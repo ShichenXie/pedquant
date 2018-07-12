@@ -1,11 +1,16 @@
 Package: getpedr
-Title: What the Package Does (one line, title case)
-Version: 0.0.0.9000
-Authors@R: Shichen Xie <xie@shichen.name> [aut, cre]
+Title: get public economic data
+Version: 0.0.1
+Authors@R: person("Shichen", "Xie", email = "xie@shichen.name", 
+    role = c("aut", "cre"))
 Description: The getpedr package provides an interface to access public 
-  economic, financial, market data, which are provided by organizations 
-  like national statistics, central bank, stock exchange etc.
-Depends: R (>= 3.5.0)
+    economic data, which are provided by organizations such as 
+    national statistics, central bank, stock exchange etc.
+Depends: R (>= 3.1.0)
 License: GPL-3 + file LICENSE
 Encoding: UTF-8
 LazyData: true
+Imports: data.table, httr, jsonlite, stringi, rvest, readxl, readr
+URL: https://github.com/ShichenXie/getpedr
+BugReports: https://github.com/ShichenXie/getpedr/issues
+RoxygenNote: 6.0.1

@@ -1,0 +1,41 @@
+#' @importFrom stats lm predict
+ped_plot = function(dt, type = "line", title=NULL) {
+    log_close = ggplot = geom_line = aes = lm0 = lm_p2 = lm_p1 = lm_m1 = scale_y_continuous = scale_x_date = labs = theme_bw = NULL
+    
+    
+    dt = dt[, log_close := log10(close)
+            ][, `:=`(
+                lm0 = predict(lm(log_close~date)),
+                lm_p2 = predict(lm((log_close+sd(log_close)*2)~date)),
+                lm_p1 = predict(lm((log_close+sd(log_close))~date)),
+                lm_m1 = predict(lm((log_close-sd(log_close))~date))
+                # log_close_p2sd = log_close + sd(log_close)*2,
+                # log_close_p1sd = log_close + sd(log_close),
+                # log_close_m1sd = log_close - sd(log_close)
+            )]
+    
+    title_str = sprintf("[%s/%s]", dt[,date[1]], dt[,date[.N]])
+    if (!is.null(title)) title_str = paste(title_str,title)
+    ggplot(data = dt) + 
+        geom_line(aes(x=date, y=log_close)) +
+        geom_line(aes(date, lm0), color="red") +
+        geom_line(aes(date, lm_p2), color="grey") +
+        geom_line(aes(date, lm_p1), color="grey") +
+        geom_line(aes(date, lm_m1), color="grey") + 
+        scale_y_continuous(position = "right") +
+        scale_x_date(breaks = seq(as.Date("1990-01-01"), as.Date("2020-01-01"), by="5 year"), labels = seq(1990,2020,5)) +
+        labs(title=title_str, x=NULL) +
+        theme_bw()
+}
+# ssec_real = ped_rp1(getmd_163("^000001", print_step = 0))
+# ped_plot(ssec_real, title="ssec")
+# szsec_real = ped_rp1(getmd_163("^399001", print_step = 0))
+# ped_plot(szsec_real, title="szsec")
+
+# create a new Techinal Analysis Indicator for a ped
+ped_addTA = function(dt, ta) {
+    
+}
+
+
+
