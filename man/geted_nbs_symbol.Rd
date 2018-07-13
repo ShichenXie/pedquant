@@ -2,7 +2,7 @@
 % Please edit documentation in R/geted_nbs.R
 \name{geted_nbs_symbol}
 \alias{geted_nbs_symbol}
-\title{Get Symbol from NBS}
+\title{get symbol of Chinese economic indicators from NBS}
 \usage{
 geted_nbs_symbol(geo_type = NULL, frequency = NULL, eng = FALSE)
 }

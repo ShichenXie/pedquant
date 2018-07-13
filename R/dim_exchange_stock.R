@@ -1,4 +1,4 @@
-#' Stock Exchanges
+#' stock exchanges list
 #'
 #' List of major stock exchanges by January 2015 (top 20 by market capitalization)
 #'

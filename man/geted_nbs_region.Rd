@@ -2,7 +2,7 @@
 % Please edit documentation in R/geted_nbs.R
 \name{geted_nbs_region}
 \alias{geted_nbs_region}
-\title{Get Region from NBS}
+\title{get code of Chinese subregion from NBS}
 \usage{
 geted_nbs_region(geo_type = NULL, eng = FALSE)
 }

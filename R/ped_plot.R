@@ -1,5 +1,51 @@
+#' create a chart for timeseries data
+#' 
+#' `ped_plot` creates a charts for a time series dataset. 
+#' 
+#' @param dt a time series dataset
+#' @param y the variable display on chart
+#' @param type chart style, including line, candle
+#' @param title chart title
+#' 
+#' @examples 
+#' \dontrun{
+#' ssec = getmd_163("^000001")
+#' 
+#' p = ped_plot(ssec$`^000001`, title="SSEC")
+#' print(p)
+#' }
+#' 
+#' @export
+ped_plot = function(dt, y="close", type="line", title=NULL) {
+    ggplot = geom_line = aes = scale_y_continuous = scale_x_date = labs = theme_bw = NULL
+    
+    min_date = dt[,date[1]]
+    max_date = dt[,date[.N]] 
+    title_str = sprintf("[%s/%s]", min_date, max_date)
+    
+    # remove 0 rows in variable
+    dt = dt[eval(parse(text=y)) != 0]
+    # title string
+    if (!is.null(title)) title_str = paste(title_str,title)
+    
+    # plot
+    p = ggplot(data = dt) + 
+        geom_line(aes(x=date, y=eval(parse(text=y)))) +
+        scale_y_continuous(position = "right") +
+        scale_x_date(date_breaks="2 year", date_minor_breaks = "1 year", date_labels = "%y")+
+            #breaks = seq(as.Date("1990-01-01"), as.Date("2020-01-01"), by="5 year"), labels = seq(1990,2020,5)) +
+        labs(title=title_str, x=NULL, y=NULL) +
+        theme_bw()
+    
+    # p <- plot_ly(data=dt, x = ~date, y = ~eval(parse(text=y)), mode = 'lines')
+    
+    return(p)
+}
+
+
+
 #' @importFrom stats lm predict
-ped_plot = function(dt, type = "line", title=NULL) {
+ped_plot_rp = function(dt, type = "line", title=NULL) {
     log_close = ggplot = geom_line = aes = lm0 = lm_p2 = lm_p1 = lm_m1 = scale_y_continuous = scale_x_date = labs = theme_bw = NULL
     
     

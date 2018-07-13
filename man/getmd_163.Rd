@@ -2,7 +2,7 @@
 % Please edit documentation in R/getmd_163.R
 \name{getmd_163}
 \alias{getmd_163}
-\title{Get Stock Market Data from 163}
+\title{get stock market data from 163}
 \source{
 \url{http://quotes.money.163.com/stock}
 }
@@ -11,7 +11,7 @@ getmd_163(symbol, from = "1900-01-01", to = Sys.Date(), print_step = 1,
   frequency = "daily", fillzero = FALSE)
 }
 \arguments{
-\item{symbol}{symbol of Chinese stock and index in 163, which should be in end of '.ss' or '.sz', represents sse and szse, such as '600000.ss', '000001.sz'.}
+\item{symbol}{symbol of Chinese stock and index in 163, the index symbol should be starts with ^.}
 
 \item{from}{the start date. Default is '1900-01-01'.}
 

@@ -1,4 +1,4 @@
-#' Commodity Exchanges
+#' commodity exchanges list
 #'
 #' List of commodities exchanges
 #'

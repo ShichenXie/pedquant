@@ -3,7 +3,7 @@
 \docType{data}
 \name{code_country}
 \alias{code_country}
-\title{Country Code List}
+\title{country code list}
 \format{A data frame with 249 rows and 4 columns.}
 \source{
 \url{https://en.wikipedia.org/wiki/ISO_3166-1}

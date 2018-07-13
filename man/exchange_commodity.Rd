@@ -3,7 +3,7 @@
 \docType{data}
 \name{exchange_commodity}
 \alias{exchange_commodity}
-\title{Commodity Exchanges}
+\title{commodity exchanges list}
 \format{A data frame with 97 rows and 7 columns.}
 \source{
 \url{https://en.wikipedia.org/wiki/List_of_commodities_exchanges}

@@ -3,7 +3,7 @@
 \docType{data}
 \name{code_currency}
 \alias{code_currency}
-\title{Currency Code List}
+\title{currency code list}
 \format{A data frame with 278 rows and 3 columns.}
 \source{
 \url{https://en.wikipedia.org/wiki/ISO_4217}, \url{https://www.currency-iso.org/en/home/tables/table-a1.html}

@@ -2,7 +2,7 @@
 % Please edit documentation in R/getmd_163.R
 \name{getmd_163_symbol}
 \alias{getmd_163_symbol}
-\title{Get Stock and index Symbols from 163}
+\title{get stock and index symbols from 163}
 \source{
 \url{http://quotes.money.163.com/stock}
 }

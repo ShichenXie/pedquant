@@ -3,7 +3,7 @@
 \docType{data}
 \name{exchange_stock}
 \alias{exchange_stock}
-\title{Stock Exchanges}
+\title{stock exchanges list}
 \format{A data frame with 65 rows and 13 columns.}
 \source{
 \url{https://en.wikipedia.org/wiki/List_of_stock_exchange_trading_hours}

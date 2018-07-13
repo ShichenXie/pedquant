@@ -1,4 +1,4 @@
-#' Country Code List
+#' country code list
 #'
 #' Code list for the representation of names 
 #' of countries and their subdivisions.
@@ -18,7 +18,7 @@ NULL
 
 
 
-#' Currency Code List
+#' currency code list
 #'
 #' Current currency & funds code list.
 #'

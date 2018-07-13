@@ -137,11 +137,11 @@ getmd_163_stock1 = function(symbol, from="1900-01-01", to=Sys.Date(), fillzero=F
 }
 
 
-#' Get Stock Market Data from 163
+#' get stock market data from 163
 #' 
 #' \code{getmd_163} gets Chinese stock and index data from 163, and returns a list of dataframes.
 #' 
-#' @param symbol symbol of Chinese stock and index in 163, which should be in end of '.ss' or '.sz', represents sse and szse, such as '600000.ss', '000001.sz'.
+#' @param symbol symbol of Chinese stock and index in 163, the index symbol should be starts with ^.
 #' @param from the start date. Default is '1900-01-01'.
 #' @param to the end date. Default is current system date.
 #' @param print_step A non-negative integer, which will print variable names by each print_step-th iteration. Default is 1. 
@@ -182,7 +182,7 @@ getmd_163 = function(symbol, from="1900-01-01", to=Sys.Date(), print_step=1, fre
 }
 
 
-#' Get Stock and index Symbols from 163
+#' get stock and index symbols from 163
 #' 
 #' \code{getmd_163_symbol} gets all Chinese stock and index symbols from 163. 
 #' 
