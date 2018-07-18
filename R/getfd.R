@@ -1,26 +1,26 @@
 # get financial data
 
-#' get financial statement data from 163
+#' get financial statement data of Chinese stock
 #' 
-#' `getfd_163` gets the financial statement tables of Chinese stock from 163.  
+#' `getfd_cn` gets the financial statement tables of Chinese stock.  
 #' 
-#' @param symbol symbol of Chinese stock in 163
+#' @param symbol symbol of Chinese stock
 #' @param type the type of financial statement table
 #' 
 #' @examples 
 #' \dotrun{
-#' dat1 = getfd_163("000001")
+#' dat1 = getfd_cn("000001")
 #' 
-#' dat2 = getfd_163("000001", type="fs0")
+#' dat2 = getfd_cn("000001", type="fs0")
 #' 
-#' dat3 = getfd_163("000001", type="fs0_summary")
+#' dat3 = getfd_cn("000001", type="fs0_summary")
 #' 
 #' }
 #' 
 #' @import data.table
 #' @importFrom readr read_csv
 #' @export
-getfd_163 = function(symbol, type=NULL) {
+getfd_cn = function(symbol, type=NULL) {
     fs_163 = setDT(copy(finance_statement_163))
     
     if (is.null(type)) {

@@ -1,25 +1,26 @@
 # China securities index, csindex
 
-#' get current constituent of China securities index.
+#' get constituent of China securities index (CSI).
 #' 
-#' \code{getmd_csi_cons} provides an API to get the current constituent of China securities index. 
+#' \code{getmd_index_cons} provides an API to get the current constituent of China securities index. 
 #' 
 #' @param symbol the code of China securities index.
+#' 
 #' @source \url{http://www.csindex.com.cn/zh-CN}
 #' 
 #' @examples 
 #' \dontrun{
-#' dt50 = getmd_csi_cons("000016")
+#' dt50 = getmd_index_cons("000016")
 #' 
-#' dt300 = getmd_csi_cons("000300")
+#' dt300 = getmd_index_cons("000300")
 #' 
-#' dt500 = getmd_csi_cons("000905")
+#' dt500 = getmd_index_cons("000905")
 #' }
 #' 
 #' @import data.table
 #' @export
 #' 
-getmd_csi_cons = function(symbol) {
+getmd_index_cons = function(symbol) {
     exchange = NULL
     
     path = sprintf("http://www.csindex.com.cn/uploads/file/autofile/cons/%scons.xls",symbol)

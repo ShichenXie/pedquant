@@ -93,7 +93,7 @@ geted_nbs_symbol1 = function(geo_type=NULL, frequency=NULL, symbol='zb', eng=FAL
   zb_list = setDT(zb_list)[,.(symbol=id, name, isParent, symbolParent=pid)]
   return(zb_list)
 }
-#' get symbol of Chinese economic indicators from NBS
+#' get symbol of Chinese economic indicator from NBS
 #' 
 #' \code{geted_nbs_symbol} interactively get economic data symbol from NBS.
 #' 
@@ -142,9 +142,9 @@ geted_nbs_symbol = function(geo_type=NULL, frequency=NULL, eng=FALSE) {
   return(sel_symbol)
 }
 
-#' get code of Chinese subregion from NBS
+#' get code of subregion in China from NBS
 #' 
-#' \code{geted_nbs_region} get province or city codes from NBS
+#' \code{geted_nbs_region} get province or city code from NBS
 #' 
 #' @param geo_type geography type in NBS, including 'national', 'province', 'city'. Default is NULL.
 #' @param eng logical. Default is FALSE. If it is FALSE, the result is in Chinese, otherwise in English.
@@ -316,7 +316,7 @@ nbs_jsondat_format = function(jsondat) {
 }
 
 
-#' get macroeconomic data from NBS (National Bureau of Statistics of China)
+#' get macroeconomic data from National Bureau of Statistics of China (NBS)
 #' 
 #' \code{geted_nbs} provides a simple way to get macroeconomic data from National Bureau of Statistics of China (NBS).
 #' 

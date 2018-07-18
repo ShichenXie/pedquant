@@ -40,6 +40,8 @@
 # - https://www.investing.com
 # - https://www.quandl.com
 
+# http://blog.sina.com.cn/s/blog_afae4ee50102wu8a.html
+# http://hq.sinajs.cn/list=sz000913,s_sh000001
 
 
 

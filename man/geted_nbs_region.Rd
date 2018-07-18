@@ -2,7 +2,7 @@
 % Please edit documentation in R/geted_nbs.R
 \name{geted_nbs_region}
 \alias{geted_nbs_region}
-\title{get code of Chinese subregion from NBS}
+\title{get code of subregion in China from NBS}
 \usage{
 geted_nbs_region(geo_type = NULL, eng = FALSE)
 }
@@ -12,7 +12,7 @@ geted_nbs_region(geo_type = NULL, eng = FALSE)
 \item{eng}{logical. Default is FALSE. If it is FALSE, the result is in Chinese, otherwise in English.}
 }
 \description{
-\code{geted_nbs_region} get province or city codes from NBS
+\code{geted_nbs_region} get province or city code from NBS
 }
 \examples{
 # get province code 

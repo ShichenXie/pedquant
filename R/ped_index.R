@@ -70,9 +70,9 @@ ped_rp1 = function(dt, region="cn", columns = c("open", "high", "low", "close"))
 
 
 
-#' create a index
+#' create an index 
 #' 
-#' ped_index creates a index, which is geometrically weighted averages of chain index, based on multiple time series dataframes.
+#' ped_index creates an index based on multiple timeseries. The methodology is geometrically weighted averages.
 #' 
 #' @param dt input datasets including many dataframes.
 #' @param chain_index the name of chain index

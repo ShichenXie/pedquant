@@ -2,7 +2,7 @@
 % Please edit documentation in R/geted_nbs.R
 \name{geted_nbs}
 \alias{geted_nbs}
-\title{get macroeconomic data from NBS (National Bureau of Statistics of China)}
+\title{get macroeconomic data from National Bureau of Statistics of China (NBS)}
 \source{
 \url{http://data.stats.gov.cn/index.htm}
 }

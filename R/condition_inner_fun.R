@@ -60,7 +60,17 @@ check_symbol_for_163 = function(symbol) {
         return(paste0(ex_code, sub(".*?(\\d+).*","\\1", symbol)))
     }
 }
-
+check_symbol_for_tx = function(symbol) {
+    tags = tags_symbol_stockcn(symbol, ifelse(grepl("\\^",symbol),"index","stock"))
+    ex_code = ifelse(grepl("sse",tags), "sh", 
+                     ifelse(grepl("szse",tags), "sz", NULL))
+    
+    if (is.null(ex_code)) {
+        return(NULL)
+    } else {
+        return(paste0(ex_code, sub(".*?(\\d+).*","\\1", symbol)))
+    }
+}
 
 # download and read excel file from website
 #' @importFrom readxl read_excel
