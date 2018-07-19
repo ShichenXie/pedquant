@@ -20,9 +20,9 @@ ped_plot(dt, y = "close", type = "line", title = NULL)
 }
 \examples{
 \dontrun{
-ssec = getmd_163("^000001")
+ssec = getmd_stock("^000001")
 
-p = ped_plot(ssec$`^000001`, title="SSEC")
+p = ped_plot(ssec, title="SSEC")
 print(p)
 }
 

@@ -2,8 +2,8 @@
 # weighted geometric mean
 # I_t/I_{t-1} = \prod{(x_{j,t}/x_{j,t-1})^{w_{j,t}}}
 
-# dat = getmd_163(sybs, fillzero = FALSE)
-# ssec = getmd_163("^000001")
+# dat = getmd_stock(sybs, fillzero = FALSE)
+# ssec = getmd_stock("^000001")
 
 # create a fixed-base index from chain index
 #' @import data.table
@@ -66,15 +66,15 @@ ped_rp1 = function(dt, region="cn", columns = c("open", "high", "low", "close"))
    
    return(dt_rp)
 }
-# ssec_real = ped_rp1(getmd_163("^000001", print_step = 0))
+# ssec_real = ped_rp1(getmd_stock("^000001", print_step = 0))
 
 
 
 #' create an index 
 #' 
-#' ped_index creates an index based on multiple timeseries. The methodology is geometrically weighted averages.
+#' ped_index using the method of geometrically weighted averages to create an index based on multiple timeseries datasets.
 #' 
-#' @param dt input datasets including many dataframes.
+#' @param dt input timeseries datasets
 #' @param chain_index the name of chain index
 #' @param weight the name of weight variable
 #' @param base_index the base value of index, default is 1
@@ -84,17 +84,16 @@ ped_rp1 = function(dt, region="cn", columns = c("open", "high", "low", "close"))
 #' \dontrun{
 #' banks_symbol = c("601988", "601288", "601398", "601939")
 #' 
-#' dat = getmd_163(banks_symbol)
+#' dat = getmd_stock(banks_symbol)
 #' 
 #' library(data.table)
-#' dat = lapply(dat, function(x) x[, pct_change:=pct_change+1])
+#' dat = lapply(dat, function(x) x[, change_pct:=change_pct+1])
 #' 
-#' bankindex = ped_index(dat, "pct_change", "total_cap")
+#' bankindex = ped_index(dat, "change_pct", "cap_total")
 #' }
 #' 
 #' @import data.table
 #' @export
-#' 
 ped_index = function(dt, chain_index, weight, base_index=1, base_date="2010-01-01") {
     w = ci = cw = ped_fbi = V1 = . = index = NULL
     

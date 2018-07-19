@@ -1,4 +1,4 @@
-# d, w, m, q, a, ytd
+# d, w, m, q, y, ytd
 
 ped_perf = function() {
     

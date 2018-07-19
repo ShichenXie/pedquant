@@ -2,12 +2,12 @@
 % Please edit documentation in R/ped_index.R
 \name{ped_index}
 \alias{ped_index}
-\title{create a index}
+\title{create an index}
 \usage{
 ped_index(dt, chain_index, weight, base_index = 1, base_date = "2010-01-01")
 }
 \arguments{
-\item{dt}{input datasets including many dataframes.}
+\item{dt}{input timeseries datasets}
 
 \item{chain_index}{the name of chain index}
 
@@ -18,18 +18,18 @@ ped_index(dt, chain_index, weight, base_index = 1, base_date = "2010-01-01")
 \item{base_date}{the date base of index, deafult is "2010-01-01"}
 }
 \description{
-ped_index creates a index, which is geometrically weighted averages of chain index, based on multiple time series dataframes.
+ped_index using the method of geometrically weighted averages to create an index based on multiple timeseries datasets.
 }
 \examples{
 \dontrun{
 banks_symbol = c("601988", "601288", "601398", "601939")
 
-dat = getmd_163(banks_symbol)
+dat = getmd_stock(banks_symbol)
 
 library(data.table)
-dat = lapply(dat, function(x) x[, pct_change:=pct_change+1])
+dat = lapply(dat, function(x) x[, change_pct:=change_pct+1])
 
-bankindex = ped_index(dat, "pct_change", "total_cap")
+bankindex = ped_index(dat, "change_pct", "cap_total")
 }
 
 }

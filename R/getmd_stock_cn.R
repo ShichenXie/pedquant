@@ -12,7 +12,8 @@
 #' @import data.table 
 #' @importFrom jsonlite fromJSON
 getmd_stock_spotall_163 = function(symbol = "a,index", only_symbol = FALSE) {
-  
+  tags = market = exchange = time = . = submarket = region = board = name = NULL
+    
   fun_stock_163 = function(urli, mkt) {
     code = symbol = exchange = . = name = high = low = price = yestclose = updown = percent = hs = volume = turnover = mcap = tcap = pe = mfsum = net_income = revenue = plate_ids = time = NULL
     # stock
@@ -60,7 +61,8 @@ getmd_stock_spotall_163 = function(symbol = "a,index", only_symbol = FALSE) {
   ][, c("exchange","submarket","board"):=tstrsplit(tags,",")
   ][, tags := NULL][order(-market, exchange, symbol)]
   
-  # if (dat[1,date] < paste0(format(Sys.Date(), "%Y%m%d"), '150000')) cat("The close price in returned dataframe is spot price at", dat[1,date], "\n")
+  datetime = gsub("[^(0-9)]","",df_stock_cn[1,time])
+  if (datetime < paste0(substr(datetime,1,8), '150000')) cat("The close price in returned dataframe is spot price at", datetime, "\n")
   
   if (only_symbol) df_stock_cn = df_stock_cn[, .(market, submarket, region, exchange, board, symbol, name)]
   
@@ -68,14 +70,15 @@ getmd_stock_spotall_163 = function(symbol = "a,index", only_symbol = FALSE) {
 }
 # @import data.table
 getmd_stockall_sina = function(symbol = "a,index", only_symbol = FALSE) {
+  tags=market=exchange=.=submarket=region=board=name=NULL
+  
   fun_stock_sina = function(urli, mkt) {
-    print(urli)
+    V1=.=code=name=high=low=trade=settlement=pricechange=changepercent=turnoverratio=volume=amount=mktcap=nmc=pb=per=ticktime= NULL
     
     dt_list = list()
     doc = "init"
     num = 1
     while (doc != "null") {
-      print(num)
       doc = readLines(sprintf(urli, num), warn = FALSE)
       
       if (doc != "null") {
@@ -129,6 +132,8 @@ getmd_stockall_sina = function(symbol = "a,index", only_symbol = FALSE) {
 
 # get spot data from tx
 getmd_stock_spot1_tx = function(symbol) {
+  dat = doc = . = name = high = low = prev_close = change = change_pct = volume = value = turnover = cap_market = cap_total = pb = pe_last = pe_trailing = pe_forward = buy = sell = bid1 = bid1_volume = bid2 = bid2_volume = bid3 = bid3_volume = bid4 = bid4_volume = bid5 = bid5_volume = ask1 = ask1_volume = ask2 = ask2_volume = ask3 = ask3_volume = ask4 = ask4_volume = ask5 = ask5_volume = NULL
+  
   symbol = paste0(sapply(symbol, check_symbol_for_tx),collapse=",")
   
   dt = readLines(sprintf("http://qt.gtimg.cn/q=%s", symbol))
@@ -163,8 +168,9 @@ getmd_stock_spot1_tx = function(symbol) {
     bid1, bid1_volume, bid2, bid2_volume, bid3, bid3_volume, bid4, bid4_volume, bid5, bid5_volume, 
     ask1, ask1_volume, ask2, ask2_volume, ask3, ask3_volume, ask4, ask4_volume, ask5, ask5_volume)]
   
-  if (dat[1,date] < paste0(format(Sys.Date(), "%Y%m%d"), '150000')) cat("The close price in returned dataframe is spot price at", dat[1,date], "\n")
+  if (dt[1,date] < paste0(substr(dt[1,date],1,8), '150000')) cat("The close price in returned dataframe is spot price at", dt[1,date], "\n")
   
+  return(dt)
 }
 
 
@@ -227,27 +233,7 @@ getmd_stock_hist1_163 = function(symbol, from="1900-01-01", to=Sys.Date(), fillz
 }
 
 
-#' get stock market data in sse and szse
-#' 
-#' \code{getmd_stock_cn} gets Chinese stock and index data in sse and szse. The return object is a list of dataframes.
-#' 
-#' @param symbol symbols of Chinese stock and index, the index symbol should starts with ^.
-#' @param from the start date. Default is '1900-01-01'.
-#' @param to the end date. Default is current system date.
-#' @param print_step A non-negative integer, which will print variable names by each print_step-th iteration. Default is 1. 
-#' @param frequency supports daily and spot data. 
-#' @param fillzero logical. Defualt is FALSE If it is TRUE, the zeros in dataset will be filled with last non-zero values.
-#' 
-#' 
-#' @examples 
-#' \dontrun{
-#' dat = getmd_stock_cn(symbol=c('600000', '000001'))
-#' 
-#' ssec_szsec = getmd_stock_cn(symbol = c('^000001', '^399001'))
-#' }
-#' 
 #' @import data.table rvest
-#' @export
 getmd_stock_cn = function(symbol, from="1900-01-01", to=Sys.Date(), print_step=1, frequency = "daily", fillzero=FALSE) {
   if (frequency == "spot") {
     if (all(unlist(strsplit(symbol,",")) %in% c('a','b','index'))) {
@@ -257,18 +243,47 @@ getmd_stock_cn = function(symbol, from="1900-01-01", to=Sys.Date(), print_step=1
     }
     
   } else if (frequency == "daily") {
-    md_list = NULL
+    dt_list = NULL
     symbol_len = length(symbol)
     for (i in 1:symbol_len) {
       si = symbol[i]
       # print
       if ((print_step>0) & (i %% print_step == 0)) cat(paste0(format(c(i,symbol_len)),collapse = "/"), si,"\n")
       
-      md_list[[si]] = getmd_stock_hist1_163(symbol = si, from = from, to = to, fillzero = fillzero)
+      dt_list[[si]] = getmd_stock_hist1_163(symbol = si, from = from, to = to, fillzero = fillzero)
     }
-    return(md_list)
+    return(dt_list)
     
   }
 }
 
+#' get stock market data
+#' 
+#' \code{getmd_stock} provides an interface to get end of date and spot price data of Chinese stock and index.
+#' 
+#' @param symbol symbols of Chinese stock and index, the index symbol should starts with ^.
+#' @param from the start date. Default is '1900-01-01'.
+#' @param to the end date. Default is current system date.
+#' @param print_step A non-negative integer, which will print variable names by each print_step-th iteration. Default is 1. 
+#' @param frequency supports daily and spot data. 
+#' @param fillzero logical. Defualt is FALSE If it is TRUE, the zeros in dataset will be filled with last non-zero values.
+#' @param region only cn (China) is available.
+#' 
+#' @examples 
+#' \dontrun{
+#' dat = getmd_stock(symbol=c('600000', '000001', '^000001', '^399001'))
+#' 
+#' dat2 = getmd_stock(symbol=c('600000', '000001', '^000001', '^399001'), frequency="spot")
+#' 
+#' # get spot price of all A shares
+#' dat3 = getmd_stock(symbol='a', frequency="spot")
+#' 
+#' # get spot price of all index in sse and szse
+#' dat4 = getmd_stock(symbol='index', frequency="spot")
+#' }
+#' 
+#' @export
+getmd_stock = function(symbol, from="1900-01-01", to=Sys.Date(), print_step=1, frequency = "daily", fillzero=FALSE, region="cn") {
+  if (region == "cn") return(getmd_stock_cn(symbol, from, to, print_step, frequency, fillzero))
+}
 

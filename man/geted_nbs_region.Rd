@@ -20,9 +20,11 @@ prov1 = geted_nbs_region(geo_type = 'province')
 # or using 'p' represents 'province'
 prov2 = geted_nbs_region(geo_type = 'p') 
 
+\dontrun{
 # get city code in Chinese
-city = geted_nbs_region(geo_type = 'c') 
+city = geted_nbs_region(geo_type = 'c', eng = FALSE) 
 # get city code in English
 city = geted_nbs_region(geo_type = 'c', eng = TRUE) 
+}
 
 }

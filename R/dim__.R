@@ -20,6 +20,16 @@
 # - Current Account
 # - Forex Reserve
 
+# Daily
+# Weekly
+# Monthly
+# Quarterly
+# Yearly
+
+
+# Internal data # http://r-pkgs.had.co.nz/data.html
+# devtools::use_data(finance_statement_163, prov_indu_163, symbol_commodity_sina, symbol_stock_163, internal = TRUE, overwrite = TRUE)
+
 
 
 # Symbol          Name

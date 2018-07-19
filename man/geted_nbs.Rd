@@ -2,7 +2,7 @@
 % Please edit documentation in R/geted_nbs.R
 \name{geted_nbs}
 \alias{geted_nbs}
-\title{get macroeconomic data from National Bureau of Statistics of China (NBS)}
+\title{get economic data from National Bureau of Statistics of China (NBS)}
 \source{
 \url{http://data.stats.gov.cn/index.htm}
 }
@@ -14,7 +14,7 @@ geted_nbs(geo_type = NULL, frequency = NULL, symbol = NULL,
 \arguments{
 \item{geo_type}{geography type in NBS, including 'national', 'province', 'city'. Default is NULL.}
 
-\item{frequency}{the frequency of indicators in NBS, including 'monthly', 'quarterly', 'annual'. Default is NULL.}
+\item{frequency}{the frequency of indicators in NBS, including 'monthly', 'quarterly', 'yearly'. Default is NULL.}
 
 \item{symbol}{symbol of indicators in NBS, which is available via geted_nbs_symbol. Default is NULL.}
 
@@ -24,12 +24,12 @@ geted_nbs(geo_type = NULL, frequency = NULL, symbol = NULL,
 
 \item{to}{the end date. Default is current system date.}
 
-\item{na_rm}{logical. Default is FALSE. If it is TRUE, the missing values will be removed.}
+\item{na_rm}{logical. If it is TRUE, the missing values will be removed. Default is FALSE.}
 
-\item{eng}{logical. Default is FALSE. If it is FALSE, the query results are in Chinese, otherwise in English.}
+\item{eng}{logical. If it is FALSE, the query results are in Chinese, otherwise in English. Default is FALSE.}
 }
 \description{
-\code{geted_nbs} provides a simple way to get macroeconomic data from National Bureau of Statistics of China (NBS).
+\code{geted_nbs} provides an interface to get economic data from National Bureau of Statistics of China (NBS).
 }
 \examples{
 # interactively setting paratmeters
@@ -45,7 +45,7 @@ dt2 = geted_nbs(geo_type='n', frequency='q', symbol='A010101')
 
 
 # get data of one region
-dt4 = geted_nbs(geo_type='province', frequency='quarterly', 
+dt3 = geted_nbs(geo_type='province', frequency='quarterly', 
   symbol='A010101', region='110000', from='2010-03-01', to='2010-03-01')
   
 # get data of all province

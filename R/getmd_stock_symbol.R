@@ -129,8 +129,8 @@ sym_stock_cn_cninfo = function(return_url=FALSE) {
 
 #' @import data.table
 #' @importFrom stringi stri_unescape_unicode
-getmd_stock_symbol_hk = function(source="sina", return_price=FALSE) {
-  symbol = exchange = market_symbols = NULL
+getmd_stock_symbol_hk = function(source="163", return_price=FALSE) {
+  symbol = exchange = market_symbols = stock_list_hk2 = NULL
 
   if (source == "163") {
     # function
@@ -249,11 +249,9 @@ getmd_stock_symbol_163 = function() {
   
   df_symbol = try(rbindlist(mapply(fun_symbol_163, symbol_url_163, c("stock","stock","index","index"), SIMPLIFY = FALSE), fill = TRUE), silent = TRUE)
   if ('try-error' %in% class(df_symbol)) {
-    df_symbol = setDT(copy(symbol_name_163))
+    df_symbol = setDT(copy(symbol_stock_163))
   }
   
-  # Internal data # http://r-pkgs.had.co.nz/data.html
-  # devtools::use_data(symbol_name_163, prov_indu_163, internal = TRUE, overwrite = TRUE)
   symbol_163_format = function(df_symbol) {
     type = . = id = name = symbol = tags = market = submarket = region = exchange = board = prov = indu = sec = NULL
     
@@ -280,9 +278,9 @@ getmd_stock_symbol_163 = function() {
 
 #' get stock and index symbols
 #' 
-#' \code{getmd_163_symbol} gets the share symbols in sse (Shanghai Stock Exchange), szse (Shenzhen Stock Exchange) and hkex (Hong Kong Stock Exchange). 
+#' \code{getmd_163_symbol} gets the stock and index symbols in sse (Shanghai Stock Exchange), szse (Shenzhen Stock Exchange) and hkex (Hong Kong Stock Exchange). 
 #' 
-#' @param exchanges default is c("sse", "szse"), which means to return symbols in sse and szse sse and szse.
+#' @param exchanges name of stock exchange. Accepted values including sse, szse and hkex. Default is c("sse", "szse").
 #' 
 #' @examples 
 #' \dontrun{
@@ -291,7 +289,8 @@ getmd_stock_symbol_163 = function() {
 #' @import data.table
 #' @export
 getmd_stock_symbol = function(exchanges = c("sse", "szse")) {
-  syb = NULL
+  exchange = region = syb = NULL
+  
   if (any(c("sse", "szse") %in% exchanges)) {
     syb = getmd_stock_symbol_163()[exchange %in% exchanges]
     

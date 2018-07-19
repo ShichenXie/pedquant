@@ -1,3 +1,30 @@
+
+ped1_plot = function(df, y="close", type="line", title=NULL) {
+    ggplot = geom_line = aes = scale_y_continuous = scale_x_date = labs = theme_bw = NULL
+    
+    min_date = df[,date[1]]
+    max_date = df[,date[.N]] 
+    title_str = sprintf("[%s/%s]", min_date, max_date)
+    
+    # remove 0 rows in variable
+    df = df[eval(parse(text=y)) != 0]
+    # title string
+    if (!is.null(title)) title_str = paste(title_str,title)
+    
+    # plot
+    p = ggplot(data = df) + 
+        geom_line(aes(x=date, y=eval(parse(text=y)))) +
+        scale_y_continuous(position = "right") +
+        scale_x_date(date_breaks="2 year", date_minor_breaks = "1 year", date_labels = "%y")+
+            #breaks = seq(as.Date("1990-01-01"), as.Date("2020-01-01"), by="5 year"), labels = seq(1990,2020,5)) +
+        labs(title=title_str, x=NULL, y=NULL) +
+        theme_bw()
+    
+    # p <- plot_ly(data=df, x = ~date, y = ~eval(parse(text=y)), mode = 'lines')
+    
+    return(p)
+}
+
 #' create a chart for timeseries data
 #' 
 #' `ped_plot` creates a charts for a time series dataset. 
@@ -9,39 +36,29 @@
 #' 
 #' @examples 
 #' \dontrun{
-#' ssec = getmd_163("^000001")
+#' ssec = getmd_stock("^000001")
 #' 
-#' p = ped_plot(ssec$`^000001`, title="SSEC")
+#' p = ped_plot(ssec, title="SSEC")
 #' print(p)
 #' }
 #' 
+#' @import ggplot2
 #' @export
 ped_plot = function(dt, y="close", type="line", title=NULL) {
-    ggplot = geom_line = aes = scale_y_continuous = scale_x_date = labs = theme_bw = NULL
+    if (is.list(dt) & !is.data.frame(dt)) {
+        dt_names = names(dt)
+        
+        plist = NULL
+        for (i in dt_names) {
+            if (is.null(title)) title = i
+            plist[[i]] = ped1_plot(dt[[i]], y, type, title)
+        }
+    } else if (is.data.frame(dt)) {
+        plist = ped1_plot(dt, y, type, title)
+    }
     
-    min_date = dt[,date[1]]
-    max_date = dt[,date[.N]] 
-    title_str = sprintf("[%s/%s]", min_date, max_date)
-    
-    # remove 0 rows in variable
-    dt = dt[eval(parse(text=y)) != 0]
-    # title string
-    if (!is.null(title)) title_str = paste(title_str,title)
-    
-    # plot
-    p = ggplot(data = dt) + 
-        geom_line(aes(x=date, y=eval(parse(text=y)))) +
-        scale_y_continuous(position = "right") +
-        scale_x_date(date_breaks="2 year", date_minor_breaks = "1 year", date_labels = "%y")+
-            #breaks = seq(as.Date("1990-01-01"), as.Date("2020-01-01"), by="5 year"), labels = seq(1990,2020,5)) +
-        labs(title=title_str, x=NULL, y=NULL) +
-        theme_bw()
-    
-    # p <- plot_ly(data=dt, x = ~date, y = ~eval(parse(text=y)), mode = 'lines')
-    
-    return(p)
+    return(plist)
 }
-
 
 
 #' @importFrom stats lm predict
@@ -73,9 +90,9 @@ ped_plot_rp = function(dt, type = "line", title=NULL) {
         labs(title=title_str, x=NULL) +
         theme_bw()
 }
-# ssec_real = ped_rp1(getmd_163("^000001", print_step = 0))
+# ssec_real = ped_rp1(getmd_stock("^000001", print_step = 0))
 # ped_plot(ssec_real, title="ssec")
-# szsec_real = ped_rp1(getmd_163("^399001", print_step = 0))
+# szsec_real = ped_rp1(getmd_stock("^399001", print_step = 0))
 # ped_plot(szsec_real, title="szsec")
 
 # create a new Techinal Analysis Indicator for a ped

@@ -2,16 +2,16 @@
 % Please edit documentation in R/geted_nbs.R
 \name{geted_nbs_symbol}
 \alias{geted_nbs_symbol}
-\title{get symbol of Chinese economic indicator from NBS}
+\title{get symbol of China economic indicator from NBS}
 \usage{
 geted_nbs_symbol(geo_type = NULL, frequency = NULL, eng = FALSE)
 }
 \arguments{
 \item{geo_type}{geography type in NBS, including 'national', 'province', 'city'. Default is NULL.}
 
-\item{frequency}{the frequency of indicators in NBS, including 'monthly', 'quarterly', 'annual'. Default is NULL.}
+\item{frequency}{the frequency of indicators in NBS, including 'monthly', 'quarterly', 'yearly'. Default is NULL.}
 
-\item{eng}{logical. Default is FALSE. If it is FALSE, the result is in Chinese, otherwise in English.}
+\item{eng}{logical. If it is FALSE, the result is show in Chinese, otherwise in English. Default is FALSE.}
 }
 \description{
 \code{geted_nbs_symbol} interactively get economic data symbol from NBS.

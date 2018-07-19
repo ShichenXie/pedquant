@@ -39,7 +39,7 @@ check_nbs_geotype = function(geo_type) {
 
 # check frequency
 check_nbs_frequency = function(frequency, geo_type) {
-  if (any(frequency %in% c('year', 'y'))) frequency = "annual"
+  if (any(frequency %in% c('yearly', 'y'))) frequency = "annual"
   # specify the frequency
   frequency_list = c("monthly", "quarterly", "annual")
   if (geo_type %in% c('city','c')) frequency_list = c("monthly","annual")
@@ -93,13 +93,13 @@ geted_nbs_symbol1 = function(geo_type=NULL, frequency=NULL, symbol='zb', eng=FAL
   zb_list = setDT(zb_list)[,.(symbol=id, name, isParent, symbolParent=pid)]
   return(zb_list)
 }
-#' get symbol of Chinese economic indicator from NBS
+#' get symbol of China economic indicator from NBS
 #' 
 #' \code{geted_nbs_symbol} interactively get economic data symbol from NBS.
 #' 
 #' @param geo_type geography type in NBS, including 'national', 'province', 'city'. Default is NULL.
-#' @param frequency the frequency of indicators in NBS, including 'monthly', 'quarterly', 'annual'. Default is NULL.
-#' @param eng logical. Default is FALSE. If it is FALSE, the result is in Chinese, otherwise in English.
+#' @param frequency the frequency of indicators in NBS, including 'monthly', 'quarterly', 'yearly'. Default is NULL.
+#' @param eng logical. If it is FALSE, the result is show in Chinese, otherwise in English. Default is FALSE. 
 #' 
 #' @examples 
 #' # get symbol interactively
@@ -155,10 +155,12 @@ geted_nbs_symbol = function(geo_type=NULL, frequency=NULL, eng=FALSE) {
 #' # or using 'p' represents 'province'
 #' prov2 = geted_nbs_region(geo_type = 'p') 
 #' 
+#' \dontrun{
 #' # get city code in Chinese
-#' city = geted_nbs_region(geo_type = 'c') 
+#' city = geted_nbs_region(geo_type = 'c', eng = FALSE) 
 #' # get city code in English
 #' city = geted_nbs_region(geo_type = 'c', eng = TRUE) 
+#' }
 #' 
 #' @importFrom jsonlite fromJSON 
 #' @export
@@ -201,18 +203,20 @@ geted_nbs_region = function(geo_type=NULL, eng=FALSE) {
 check_nbs_region = function(region, geo_type, eng){
   code = NULL
   
-  if (any(region =='all')) return(region)
-  
   if (grepl('^n', geo_type)) {
     return(NULL)
   } else if (grepl('^p|^c', geo_type)) {
+    if (any(region =='all')) return(region)
+    
+    # dataframe of subregions in CHina
     regdf = geted_nbs_region(geo_type, eng)
     
+    # all regions?
     all_regioin_notin_regdf = is.null(region) || any((region %in% regdf$code) == FALSE)
     if (all_regioin_notin_regdf) {
       print(setDF(copy(regdf)))
-      
       sel_region = readline("Select regions' rowid: ")
+      
       if (sel_region=='all') return(sel_region)
       sel_region = sprintf('c(%s)', gsub('-',':',gsub(' ','',sel_region))) 
       sel_region = eval(parse(text = sel_region))
@@ -260,7 +264,7 @@ geted_nbs_querydat = function(nbs_geo, symbol, region=NULL, from, eng=FALSE) {
   
   rowcode = 'zb'
   if (!is.null(region)) {
-    if (grepl('^fs|^cs', nbs_geo) & region=='all') rowcode = 'reg'
+    if (grepl('^fs|^cs', nbs_geo) & ('all' %in% region || length(region)>1)) rowcode = 'reg'
   }
   
   # query list
@@ -316,18 +320,18 @@ nbs_jsondat_format = function(jsondat) {
 }
 
 
-#' get macroeconomic data from National Bureau of Statistics of China (NBS)
+#' get economic data from National Bureau of Statistics of China (NBS)
 #' 
-#' \code{geted_nbs} provides a simple way to get macroeconomic data from National Bureau of Statistics of China (NBS).
+#' \code{geted_nbs} provides an interface to get economic data from National Bureau of Statistics of China (NBS).
 #' 
 #' @param geo_type geography type in NBS, including 'national', 'province', 'city'. Default is NULL.
-#' @param frequency the frequency of indicators in NBS, including 'monthly', 'quarterly', 'annual'. Default is NULL.
+#' @param frequency the frequency of indicators in NBS, including 'monthly', 'quarterly', 'yearly'. Default is NULL.
 #' @param symbol symbol of indicators in NBS, which is available via geted_nbs_symbol. Default is NULL.
 #' @param region region codes of province or city, which is available via geted_nbs_region. Default is NULL.
 #' @param from the start date. Default is '1900-01-01'.
 #' @param to the end date. Default is current system date.
-#' @param na_rm logical. Default is FALSE. If it is TRUE, the missing values will be removed.
-#' @param eng logical. Default is FALSE. If it is FALSE, the query results are in Chinese, otherwise in English.
+#' @param na_rm logical. If it is TRUE, the missing values will be removed. Default is FALSE.
+#' @param eng logical. If it is FALSE, the query results are in Chinese, otherwise in English. Default is FALSE.
 #' 
 #' @source \url{http://data.stats.gov.cn/index.htm}
 #' 
@@ -345,7 +349,7 @@ nbs_jsondat_format = function(jsondat) {
 #' 
 #' 
 #' # get data of one region
-#' dt4 = geted_nbs(geo_type='province', frequency='quarterly', 
+#' dt3 = geted_nbs(geo_type='province', frequency='quarterly', 
 #'   symbol='A010101', region='110000', from='2010-03-01', to='2010-03-01')
 #'   
 #' # get data of all province
@@ -369,7 +373,7 @@ geted_nbs = function(geo_type=NULL, frequency=NULL, symbol=NULL, region=NULL, fr
   # symbol
   if (is.null(symbol)) symbol = geted_nbs_symbol(geo_type, frequency, eng)
   # region
-  region = check_nbs_region(region, geo_type, eng)
+  if (is.null(region)) region = check_nbs_region(region, geo_type, eng)
   # from/to
   from = check_fromto(from)
   to = check_fromto(to)
@@ -380,8 +384,16 @@ geted_nbs = function(geo_type=NULL, frequency=NULL, symbol=NULL, region=NULL, fr
   for (s in symbol) {
     jsondat[[s]] = geted_nbs_querydat(nbs_geo, symbol=s, region, from, eng)
   }
-  
+  # rbindlist jsondat
   dat = rbindlist(lapply(jsondat, nbs_jsondat_format), fill=TRUE)[date>=fromto[[1]] & date<=fromto[[2]],]
+  
+  # filter dat by region if length(region)>1
+  if (length(region) > 1 & !("all" %in% region)) {
+    row_idx = which(dat$region %in% region)
+    dat = dat[row_idx,]
+  }
+  
+  # remove na rows
   if (na_rm) dat = dat[!is.na(value)]
   setkey(dat, "date")
     

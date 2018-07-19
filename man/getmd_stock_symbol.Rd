@@ -7,10 +7,10 @@
 getmd_stock_symbol(exchanges = c("sse", "szse"))
 }
 \arguments{
-\item{exchanges}{default is c("sse", "szse"), which means to return symbols in sse and szse sse and szse.}
+\item{exchanges}{name of stock exchange. Accepted values including sse, szse and hkex. Default is c("sse", "szse").}
 }
 \description{
-\code{getmd_163_symbol} gets the share symbols in sse (Shanghai Stock Exchange), szse (Shenzhen Stock Exchange) and hkex (Hong Kong Stock Exchange).
+\code{getmd_163_symbol} gets the stock and index symbols in sse (Shanghai Stock Exchange), szse (Shenzhen Stock Exchange) and hkex (Hong Kong Stock Exchange).
 }
 \examples{
 \dontrun{
