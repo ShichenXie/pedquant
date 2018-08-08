@@ -11,7 +11,7 @@ Depends: R (>= 3.1.0)
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
-Imports: data.table, httr, jsonlite, stringi, rvest, readxl, readr, ggplot2
+Imports: data.table, httr, curl, jsonlite, stringi, rvest, readxl, readr, ggplot2
 URL: https://github.com/ShichenXie/getpedr
 BugReports: https://github.com/ShichenXie/getpedr/issues
 RoxygenNote: 6.0.1

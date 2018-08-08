@@ -31,7 +31,7 @@ ped1_plot = function(df, y="close", type="line", title=NULL) {
 #' 
 #' @param dt a time series dataset
 #' @param y the variable display on chart
-#' @param type chart style, including line, candle
+#' @param type chart style, including line, candle, bar
 #' @param title chart title
 #' 
 #' @examples 

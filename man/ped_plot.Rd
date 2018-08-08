@@ -11,7 +11,7 @@ ped_plot(dt, y = "close", type = "line", title = NULL)
 
 \item{y}{the variable display on chart}
 
-\item{type}{chart style, including line, candle}
+\item{type}{chart style, including line, candle, bar}
 
 \item{title}{chart title}
 }

@@ -13,7 +13,7 @@ sel_nbs_url = function(eng) {
 df_nbs_geo = function() {
   dim_region = rep('cn',8)
   dim_geo_type = rep(c('national', 'province', 'city'), c(3,3,2))
-  dim_frequency = c("monthly","quarterly","annual", "monthly","quarterly","annual", "monthly","annual")
+  dim_frequency = c("monthly","quarterly","yearly", "monthly","quarterly","yearly", "monthly","yearly")
   dim_sta_db = c("hgyd","hgjd","hgnd","fsyd","fsjd","fsnd","csyd","csnd")
   
   dfdim_sta_db = data.table(dim_region, dim_geo_type, dim_frequency, dim_sta_db)
@@ -24,37 +24,29 @@ df_nbs_geo = function() {
 check_nbs_geotype = function(geo_type) {
   # specify the type of geography
   geo_type_list = c("national", "province", "city")
-  geo_type_list2 = c("n", "p", "c")
-  while (!any(geo_type == geo_type_list)) {
-    if (!any(geo_type == geo_type_list2)) {
-      sel_geo_type = menu(geo_type_list, cat('Specify the type of geography:'))
-      geo_type = geo_type_list[sel_geo_type]
-    } else {
-      sel_geo_type = which(geo_type == geo_type_list2)
-      geo_type = geo_type_list[sel_geo_type]
-    }
+  if (!is.null(geo_type)) geo_type = try(match.arg(geo_type, geo_type_list), silent = TRUE)
+  
+  if (is.null(geo_type) || inherits(geo_type, "try-error")) {
+    sel_geo_type = menu(geo_type_list, cat('Specify the type of geography:'))
+    geo_type = geo_type_list[sel_geo_type]
   }
+  
   return(geo_type)
 }
 
 # check frequency
 check_nbs_frequency = function(frequency, geo_type) {
-  if (any(frequency %in% c('yearly', 'y'))) frequency = "annual"
-  # specify the frequency
-  frequency_list = c("monthly", "quarterly", "annual")
-  if (geo_type %in% c('city','c')) frequency_list = c("monthly","annual")
+  # frequency_list
+  frequency_list = c("monthly", "quarterly", "yearly")
+  is_city = try(match.arg(geo_type, "city"), silent = TRUE)
+  if (!inherits(is_city, "try-error") & is_city == "city") frequency_list = c("monthly", "yearly")
   
-  frequency_list2 = c("m", "q", "a")
-  if (geo_type %in% c('city','c')) frequency_list2 = c("m", "a")
   
-  while (!any(frequency == frequency_list)) {
-    if (!any(frequency == frequency_list2)) {
-      sel_frequency = menu(frequency_list, cat('Specify the frequency:'))
-      frequency = frequency_list[sel_frequency]
-    } else {
-      sel_frequency = which(frequency == frequency_list2)
-      frequency = frequency_list[sel_frequency]
-    }
+  if (!is.null(frequency)) frequency = try(match.arg(frequency, frequency_list), silent = TRUE) 
+  
+  if (is.null(frequency) || inherits(frequency, "try-error")) {
+    sel_frequency = menu(frequency_list, cat('Specify the frequency:'))
+    frequency = frequency_list[sel_frequency]
   }
   
   return(frequency)
@@ -74,7 +66,7 @@ geted_nbs_symbol1 = function(geo_type=NULL, frequency=NULL, symbol='zb', eng=FAL
   
   #param
   url_nbs = sel_nbs_url(eng)
-  time_sec = sys_time_milli_sec()
+  time_sec = as.character(date_to_sec()*100)
   if (is.null(symbol)) symbol = 'zb'
   # geography type
   geo_type = check_nbs_geotype(geo_type)
@@ -169,7 +161,7 @@ geted_nbs_region = function(geo_type=NULL, eng=FALSE) {
   
   # param
   url_nbs = sel_nbs_url(eng)
-  time_sec = sys_time_milli_sec()
+  time_sec = as.character(date_to_sec()*100)
   
   # geography type
   geo_type = check_nbs_geotype(geo_type)
@@ -250,7 +242,7 @@ date_to_mqa = function(from, to, frequency) {
 #' @importFrom jsonlite fromJSON 
 geted_nbs_querydat = function(nbs_geo, symbol, region=NULL, from, eng=FALSE) {
   url_nbs = sel_nbs_url(eng)
-  time_sec = sys_time_milli_sec()
+  time_sec = as.character(date_to_sec()*100)
   
   # date range
   freq_mqa = which(substr(nbs_geo, 3, 3) == c('y','j','n'))

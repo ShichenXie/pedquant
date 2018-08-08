@@ -1,3 +1,4 @@
+
 # # Market Data
 # - froex
 # - bond, money
@@ -88,3 +89,6 @@
 # http://vip.stock.finance.sina.com.cn/quotes_service/view/vMS_tradehistory.php?symbol=sz000562&date=2014-12-05
 # http://vip.stock.finance.sina.com.cn/corp/go.php/vMS_FuQuanMarketHistory/stockid/000562.phtml?year=2014&jidu=4
 
+
+# TrueFX  realtime forex
+# https://www.truefx.com

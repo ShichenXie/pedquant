@@ -17,8 +17,8 @@ check_fs_type = function(type) {
     return(intersect(sel_type, fs_163[,.I]))
 }
 
-# get one type report
-getfs1_cn = function(symbol, row_type=NULL) {
+# get one type financial report of one symbol
+getfs_type1_cn = function(symbol, row_type=NULL) {
     patterns = value = type = . = fs_id = fs_name = name = name_en = var_name = var_id = NULL
     
     
@@ -47,30 +47,27 @@ getfs1_cn = function(symbol, row_type=NULL) {
     
     return(dat_melt)
 } 
-
+# get financial reports of one symbol 
+getfs_symbol1_cn = function(symbol, type) {
+    # check type of fs
+    type = check_fs_type(type)
+    
+    dat_list = list()
+    for (t in type) {
+        dat_list[[t]] = getfs_type1_cn(symbol, t)
+    }
+    
+    return(rbindlist(dat_list, fill = TRUE))
+}
 
 
 #' @import data.table
 #' @importFrom readr read_csv stop_for_problems cols
 getfs_cn = function(symbol, type=NULL, print_step=1) {
-    # check type of fs
-    type = check_fs_type(type)
     
-    dt_list = NULL
-    dt_list = NULL
-    symbol_len = length(symbol)
-    for (i in 1:symbol_len) {
-        # symbol i
-        si = symbol[i]
-        # print
-        if ((print_step>0) & (i %% print_step == 0)) cat(paste0(format(c(i,symbol_len)),collapse = "/"), si,"\n")
-        
-        for (t in type) {
-            dt_list[[si]][[t]] = getfs1_cn(si, t)
-        }
-        dt_list[[si]] = rbindlist(dt_list[[si]], fill = TRUE)
-    }
-    return(dt_list)
+    dat_list = load_dat_loop(symbol, "getfs_symbol1_cn", args = list(type=type), print_step=print_step)
+    
+    return(dat_list)
 }
 
 

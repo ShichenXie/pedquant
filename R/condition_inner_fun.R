@@ -1,3 +1,4 @@
+########################### condition functions ###########################
 # check date format of from/to
 check_fromto = function(fromto) {
     if (grepl("-|/",fromto)) {
@@ -72,28 +73,45 @@ check_symbol_for_tx = function(symbol) {
     }
 }
 
+
+
+
+
+########################### inner functions ###########################
 # download and read excel file from website
 #' @importFrom readxl read_excel
 #' @importFrom utils download.file
-load_read_xl = function(link) {
+#' @importFrom curl curl_download new_handle
+load_read_xl = function(url, handle=new_handle()) {
     temp = tempfile()
-    download.file(url=link, destfile=temp, quiet=TRUE)
+    on.exit(unlink(temp))
+    
+    curl_download(url, destfile = temp, handle = handle)
     dat = read_excel(temp)
-    unlink(temp)
     
     return(dat)
 }
 
 #download and read csv file from website
 #' @importFrom utils download.file read.csv
-load_read_csv = function(link, encode) {
+# load_read_csv = function(url, encode) {
+#     temp = tempfile()
+#     download.file(url=url, destfile=temp, quiet=TRUE)
+#     dat = read.csv(temp, fileEncoding = encode)
+#     unlink(temp)
+#     
+#     return(dat)
+# }
+#' @importFrom curl curl_download new_handle
+load_read_csv = function(url, encode="UTF-8", handle=new_handle()) {
     temp = tempfile()
-    download.file(url=link, destfile=temp, quiet=TRUE)
-    dat = read.csv(temp, fileEncoding = encode)
-    unlink(temp)
+    on.exit(unlink(temp))
     
+    curl_download(url, destfile = temp, handle = handle)
+    dat = read.csv(temp, fileEncoding = encode)
     return(dat)
 }
+
 
 
 # fill 0/na in a vector with last non 0/na value
@@ -121,12 +139,26 @@ fillna = function(x) {
 }
 
 
-# system time in milliseconds
-sys_time_milli_sec = function() {
-    ms = as.character(as.numeric(Sys.time())*1000)
-    return(unlist(strsplit(ms, '\\.'))[1]) 
+# convert date to second 
+date_to_sec = function(date=Sys.time()) {
+    datetime = as.POSIXct(as.Date(date, origin = "1970-01-01"))
+    return(trunc(as.numeric(datetime))) 
 }
 
+
+# loop on 
+load_dat_loop = function(symbol, func, args=list(), print_step) {
+    dt_list = NULL
+    symbol_len = length(symbol)
+    for (i in 1:symbol_len) {
+        symbol_i = symbol[i]
+        # print
+        if ((print_step>0) & (i %% print_step == 0)) cat(paste0(format(c(i,symbol_len)),collapse = "/"), symbol_i,"\n")
+        
+        dt_list[[symbol_i]] = do.call(eval(parse(text = func)), c(symbol_i, args))
+    }
+    return(dt_list)
+}
 
 # #' last workday date
 # #' 

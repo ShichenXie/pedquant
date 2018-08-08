@@ -234,7 +234,7 @@ getmd_stock_hist1_163 = function(symbol, from="1900-01-01", to=Sys.Date(), fillz
 
 
 #' @import data.table rvest
-getmd_stock_cn = function(symbol, from="1900-01-01", to=Sys.Date(), print_step=1, frequency = "daily", fillzero=FALSE) {
+getmd_163 = function(symbol, from="1900-01-01", to=Sys.Date(), print_step=1L, frequency = "daily", fillzero=FALSE) {
   if (frequency == "spot") {
     if (all(unlist(strsplit(symbol,",")) %in% c('a','b','index'))) {
       return(getmd_stock_spotall_163(symbol))
@@ -243,16 +243,9 @@ getmd_stock_cn = function(symbol, from="1900-01-01", to=Sys.Date(), print_step=1
     }
     
   } else if (frequency == "daily") {
-    dt_list = NULL
-    symbol_len = length(symbol)
-    for (i in 1:symbol_len) {
-      si = symbol[i]
-      # print
-      if ((print_step>0) & (i %% print_step == 0)) cat(paste0(format(c(i,symbol_len)),collapse = "/"), si,"\n")
-      
-      dt_list[[si]] = getmd_stock_hist1_163(symbol = si, from = from, to = to, fillzero = fillzero)
-    }
-    return(dt_list)
+    dat_list = load_dat_loop(symbol, "getmd_stock_hist1_163", args = list(from = from, to = to, fillzero = fillzero), print_step=print_step)
+    
+    return(dat_list)
     
   }
 }
@@ -283,7 +276,7 @@ getmd_stock_cn = function(symbol, from="1900-01-01", to=Sys.Date(), print_step=1
 #' }
 #' 
 #' @export
-getmd_stock = function(symbol, from="1900-01-01", to=Sys.Date(), print_step=1, frequency = "daily", fillzero=FALSE, region="cn") {
+getmd_stock = function(symbol, from="1900-01-01", to=Sys.Date(), print_step=1L, frequency = "daily", fillzero=FALSE, region="cn") {
   if (region == "cn") return(getmd_stock_cn(symbol, from, to, print_step, frequency, fillzero))
 }
 

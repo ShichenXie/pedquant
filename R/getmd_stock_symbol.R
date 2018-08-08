@@ -288,7 +288,7 @@ getmd_stock_symbol_163 = function() {
 #' 
 #' @import data.table
 #' @export
-getmd_stock_symbol = function(exchanges = c("sse", "szse")) {
+getmd_symbol_163 = function(exchanges = c("sse", "szse")) {
   exchange = region = syb = NULL
   
   if (any(c("sse", "szse") %in% exchanges)) {
@@ -296,7 +296,6 @@ getmd_stock_symbol = function(exchanges = c("sse", "szse")) {
     
   } else if (any("hk" %in% region)) {
     syb = rbindlist(syb, getmd_stock_symbol_hk(), fill = TRUE)
-    
   }
   
   return(syb)

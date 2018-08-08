@@ -4,7 +4,7 @@
 \alias{getmd_stock}
 \title{get stock market data}
 \usage{
-getmd_stock(symbol, from = "1900-01-01", to = Sys.Date(), print_step = 1,
+getmd_stock(symbol, from = "1900-01-01", to = Sys.Date(), print_step = 1L,
   frequency = "daily", fillzero = FALSE, region = "cn")
 }
 \arguments{
