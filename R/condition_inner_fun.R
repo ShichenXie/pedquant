@@ -146,7 +146,7 @@ date_to_sec = function(date=Sys.time()) {
 }
 
 
-# loop on 
+# loop on download data function
 load_dat_loop = function(symbol, func, args=list(), print_step) {
     dt_list = NULL
     symbol_len = length(symbol)
@@ -158,6 +158,45 @@ load_dat_loop = function(symbol, func, args=list(), print_step) {
         dt_list[[symbol_i]] = do.call(eval(parse(text = func)), c(symbol_i, args))
     }
     return(dt_list)
+}
+
+
+# extract table from html via xml2 package
+#' @import data.table
+xml_table = function(wb, num=NULL, sup_rm = NULL) {
+    doc0 = xml_find_all(wb, "//table")
+    if (!is.null(num)) doc0 = doc0[num]
+    
+    doc = lapply(
+        doc0,
+        function(x) xml_text(xml_find_all(x, ".//tr"))
+    )
+    
+    dt = lapply(doc, function(x) {
+        if (!is.null(sup_rm)) x = gsub(sup_rm, "", x)
+        
+        data.table(x = x)[, tstrsplit(x, "[\n\t\r]+")]
+    })
+    
+    return(dt)
+}
+
+# market data sources
+func_md_syb = function(region, market, source) {
+    . = md = syb = NULL
+    
+    md_syb_src = rbindlist(list(
+        yahoo = data.frame(reg="world", mkt=c("stock", "index", "currency", "commodity"), md="getmd_yahoo", syb = "gemd_symbol_yahoo"),
+        `163` = data.frame(reg="cn", mkt="stock", md="getmd_163", syb = "gemd_symbol_163"),
+        sina = data.frame(reg="cn", mkt="commodity", md="getmd_sina", syb = "gemd_symbol_sina")
+    ), idcol = "src")
+    
+    mrs = c(mkt=market, reg=region, src=source)
+    for (i in length(mrs)) 
+        md_syb_src = md_syb_src[md_syb_src[[names(mrs[i])]] == mrs[i]]
+    
+    ret_src = unique(md_syb_src[,.(md, syb)])
+    return(ret_src)
 }
 
 # #' last workday date

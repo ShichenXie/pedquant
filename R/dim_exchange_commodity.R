@@ -15,22 +15,18 @@
 NULL
 
 
-#' @import data.table rvest 
+#' @import data.table xml2 
 dim_exchange_commodity = function() {
     read_html = exchange = location = abbreviation = product_types = life_time = economy = city = region = . = NULL
     
     # https://en.wikipedia.org/wiki/List_of_commodities_exchanges
     # https://en.wikipedia.org/wiki/List_of_futures_exchanges
     
-    ce = read_html("https://en.wikipedia.org/wiki/List_of_commodities_exchanges") %>% html_table(header=TRUE, fill=TRUE)
-    ce_africa = ce[[2]]
-    ce_americas = ce[[3]]
-    ce_asia = ce[[4]]
-    ce_europe = ce[[5]]
-    ce_oceania = ce[[6]]
+    wb = read_html("https://en.wikipedia.org/wiki/List_of_commodities_exchanges") 
+    tbls = lapply(xml_table(wb, 2:6, sup_rm="\\[.+?\\]"), function(x) x[-1])
+    names(tbls) = c("africa","americas","asia","europe","oceania")
     
-    ce_dt = rbindlist(list(africa=ce_africa, americas=ce_americas, asia=ce_asia, europe=ce_europe, oceania=ce_oceania), fill = TRUE, idcol = "region")
-    
+    ce_dt = rbindlist(tbls, fill = TRUE, idcol = "region")
     setnames(ce_dt, c("region", "exchange", "abbreviation", "location", "product_types", "life_time"))
     
     ce_dt = ce_dt[,`:=`(

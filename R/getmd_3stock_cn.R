@@ -1,14 +1,4 @@
-# get market data # getmd
-# - froex
-# - bond
-# - index
-# - stock
-# - commodity
-# - ETF
-# - found
 
-# library(data.table)
-# library(jsonlite)
 #' @import data.table 
 #' @importFrom jsonlite fromJSON
 getmd_stock_spotall_163 = function(symbol = "a,index", only_symbol = FALSE) {
@@ -233,7 +223,7 @@ getmd_stock_hist1_163 = function(symbol, from="1900-01-01", to=Sys.Date(), fillz
 }
 
 
-#' @import data.table rvest
+#' @import data.table
 getmd_163 = function(symbol, from="1900-01-01", to=Sys.Date(), print_step=1L, frequency = "daily", fillzero=FALSE) {
   if (frequency == "spot") {
     if (all(unlist(strsplit(symbol,",")) %in% c('a','b','index'))) {
@@ -250,33 +240,4 @@ getmd_163 = function(symbol, from="1900-01-01", to=Sys.Date(), print_step=1L, fr
   }
 }
 
-#' get stock market data
-#' 
-#' \code{getmd_stock} provides an interface to get end of date and spot price data of Chinese stock and index.
-#' 
-#' @param symbol symbols of Chinese stock and index, the index symbol should starts with ^.
-#' @param from the start date. Default is '1900-01-01'.
-#' @param to the end date. Default is current system date.
-#' @param print_step A non-negative integer, which will print variable names by each print_step-th iteration. Default is 1. 
-#' @param frequency supports daily and spot data. 
-#' @param fillzero logical. Defualt is FALSE If it is TRUE, the zeros in dataset will be filled with last non-zero values.
-#' @param region only cn (China) is available.
-#' 
-#' @examples 
-#' \dontrun{
-#' dat = getmd_stock(symbol=c('600000', '000001', '^000001', '^399001'))
-#' 
-#' dat2 = getmd_stock(symbol=c('600000', '000001', '^000001', '^399001'), frequency="spot")
-#' 
-#' # get spot price of all A shares
-#' dat3 = getmd_stock(symbol='a', frequency="spot")
-#' 
-#' # get spot price of all index in sse and szse
-#' dat4 = getmd_stock(symbol='index', frequency="spot")
-#' }
-#' 
-#' @export
-getmd_stock = function(symbol, from="1900-01-01", to=Sys.Date(), print_step=1L, frequency = "daily", fillzero=FALSE, region="cn") {
-  if (region == "cn") return(getmd_stock_cn(symbol, from, to, print_step, frequency, fillzero))
-}
 

@@ -6,7 +6,7 @@
 # - commodity
 
 # - ETF
-# - found
+# - fund
 
 # Core Financial Data
 

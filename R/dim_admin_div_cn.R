@@ -14,13 +14,9 @@ admin_div_cn = function(admin_level=3) {
   url_latest = function(web_url="http://www.stats.gov.cn/tjsj/tjbz/tjyqhdmhcxhfdm/") {
     url_nbs = "http://www.stats.gov.cn"
     
-    url0 = read_html(web_url) %>% 
-      html_nodes(".center_list_contlist li a") %>% 
-      html_attr("href") %>%
-      sub(url_nbs,"",.) %>% 
-      sub("index.html","",.) %>% .[[1]] %>% 
-      paste0(url_nbs,.)
-    
+    url0 = xml_attr(xml_find_all(read_html(web_url), "//ul[@class='center_list_contlist']//li//a"), "href")
+    url0 = paste0(url_nbs, sub("index.html", "", sub(url_nbs, "", url0)))
+   
     return(url0)
   }
   
@@ -38,6 +34,8 @@ admin_div_cn = function(admin_level=3) {
   
   # function to scrap dat/url
   scrap_daturl = function(url, ad, rem = FALSE) {
+    html_nodes = `%>%` = html_attr = html_text = NULL
+    
     read_web = function(url, rem=FALSE) {
       if (rem) {
         remDr$navigate(url)

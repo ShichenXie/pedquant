@@ -2,7 +2,7 @@
 # @import RSelenium rvest data.table
 sym_stock_cn_cninfo = function(return_url=FALSE) {
   code_name = submarket = type = . = board = delist_date = exchange = name = read_html = remoteDriver = suspend_date = symbol = NULL
-  
+  html_nodes = `%>%` = html_text = html_attr = NULL
   # RSelenium ref:
   # [Selenium](http://www.seleniumhq.org)
   # [Selenium with Python](https://selenium-python.readthedocs.io/installation.html)
@@ -276,18 +276,11 @@ getmd_stock_symbol_163 = function() {
   return(symbol_163_format(df_symbol))
 }
 
-#' get stock and index symbols
-#' 
-#' \code{getmd_163_symbol} gets the stock and index symbols in sse (Shanghai Stock Exchange), szse (Shenzhen Stock Exchange) and hkex (Hong Kong Stock Exchange). 
-#' 
-#' @param exchanges name of stock exchange. Accepted values including sse, szse and hkex. Default is c("sse", "szse").
-#' 
-#' @examples 
-#' \dontrun{
-#' dt = getmd_stock_symbol()}
-#' 
-#' @import data.table
-#' @export
+# get stock and index symbols
+# 
+# \code{getmd_163_symbol} gets the stock and index symbols in sse (Shanghai Stock Exchange), szse (Shenzhen Stock Exchange) and hkex (Hong Kong Stock Exchange). 
+#
+# @param exchanges name of stock exchange. Accepted values including sse, szse and hkex. Default is c("sse", "szse").
 getmd_symbol_163 = function(exchanges = c("sse", "szse")) {
   exchange = region = syb = NULL
   

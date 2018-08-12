@@ -17,40 +17,35 @@
 NULL
 
 
-#' @import data.table rvest 
+#' @import data.table xml2 
 dim_exchange_stock = function() {
-  read_html = . = NULL 
-  
   # list of stock exchange
   # https://www.stockmarketclock.com/exchanges
   # https://en.wikipedia.org/wiki/List_of_stock_exchange_trading_hours
-  se = read_html("https://en.wikipedia.org/wiki/List_of_stock_exchange_trading_hours") %>% 
-    html_table(header=TRUE, fill=TRUE) %>% .[[2]] %>% .[-1,]
+  wb = read_html("https://en.wikipedia.org/wiki/List_of_stock_exchange_trading_hours")
   
-  names(se) = c("name", "id", "country", "city", "time_zone", "delta", "DST", "open_local", "close_local", "lunch_local", "open_UTC", "close_UTC", "lunch_UTC")
+  # scrap datatable
+  se = xml_table(wb, 2, sup_rm="\\[.+?\\]")[[1]][-c(1,2)]
+  setnames(se, c("name", "id", "country", "city", "time_zone", "delta", "DST", "open_local", "close_local", "lunch_local", "open_UTC", "close_UTC", "lunch_UTC"))
   
-  se = setDT(se)[, lapply(.SD, function(x) gsub("\\[.+\\]","", x))]
-  
-  
-  # market cap of stock exchanges
-  se2 = read_html("https://www.stockmarketclock.com/exchanges") %>% 
-    html_table(header=TRUE, fill=TRUE) %>% .[[1]] %>% .[,1:3]
-  names(se2) = c("NAME", "id", "market cap")
-  
+  # # market cap of stock exchanges
+  # se2 = read_html("https://www.stockmarketclock.com/exchanges") %>% 
+  #   html_table(header=TRUE, fill=TRUE) %>% .[[1]] %>% .[,1:3]
+  # names(se2) = c("NAME", "id", "market cap")
   
   return(setDF(se))
 }
 
-#' @import data.table rvest 
+#' @import data.table xml2 
 dim_exchange_stock20 = function() {
-  . = city = economy = read_html = market_cap_bnUSD = monthly_trade_volume_bnUSD = NULL
+  V1 = . = city = economy = read_html = market_cap_bnUSD = monthly_trade_volume_bnUSD = NULL
   
   # https://en.wikipedia.org/wiki/List_of_stock_exchanges
   # http://money.visualcapitalist.com/all-of-the-worlds-stock-exchanges-by-size/
-  se = read_html('https://en.wikipedia.org/wiki/List_of_stock_exchanges') %>% 
-    html_table(header=TRUE, fill=TRUE) %>% .[[4]]
+  wb = read_html('https://en.wikipedia.org/wiki/List_of_stock_exchanges')
   
-  names(se) = c("rank", "exchange", "economy", "city", "market_cap_bnUSD", "monthly_trade_volume_bnUSD", "time_zone", "delta_to_UTC", "DST", "opentime_local", "closetime_local", "lunchtime_local", "opentime_UTC", "closetime_UTC")
+  se = xml_table(wb, 4, sup_rm="\\[.+?\\]")[[1]][V1 != "Rank"]
+  setnames(se, c("rank", "exchange", "economy", "city", "market_cap_bnUSD", "monthly_trade_volume_bnUSD", "time_zone", "delta_to_UTC", "DST", "opentime_local", "closetime_local", "lunchtime_local", "opentime_UTC", "closetime_UTC"))
   
   se = setDT(se)[,`:=`(
     rank = sub("\\[.+\\]","",rank),
@@ -60,8 +55,7 @@ dim_exchange_stock20 = function() {
     economy = ifelse(economy=="United Kingdom, Italy","United Kingdom, Italy", economy)
   )]
   
-  se = setDF(se)
-  return(se)
+  return(setDF(se))
 }
 # exchange_stock = dim_exchange_stock()
 # save(exchange_stock, file="./data/exchange_stock.RData")

@@ -1,16 +1,14 @@
 # shanghai interbank offered rate, shibor
-#' @import data.table rvest
+#' @import data.table xml2
 getmd_shibor = function(from="2006-01-01", to=Sys.Date()) {
-    read_html = . = NULL
+    V1 = NULL
     fromto = lapply(list(from=from, to=to), check_fromto)
     
     # shibor in recent 10 days
     if ( as.integer(Sys.Date() - check_fromto(from)) <= 10 ) {
-        dt = "http://www.shibor.org/shibor/ShiborTendaysShow_e.do" %>% 
-            read_html() %>% html_table(fill = TRUE) %>% .[[3]]
-        
+        wb = read_html("http://www.shibor.org/shibor/ShiborTendaysShow_e.do")
+        dt = setDT(xml_table(wb, 3)[[1]])[, V1 := as.Date(V1)]
         setnames(setDT(dt), c("date", "shiboron", "shibor1w", "shibor2w", "shibor1m", "shibor3m", "shibor6m", "shibor9m", "shibor1y"))
-        dt = dt[, date := as.Date(date)]
         
     } else {
         # shibor in history
@@ -42,18 +40,18 @@ getmd_shibor = function(from="2006-01-01", to=Sys.Date()) {
 
 
 # loan prime rate, LPR
-#' @import data.table rvest
+#' @import data.table xml2
 getmd_lpr = function(from="2013-01-01", to=Sys.Date()) {
-    read_html = . = NULL
+    V1 = NULL
     fromto = lapply(list(from=from, to=to), check_fromto)
     
     # lpr in recent 10 days
     if ( as.integer(Sys.Date() - check_fromto(from)) <= 10 ) {
-        dt = "http://www.shibor.org/shibor/LPRTendaysShow_e.do" %>% 
-            read_html() %>% html_table(fill = TRUE) %>% .[[1]]
-        
+        wb = read_html("http://www.shibor.org/shibor/LPRTendaysShow_e.do")
+        dt = setDT(
+            xml_table(wb)[[1]][!(V1 %in% c("","Date")), 1:2]
+        )[, V1 := as.Date(V1)]
         setnames(setDT(dt), c("date", "lpr1y"))
-        dt = dt[!(date %in% c("","Date"))][,date := as.Date(date)]
         
     } else {
         # lpr in history

@@ -85,20 +85,7 @@ getmd_curcom1_yahoo = function(symbol, handle, crumb, frequency="daily", from="1
     return(dat3)
 }
 
-#' get market data from yahoo
-#' 
-#' adagd
-#' 
-#' @param symbol
-#' @param frequency
-#' @param from
-#' @param to
-#' @param print_step
-#' 
-#' @examples 
-#' 
-#' 
-#' @export
+# get market data from yahoo
 getmd_yahoo = function(symbol, frequency="daily", from="1900-01-01", to=Sys.time(), print_step=1L) {
     
     handle = handle_new_session()
@@ -134,16 +121,11 @@ getmd_yahoo = function(symbol, frequency="daily", from="1900-01-01", to=Sys.time
 # money, bonds, currencies, indices, commodities
 # market="world-indices"
 
-#' get symbols from yahoo
-#' 
-#' get symbols of currency, commodity and world-indices from yahoo
-#' 
-#' @examples 
-#' 
-#' 
-#' @import data.table rvest
-#' @export
+# get symbols from yahoo
+# get symbols of currency, commodity and world-indices from yahoo
+#' @import data.table xml2
 getmd_symbol_yahoo = function() {
+    cat("For more details on the data provided by Yahoo Finance see", "\nhttps://help.yahoo.com/kb/SLN2310.html\n")
 
     df_symbol = lapply(
         list(currencies="currencies", indices="world-indices", commodities="commodities"), 
@@ -151,18 +133,20 @@ getmd_symbol_yahoo = function() {
             . = symbol = name = last_price = change = `%_change` = NULL
             
             # scrap web page
-            wb = html(paste0("https://finance.yahoo.com/", mkt))
+            wb = read_html(paste0("https://finance.yahoo.com/", mkt))
             # column names
-            col_names = html_nodes(wb, "th span") %>% html_text() %>% gsub(" ", "_", .) %>% tolower()
+            col_names = xml_text(xml_find_all(wb, "//th//span"))
+            col_names = tolower(gsub(" ","_",col_names))
+            
             # dataframe
-            symbol_name = html_nodes(wb, "td") %>% html_text() %>% 
-                matrix(., ncol = length(col_names), byrow=TRUE) %>% 
-                as.data.frame()
+            symbol_name = xml_text(xml_find_all(wb, "//td"))
+            symbol_name = as.data.frame(matrix(symbol_name, ncol = length(col_names), byrow=TRUE))
+            
             # renames
             setnames(setDT(symbol_name), col_names)
             
             return(symbol_name[,.(symbol, name, last_price, change, change_pct = `%_change`)])
         })
     
-    return(rbindlist(df_symbol, idcol = "market"))
+    return(rbindlist(df_symbol, idcol = "market")[,.(market, symbol, name)])
 }
