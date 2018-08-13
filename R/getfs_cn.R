@@ -77,7 +77,7 @@ getfs_cn = function(symbol, type=NULL, print_step=1) {
 #' 
 #' @param symbol symbol of stock in China.
 #' @param type the type of financial statements. 
-#' @param print_step A non-negative integer, which will print variable names by each print_step-th iteration. Default is 1.
+#' @param print_step A non-negative integer, which will print symbol name by each print_step iteration. Default is 1.
 #' @param region only cn (China) is available.
 #' 
 #' @examples 

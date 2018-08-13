@@ -78,7 +78,7 @@ ped_rp1 = function(dt, region="cn", columns = c("open", "high", "low", "close"))
 #' @param chain_index the name of chain index
 #' @param weight the name of weight variable
 #' @param base_index the base value of index, default is 1
-#' @param base_date the date base of index, deafult is "2010-01-01"
+#' @param base_date the date base of index, default is "2010-01-01"
 #' 
 #' @examples 
 #' \dontrun{

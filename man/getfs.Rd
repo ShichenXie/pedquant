@@ -11,7 +11,7 @@ getfs(symbol, type = NULL, print_step = 1L, region = "cn")
 
 \item{type}{the type of financial statements.}
 
-\item{print_step}{A non-negative integer, which will print variable names by each print_step-th iteration. Default is 1.}
+\item{print_step}{A non-negative integer, which will print symbol name by each print_step iteration. Default is 1.}
 
 \item{region}{only cn (China) is available.}
 }

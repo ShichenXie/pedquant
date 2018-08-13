@@ -24,13 +24,13 @@ getmd_stock_spotall_163 = function(symbol = "a,index", only_symbol = FALSE) {
         date = as.Date(substr(jsonDat$time,1,10)), 
         time = jsonDat$time#,
         #strptime(jsonDat$time, "%Y-%m-%d %H:%M:%S", tz = "Asia/Shanghai")
-      )][, .(date, symbol, name, open, high, low, close=price, prev_close=yestclose, change=updown, change_pct=percent, turnover=hs, volume, amount=turnover, cap_market=mcap, cap_total=tcap, pe, eps=mfsum, net_income, revenue, plate_ids, time)]
+      )][, .(date, symbol, name, open, high, low, close=price, prev_close=yestclose, change=updown, change_pct=percent*100, volume, amount=turnover, turnover=hs*100, cap_market=mcap, cap_total=tcap, pe_last=pe, eps=mfsum, net_income, revenue, plate_ids, time=as.POSIXct(time))]
     } else if (mkt == "index") {
       names(jsonDF) = tolower(names(jsonDF))
       
       jsonDF = setDT(jsonDF)[,`:=`(
         date = as.Date(substr(jsonDat$time,1,10))
-      )][, .(date, symbol, name, open, high, low, close=price, prev_close=yestclose, change=updown, change_pct=percent, volume, amount=turnover, time)]
+      )][, .(date, symbol, name, open, high, low, close=price, prev_close=yestclose, change=updown, change_pct=percent*100, volume, amount=turnover, time=as.POSIXct(time))]
     }
     
     return(jsonDF[, `:=`(market = mkt, region = "cn")])
@@ -46,15 +46,26 @@ getmd_stock_spotall_163 = function(symbol = "a,index", only_symbol = FALSE) {
   
   df_stock_cn = rbindlist(mapply(
     fun_stock_163, urls_163[idx], c("stock","stock","index","index")[idx], SIMPLIFY = FALSE
-  ), fill = TRUE
-  )[, tags := mapply(tags_symbol_stockcn, symbol, market)
-  ][, c("exchange","submarket","board"):=tstrsplit(tags,",")
-  ][, tags := NULL][order(-market, exchange, symbol)]
+  ), fill = TRUE)
   
   datetime = gsub("[^(0-9)]","",df_stock_cn[1,time])
-  if (datetime < paste0(substr(datetime,1,8), '150000')) cat("The close price in returned dataframe is spot price at", datetime, "\n")
+  if (df_stock_cn[1,time] < as.POSIXct(paste(df_stock_cn[1,date], "15:00:00"))) 
+    cat("The close price is spot price at", as.character(datetime), "\n")
   
-  if (only_symbol) df_stock_cn = df_stock_cn[, .(market, submarket, region, exchange, board, symbol, name)]
+  if (only_symbol) {
+    df_stock_cn = df_stock_cn[
+      , tags := mapply(tags_symbol_stockcn, symbol, market)
+    ][, c("exchange","submarket","board"):=tstrsplit(tags,",")
+    ][, tags := NULL
+    ][order(-market, exchange, symbol)
+    ][, .(market, submarket, region, exchange, board, symbol, name)]
+  } else {
+    try(
+      df_stock_cn <- df_stock_cn[, c("plate_ids", "market", "region", "pe_last", "eps", "net_income", "revenue") := NULL],
+      silent = TRUE
+    )
+  }
+  
   
   return(df_stock_cn)
 }
@@ -123,11 +134,10 @@ getmd_stockall_sina = function(symbol = "a,index", only_symbol = FALSE) {
 
 # get spot data from tx
 getmd_stock_spot1_tx = function(symbol) {
-  dat = doc = . = name = high = low = prev_close = change = change_pct = volume = amount = turnover = cap_market = cap_total = pb = pe_last = pe_trailing = pe_forward = buy = sell = bid1 = bid1_volume = bid2 = bid2_volume = bid3 = bid3_volume = bid4 = bid4_volume = bid5 = bid5_volume = ask1 = ask1_volume = ask2 = ask2_volume = ask3 = ask3_volume = ask4 = ask4_volume = ask5 = ask5_volume = NULL
+  dat = doc = . = name = high = low = prev_close = change = change_pct = volume = amount = turnover = cap_market = cap_total = time = NULL
   
-  symbol = paste0(sapply(symbol, check_symbol_for_tx),collapse=",")
-  
-  dt = readLines(sprintf("http://qt.gtimg.cn/q=%s", symbol))
+  syb = sapply(symbol, check_symbol_for_tx)
+  dt = readLines(sprintf("http://qt.gtimg.cn/q=%s", paste0(syb,collapse=",")))
   # ff_ 资金流量 # s_pk 盘口 # s_ 简要信息
   
   dt = data.table(
@@ -153,19 +163,26 @@ getmd_stock_spot1_tx = function(symbol) {
                   "pe_trailing", "", "high", "low", "", "cap_market", "cap_total", "pb", "", "", "", "", "average", "pe_forward", "pe_last" )
   setnames(dt, colnames_en)
   
-  num_cols = c("open", "high", "low", "close", "prev_close", "change", "change_pct", "volume", "amount", "turnover", "cap_market", "cap_total", "pb", "pe_last", "pe_trailing", "pe_forward")
+  num_cols = c(
+    "open", "high", "low", "close", "prev_close", "change", "change_pct", "volume", "amount", "turnover", "cap_market", "cap_total"#, "pb", "pe_last", "pe_trailing", "pe_forward"
+  )
   dt = dt[,.(
-    date, symbol, name, open, high, low, close, prev_close, change, change_pct, volume, amount, turnover, cap_market, cap_total, pb, pe_last, pe_trailing, pe_forward#, 
+    date, symbol, name, open, high, low, close, prev_close, change, change_pct, volume, amount, turnover, cap_market, cap_total#, pb, pe_last, pe_trailing, pe_forward, 
     #buy, sell, 
     #bid1, bid1_volume, bid2, bid2_volume, bid3, bid3_volume, bid4, bid4_volume, bid5, bid5_volume, 
     #ask1, ask1_volume, ask2, ask2_volume, ask3, ask3_volume, ask4, ask4_volume, ask5, ask5_volume
     )][, (num_cols) := lapply(.SD, as.numeric), .SDcols= num_cols
      ][, `:=`(
-       time = strptime(date, format="%Y%m%d%H%H%S", tz="Asia/Shanghai"),
-       date = as.Date(date, format="%Y%m%d%H%H%S")
+       volume = volume*100,
+       amount = amount*10000,
+       cap_market = cap_market*10^8, 
+       cap_total = cap_total*10^8,
+       time = as.POSIXct(date, format="%Y%m%d%H%M%S", tz="Asia/Shanghai"),
+       date = as.Date(date, format="%Y%m%d%H%M%S")
      )]
   
-  if (dt[1,date] < paste0(substr(dt[1,date],1,8), '150000')) cat("The close price in returned dataframe is spot price at", dt[1,date], "\n")
+  if (dt[1,time] < as.POSIXct(paste(dt[1,date], '15:00:00')))
+    cat("The close price is spot price at", dt[1,as.character(time)], "\n")
   
   return(dt)
 }
@@ -183,39 +200,39 @@ getmd_stock_hist1_163 = function(symbol, from="1900-01-01", to=Sys.Date(), fillz
   # {'D': 'akdaily', 'W': 'akweekly', 'M': 'akmonthly'}
   
   # symbol
-  symbol = check_symbol_for_163(symbol)
+  syb = check_symbol_for_163(symbol)
 
   # date range
   fromto = lapply(list(from=from,to=to), function(x) format(check_fromto(x), "%Y%m%d"))
   
   # create link
-  link = paste0("http://quotes.money.163.com/service/chddata.html?code=",symbol,"&start=",fromto$from,"&end=",fromto$to,"&fields=TOPEN;HIGH;LOW;TCLOSE;CHG;PCHG;TURNOVER;VOTURNOVER;VATURNOVER;TCAP;MCAP")
+  link = paste0("http://quotes.money.163.com/service/chddata.html?code=",syb,"&start=",fromto$from,"&end=",fromto$to,"&fields=TOPEN;HIGH;LOW;TCLOSE;LCLOSE;CHG;PCHG;VOTURNOVER;VATURNOVER;TURNOVER;MCAP;TCAP")
   # 开盘价   # TOPEN:       open
   # 最高价   # HIGH:        high
   # 最低价   # LOW:         low
   # 收盘价   # TCLOSE:      close
+             # LCLOSE:      last close
   # 涨跌额   # CHG:         chg
   # 涨跌幅   # PCHG:        chg percent
-  # 换手率   # TURNOVER:    turnour
   # 成交量   # VOTURNOVER:  volume turnover
   # 成交金额 # VATURNOVER:  amount turnover
-  # 总市值   # TCAP:        total market capitalisation
+  # 换手率   # TURNOVER:    turnour
   # 流通市值 # MCAP:        tradable market capitalisation
-             # LCLOSE:      last close
+  # 总市值   # TCAP:        total market capitalisation
+             
    
   
   # download data from 163
   dt = read_csv(
     file=link, locale = locale(encoding = "GBK"), na=c("", "NA", "None"),
-    col_types=list(col_date(format = ""), col_character(), col_character(), col_double(), col_double(), col_double(), col_double(), col_double(), col_double(), col_double(), col_double(), col_double(), col_double(), col_double()))
+    col_types=list(col_date(format = ""), col_character(), col_character(), col_double(), col_double(), col_double(), col_double(), col_double(), col_double(), col_double(), col_double(), col_double(), col_double(), col_double(), col_double()))
   # dt = load_read_csv(link, "GBK")
   
-  cols_name = c("date", "symbol", "name", "open", "high", "low", "close", "change", "change_pct", "turnover", "volume", "amount", "cap_total", "cap_market")
+  cols_name = c("date", "symbol", "name", "open", "high", "low", "close", "prev_close", "change", "change_pct", "volume", "amount", "turnover", "cap_market", "cap_total")
   setnames(dt, cols_name)
   
   dt = setDT(setDF(dt), key="date")[,`:=`(
-    symbol = sub("'","",symbol),
-    change_pct = change_pct/100
+    symbol = sub("'","",symbol)
   )]#[, (cols_name[-c(1:3)]) := lapply(.SD, as.numeric), .SDcols = cols_name[-c(1:3)] ]
   
   # fill zeros in dt

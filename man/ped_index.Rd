@@ -15,7 +15,7 @@ ped_index(dt, chain_index, weight, base_index = 1, base_date = "2010-01-01")
 
 \item{base_index}{the base value of index, default is 1}
 
-\item{base_date}{the date base of index, deafult is "2010-01-01"}
+\item{base_date}{the date base of index, default is "2010-01-01"}
 }
 \description{
 ped_index using the method of geometrically weighted averages to create an index based on multiple timeseries datasets.

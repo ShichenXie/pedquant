@@ -20,7 +20,7 @@ getmd(symbol, frequency = "daily", from = "2010-01-01", to = Sys.time(),
 
 \item{source}{data source. The available sources including 'yahoo', '163' and 'sina'.}
 
-\item{fillzero}{logical. Defualt is FALSE If it is TRUE, the zeros in dataset will be filled with last non-zero values.}
+\item{fillzero}{logical. Default is FALSE If it is TRUE, the zeros in dataset will be filled with last non-zero values.}
 }
 \description{
 \code{getmd} provides an interface to get historical data for different markets, such as forex, bond, money, stock and commodity, which are provided public sources.
@@ -29,9 +29,11 @@ getmd(symbol, frequency = "daily", from = "2010-01-01", to = Sys.time(),
 \dontrun{
 # Example I
 # get Chinese stock data from 163
-dat = getmd(symbol=c('600000', '000001', '^000001', '^399001'), source="163")
+dat1 = getmd(symbol=c('600000', '000001', '^000001', '^399001'), 
+             source="163")
 
-dat2 = getmd(symbol=c('600000', '000001', '^000001', '^399001'), source="163", frequency="spot")
+dat2 = getmd(symbol=c('600000', '000001', '^000001', '^399001'), 
+             source="163", frequency="spot")
 
 # get spot price of all A shares in sse and szse
 dat3 = getmd(symbol='a', source="163", frequency="spot")

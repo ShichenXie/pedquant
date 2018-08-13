@@ -14,15 +14,17 @@
 #' @param to the end date. Default is current system date.
 #' @param print_step A non-negative integer, which will print symbol name by each print_step iteration. Default is 1. 
 #' @param source data source. The available sources including 'yahoo', '163' and 'sina'.
-#' @param fillzero logical. Defualt is FALSE If it is TRUE, the zeros in dataset will be filled with last non-zero values.
+#' @param fillzero logical. Default is FALSE If it is TRUE, the zeros in dataset will be filled with last non-zero values.
 #' 
 #' @examples 
 #' \dontrun{
 #' # Example I
 #' # get Chinese stock data from 163
-#' dat = getmd(symbol=c('600000', '000001', '^000001', '^399001'), source="163")
+#' dat1 = getmd(symbol=c('600000', '000001', '^000001', '^399001'), 
+#'              source="163")
 #' 
-#' dat2 = getmd(symbol=c('600000', '000001', '^000001', '^399001'), source="163", frequency="spot")
+#' dat2 = getmd(symbol=c('600000', '000001', '^000001', '^399001'), 
+#'              source="163", frequency="spot")
 #' 
 #' # get spot price of all A shares in sse and szse
 #' dat3 = getmd(symbol='a', source="163", frequency="spot")
