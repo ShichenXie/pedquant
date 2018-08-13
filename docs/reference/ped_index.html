@@ -141,9 +141,9 @@
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><span class='co'># NOT RUN {</span>
-<span class='no'>banks_symbol</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"601988"</span>, <span class='st'>"601288"</span>, <span class='st'>"601398"</span>, <span class='st'>"601939"</span>)
+<span class='no'>banks_symbol</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"601988"</span>, <span class='st'>"601288"</span>, <span class='st'>"601398"</span>, <span class='st'>"601939"</span>, <span class='st'>"601328"</span>)
 
-<span class='no'>dat</span> <span class='kw'>=</span> <span class='fu'>getmd_stock</span>(<span class='no'>banks_symbol</span>)
+<span class='no'>dat</span> <span class='kw'>=</span> <span class='fu'><a href='getmd.html'>getmd</a></span>(<span class='no'>banks_symbol</span>, <span class='kw'>source</span><span class='kw'>=</span><span class='st'>"163"</span>, <span class='kw'>from</span><span class='kw'>=</span><span class='st'>"1900-01-01"</span>)
 
 <span class='fu'>library</span>(<span class='no'>data.table</span>)
 <span class='no'>dat</span> <span class='kw'>=</span> <span class='fu'>lapply</span>(<span class='no'>dat</span>, <span class='kw'>function</span>(<span class='no'>x</span>) <span class='no'>x</span>[, <span class='no'>change_pct</span><span class='kw'>:=</span><span class='no'>change_pct</span>+<span class='fl'>1</span>])
