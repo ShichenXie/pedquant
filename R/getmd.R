@@ -41,11 +41,15 @@
 #'  # Example III
 #'  # get data from yahoo
 #'  dat_yahoo = getmd(symbol=c("^GSPC", "000001.SS", "EURUSD=X"))
+#'  
+#'  # for Chinese share
+#'  dat_yahoo2 = getmd(c("000001", "^000001"))
 #' }
 #' 
 #' @export
 #' 
 getmd = function(symbol, frequency="daily", from = "2010-01-01", to = Sys.time(), print_step = 1L, source="yahoo", fillzero=FALSE) {
+    cat(source,"\n")
     
     args = list(symbol=symbol, frequency=frequency, from=from, to=to, print_step=print_step)
     if (source == "163") args['fillzero'] = fillzero
@@ -73,9 +77,6 @@ getmd = function(symbol, frequency="daily", from = "2010-01-01", to = Sys.time()
 #' 
 getmd_symbol = function(source="yahoo") {
 
-    do.call(
-        eval(parse(text = paste0("getmd_symbol_", source))),
-        list()
-    )
+    do.call(eval(parse(text = paste0("getmd_symbol_", source))), list())
 
 }

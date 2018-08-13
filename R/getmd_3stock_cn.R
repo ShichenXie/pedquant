@@ -120,6 +120,7 @@ getmd_stockall_sina = function(symbol = "a,index", only_symbol = FALSE) {
   return(df_stock_cn)
 }
 
+
 # get spot data from tx
 getmd_stock_spot1_tx = function(symbol) {
   dat = doc = . = name = high = low = prev_close = change = change_pct = volume = amount = turnover = cap_market = cap_total = pb = pe_last = pe_trailing = pe_forward = buy = sell = bid1 = bid1_volume = bid2 = bid2_volume = bid3 = bid3_volume = bid4 = bid4_volume = bid5 = bid5_volume = ask1 = ask1_volume = ask2 = ask2_volume = ask3 = ask3_volume = ask4 = ask4_volume = ask5 = ask5_volume = NULL
@@ -152,18 +153,22 @@ getmd_stock_spot1_tx = function(symbol) {
                   "pe_trailing", "", "high", "low", "", "cap_market", "cap_total", "pb", "", "", "", "", "average", "pe_forward", "pe_last" )
   setnames(dt, colnames_en)
   
+  num_cols = c("open", "high", "low", "close", "prev_close", "change", "change_pct", "volume", "amount", "turnover", "cap_market", "cap_total", "pb", "pe_last", "pe_trailing", "pe_forward")
   dt = dt[,.(
-    date, symbol, name, open, high, low, close, prev_close, change, change_pct, volume, amount, turnover, cap_market, cap_total, pb, pe_last, pe_trailing, pe_forward, 
-    buy, sell, 
-    bid1, bid1_volume, bid2, bid2_volume, bid3, bid3_volume, bid4, bid4_volume, bid5, bid5_volume, 
-    ask1, ask1_volume, ask2, ask2_volume, ask3, ask3_volume, ask4, ask4_volume, ask5, ask5_volume)]
+    date, symbol, name, open, high, low, close, prev_close, change, change_pct, volume, amount, turnover, cap_market, cap_total, pb, pe_last, pe_trailing, pe_forward#, 
+    #buy, sell, 
+    #bid1, bid1_volume, bid2, bid2_volume, bid3, bid3_volume, bid4, bid4_volume, bid5, bid5_volume, 
+    #ask1, ask1_volume, ask2, ask2_volume, ask3, ask3_volume, ask4, ask4_volume, ask5, ask5_volume
+    )][, (num_cols) := lapply(.SD, as.numeric), .SDcols= num_cols
+     ][, `:=`(
+       time = strptime(date, format="%Y%m%d%H%H%S", tz="Asia/Shanghai"),
+       date = as.Date(date, format="%Y%m%d%H%H%S")
+     )]
   
   if (dt[1,date] < paste0(substr(dt[1,date],1,8), '150000')) cat("The close price in returned dataframe is spot price at", dt[1,date], "\n")
   
   return(dt)
 }
-
-
 
 
 #' @import data.table

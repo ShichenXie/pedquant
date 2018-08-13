@@ -22,9 +22,9 @@ ped_index using the method of geometrically weighted averages to create an index
 }
 \examples{
 \dontrun{
-banks_symbol = c("601988", "601288", "601398", "601939")
+banks_symbol = c("601988", "601288", "601398", "601939", "601328")
 
-dat = getmd_stock(banks_symbol)
+dat = getmd(banks_symbol, source="163", from="1900-01-01")
 
 library(data.table)
 dat = lapply(dat, function(x) x[, change_pct:=change_pct+1])

@@ -36,7 +36,7 @@ ped1_plot = function(df, y="close", type="line", title=NULL) {
 #' 
 #' @examples 
 #' \dontrun{
-#' ssec = getmd_stock("^000001")
+#' ssec = getmd("^000001", source="163")
 #' 
 #' p = ped_plot(ssec, title="SSEC")
 #' print(p)

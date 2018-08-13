@@ -30,7 +30,8 @@ yahoo_crumb = function(handle) {
 #' @importFrom curl curl_fetch_memory 
 getmd_stock1_yahoo = function(symbol, handle, crumb, frequency="daily", from="1900-01-01", to=Sys.time(), type="history") {
     Date = NULL
-    
+    # symbol
+    symbol = check_symbol_for_yahoo(symbol)
     # frequency
     intervals = c(daily = "1d", weekly = "1wk", monthly = "1mo")
     frequency = intervals[match.arg(frequency, names(intervals))]

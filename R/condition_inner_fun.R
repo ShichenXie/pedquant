@@ -50,29 +50,36 @@ tags_symbol_stockcn = function(symbol, market) {
 
 # 
 check_symbol_for_163 = function(symbol) {
-    tags = tags_symbol_stockcn(symbol, 
-        ifelse(grepl("\\^",symbol),"index","stock"))
-    ex_code = ifelse(grepl("sse",tags), "0", 
-        ifelse(grepl("szse",tags), "1", NULL))
+    syb = sub("^.*?([0-9]+).*$","\\1",symbol)
+    mkt = ifelse(grepl("\\^",symbol),"index","stock")
+    tags = tags_symbol_stockcn(symbol, mkt)
     
-    if (is.null(ex_code)) {
-        return(NULL)
-    } else {
-        return(paste0(ex_code, sub(".*?(\\d+).*","\\1", symbol)))
-    }
+    ex_code = ifelse(grepl("sse",tags), "0", 
+                     ifelse(grepl("szse",tags), "1", NULL))
+    if (!is.null(ex_code)) symbol = paste0(ex_code, syb)
+    return(symbol)
 }
 check_symbol_for_tx = function(symbol) {
-    tags = tags_symbol_stockcn(symbol, ifelse(grepl("\\^",symbol),"index","stock"))
+    syb = sub("^.*?([0-9]+).*$","\\1",symbol)
+    mkt = ifelse(grepl("\\^",symbol),"index","stock")
+    tags = tags_symbol_stockcn(symbol, mkt)
+    
     ex_code = ifelse(grepl("sse",tags), "sh", 
                      ifelse(grepl("szse",tags), "sz", NULL))
-    
-    if (is.null(ex_code)) {
-        return(NULL)
-    } else {
-        return(paste0(ex_code, sub(".*?(\\d+).*","\\1", symbol)))
-    }
+    if (!is.null(ex_code)) symbol = paste0(ex_code, syb)
+    return(symbol)
 }
-
+check_symbol_for_yahoo = function(symbol) {
+    syb = sub("^.*?([0-9]+).*$","\\1",symbol)
+    if (nchar(syb)==6 & (nchar(symbol)==7 | nchar(symbol)==6)) {
+        mkt = ifelse(grepl("\\^",symbol),"index","stock")
+        tags = tags_symbol_stockcn(symbol, mkt)
+        
+        ex_code = ifelse(grepl("sse|szse",tags), substr(tags,1,2), NULL)
+        if (!is.null(ex_code)) symbol = paste(syb, ex_code, sep=".")
+    }
+    return(symbol)
+}
 
 
 
