@@ -73,7 +73,7 @@ getfs_cn = function(symbol, type=NULL, print_step=1) {
 
 #' get financial statements and indicators
 #' 
-#' `getfs` provides an interface to get financial statements and indicators of listed companies in China.
+#' \code{getfs} provides an interface to get financial statements and indicators of listed companies in China.
 #' 
 #' @param symbol symbol of stock in China.
 #' @param type the type of financial statements. 
@@ -97,6 +97,6 @@ getfs_cn = function(symbol, type=NULL, print_step=1) {
 #' }
 #' 
 #' @export
-getfs = function(symbol, type=NULL, print_step=1, region="cn") {
+getfs = function(symbol, type=NULL, print_step=1L, region="cn") {
     if (region == "cn") return(getfs_cn(symbol, type, print_step))
 }

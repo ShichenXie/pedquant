@@ -24,13 +24,13 @@ getmd_stock_spotall_163 = function(symbol = "a,index", only_symbol = FALSE) {
         date = as.Date(substr(jsonDat$time,1,10)), 
         time = jsonDat$time#,
         #strptime(jsonDat$time, "%Y-%m-%d %H:%M:%S", tz = "Asia/Shanghai")
-      )][, .(date, symbol, name, open, high, low, close=price, prev_close=yestclose, change=updown, change_pct=percent, turnover=hs, volume, value=turnover, cap_market=mcap, cap_total=tcap, pe, eps=mfsum, net_income, revenue, plate_ids, time)]
+      )][, .(date, symbol, name, open, high, low, close=price, prev_close=yestclose, change=updown, change_pct=percent, turnover=hs, volume, amount=turnover, cap_market=mcap, cap_total=tcap, pe, eps=mfsum, net_income, revenue, plate_ids, time)]
     } else if (mkt == "index") {
       names(jsonDF) = tolower(names(jsonDF))
       
       jsonDF = setDT(jsonDF)[,`:=`(
         date = as.Date(substr(jsonDat$time,1,10))
-      )][, .(date, symbol, name, open, high, low, close=price, prev_close=yestclose, change=updown, change_pct=percent, volume, value=turnover, time)]
+      )][, .(date, symbol, name, open, high, low, close=price, prev_close=yestclose, change=updown, change_pct=percent, volume, amount=turnover, time)]
     }
     
     return(jsonDF[, `:=`(market = mkt, region = "cn")])
@@ -83,13 +83,13 @@ getmd_stockall_sina = function(symbol = "a,index", only_symbol = FALSE) {
             , (c("symbol", "code", "name", "trade", "pricechange", "changepercent", "buy", "sell", "settlement", "open", "high", "low", "volume", "amount", "ticktime", "per", "pb", "mktcap", "nmc", "turnoverratio")) := tstrsplit(V1, ",", fixed=TRUE)
             ][, V1 := NULL
               ][, lapply(.SD, function(x) gsub(".+:|\"", "", x))
-                ][,.(symbol=code, name, open, high, low, close=trade, prev_close=settlement, change=pricechange, change_pct=changepercent, turnover=turnoverratio, volume, value=amount, cap_market=mktcap, cap_total=nmc, pb, pe=per, time=ticktime)] 
+                ][,.(symbol=code, name, open, high, low, close=trade, prev_close=settlement, change=pricechange, change_pct=changepercent, turnover=turnoverratio, volume, amount, cap_market=mktcap, cap_total=nmc, pb, pe=per, time=ticktime)] 
         } else {
           dt = dt[
             , (c("symbol","name","trade","pricechange","changepercent","buy","sell","settlement","open","high","low","volume","amount","code","ticktime")) := tstrsplit(V1, ",", fixed=TRUE)
             ][, V1 := NULL
               ][, lapply(.SD, function(x) gsub(".+:|\"", "", x))
-                ][,.(symbol=code, name, open, high, low, close=trade, prev_close=settlement, change=pricechange, change_pct=changepercent, volume, value=amount, time=ticktime)] 
+                ][,.(symbol=code, name, open, high, low, close=trade, prev_close=settlement, change=pricechange, change_pct=changepercent, volume, amount, time=ticktime)] 
         }
         
         dt_list[[num]] = dt
@@ -122,7 +122,7 @@ getmd_stockall_sina = function(symbol = "a,index", only_symbol = FALSE) {
 
 # get spot data from tx
 getmd_stock_spot1_tx = function(symbol) {
-  dat = doc = . = name = high = low = prev_close = change = change_pct = volume = value = turnover = cap_market = cap_total = pb = pe_last = pe_trailing = pe_forward = buy = sell = bid1 = bid1_volume = bid2 = bid2_volume = bid3 = bid3_volume = bid4 = bid4_volume = bid5 = bid5_volume = ask1 = ask1_volume = ask2 = ask2_volume = ask3 = ask3_volume = ask4 = ask4_volume = ask5 = ask5_volume = NULL
+  dat = doc = . = name = high = low = prev_close = change = change_pct = volume = amount = turnover = cap_market = cap_total = pb = pe_last = pe_trailing = pe_forward = buy = sell = bid1 = bid1_volume = bid2 = bid2_volume = bid3 = bid3_volume = bid4 = bid4_volume = bid5 = bid5_volume = ask1 = ask1_volume = ask2 = ask2_volume = ask3 = ask3_volume = ask4 = ask4_volume = ask5 = ask5_volume = NULL
   
   symbol = paste0(sapply(symbol, check_symbol_for_tx),collapse=",")
   
@@ -148,12 +148,12 @@ getmd_stock_spot1_tx = function(symbol) {
                   "bid1", "bid1_volume", "bid2", "bid2_volume", "bid3", "bid3_volume", "bid4", "bid4_volume", "bid5", "bid5_volume",
                   "ask1", "ask1_volume", "ask2", "ask2_volume", "ask3", "ask3_volume", "ask4", "ask4_volume", "ask5", "ask5_volume",
                   "last_trade", "date", "change", "change_pct", "high", "low", 
-                  "", "volume", "value", "turnover", 
+                  "", "volume", "amount", "turnover", 
                   "pe_trailing", "", "high", "low", "", "cap_market", "cap_total", "pb", "", "", "", "", "average", "pe_forward", "pe_last" )
   setnames(dt, colnames_en)
   
   dt = dt[,.(
-    date, symbol, name, open, high, low, close, prev_close, change, change_pct, volume, value, turnover, cap_market, cap_total, pb, pe_last, pe_trailing, pe_forward, 
+    date, symbol, name, open, high, low, close, prev_close, change, change_pct, volume, amount, turnover, cap_market, cap_total, pb, pe_last, pe_trailing, pe_forward, 
     buy, sell, 
     bid1, bid1_volume, bid2, bid2_volume, bid3, bid3_volume, bid4, bid4_volume, bid5, bid5_volume, 
     ask1, ask1_volume, ask2, ask2_volume, ask3, ask3_volume, ask4, ask4_volume, ask5, ask5_volume)]
@@ -193,7 +193,7 @@ getmd_stock_hist1_163 = function(symbol, from="1900-01-01", to=Sys.Date(), fillz
   # 涨跌幅   # PCHG:        chg percent
   # 换手率   # TURNOVER:    turnour
   # 成交量   # VOTURNOVER:  volume turnover
-  # 成交金额 # VATURNOVER:  value turnover
+  # 成交金额 # VATURNOVER:  amount turnover
   # 总市值   # TCAP:        total market capitalisation
   # 流通市值 # MCAP:        tradable market capitalisation
              # LCLOSE:      last close
@@ -205,7 +205,7 @@ getmd_stock_hist1_163 = function(symbol, from="1900-01-01", to=Sys.Date(), fillz
     col_types=list(col_date(format = ""), col_character(), col_character(), col_double(), col_double(), col_double(), col_double(), col_double(), col_double(), col_double(), col_double(), col_double(), col_double(), col_double()))
   # dt = load_read_csv(link, "GBK")
   
-  cols_name = c("date", "symbol", "name", "open", "high", "low", "close", "change", "change_pct", "turnover", "volume", "value", "cap_total", "cap_market")
+  cols_name = c("date", "symbol", "name", "open", "high", "low", "close", "change", "change_pct", "turnover", "volume", "amount", "cap_total", "cap_market")
   setnames(dt, cols_name)
   
   dt = setDT(setDF(dt), key="date")[,`:=`(

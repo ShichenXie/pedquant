@@ -125,7 +125,11 @@ getmd_yahoo = function(symbol, frequency="daily", from="1900-01-01", to=Sys.time
 # get symbols of currency, commodity and world-indices from yahoo
 #' @import data.table xml2
 getmd_symbol_yahoo = function() {
-    cat("For more details on the data provided by Yahoo Finance see", "\nhttps://help.yahoo.com/kb/SLN2310.html\n")
+    . = market = name = symbol = NULL
+    
+    cat("For more details on the data provided by Yahoo Finance see\n",
+        "https://finance.yahoo.com\n", 
+        "https://help.yahoo.com/kb/SLN2310.html\n")
 
     df_symbol = lapply(
         list(currencies="currencies", indices="world-indices", commodities="commodities"), 
