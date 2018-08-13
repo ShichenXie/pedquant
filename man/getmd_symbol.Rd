@@ -10,7 +10,7 @@ getmd_symbol(source = "yahoo")
 \item{source}{data source. The available data sources including 'yahoo', '163' and 'sina'.}
 }
 \description{
-`getmd_symbol` provides an interface to get symbols of different markets. yahoo (main currencies, commodities and world-indices), 163 (stock shares in sse and szse) and sina (commodity futures in dce, shfe, sge and zce).
+\code{getmd_symbol} provides an interface to get symbols of different markets. yahoo (main currencies, commodities and world-indices), 163 (stock shares in sse and szse) and sina (commodity futures in dce, shfe, sge and zce).
 }
 \examples{
 \dontrun{

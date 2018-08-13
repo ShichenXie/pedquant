@@ -46,6 +46,10 @@ dat_com1 = getmd(symbol='RB0', source="sina")
 
 dat_com2 = getmd(symbol=c("AG0","AU0"), source="sina")
 
+
+ # Example III
+ # get data from yahoo
+ dat_yahoo = getmd(symbol=c("^GSPC", "000001.SS", "EURUSD=X"))
 }
 
 }

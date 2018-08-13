@@ -4,7 +4,7 @@
 \alias{getfs}
 \title{get financial statements and indicators}
 \usage{
-getfs(symbol, type = NULL, print_step = 1, region = "cn")
+getfs(symbol, type = NULL, print_step = 1L, region = "cn")
 }
 \arguments{
 \item{symbol}{symbol of stock in China.}
@@ -16,7 +16,7 @@ getfs(symbol, type = NULL, print_step = 1, region = "cn")
 \item{region}{only cn (China) is available.}
 }
 \description{
-`getfs` provides an interface to get financial statements and indicators of listed companies in China.
+\code{getfs} provides an interface to get financial statements and indicators of listed companies in China.
 }
 \examples{
 \dontrun{
