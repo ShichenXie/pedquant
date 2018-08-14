@@ -109,7 +109,7 @@
     
     </div>
 
-    <pre class="usage"><span class='fu'>getmd</span>(<span class='no'>symbol</span>, <span class='kw'>frequency</span> <span class='kw'>=</span> <span class='st'>"daily"</span>, <span class='kw'>from</span> <span class='kw'>=</span> <span class='st'>"2010-01-01"</span>, <span class='kw'>to</span> <span class='kw'>=</span> <span class='fu'>Sys.time</span>(),
+    <pre class="usage"><span class='fu'>getmd</span>(<span class='no'>symbol</span>, <span class='kw'>frequency</span> <span class='kw'>=</span> <span class='st'>"daily"</span>, <span class='kw'>from</span> <span class='kw'>=</span> <span class='st'>"2010-01-01"</span>, <span class='kw'>to</span> <span class='kw'>=</span> <span class='fu'>Sys.Date</span>(),
   <span class='kw'>print_step</span> <span class='kw'>=</span> <span class='fl'>1L</span>, <span class='kw'>source</span> <span class='kw'>=</span> <span class='st'>"yahoo"</span>, <span class='kw'>fillzero</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -137,11 +137,11 @@
     </tr>
     <tr>
       <th>source</th>
-      <td><p>data source. The available sources including 'yahoo', '163' and 'sina'.</p></td>
+      <td><p>data sources. The available sources including 'yahoo', '163', 'sina' and 'original'.</p></td>
     </tr>
     <tr>
       <th>fillzero</th>
-      <td><p>logical. Default is FALSE If it is TRUE, the zeros in dataset will be filled with last non-zero values.</p></td>
+      <td><p>logical. Default is FALSE. If it is TRUE, the zeros in dataset will be filled with last non-zero values.</p></td>
     </tr>
     </table>
     

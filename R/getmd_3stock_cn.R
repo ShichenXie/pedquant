@@ -48,9 +48,11 @@ getmd_stock_spotall_163 = function(symbol = "a,index", only_symbol = FALSE) {
     fun_stock_163, urls_163[idx], c("stock","stock","index","index")[idx], SIMPLIFY = FALSE
   ), fill = TRUE)
   
+  # date time of download
   datetime = gsub("[^(0-9)]","",df_stock_cn[1,time])
   if (df_stock_cn[1,time] < as.POSIXct(paste(df_stock_cn[1,date], "15:00:00"))) 
     cat("The close price is spot price at", as.character(datetime), "\n")
+  
   
   if (only_symbol) {
     df_stock_cn = df_stock_cn[
@@ -60,10 +62,9 @@ getmd_stock_spotall_163 = function(symbol = "a,index", only_symbol = FALSE) {
     ][order(-market, exchange, symbol)
     ][, .(market, submarket, region, exchange, board, symbol, name)]
   } else {
-    try(
-      df_stock_cn <- df_stock_cn[, c("plate_ids", "market", "region", "pe_last", "eps", "net_income", "revenue") := NULL],
-      silent = TRUE
-    )
+    df_stock_cn = df_stock_cn[, c("market", "region") := NULL]
+      
+    if (symbol != "index") df_stock_cn = df_stock_cn[, c("plate_ids", "pe_last", "eps", "net_income", "revenue") := NULL]
   }
   
   
@@ -249,14 +250,15 @@ getmd_stock_hist1_163 = function(symbol, from="1900-01-01", to=Sys.Date(), fillz
 getmd_163 = function(symbol, from="1900-01-01", to=Sys.Date(), print_step=1L, frequency = "daily", fillzero=FALSE) {
   if (frequency == "spot") {
     if (all(unlist(strsplit(symbol,",")) %in% c('a','b','index'))) {
-      return(getmd_stock_spotall_163(symbol))
+      dat_list <- try(getmd_stock_spotall_163(symbol), silent = TRUE)
+      return(dat_list)
     } else {
-      return(getmd_stock_spot1_tx(symbol))
+      dat_list <- try(getmd_stock_spot1_tx(symbol), silent = TRUE)
+      return(dat_list)
     }
     
   } else if (frequency == "daily") {
     dat_list = load_dat_loop(symbol, "getmd_stock_hist1_163", args = list(from = from, to = to, fillzero = fillzero), print_step=print_step)
-    
     return(dat_list)
     
   }

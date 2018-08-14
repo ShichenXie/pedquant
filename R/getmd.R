@@ -13,7 +13,7 @@
 #' @param from the start date. Default is '2010-01-01'.
 #' @param to the end date. Default is current system date.
 #' @param print_step A non-negative integer, which will print symbol name by each print_step iteration. Default is 1. 
-#' @param source data source. The available sources including 'yahoo', '163' and 'sina'.
+#' @param source data sources. The available sources including 'yahoo', '163', 'sina' and 'original'.
 #' @param fillzero logical. Default is FALSE. If it is TRUE, the zeros in dataset will be filled with last non-zero values.
 #' 
 #' @examples 
@@ -50,7 +50,7 @@
 #' 
 #' @export
 #' 
-getmd = function(symbol, frequency = "daily", from = "2010-01-01", to = Sys.time(), print_step = 1L, source = "yahoo", fillzero = FALSE) {
+getmd = function(symbol, frequency = "daily", from = "2010-01-01", to = Sys.Date(), print_step = 1L, source = "yahoo", fillzero = FALSE) {
     cat(source,"\n")
     
     args = list(symbol=symbol, frequency=frequency, from=from, to=to, print_step=print_step)
@@ -62,39 +62,33 @@ getmd = function(symbol, frequency = "daily", from = "2010-01-01", to = Sys.time
 
 #' get symbols of market data
 #' 
-#' \code{getmd_symbol} provides an interface to get symbols of different markets. yahoo (main currencies, commodities and world-indices), 163 (stock shares in sse and szse) and sina (commodity futures in dce, shfe, sge and zce). 
+#' \code{getmd_symbol} provides an interface to get symbols of different markets, which can query data via \code{getmd}.
 #' 
-#' @param source data source. The available data sources including 'yahoo', '163' and 'sina'.
+#' @param market there are six markets, 'currency', 'bond', 'money', 'index', 'stock' and 'commodity'.
+#' @param source data sources. The available data sources including 'yahoo', '163', 'sina' and 'original'. 
 #' 
 #' @examples 
 #' \dontrun{
-#' syb_yahoo = getmd_symbol(source="yahoo")
+#' # specify source
+#' syb_163 = getmd_symbol(source="163")
 #' 
-#' syb_commodity_cn = getmd_symbol(source="sina")
+#' # specify market
+#' syb_stock = getmd_symbol(market="stock")
 #' 
-#' syb_stock_cn = getmd_symbol(source="163")
+#' # specify both source and market
+#' syb_commodity_sina = getmd_symbol(market="commodity", source="sina")
+#' 
+#' # without specify both source and market
+#' sybs = getmd_symbol()
 #' }
 #' 
 #' @export
 #' 
-getmd_symbol = function(source=NULL, market=NULL) {
-    # specify data source
-    src = c("yahoo", "163", "sina")
-    while (is.null(source)) {
-        source = menu(src, cat('Specify the data source:'))
-        source = src[source]
-    }
-
+getmd_symbol = function(market=NULL, source=NULL) {
+    # mkt src
+    ms = check_mkt_src(market=market, source=source)
+    
     # get symbols
-    sybs = do.call(eval(parse(text = paste0("getmd_symbol_", source))), list())
+    do.call(eval(parse(text = paste0("getmd_symbol_", ms$src))), list(market = ms$mkt))
     
-    # specify market
-    mkts = sybs[, unique(market)]
-    while (is.null(market) || !(market %in% mkts)) {
-        market = menu(mkts, cat('Specify the market:'))
-        market = mkts[market]
-    }
-    
-    mkt_rows = sybs[["market"]] %in% market
-    return(sybs[mkt_rows])
 }

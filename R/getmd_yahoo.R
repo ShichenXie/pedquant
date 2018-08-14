@@ -130,33 +130,45 @@ getmd_yahoo = function(symbol, frequency="daily", from="1900-01-01", to=Sys.time
 # get symbols from yahoo
 # get symbols of currency, commodity and world-indices from yahoo
 #' @import data.table xml2
-getmd_symbol_yahoo = function() {
-    . = market = name = symbol = NULL
+getmd_symbol_yahoo = function(market=NULL) {
+    . = name = symbol = NULL
+  
+    mkts_yahoo = list(currency="currencies", index="world-indices", commodity="commodities")
+    if (market == "stock") {
+      cat("Details on the stock/index provided by Yahoo Finance see\n",
+          "https://finance.yahoo.com\n",
+          "https://help.yahoo.com/kb/SLN2310.html\n\n")
+      return()
+      
+    } else if (is.null(market) || !any(names(mkts_yahoo) %in% market)) {
+      mkts_sel = mkts_yahoo
+      
+    } else {
+      mkts_sel = mkts_yahoo[which(names(mkts_yahoo) %in% market)]
+      
+    }
     
-    # cat("Details on the data provided by Yahoo Finance see\n",
-        # "https://finance.yahoo.com\n",
-        # "https://help.yahoo.com/kb/SLN2310.html\n\n")
-
     df_symbol = lapply(
-        list(currency="currencies", index="world-indices", commodity="commodities"), 
-        function(mkt) {
-            . = symbol = name = last_price = change = `%_change` = NULL
-            
-            # scrap web page
-            wb = read_html(paste0("https://finance.yahoo.com/", mkt))
-            # column names
-            col_names = xml_text(xml_find_all(wb, "//th//span"))
-            col_names = tolower(gsub(" ","_",col_names))
-            
-            # dataframe
-            symbol_name = xml_text(xml_find_all(wb, "//td"))
-            symbol_name = as.data.frame(matrix(symbol_name, ncol = length(col_names), byrow=TRUE))
-            
-            # renames
-            setnames(setDT(symbol_name), col_names)
-            
-            return(symbol_name[,.(symbol, name, last_price, change, change_pct = `%_change`)])
-        })
+      mkts_sel, 
+      function(mkt) {
+        
+        . = symbol = name = last_price = change = `%_change` = NULL
+        
+        # scrap web page
+        wb = read_html(paste0("https://finance.yahoo.com/", mkt))
+        # column names
+        col_names = xml_text(xml_find_all(wb, "//th//span"))
+        col_names = tolower(gsub(" ","_",col_names))
+        
+        # dataframe
+        symbol_name = xml_text(xml_find_all(wb, "//td"))
+        symbol_name = as.data.frame(matrix(symbol_name, ncol = length(col_names), byrow=TRUE))
+        
+        # renames
+        setnames(setDT(symbol_name), col_names)
+        
+        return(symbol_name[,.(symbol, name, last_price, change, change_pct = `%_change`)])
+      })
     
     return(rbindlist(df_symbol, idcol = "market")[,.(market, symbol, name)])
 }

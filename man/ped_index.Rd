@@ -26,10 +26,11 @@ banks_symbol = c("601988", "601288", "601398", "601939", "601328")
 
 dat = getmd(banks_symbol, source="163", from="1900-01-01")
 
-library(data.table)
-dat = lapply(dat, function(x) x[, change_pct:=change_pct+1])
+dat = lapply(dat, function(x) {
+x$change_pct = x$change_pct/100+1
+return(x)})
 
-bankindex = ped_index(dat, "change_pct", "cap_total")
+bankindex = ped_index(dat, chain_index="change_pct", weight="cap_total")
 }
 
 }

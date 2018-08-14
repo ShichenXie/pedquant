@@ -32,7 +32,7 @@
 
 <meta property="og:title" content="get symbols of market data — getmd_symbol" />
 
-<meta property="og:description" content="getmd_symbol provides an interface to get symbols of different markets. yahoo (main currencies, commodities and world-indices), 163 (stock shares in sse and szse) and sina (commodity futures in dce, shfe, sge and zce)." />
+<meta property="og:description" content="getmd_symbol provides an interface to get symbols of different markets, which can query data via getmd." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -105,29 +105,39 @@
 
     <div class="ref-description">
     
-    <p><code>getmd_symbol</code> provides an interface to get symbols of different markets. yahoo (main currencies, commodities and world-indices), 163 (stock shares in sse and szse) and sina (commodity futures in dce, shfe, sge and zce).</p>
+    <p><code>getmd_symbol</code> provides an interface to get symbols of different markets, which can query data via <code>getmd</code>.</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>getmd_symbol</span>(<span class='kw'>source</span> <span class='kw'>=</span> <span class='st'>"yahoo"</span>)</pre>
+    <pre class="usage"><span class='fu'>getmd_symbol</span>(<span class='kw'>market</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>source</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
+      <th>market</th>
+      <td><p>there are six markets, 'currency', 'bond', 'money', 'index', 'stock' and 'commodity'.</p></td>
+    </tr>
+    <tr>
       <th>source</th>
-      <td><p>data source. The available data sources including 'yahoo', '163' and 'sina'.</p></td>
+      <td><p>data sources. The available data sources including 'yahoo', '163', 'sina' and 'original'.</p></td>
     </tr>
     </table>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><span class='co'># NOT RUN {</span>
-<span class='no'>syb_yahoo</span> <span class='kw'>=</span> <span class='fu'>getmd_symbol</span>(<span class='kw'>source</span><span class='kw'>=</span><span class='st'>"yahoo"</span>)
+<span class='co'># specify source</span>
+<span class='no'>syb_163</span> <span class='kw'>=</span> <span class='fu'>getmd_symbol</span>(<span class='kw'>source</span><span class='kw'>=</span><span class='st'>"163"</span>)
 
-<span class='no'>syb_commodity_cn</span> <span class='kw'>=</span> <span class='fu'>getmd_symbol</span>(<span class='kw'>source</span><span class='kw'>=</span><span class='st'>"sina"</span>)
+<span class='co'># specify market</span>
+<span class='no'>syb_stock</span> <span class='kw'>=</span> <span class='fu'>getmd_symbol</span>(<span class='kw'>market</span><span class='kw'>=</span><span class='st'>"stock"</span>)
 
-<span class='no'>syb_stock_cn</span> <span class='kw'>=</span> <span class='fu'>getmd_symbol</span>(<span class='kw'>source</span><span class='kw'>=</span><span class='st'>"163"</span>)
+<span class='co'># specify both source and market</span>
+<span class='no'>syb_commodity_sina</span> <span class='kw'>=</span> <span class='fu'>getmd_symbol</span>(<span class='kw'>market</span><span class='kw'>=</span><span class='st'>"commodity"</span>, <span class='kw'>source</span><span class='kw'>=</span><span class='st'>"sina"</span>)
+
+<span class='co'># without specify both source and market</span>
+<span class='no'>sybs</span> <span class='kw'>=</span> <span class='fu'>getmd_symbol</span>()
 <span class='co'># }</span><div class='input'>
 </div></pre>
   </div>

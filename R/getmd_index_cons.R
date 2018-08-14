@@ -26,7 +26,7 @@ getmd_index_cons = function(symbol) {
     path = sprintf("http://www.csindex.com.cn/uploads/file/autofile/cons/%scons.xls",symbol)
     dat = load_read_xl(path)
     setDT(dat)
-    setnames(dat, c("date","index_code","index_name","index_name_eng","constituent_code","constituent_name", "constituent_name_eng","exchange"))
+    setnames(dat, c("date","index_symbol","index_name","index_name_eng","constituent_symbol","constituent_name", "constituent_name_eng","exchange"))
     dat = dat[, exchange := ifelse(exchange=="SHH","sse", ifelse(exchange=="SHZ","szse", exchange))]
     
     cat("For more detials go to:", sprintf("\nhttp://www.csindex.com.cn/zh-CN/indices/index-detail/%s", symbol), "\n")

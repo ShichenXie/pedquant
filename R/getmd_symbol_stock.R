@@ -281,13 +281,15 @@ getmd_stock_symbol_163 = function() {
 # \code{getmd_163_symbol} gets the stock and index symbols in sse (Shanghai Stock Exchange), szse (Shenzhen Stock Exchange) and hkex (Hong Kong Stock Exchange). 
 #
 # @param exchanges name of stock exchange. Accepted values including sse, szse and hkex. Default is c("sse", "szse").
-getmd_symbol_163 = function(exchanges = c("sse", "szse")) {
-  exchange = region = syb = NULL
+getmd_symbol_163 = function(market = NULL, exchanges = c("sse", "szse")) {
+  exchange = syb = NULL
+  mkts = market
+  if (is.null(mkts)) mkts = c("stock", "index")
   
   if (any(c("sse", "szse") %in% exchanges)) {
-    syb = getmd_stock_symbol_163()[exchange %in% exchanges]
+    syb = getmd_stock_symbol_163()[(market %in% mkts) & (exchange %in% exchanges)]
     
-  } else if (any("hk" %in% region)) {
+  } else if (any("hkex" %in% exchanges)) {
     syb = rbindlist(syb, getmd_stock_symbol_hk(), fill = TRUE)
   }
   

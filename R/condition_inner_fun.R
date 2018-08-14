@@ -82,6 +82,49 @@ check_symbol_for_yahoo = function(symbol) {
 }
 
 
+# market data sources
+check_mkt_src = function(market=NULL, source=NULL) {
+    mkt = src = NULL
+    
+    mkts = c("currency", 
+             # "bond", "money", 
+             "index", "stock", "commodity")
+    srcs = c("yahoo", "163", "sina", "original")
+    market = market[which(market %in% mkts)]
+    source = source[which(source %in% srcs)]
+    
+    ms_df = rbindlist(list(
+        currency = data.frame(src = c("yahoo")),
+        # bond = data.frame(src = c("original")),
+        # money = data.frame(src = c("original")),
+        index = data.frame(src = c("yahoo", "163")),
+        stock = data.frame(src = c("yahoo", "163")),
+        commodity = data.frame(src = c("yahoo", "sina"))
+    ), idcol = "mkt")
+    
+    
+    if ((is.null(market) & is.null(source)) || length(source) > 1) {
+        # specify market
+        market = mkts[menu(mkts, cat('Specify the market:'))]
+        
+        # specify data source
+        srcs = ms_df[mkt %in% market, src]
+        source = srcs[menu(srcs, cat('Specify the data source:'))]
+    } else if (is.null(market)) {
+        mkts = ms_df[src %in% source, mkt]
+        market = mkts[menu(mkts, cat('Specify the market:'))]
+    } else if (is.null(source)) {
+        srcs = ms_df[mkt %in% market, src]
+        source = srcs[menu(srcs, cat('Specify the data source:'))]
+    } else {
+        ms = ms_df[mkt %in% market & src %in% source]
+        if (ms[,.N] > 1) {
+            mkts = ms$mkt
+            market = mkts[menu(mkts, cat('Specify the market:'))]
+        }
+    }
+    return(list(mkt=market, src=source))
+}
 
 
 ########################### inner functions ###########################
@@ -188,23 +231,6 @@ xml_table = function(wb, num=NULL, sup_rm = NULL) {
     return(dt)
 }
 
-# market data sources
-func_md_syb = function(region, market, source) {
-    . = md = syb = NULL
-    
-    md_syb_src = rbindlist(list(
-        yahoo = data.frame(reg="world", mkt=c("stock", "index", "currency", "commodity"), md="getmd_yahoo", syb = "gemd_symbol_yahoo"),
-        `163` = data.frame(reg="cn", mkt="stock", md="getmd_163", syb = "gemd_symbol_163"),
-        sina = data.frame(reg="cn", mkt="commodity", md="getmd_sina", syb = "gemd_symbol_sina")
-    ), idcol = "src")
-    
-    mrs = c(mkt=market, reg=region, src=source)
-    for (i in length(mrs)) 
-        md_syb_src = md_syb_src[md_syb_src[[names(mrs[i])]] == mrs[i]]
-    
-    ret_src = unique(md_syb_src[,.(md, syb)])
-    return(ret_src)
-}
 
 # #' last workday date
 # #' 

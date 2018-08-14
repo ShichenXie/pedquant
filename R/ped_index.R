@@ -86,10 +86,11 @@ ped_rp1 = function(dt, region="cn", columns = c("open", "high", "low", "close"))
 #' 
 #' dat = getmd(banks_symbol, source="163", from="1900-01-01")
 #' 
-#' library(data.table)
-#' dat = lapply(dat, function(x) x[, change_pct:=change_pct+1])
+#' dat = lapply(dat, function(x) {
+#' x$change_pct = x$change_pct/100+1
+#' return(x)})
 #' 
-#' bankindex = ped_index(dat, "change_pct", "cap_total")
+#' bankindex = ped_index(dat, chain_index="change_pct", weight="cap_total")
 #' }
 #' 
 #' @import data.table

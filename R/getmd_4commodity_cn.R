@@ -20,7 +20,7 @@ getmd_commodity1_sina = function(symbol, frequency, from, to, handle) {
 
 # get Chinese commodity future data
 #' @import data.table 
-getmd_sina = function(symbol, frequency="daily", from = "1900-01-01", to = Sys.time(), print_step=1L) {
+getmd_sina = function(symbol, frequency="daily", from = "1900-01-01", to = Sys.Date(), print_step=1L) {
     
     handle = handle_new_session(url="http://sina.com")
     
@@ -35,7 +35,7 @@ getmd_sina = function(symbol, frequency="daily", from = "1900-01-01", to = Sys.t
 # \code{getmd_commodity_symbol} gets the symbols commodity future in Dalian Commodity Exchange (dce), Shanghai Futures Exchange (shfe), Shanghai Gold Exchange (sge), Zhengzhou Commodity Exchange (zce). For more commodity symbols go to \url{http://vip.stock.finance.sina.com.cn/quotes_service/view/qihuohangqing.html}.
 #
 #' @import data.table
-getmd_symbol_sina = function() {
+getmd_symbol_sina = function(market=NULL) {
     # cat("More commodity symbols go to\n", "http://vip.stock.finance.sina.com.cn/quotes_service/view/qihuohangqing.html\n\n")
     
     .=exchange=board=symbol=name=NULL

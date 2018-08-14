@@ -4,7 +4,7 @@
 \alias{getmd}
 \title{get market data}
 \usage{
-getmd(symbol, frequency = "daily", from = "2010-01-01", to = Sys.time(),
+getmd(symbol, frequency = "daily", from = "2010-01-01", to = Sys.Date(),
   print_step = 1L, source = "yahoo", fillzero = FALSE)
 }
 \arguments{
@@ -18,7 +18,7 @@ getmd(symbol, frequency = "daily", from = "2010-01-01", to = Sys.time(),
 
 \item{print_step}{A non-negative integer, which will print symbol name by each print_step iteration. Default is 1.}
 
-\item{source}{data source. The available sources including 'yahoo', '163' and 'sina'.}
+\item{source}{data sources. The available sources including 'yahoo', '163', 'sina' and 'original'.}
 
 \item{fillzero}{logical. Default is FALSE. If it is TRUE, the zeros in dataset will be filled with last non-zero values.}
 }

@@ -143,10 +143,11 @@
 
 <span class='no'>dat</span> <span class='kw'>=</span> <span class='fu'><a href='getmd.html'>getmd</a></span>(<span class='no'>banks_symbol</span>, <span class='kw'>source</span><span class='kw'>=</span><span class='st'>"163"</span>, <span class='kw'>from</span><span class='kw'>=</span><span class='st'>"1900-01-01"</span>)
 
-<span class='fu'>library</span>(<span class='no'>data.table</span>)
-<span class='no'>dat</span> <span class='kw'>=</span> <span class='fu'>lapply</span>(<span class='no'>dat</span>, <span class='kw'>function</span>(<span class='no'>x</span>) <span class='no'>x</span>[, <span class='no'>change_pct</span><span class='kw'>:=</span><span class='no'>change_pct</span>+<span class='fl'>1</span>])
+<span class='no'>dat</span> <span class='kw'>=</span> <span class='fu'>lapply</span>(<span class='no'>dat</span>, <span class='kw'>function</span>(<span class='no'>x</span>) {
+<span class='no'>x</span>$<span class='no'>change_pct</span> <span class='kw'>=</span> <span class='no'>x</span>$<span class='no'>change_pct</span>/<span class='fl'>100</span>+<span class='fl'>1</span>
+<span class='fu'>return</span>(<span class='no'>x</span>)})
 
-<span class='no'>bankindex</span> <span class='kw'>=</span> <span class='fu'>ped_index</span>(<span class='no'>dat</span>, <span class='st'>"change_pct"</span>, <span class='st'>"cap_total"</span>)
+<span class='no'>bankindex</span> <span class='kw'>=</span> <span class='fu'>ped_index</span>(<span class='no'>dat</span>, <span class='kw'>chain_index</span><span class='kw'>=</span><span class='st'>"change_pct"</span>, <span class='kw'>weight</span><span class='kw'>=</span><span class='st'>"cap_total"</span>)
 <span class='co'># }</span><div class='input'>
 </div></pre>
   </div>
