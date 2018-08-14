@@ -320,7 +320,7 @@ nbs_jsondat_format = function(jsondat) {
 #' @param frequency the frequency of indicators in NBS, including 'monthly', 'quarterly', 'yearly'. Default is NULL.
 #' @param symbol symbol of indicators in NBS, which is available via geted_nbs_symbol. Default is NULL.
 #' @param region region codes of province or city, which is available via geted_nbs_region. Default is NULL.
-#' @param from the start date. Default is '1900-01-01'.
+#' @param from the start date. Default is '2010-01-01'.
 #' @param to the end date. Default is current system date.
 #' @param na_rm logical. If it is TRUE, the missing values will be removed. Default is FALSE.
 #' @param eng logical. If it is FALSE, the query results are in Chinese, otherwise in English. Default is FALSE.
@@ -351,7 +351,7 @@ nbs_jsondat_format = function(jsondat) {
 #' 
 #' @import data.table
 #' @export
-geted_nbs = function(geo_type=NULL, frequency=NULL, symbol=NULL, region=NULL, from='1900-01-01', to=Sys.Date(), na_rm=FALSE, eng=FALSE) {
+geted_nbs = function(geo_type=NULL, frequency=NULL, symbol=NULL, region=NULL, from='2010-01-01', to=Sys.Date(), na_rm=FALSE, eng=FALSE) {
   dim_region = dim_geo_type = dim_frequency = dim_sta_db = value = NULL
   
   # geography type

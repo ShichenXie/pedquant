@@ -6,8 +6,8 @@ Authors@R: person("Shichen", "Xie", email = "xie@shichen.name",
 Description: `getpedr` provides an interface to access public economic 
     data, which are provided by national statistics, central bank, 
     stock exchange etc. Three kinds of datasets are included in 
-    `getpedr`, market data (`getmd*`), financial statements 
-    (`getfs`), and economic data (`geted*`).
+    `getpedr`, market data (`getmd*`), financial reports 
+    (`getfr`), and economic data (`geted*`).
 Depends: R (>= 3.1.0)
 License: MIT + file LICENSE
 Encoding: UTF-8

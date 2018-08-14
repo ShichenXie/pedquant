@@ -14,7 +14,7 @@
 #' @param to the end date. Default is current system date.
 #' @param print_step A non-negative integer, which will print symbol name by each print_step iteration. Default is 1. 
 #' @param source data source. The available sources including 'yahoo', '163' and 'sina'.
-#' @param fillzero logical. Default is FALSE If it is TRUE, the zeros in dataset will be filled with last non-zero values.
+#' @param fillzero logical. Default is FALSE. If it is TRUE, the zeros in dataset will be filled with last non-zero values.
 #' 
 #' @examples 
 #' \dontrun{
@@ -50,7 +50,7 @@
 #' 
 #' @export
 #' 
-getmd = function(symbol, frequency="daily", from = "2010-01-01", to = Sys.time(), print_step = 1L, source="yahoo", fillzero=FALSE) {
+getmd = function(symbol, frequency = "daily", from = "2010-01-01", to = Sys.time(), print_step = 1L, source = "yahoo", fillzero = FALSE) {
     cat(source,"\n")
     
     args = list(symbol=symbol, frequency=frequency, from=from, to=to, print_step=print_step)
@@ -77,8 +77,24 @@ getmd = function(symbol, frequency="daily", from = "2010-01-01", to = Sys.time()
 #' 
 #' @export
 #' 
-getmd_symbol = function(source="yahoo") {
+getmd_symbol = function(source=NULL, market=NULL) {
+    # specify data source
+    src = c("yahoo", "163", "sina")
+    while (is.null(source)) {
+        source = menu(src, cat('Specify the data source:'))
+        source = src[source]
+    }
 
-    do.call(eval(parse(text = paste0("getmd_symbol_", source))), list())
-
+    # get symbols
+    sybs = do.call(eval(parse(text = paste0("getmd_symbol_", source))), list())
+    
+    # specify market
+    mkts = sybs[, unique(market)]
+    while (is.null(market) || !(market %in% mkts)) {
+        market = menu(mkts, cat('Specify the market:'))
+        market = mkts[market]
+    }
+    
+    mkt_rows = sybs[["market"]] %in% market
+    return(sybs[mkt_rows])
 }

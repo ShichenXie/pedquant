@@ -2,7 +2,7 @@
 % Please edit documentation in R/getmd_index_cons.R
 \name{getmd_index_cons}
 \alias{getmd_index_cons}
-\title{get constituent of China securities index (CSI).}
+\title{get constituent of securities index}
 \source{
 \url{http://www.csindex.com.cn/zh-CN}
 }
@@ -10,10 +10,10 @@
 getmd_index_cons(symbol)
 }
 \arguments{
-\item{symbol}{the code of China securities index.}
+\item{symbol}{the symbol of securities index. It supports Chinese securities index only at this moment.}
 }
 \description{
-\code{getmd_index_cons} provides an API to get the current constituent of China securities index.
+\code{getmd_index_cons} provides an interface to get the current constituent of securities index.
 }
 \examples{
 \dontrun{

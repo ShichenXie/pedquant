@@ -41,9 +41,11 @@ getmd_stock1_yahoo = function(symbol, handle, crumb, frequency="daily", from="19
     urli <- sprintf("https://query%s.finance.yahoo.com/v7/finance/download/%s?period1=%.0f&period2=%.0f&interval=%s&events=history&crumb=%s", ifelse(unclass(Sys.time()) %% 1L >= 0.5, 1L, 2L), symbol, from_to$from, from_to$to, frequency, crumb)
     
     dat = load_read_csv(urli, handle = handle)
-    setnames(setDT(dat), c("date", "open", "high", "low", "close", "close_adj", "volume"))
+    cols_num = c("open", "high", "low", "close", "close_adj", "volume")
+    setnames(setDT(dat), c("date", cols_num))
     dat[dat=="null"] = NA
-    dat[, date := as.Date(date)]
+    dat[, date := as.Date(date)
+      ][, (cols_num) := lapply(.SD, as.numeric), .SDcols = cols_num]
     
     return(dat)
 }
@@ -71,6 +73,8 @@ getmd_curcom1_yahoo = function(symbol, handle, crumb, frequency="daily", from="1
     
     curl_download(urli, tmp, handle = handle)
     dat2 = fromJSON(readLines(tmp))
+    
+    cols_num = c("open", "high", "low", "close", "close_adj", "volume")
     dat3 = data.table(
         date = dat2$chart$result$timestamp[[1]],
         symbol = dat2$chart$result$meta$symbol,
@@ -80,7 +84,8 @@ getmd_curcom1_yahoo = function(symbol, handle, crumb, frequency="daily", from="1
         close = dat2$chart$result$indicators$quote[[1]]$close,
         close_adj = dat2$chart$result$indicators$adjclose[[1]],
         volume = dat2$chart$result$indicators$quote[[1]]$volume
-    )[, date := as.POSIXct(date, origin="1970-01-01")]
+    )[, date := as.POSIXct(date, origin="1970-01-01")
+    ][, (cols_num) := lapply(.SD, as.numeric), .SDcols=cols_num]
     
     # dat[dat=="null"] = NA
     return(dat3)
@@ -128,12 +133,12 @@ getmd_yahoo = function(symbol, frequency="daily", from="1900-01-01", to=Sys.time
 getmd_symbol_yahoo = function() {
     . = market = name = symbol = NULL
     
-    cat("For more details on the data provided by Yahoo Finance see\n",
-        "https://finance.yahoo.com\n", 
-        "https://help.yahoo.com/kb/SLN2310.html\n")
+    # cat("Details on the data provided by Yahoo Finance see\n",
+        # "https://finance.yahoo.com\n",
+        # "https://help.yahoo.com/kb/SLN2310.html\n\n")
 
     df_symbol = lapply(
-        list(currencies="currencies", indices="world-indices", commodities="commodities"), 
+        list(currency="currencies", index="world-indices", commodity="commodities"), 
         function(mkt) {
             . = symbol = name = last_price = change = `%_change` = NULL
             

@@ -1,0 +1,43 @@
+template:
+  params:
+    bootswatch: flatly
+
+navbar:
+  title: scorecard
+  type: inverse
+  left:
+    - text: "Home" # icon: fa-home fa-lg
+      href: index.html
+    - text: "Reference"
+      href: reference/index.html
+    - text: "News"
+      href: news/index.html
+  right:
+    - icon: fa-github fa-lg
+      text: "github"
+      href: https://github.com/ShichenXie/getpedr
+
+reference:
+  - title: "get market data"
+    contents:
+      - getmd
+      - getmd_symbol
+      - getmd_index_cons
+  - title: "get financial reports"
+    contents:
+      - getfr
+  - title: "get economic data"
+    contents:
+      - geted_nbs
+      - geted_nbs_region
+      - geted_nbs_symbol
+  - title: "ped viz, index"
+    contents:
+      - ped_index
+      - ped_plot
+  - title: "country, currency, exchange"
+    contents:
+      - code_country
+      - code_currency
+      - exchange_commodity
+      - exchange_stock

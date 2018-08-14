@@ -1,10 +1,10 @@
 # China securities index, csindex
 
-#' get constituent of China securities index (CSI).
+#' get constituent of securities index
 #' 
-#' \code{getmd_index_cons} provides an API to get the current constituent of China securities index. 
+#' \code{getmd_index_cons} provides an interface to get the current constituent of securities index. 
 #' 
-#' @param symbol the code of China securities index.
+#' @param symbol the symbol of securities index. It supports Chinese securities index only at this moment.
 #' 
 #' @source \url{http://www.csindex.com.cn/zh-CN}
 #' 

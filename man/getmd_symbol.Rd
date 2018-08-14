@@ -4,7 +4,7 @@
 \alias{getmd_symbol}
 \title{get symbols of market data}
 \usage{
-getmd_symbol(source = "yahoo")
+getmd_symbol(source = NULL, market = NULL)
 }
 \arguments{
 \item{source}{data source. The available data sources including 'yahoo', '163' and 'sina'.}

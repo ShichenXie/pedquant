@@ -3,7 +3,7 @@
 export(geted_nbs)
 export(geted_nbs_region)
 export(geted_nbs_symbol)
-export(getfs)
+export(getfr)
 export(getmd)
 export(getmd_index_cons)
 export(getmd_symbol)

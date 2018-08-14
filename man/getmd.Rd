@@ -20,7 +20,7 @@ getmd(symbol, frequency = "daily", from = "2010-01-01", to = Sys.time(),
 
 \item{source}{data source. The available sources including 'yahoo', '163' and 'sina'.}
 
-\item{fillzero}{logical. Default is FALSE If it is TRUE, the zeros in dataset will be filled with last non-zero values.}
+\item{fillzero}{logical. Default is FALSE. If it is TRUE, the zeros in dataset will be filled with last non-zero values.}
 }
 \description{
 \code{getmd} provides an interface to get historical data for different markets, such as forex, bond, money, stock and commodity, which are provided public sources.

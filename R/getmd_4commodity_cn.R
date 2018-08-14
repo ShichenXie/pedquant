@@ -1,6 +1,6 @@
 #' @importFrom readr read_lines
 #' @importFrom curl curl
-getmd_commodity1_sina = function(symbol, from, to, handle) {
+getmd_commodity1_sina = function(symbol, frequency, from, to, handle) {
     doc = V1 = NULL
     
     urli = sprintf("http://stock2.finance.sina.com.cn/futures/api/json.php/IndexService.getInnerFuturesDailyKLine?symbol=%s", symbol)
@@ -20,11 +20,11 @@ getmd_commodity1_sina = function(symbol, from, to, handle) {
 
 # get Chinese commodity future data
 #' @import data.table 
-getmd_sina = function(symbol, from = "1900-01-01", to = Sys.time(), print_step=1L) {
+getmd_sina = function(symbol, frequency="daily", from = "1900-01-01", to = Sys.time(), print_step=1L) {
     
     handle = handle_new_session(url="http://sina.com")
     
-    dat_list = load_dat_loop(symbol, "getmd_commodity1_sina", args = list(handle = handle, from = from, to = to), print_step=print_step)
+    dat_list = load_dat_loop(symbol, "getmd_commodity1_sina", args = list(handle = handle, frequency=frequency, from = from, to = to), print_step=print_step)
     
     return(dat_list)
 }
@@ -36,7 +36,8 @@ getmd_sina = function(symbol, from = "1900-01-01", to = Sys.time(), print_step=1
 #
 #' @import data.table
 getmd_symbol_sina = function() {
-    cat("For more commodity symbols go to", "\nhttp://vip.stock.finance.sina.com.cn/quotes_service/view/qihuohangqing.html\n")
+    # cat("More commodity symbols go to\n", "http://vip.stock.finance.sina.com.cn/quotes_service/view/qihuohangqing.html\n\n")
+    
     .=exchange=board=symbol=name=NULL
     
     df_symbol = setDT(copy(symbol_commodity_sina))[,.(

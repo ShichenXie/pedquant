@@ -8,7 +8,7 @@
 }
 \usage{
 geted_nbs(geo_type = NULL, frequency = NULL, symbol = NULL,
-  region = NULL, from = "1900-01-01", to = Sys.Date(), na_rm = FALSE,
+  region = NULL, from = "2010-01-01", to = Sys.Date(), na_rm = FALSE,
   eng = FALSE)
 }
 \arguments{
@@ -20,7 +20,7 @@ geted_nbs(geo_type = NULL, frequency = NULL, symbol = NULL,
 
 \item{region}{region codes of province or city, which is available via geted_nbs_region. Default is NULL.}
 
-\item{from}{the start date. Default is '1900-01-01'.}
+\item{from}{the start date. Default is '2010-01-01'.}
 
 \item{to}{the end date. Default is current system date.}
 
