@@ -77,8 +77,11 @@ getmd_lpr = function(from="2013-01-01", to=Sys.Date()) {
 
     }
     dt = dt[date>=fromto$from & date<=fromto$to]
-    setkey(dt, "date")
-    return(dt)
+    
+    # melt datatable
+    dt_melt = melt(dt, id.vars = "date", variable.name = "symbol", variable.factor = FALSE)
+    setkey(dt_melt, "symbol", "date")
+    return(dt_melt)
 }
 
 
@@ -107,7 +110,11 @@ getmd_br = function(from="1998-01-01", to=Sys.Date()) {
         benchmark_lending_rate_1y = as.numeric(benchmark_lending_rate_1y)
     )]
     
-    return(dt_br)
+    # melt datatable
+    dt_melt = melt(dt_br, id.vars = "date", variable.name = "symbol", variable.factor = FALSE)
+    setkey(dt_melt, "symbol", "date")
+    
+    return(dt_melt)
 }
 
 

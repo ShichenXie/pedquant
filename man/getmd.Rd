@@ -4,23 +4,25 @@
 \alias{getmd}
 \title{get market data}
 \usage{
-getmd(symbol, frequency = "daily", from = "2010-01-01", to = Sys.Date(),
-  print_step = 1L, source = "yahoo", fillzero = FALSE)
+getmd(symbol, source = "yahoo", freq = "daily", from = "2010-01-01",
+  to = Sys.Date(), adjust = FALSE, fillzero = FALSE, print_step = 1L)
 }
 \arguments{
 \item{symbol}{symbols market data, which is available via getmd_symbol.}
 
-\item{frequency}{default is daily. It supports daily, weekly and monthly for data from yahoo; daily for data from 163 and sina.}
+\item{source}{data sources. The available sources including 'yahoo', '163', 'sina' and 'original'.}
+
+\item{freq}{default is daily. It supports daily, weekly and monthly for data from yahoo; daily for data from 163 and sina.}
 
 \item{from}{the start date. Default is '2010-01-01'.}
 
 \item{to}{the end date. Default is current system date.}
 
+\item{adjust}{logical. Argument for data download from yahoo. Default is FALSE. If it is TRUE, the open, high, low and close values will adjusted based on close_adj.}
+
+\item{fillzero}{logical. Argument for data download from 163. Default is FALSE. If it is TRUE, the zeros in dataset will be filled with last non-zero values.}
+
 \item{print_step}{A non-negative integer, which will print symbol name by each print_step iteration. Default is 1.}
-
-\item{source}{data sources. The available sources including 'yahoo', '163', 'sina' and 'original'.}
-
-\item{fillzero}{logical. Default is FALSE. If it is TRUE, the zeros in dataset will be filled with last non-zero values.}
 }
 \description{
 \code{getmd} provides an interface to get historical data for different markets, such as forex, bond, money, stock and commodity, which are provided public sources.
@@ -33,13 +35,13 @@ dat1 = getmd(symbol=c('600000', '000001', '^000001', '^399001'),
              source="163")
 
 dat2 = getmd(symbol=c('600000', '000001', '^000001', '^399001'), 
-             source="163", frequency="spot")
+             source="163", freq="spot")
 
 # get spot price of all A shares in sse and szse
-dat3 = getmd(symbol='a', source="163", frequency="spot")
+dat3 = getmd(symbol='a', source="163", freq="spot")
 
 # get spot price of all index in sse and szse
-dat4 = getmd(symbol='index', source="163", frequency="spot")
+dat4 = getmd(symbol='index', source="163", freq="spot")
 
 
 # Example II

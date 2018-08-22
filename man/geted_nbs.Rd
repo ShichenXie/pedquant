@@ -7,14 +7,13 @@
 \url{http://data.stats.gov.cn/index.htm}
 }
 \usage{
-geted_nbs(geo_type = NULL, frequency = NULL, symbol = NULL,
-  region = NULL, from = "2010-01-01", to = Sys.Date(), na_rm = FALSE,
-  eng = FALSE)
+geted_nbs(geo_type = NULL, freq = NULL, symbol = NULL, region = NULL,
+  from = "2010-01-01", to = Sys.Date(), na_rm = FALSE, eng = FALSE)
 }
 \arguments{
 \item{geo_type}{geography type in NBS, including 'national', 'province', 'city'. Default is NULL.}
 
-\item{frequency}{the frequency of indicators in NBS, including 'monthly', 'quarterly', 'yearly'. Default is NULL.}
+\item{freq}{the frequency of indicators in NBS, including 'monthly', 'quarterly', 'yearly'. Default is NULL.}
 
 \item{symbol}{symbol of indicators in NBS, which is available via geted_nbs_symbol. Default is NULL.}
 
@@ -37,19 +36,19 @@ geted_nbs(geo_type = NULL, frequency = NULL, symbol = NULL,
 dt = geted_nbs()
 
 # specify paratmeters
-dt1 = geted_nbs(geo_type='national', frequency='quarterly', 
+dt1 = geted_nbs(geo_type='national', freq='quarterly', 
   symbol='A010101')
 
 # or using 'n'/'q' represents 'national'/'quarterly'
-dt2 = geted_nbs(geo_type='n', frequency='q', symbol='A010101')
+dt2 = geted_nbs(geo_type='n', freq='q', symbol='A010101')
 
 
 # get data of one region
-dt3 = geted_nbs(geo_type='province', frequency='quarterly', 
+dt3 = geted_nbs(geo_type='province', freq='quarterly', 
   symbol='A010101', region='110000', from='2010-03-01', to='2010-03-01')
   
 # get data of all province
-dt4 = geted_nbs(geo_type='province', frequency='quarterly', 
+dt4 = geted_nbs(geo_type='province', freq='quarterly', 
   symbol='A010101', region='all', from='2010-03-01', to='2010-03-01')
 }
 

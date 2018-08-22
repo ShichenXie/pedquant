@@ -1,26 +1,36 @@
 
-ped1_plot = function(df, y="close", type="line", title=NULL) {
+ped1_plot = function(dt, y="close|value", type="line", title=NULL) {
     ggplot = geom_line = aes = scale_y_continuous = scale_x_date = labs = theme_bw = NULL
     
-    min_date = df[,date[1]]
-    max_date = df[,date[.N]] 
-    title_str = sprintf("[%s/%s]", min_date, max_date)
-    
+    # y
+    y = names(dt)[grepl(y, names(dt))][1]
     # remove 0 rows in variable
-    df = df[eval(parse(text=y)) != 0]
-    # title string
-    if (!is.null(title)) title_str = paste(title_str,title)
+    dt = dt[eval(parse(text=y)) != 0]
+    if (type == "step") {
+        dt = rbindlist(list(dt, data.table(date=Sys.Date())), fill = TRUE)
+        dt[[y]] = fillna(dt[[y]])
+    }
+    # date range
+    if (is.null(title)) {
+        if ("symbol" %in% names(dt)) {
+            title = dt[1,symbol]
+        } else {
+            title = y
+        }
+    }
+    title_str = sprintf("[%s/%s] %s", dt[,date[1]], dt[,date[.N]], title )
+    
     
     # plot
-    p = ggplot(data = df) + 
-        geom_line(aes(x=date, y=eval(parse(text=y)))) +
+    p = ggplot(data = dt) + 
+        stat_identity(aes(x = date, y = eval(parse(text=y))), geom = type) +
         scale_y_continuous(position = "right") +
-        scale_x_date(date_breaks="2 year", date_minor_breaks = "1 year", date_labels = "%y")+
+        # scale_x_date(date_breaks="2 year", date_minor_breaks = "1 year", date_labels = "%y")+
             #breaks = seq(as.Date("1990-01-01"), as.Date("2020-01-01"), by="5 year"), labels = seq(1990,2020,5)) +
         labs(title=title_str, x=NULL, y=NULL) +
         theme_bw()
     
-    # p <- plot_ly(data=df, x = ~date, y = ~eval(parse(text=y)), mode = 'lines')
+    # p <- plot_ly(data=dt, x = ~date, y = ~eval(parse(text=y)), mode = 'lines')
     
     return(p)
 }
@@ -44,7 +54,9 @@ ped1_plot = function(df, y="close", type="line", title=NULL) {
 #' 
 #' @import ggplot2
 #' @export
-ped_plot = function(dt, y="close", type="line", title=NULL) {
+ped_plot = function(dt, y="close|value", type="line", title=NULL) {
+    type = check_arg(type, c("line", "step"))
+    
     if (is.list(dt) & !is.data.frame(dt)) {
         dt_names = names(dt)
         
@@ -90,15 +102,9 @@ ped_plot_rp = function(dt, type = "line", title=NULL) {
         labs(title=title_str, x=NULL) +
         theme_bw()
 }
-# ssec_real = ped_rp1(getmd_stock("^000001", print_step = 0))
-# ped_plot(ssec_real, title="ssec")
-# szsec_real = ped_rp1(getmd_stock("^399001", print_step = 0))
+# ssec_real = ped_rp1(getmd("^000001", source="163", from="1900-01-01"))
+# ped_plot_rp(ssec_real, title="ssec")
+# szsec_real = ped_rp1(getmd("^399001", source="163", from="1900-01-01"))
+# ped_plot_rp(szsec_real, title="szsec")
 # ped_plot(szsec_real, title="szsec")
-
-# create a new Techinal Analysis Indicator for a ped
-ped_addTA = function(dt, ta) {
-    
-}
-
-
 

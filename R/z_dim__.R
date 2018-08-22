@@ -29,7 +29,7 @@
 
 
 # Internal data # http://r-pkgs.had.co.nz/data.html
-# devtools::use_data(finance_report_163, prov_indu_163, symbol_commodity_sina, symbol_stock_163, internal = TRUE, overwrite = TRUE)
+# devtools::use_data(finance_report_163, prov_indu_163, symbol_future_sina, symbol_stock_163, internal = TRUE, overwrite = TRUE)
 
 
 
@@ -92,3 +92,7 @@
 
 # TrueFX  realtime forex
 # https://www.truefx.com
+# stooq
+# https://stooq.com
+# urli = "https://stooq.com/q/d/l/?s=^dax&i=d"
+# frequency: d, w, m, q, y

@@ -4,12 +4,12 @@
 \alias{geted_nbs_symbol}
 \title{get symbol of China economic indicator from NBS}
 \usage{
-geted_nbs_symbol(geo_type = NULL, frequency = NULL, eng = FALSE)
+geted_nbs_symbol(geo_type = NULL, freq = NULL, eng = FALSE)
 }
 \arguments{
 \item{geo_type}{geography type in NBS, including 'national', 'province', 'city'. Default is NULL.}
 
-\item{frequency}{the frequency of indicators in NBS, including 'monthly', 'quarterly', 'yearly'. Default is NULL.}
+\item{freq}{the frequency of indicators in NBS, including 'monthly', 'quarterly', 'yearly'. Default is NULL.}
 
 \item{eng}{logical. If it is FALSE, the result is show in Chinese, otherwise in English. Default is FALSE.}
 }

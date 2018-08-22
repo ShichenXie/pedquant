@@ -28,25 +28,28 @@ yahoo_crumb = function(handle) {
 # stock, world index
 # type = c("history", "div", "split")
 #' @importFrom curl curl_fetch_memory 
-getmd_stock1_yahoo = function(symbol, handle, crumb, frequency="daily", from="1900-01-01", to=Sys.time(), type="history") {
+getmd_stock1_yahoo = function(symbol, handle, crumb, freq="daily", from="1900-01-01", to=Sys.time(), type="history", adjust = FALSE) {
     Date = NULL
     # symbol
     symbol = check_symbol_for_yahoo(symbol)
-    # frequency
-    intervals = c(daily = "1d", weekly = "1wk", monthly = "1mo")
-    frequency = intervals[match.arg(frequency, names(intervals))]
-    # from, to
-    from_to = lapply(list(from=from, to=to), function(x) date_to_sec(x))
+    
     # url of eod 
-    urli <- sprintf("https://query%s.finance.yahoo.com/v7/finance/download/%s?period1=%.0f&period2=%.0f&interval=%s&events=history&crumb=%s", ifelse(unclass(Sys.time()) %% 1L >= 0.5, 1L, 2L), symbol, from_to$from, from_to$to, frequency, crumb)
+    urli <- sprintf("https://query%s.finance.yahoo.com/v7/finance/download/%s?period1=%.0f&period2=%.0f&interval=%s&events=%s&crumb=%s", ifelse(unclass(Sys.time()) %% 1L >= 0.5, 1L, 2L), symbol, from, to, freq, type, crumb)
     
     dat = load_read_csv(urli, handle = handle)
     cols_num = c("open", "high", "low", "close", "close_adj", "volume")
     setnames(setDT(dat), c("date", cols_num))
-    dat[dat=="null"] = NA
-    dat[, date := as.Date(date)
-      ][, (cols_num) := lapply(.SD, as.numeric), .SDcols = cols_num]
     
+    dat[dat=="null"] = NA
+    dat = dat[, `:=`(
+      date = as.Date(date), symbol = symbol
+     )][, (cols_num) := lapply(.SD, as.numeric), 
+        .SDcols = cols_num
+      ][,.(date, symbol, open, high, low, close, close_adj, volume)]
+    setkey(dat, date)
+    
+    # adjusting ohlc
+    if (adjust) dat = adjust_ohlc(dat)
     return(dat)
 }
 
@@ -55,7 +58,7 @@ getmd_stock1_yahoo = function(symbol, handle, crumb, frequency="daily", from="19
 
 
 # currencies, commodities
-getmd_curcom1_yahoo = function(symbol, handle, crumb, frequency="daily", from="1900-01-01", to=Sys.time()) {
+getmd_curcom1_yahoo = function(symbol, handle, crumb, freq="daily", from="1900-01-01", to=Sys.time(), adjust = FALSE) {
     tmp <- tempfile()
     on.exit(unlink(tmp))
     
@@ -63,13 +66,9 @@ getmd_curcom1_yahoo = function(symbol, handle, crumb, frequency="daily", from="1
     # handle = handle_new_session()
     # crumb = yahoo_crumb(handle)
     
-    # frequency
-    intervals = c(daily = "1d", weekly = "1wk", monthly = "1mo")
-    frequency = intervals[match.arg(frequency, names(intervals))]
-    # from, to
-    from_to = lapply(list(from=from, to=to), function(x) date_to_sec(x))
+    
     # url of eod 
-    urli <- paste0("https://query",ifelse(unclass(Sys.time()) %% 1L >= 0.5, 1L, 2L),".finance.yahoo.com/v8/finance/chart/",symbol,"?symbol=",symbol,"&period1=",from_to$from,"&period2=",from_to$to,"&interval=",frequency,"&includePrePost=true&events=div%7Csplit%7Cearn&lang=en-US&region=US&crumb=",crumb,"&corsDomain=finance.yahoo.com")
+    urli <- paste0("https://query",ifelse(unclass(Sys.time()) %% 1L >= 0.5, 1L, 2L),".finance.yahoo.com/v8/finance/chart/",symbol,"?symbol=",symbol,"&period1=",from,"&period2=",to,"&interval=",freq,"&includePrePost=true&events=div%7Csplit%7Cearn&lang=en-US&region=US&crumb=",crumb,"&corsDomain=finance.yahoo.com")
     
     curl_download(urli, tmp, handle = handle)
     dat2 = fromJSON(readLines(tmp))
@@ -85,17 +84,31 @@ getmd_curcom1_yahoo = function(symbol, handle, crumb, frequency="daily", from="1
         close_adj = dat2$chart$result$indicators$adjclose[[1]],
         volume = dat2$chart$result$indicators$quote[[1]]$volume
     )[, date := as.POSIXct(date, origin="1970-01-01")
-    ][, (cols_num) := lapply(.SD, as.numeric), .SDcols=cols_num]
+    ][, (cols_num) := lapply(.SD, as.numeric), 
+      .SDcols=cols_num
+    ][,.(date, symbol, open, high, low, close, close_adj, volume)]
+    setkey(dat, date)
     
+    # adjusting ohlc
+    if (adjust) dat = adjust_ohlc(dat)
     # dat[dat=="null"] = NA
     return(dat3)
 }
 
 # get market data from yahoo
-getmd_yahoo = function(symbol, frequency="daily", from="1900-01-01", to=Sys.time(), print_step=1L) {
+getmd_yahoo = function(symbol, freq="daily", from="1900-01-01", to=Sys.time(), print_step=1L, adjust=FALSE) {
     
     handle = handle_new_session()
     crumb = yahoo_crumb(handle)
+    
+    # frequency
+    intervals = c(daily = "1d", weekly = "1wk", monthly = "1mo")
+    freq = check_arg(freq, names(intervals))
+    freq = intervals[names(intervals) == freq]
+    
+    # from, to
+    from = date_to_sec(check_fromto(from))
+    to = date_to_sec(check_fromto(to))
     
     # split symbols into currency/commodity and stock/index two groups
     is_curcom = grepl("=[FX]", symbol)
@@ -105,10 +118,10 @@ getmd_yahoo = function(symbol, frequency="daily", from="1900-01-01", to=Sys.time
     dat_list_si = list()
     dat_list_cc = list()
     if (length(symbol_stockindex) > 0) {
-        dat_list_si = load_dat_loop(symbol_stockindex, "getmd_stock1_yahoo", args = list(handle = handle, crumb = crumb, frequency=frequency, from = from, to = to), print_step=print_step)
+        dat_list_si = load_dat_loop(symbol_stockindex, "getmd_stock1_yahoo", args = list(handle = handle, crumb = crumb, freq=freq, from = from, to = to, adjust = adjust), print_step=print_step)
     } 
     if (length(symbol_curcom) > 0) {
-        dat_list_cc = load_dat_loop(symbol_curcom, "getmd_stock1_yahoo", args = list(handle = handle, crumb = crumb, frequency=frequency, from = from, to = to), print_step=print_step)
+        dat_list_cc = load_dat_loop(symbol_curcom, "getmd_stock1_yahoo", args = list(handle = handle, crumb = crumb, freq=freq, from = from, to = to, adjust = adjust), print_step=print_step)
     }
     
     return(c(dat_list_si, dat_list_cc))
@@ -171,4 +184,11 @@ getmd_symbol_yahoo = function(market=NULL) {
       })
     
     return(rbindlist(df_symbol, idcol = "market")[,.(market, symbol, name)])
+}
+
+
+
+adjust_ohlc = function(dat) {
+  
+  return(dat)
 }

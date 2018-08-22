@@ -4,7 +4,7 @@
 \alias{ped_plot}
 \title{create a chart for timeseries data}
 \usage{
-ped_plot(dt, y = "close", type = "line", title = NULL)
+ped_plot(dt, y = "close|value", type = "line", title = NULL)
 }
 \arguments{
 \item{dt}{a time series dataset}

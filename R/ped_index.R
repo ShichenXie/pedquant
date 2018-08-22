@@ -35,7 +35,7 @@ ped_fbi = function(dt, chain_index, num=1, base_index=1, base_date="2006-01-01")
 fbi_cpicn = function(sybs = c("A01010101", "A01010201","A01030101", "A01030201")) {
     value = . = index = NULL
     
-    cpicn = geted_nbs(geo_type = "n", frequency = "m", symbol = sybs, na_rm = TRUE)
+    cpicn = geted_nbs(geo_type = "n", freq = "m", symbol = sybs, na_rm = TRUE, from="1900-01-01")
     
     cpicn2 = dcast(
         cpicn[, value := value/100], date~symbol_name, value.var = "value"
@@ -43,12 +43,12 @@ fbi_cpicn = function(sybs = c("A01010101", "A01010201","A01030101", "A01030201")
     setnames(cpicn2, c("date", "cpi_yoy", "cpi_mom"))
     
     cpi_fbi = ped_fbi(
-        ped_fbi(cpicn2, chain_index = "cpi_mom"),
+        dt = ped_fbi(cpicn2, chain_index = "cpi_mom"),
         chain_index = "cpi_yoy", num=12)
     
     return(cpi_fbi[,.(date,index)])
 }
-# cpi = cpicn_fbi()
+# cpi = fbi_cpicn()
 
 # ped in real price
 ped_rp1 = function(dt, region="cn", columns = c("open", "high", "low", "close")) {
@@ -66,7 +66,7 @@ ped_rp1 = function(dt, region="cn", columns = c("open", "high", "low", "close"))
    
    return(dt_rp)
 }
-# ssec_real = ped_rp1(getmd_stock("^000001", print_step = 0))
+# ssec_real = ped_rp1(getmd("^000001", print_step = 0, from="1900-01-01", source="163"))
 
 
 
@@ -113,3 +113,6 @@ ped_index = function(dt, chain_index, weight, base_index=1, base_date="2010-01-0
 
 
 
+# ref:
+# https://en.wikipedia.org/wiki/Weighted_geometric_mean
+# https://en.wikipedia.org/wiki/U.S._Dollar_Index

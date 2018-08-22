@@ -247,8 +247,16 @@ getmd_stock_hist1_163 = function(symbol, from="1900-01-01", to=Sys.Date(), fillz
 
 
 #' @import data.table
-getmd_163 = function(symbol, from="1900-01-01", to=Sys.Date(), print_step=1L, frequency = "daily", fillzero=FALSE) {
-  if (frequency == "spot") {
+getmd_163 = function(symbol, from="1900-01-01", to=Sys.Date(), print_step=1L, freq = "daily", fillzero=FALSE) {
+  # fromt to 
+  from = check_fromto(from)
+  to = check_fromto(to)
+  
+  # frequency
+  freq = check_arg(freq, c("spot","daily"))
+  
+  # get data
+  if (freq == "spot") {
     if (all(unlist(strsplit(symbol,",")) %in% c('a','b','index'))) {
       dat_list <- try(getmd_stock_spotall_163(symbol), silent = TRUE)
       return(dat_list)
@@ -257,7 +265,7 @@ getmd_163 = function(symbol, from="1900-01-01", to=Sys.Date(), print_step=1L, fr
       return(dat_list)
     }
     
-  } else if (frequency == "daily") {
+  } else if (freq == "daily") {
     dat_list = load_dat_loop(symbol, "getmd_stock_hist1_163", args = list(from = from, to = to, fillzero = fillzero), print_step=print_step)
     return(dat_list)
     

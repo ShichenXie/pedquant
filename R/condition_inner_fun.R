@@ -1,6 +1,21 @@
 ########################### condition functions ###########################
+# check arguments
+check_arg = function(arg, choices, default=NULL) {
+    arg = try(match.arg(arg, choices), silent = TRUE)
+    if (inherits(arg, "try-error")) {
+        if (is.null(default)) {
+            arg = choices[menu(choices, cat("Verify the argument"))]
+        } else {
+            arg = default
+        }
+    }
+    return(arg)
+}
+
 # check date format of from/to
-check_fromto = function(fromto) {
+check_fromto = function(fromto, type="date") {
+    type = check_arg(type, c("date", "time"), "date")
+    # type: dates or times
     if (grepl("-|/",fromto)) {
         fromto = as.Date(fromto)
     } else {
@@ -11,6 +26,7 @@ check_fromto = function(fromto) {
         }
     }
     
+    if (type == "time") fromto = as.POSIXct(paste(fromto, "00:00:00"))
     return(fromto)
 }
 
@@ -88,7 +104,7 @@ check_mkt_src = function(market=NULL, source=NULL) {
     
     mkts = c("currency", 
              # "bond", "money", 
-             "index", "stock", "commodity")
+             "index", "stock", "future")
     srcs = c("yahoo", "163", "sina", "original")
     market = market[which(market %in% mkts)]
     source = source[which(source %in% srcs)]
@@ -99,7 +115,7 @@ check_mkt_src = function(market=NULL, source=NULL) {
         # money = data.frame(src = c("original")),
         index = data.frame(src = c("yahoo", "163")),
         stock = data.frame(src = c("yahoo", "163")),
-        commodity = data.frame(src = c("yahoo", "sina"))
+        future = data.frame(src = c("yahoo", "sina"))
     ), idcol = "mkt")
     
     
@@ -144,6 +160,7 @@ load_read_xl = function(url, handle=new_handle()) {
 
 #download and read csv file from website
 #' @importFrom utils download.file read.csv
+#' @importFrom curl curl_download new_handle
 # load_read_csv = function(url, encode) {
 #     temp = tempfile()
 #     download.file(url=url, destfile=temp, quiet=TRUE)
@@ -152,7 +169,6 @@ load_read_xl = function(url, handle=new_handle()) {
 #     
 #     return(dat)
 # }
-#' @importFrom curl curl_download new_handle
 load_read_csv = function(url, encode="UTF-8", handle=new_handle()) {
     temp = tempfile()
     on.exit(unlink(temp))
@@ -206,6 +222,9 @@ load_dat_loop = function(symbol, func, args=list(), print_step) {
         if ((print_step>0) & (i %% print_step == 0)) cat(paste0(format(c(i,symbol_len)),collapse = "/"), symbol_i,"\n")
         
         dt_list[[symbol_i]] = do.call(eval(parse(text = func)), c(symbol_i, args))
+        
+        # sleep for 1s
+        Sys.sleep(runif(1))
     }
     return(dt_list)
 }
@@ -281,4 +300,9 @@ lwd <- function(n, d = NULL, tz = NULL) {
     
     lwd <- format(d, format = "%Y%m%d", tz = tz)
     return(lwd)
+}
+
+
+api_key = function(src){
+    if (src=="fred") return("4330f2f7aab9a42ab9b950cec4428b91")
 }
