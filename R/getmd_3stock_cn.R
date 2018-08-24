@@ -134,11 +134,11 @@ getmd_stockall_sina = function(symbol = "a,index", only_symbol = FALSE) {
 
 
 # get spot data from tx
-getmd_stock_spot1_tx = function(symbol) {
+getmd_stock_spot1_tx = function(symbol1) {
   dat = doc = . = name = high = low = prev_close = change = change_pct = volume = amount = turnover = cap_market = cap_total = time = NULL
   
-  syb = sapply(symbol, check_symbol_for_tx)
-  dt = readLines(sprintf("http://qt.gtimg.cn/q=%s", paste0(syb,collapse=",")))
+  syb = sapply(symbol1, check_symbol_for_tx)
+  dt = readLines(sprintf("http://qt.gtimg.cn/q=%s", paste0(syb, collapse=",")))
   # ff_ 资金流量 # s_pk 盘口 # s_ 简要信息
   
   dt = data.table(
@@ -191,7 +191,7 @@ getmd_stock_spot1_tx = function(symbol) {
 
 #' @import data.table
 #' @importFrom readr read_csv locale col_date col_character col_double col_integer
-getmd_stock_hist1_163 = function(symbol, from="1900-01-01", to=Sys.Date(), fillzero=FALSE) {
+getmd_stock_hist1_163 = function(symbol1, from="1900-01-01", to=Sys.Date(), fillzero=FALSE) {
   change_pct = NULL
   # http://quotes.money.163.com/service/chddata.html?code=0000001&start=19901219&end=20180615&fields=TCLOSE;HIGH;LOW;TOPEN;LCLOSE;CHG;PCHG;VOTURNOVER;VATURNOVER
   # http://quotes.money.163.com/service/chddata.html?code=1399001&start=19910403&end=20180615&fields=TCLOSE;HIGH;LOW;TOPEN;LCLOSE;CHG;PCHG;VOTURNOVER;VATURNOVER
@@ -201,7 +201,7 @@ getmd_stock_hist1_163 = function(symbol, from="1900-01-01", to=Sys.Date(), fillz
   # {'D': 'akdaily', 'W': 'akweekly', 'M': 'akmonthly'}
   
   # symbol
-  syb = check_symbol_for_163(symbol)
+  syb = check_symbol_for_163(symbol1)
 
   # date range
   fromto = lapply(list(from=from,to=to), function(x) format(check_fromto(x), "%Y%m%d"))
@@ -224,17 +224,19 @@ getmd_stock_hist1_163 = function(symbol, from="1900-01-01", to=Sys.Date(), fillz
    
   
   # download data from 163
-  dt = read_csv(
+  dt <- read_csv(
     file=link, locale = locale(encoding = "GBK"), na=c("", "NA", "None"),
     col_types=list(col_date(format = ""), col_character(), col_character(), col_double(), col_double(), col_double(), col_double(), col_double(), col_double(), col_double(), col_double(), col_double(), col_double(), col_double(), col_double()))
-  # dt = load_read_csv(link, "GBK")
+  # dt <- load_read_csv(link, "GBK")
+  dt = as.data.frame(dt)
   
   cols_name = c("date", "symbol", "name", "open", "high", "low", "close", "prev_close", "change", "change_pct", "volume", "amount", "turnover", "cap_market", "cap_total")
   setnames(dt, cols_name)
+  setDT(dt, key="date")
   
-  dt = setDT(setDF(dt), key="date")[,`:=`(
-    symbol = sub("'","",symbol)
-  )]#[, (cols_name[-c(1:3)]) := lapply(.SD, as.numeric), .SDcols = cols_name[-c(1:3)] ]
+  dt = dt[, `:=`(
+          symbol = symbol1#, date = as.Date(date)
+       )][, (cols_name), with=FALSE]#[, (cols_name[-(1:3)]) := lapply(.SD, function(x) as.numeric(gsub(",","",x))), .SDcols = cols_name[-(1:3)] ]
   
   # fill zeros in dt
   if (fillzero) {

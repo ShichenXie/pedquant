@@ -15,18 +15,22 @@ check_arg = function(arg, choices, default=NULL) {
 # check date format of from/to
 check_fromto = function(fromto, type="date") {
     type = check_arg(type, c("date", "time"), "date")
+    
     # type: dates or times
-    if (grepl("-|/",fromto)) {
-        fromto = as.Date(fromto)
-    } else {
-        if (nchar(fromto)==6) {
-            fromto = as.Date(fromto, format="%y%m%d")
-        } else if (nchar(fromto) == 8) {
-            fromto = as.Date(fromto, format="%Y%m%d")
+    if (class(fromto) == "character") {
+        if (grepl("-|/",fromto)) {
+            fromto = as.Date(fromto)
+        } else {
+            if (nchar(fromto)==6) {
+                fromto = as.Date(fromto, format="%y%m%d")
+            } else if (nchar(fromto) == 8) {
+                fromto = as.Date(fromto, format="%Y%m%d")
+            }
         }
+        
+        if (type != "date") fromto = as.POSIXct(paste(fromto, "00:00:00"))
     }
     
-    if (type == "time") fromto = as.POSIXct(paste(fromto, "00:00:00"))
     return(fromto)
 }
 
