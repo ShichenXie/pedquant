@@ -91,9 +91,18 @@ geted_nbs_symbol = function(geo_type=NULL, freq=NULL, eng=FALSE) {
     is_parent = TRUE
     while (is_parent) {
       symbol_df = geted_nbs_1symbol(geo_type, freq, sel_symbol, eng)
-      print(setDF(copy(symbol_df)))
+      print(symbol_df)
       
       sel_symbol = readline("Select a symbol (until isParent==FALSE): ")
+      while (grepl("r", sel_symbol)) {
+        row_id = as.integer(gsub("^r", "", sel_symbol))
+        if (row_id %in% symbol_df[,.I]) {
+          sel_symbol = symbol_df[row_id, symbol]  
+        } else {
+          sel_symbol = readline("Select a symbol (until isParent==FALSE): ")
+        }
+      }
+      
       if ( sel_symbol %in% symbol_df$symbol ) {
         is_parent = symbol_df[symbol==sel_symbol, isParent]
       } else if (sel_symbol %in% symbol_df$symbolParent) {
@@ -356,7 +365,7 @@ geted_nbs = function(geo_type=NULL, freq=NULL, symbol=NULL, region=NULL, from='2
   # jsondat
   jsondat = NULL
   for (s in symbol) {
-    jsondat[[s]] = geted1_nbs(nbs_geo, symbol=s, region, from, eng)
+    jsondat[[s]] = geted1_nbs(nbs_geo, symbol1=s, region, from, eng)
   }
   # rbindlist jsondat
   dat = rbindlist(lapply(jsondat, nbs_jsondat_format), fill=TRUE)[date>=fromto[[1]] & date<=fromto[[2]],]

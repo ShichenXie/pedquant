@@ -5,7 +5,7 @@
 \title{get market data}
 \usage{
 getmd(symbol, source = "yahoo", freq = "daily", from = "2010-01-01",
-  to = Sys.Date(), adjust = FALSE, fillzero = FALSE, print_step = 1L)
+  to = Sys.Date(), adjust = FALSE, fillzero = TRUE, print_step = 1L)
 }
 \arguments{
 \item{symbol}{symbols market data, which is available via getmd_symbol.}
@@ -20,7 +20,7 @@ getmd(symbol, source = "yahoo", freq = "daily", from = "2010-01-01",
 
 \item{adjust}{logical. Argument for data download from yahoo. Default is FALSE. If it is TRUE, the open, high, low and close values will adjusted based on close_adj.}
 
-\item{fillzero}{logical. Argument for data download from 163. Default is FALSE. If it is TRUE, the zeros in dataset will be filled with last non-zero values.}
+\item{fillzero}{logical. Argument for data download from 163. Default is TRUE If it is TRUE, the zeros in dataset will be filled with last non-zero values.}
 
 \item{print_step}{A non-negative integer, which will print symbol name by each print_step iteration. Default is 1.}
 }

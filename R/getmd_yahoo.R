@@ -29,7 +29,8 @@ yahoo_crumb = function(handle) {
 # type = c("history", "div", "split")
 #' @importFrom curl curl_fetch_memory 
 getmd_stock1_yahoo = function(symbol, handle, crumb, freq="daily", from="1900-01-01", to=Sys.time(), type="history", adjust = FALSE) {
-    Date = NULL
+    . = high = low = close_adj = volume = NULL
+    
     # symbol
     symbol = check_symbol_for_yahoo(symbol)
     
@@ -59,6 +60,8 @@ getmd_stock1_yahoo = function(symbol, handle, crumb, freq="daily", from="1900-01
 
 # currencies, commodities
 getmd_curcom1_yahoo = function(symbol, handle, crumb, freq="daily", from="1900-01-01", to=Sys.time(), adjust = FALSE) {
+    . = high = low = close_adj = volume = NULL
+  
     tmp <- tempfile()
     on.exit(unlink(tmp))
     

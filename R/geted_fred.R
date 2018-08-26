@@ -1,4 +1,6 @@
-# by category,
+# # fred
+# # http://fred.stlouisfed.org
+# # API: https://research.stlouisfed.org/docs/api/fred/
 # 
 # tags:
 #     freq
@@ -9,68 +11,15 @@
 #     src
 #     seas
 # 
-# # fred
-# # http://fred.stlouisfed.org
-# 
-# "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DTWEXB"
-# 
-# 
 # # oanda (forex & currency)
 # # https://www.oanda.com
-# 
-# 
-# 
-# fred_api = sprintf(, api_key)
-# 
-# # Categories
-# category = "https://api.stlouisfed.org/fred/category?category_id=%s&api_key=%s&file_type=json"
-# category_children = "https://api.stlouisfed.org/fred/category/children?category_id=%s&api_key=%s&file_type=json"
-# category_related = "https://api.stlouisfed.org/fred/category/related?category_id=32073&api_key=%s&file_type=json"
-# category_series = "https://api.stlouisfed.org/fred/category/series?category_id=%s&api_key=%s&file_type=json"
-# category_tags = "https://api.stlouisfed.org/fred/category/tags?category_id=%s&api_key=%s&file_type=json"
-# category_related_tags = "https://api.stlouisfed.org/fred/category/related_tags?category_id=125&tag_names=services;quarterly&api_key=%s&file_type=json"
-# 
-# # Releases
-# releases = "https://api.stlouisfed.org/fred/releases?api_key=%s&file_type=json"
-# releases_dates = "https://api.stlouisfed.org/fred/releases/dates?api_key=%s&file_type=json"
-# release = "https://api.stlouisfed.org/fred/release?release_id=53&api_key=%s&file_type=json"
-# release_dates = "https://api.stlouisfed.org/fred/release/dates?release_id=82&api_key=%s&file_type=json"
-# release_series = "https://api.stlouisfed.org/fred/release/series?release_id=51&api_key=%s&file_type=json"
-# release_sources = "https://api.stlouisfed.org/fred/release/sources?release_id=51&api_key=%s&file_type=json"
-# release_tags = "https://api.stlouisfed.org/fred/release/tags?release_id=86&api_key=%s"
-# release_related_tags = "https://api.stlouisfed.org/fred/release/related_tags?release_id=86&tag_names=sa;foreign&api_key=%s&file_type=json"
-# release_tables = "https://api.stlouisfed.org/fred/release/tables?release_id=53&api_key=%s&element_id=12886&file_type=json"
-# 
-# # Series
-# series = "https://api.stlouisfed.org/fred/series?series_id=GNPCA&api_key=%s&file_type=json"
-# series_categories = "https://api.stlouisfed.org/fred/series/categories?series_id=EXJPUS&api_key=%s&file_type=json"
-# series_observations = "https://api.stlouisfed.org/fred/series/observations?series_id=GNPCA&api_key=%s&file_type=json"
-# series_release = "https://api.stlouisfed.org/fred/series/release?series_id=IRA&api_key=%s&file_type=json"
-# series_search = "https://api.stlouisfed.org/fred/series/search?search_text=monetary+service+index&api_key=%s&file_type=json"
-# series_search_tags = "https://api.stlouisfed.org/fred/series/search/tags?series_search_text=monetary+service+index&api_key=%s&file_type=json"
-# series_search_related_tags = "https://api.stlouisfed.org/fred/series/search/related_tags?series_search_text=mortgage+rate&tag_names=30-year;frb&api_key=%s&file_type=json"
-# series_tags = "https://api.stlouisfed.org/fred/series/tags?series_id=STLFSI&api_key=%s&file_type=json"
-# series_updates = "https://api.stlouisfed.org/fred/series/updates?api_key=%s&file_type=json"
-# series_vintagedates = "https://api.stlouisfed.org/fred/series/vintagedates?series_id=GNPCA&api_key=%s&file_type=json"
-# # Sources
-# sources = "https://api.stlouisfed.org/fred/sources?api_key=%s&file_type=json"
-# source = "https://api.stlouisfed.org/fred/source?source_id=1&api_key=%s&file_type=json"
-# source_releases = "https://api.stlouisfed.org/fred/source/releases?source_id=1&api_key=%s&file_type=json"
-# 
-# # Tags
-# tags = "https://api.stlouisfed.org/fred/tags?api_key=%s&file_type=json"
-# related_tags = "https://api.stlouisfed.org/fred/related_tags?tag_names=monetary+aggregates;weekly&api_key=%s&file_type=json"
-# tags_series = "https://api.stlouisfed.org/fred/tags/series?tag_names=slovenia;food;oecd&api_key=%s&file_type=json"
-# 
-# 
-# 
-# 
-
 
 
 #' @import data.table
 #' @importFrom jsonlite fromJSON
 geted1_fred = function(symbol1, from="1776-07-04", to="9999-12-31") {
+    . = title = value = NULL
+    
     key = api_key("fred")
     base_url = "https://api.stlouisfed.org/fred/%sapi_key=%s&file_type=json"
 
@@ -92,6 +41,7 @@ geted1_fred = function(symbol1, from="1776-07-04", to="9999-12-31") {
 #' @param symbol symbol of indicators in FRED, which is available via function geted_FRED_symbol or its website. 
 #' @param from the start date. Default is '1776-07-04'.
 #' @param to the end date. Default is current system date.
+#' @param print_step A non-negative integer, which will print symbol name by each print_step iteration. Default is 1. 
 #' 
 #' @examples 
 #' \dontrun{
@@ -115,6 +65,8 @@ geted_fred = function(symbol, from="1776-07-04", to="9999-12-31", print_step=1L)
 #' @importFrom jsonlite fromJSON
 #' @import data.table
 geted_symbol_fred_keywords = function(keywords) {
+    . = name = popularity = series_count = frequency = id = title = observation_start = observation_end = seasonal_adjustment = last_updated = NULL
+    
     key = api_key("fred")
     base_url = "https://api.stlouisfed.org/fred/%sapi_key=%s&file_type=json"
     keywords = gsub("[^a-zA-Z]+", "%20", keywords)
@@ -124,6 +76,11 @@ geted_symbol_fred_keywords = function(keywords) {
     freq_search = setDT(fromJSON(sprintf(base_url, sprintf(
         "series/search/tags?series_search_text=%s&tag_group_id=%s&", keywords, "freq"), key))[["tags"]])[,.(frequency=name, popularity, series_count)]
     
+    if (freq_search[,.N] == 0) {
+        cat("not series was found")
+        return()
+    }
+        
     sel_rowid = NULL
     while (!any(sel_rowid %in% freq_search[,.I])) {
         print(setDF(copy(freq_search)))
@@ -137,61 +94,61 @@ geted_symbol_fred_keywords = function(keywords) {
 
     # symbols
     sybs_search = setDT(fromJSON(sprintf(base_url, sprintf("series/search?search_text=%s&filter_variable=%s&filter_value=%s&", keywords, filter_variable, filter_value), key))[["seriess"]])[
-        , .(symbol=id, name=title, from=observation_start, to=observation_end, frequency, units, seasonal_adjustment, last_updated, popularity, group_popularity, notes)
-    ]
+        , .(symbol=id, name=title, from=observation_start, to=observation_end, frequency, units, seasonal_adjustment, last_updated, popularity)]
     
     return(sybs_search)
 }
 
-geted_symbol_fred_category = function(category) {
+geted_symbol_fred_category = function() {
+    . = name = popularity = series_count = frequency = id = title = observation_start = observation_end = seasonal_adjustment = last_updated = parent_id = sybs_search = NULL
+    
     key = api_key("fred")
     base_url = "https://api.stlouisfed.org/fred/%sapi_key=%s&file_type=json"
     
+    
     query_category = function(id) {
-        fromJSON(sprintf(base_url, sprintf("category?category_id=%s&", id), key))[["categories"]][,c("id", "name", "parent_id")]
+        setDT(fromJSON(sprintf(base_url, sprintf("category?category_id=%s&", id), key))[["categories"]])[,.(id, name, parent_id)]
     }
     query_category_children = function(id) {
-        fromJSON(sprintf(base_url, sprintf("category/children?category_id=%s&", id), key))[["categories"]][,c("id", "name", "parent_id")]
+        setDT(fromJSON(sprintf(base_url, sprintf("category/children?category_id=%s&", id), key))[["categories"]])[,.(id, name, parent_id)]
     }
-    category0 = lapply(list(32991, 10, 32992, 1, 32455, 32263, 3008, 33060), query_category)
-    # category_children = "https://api.stlouisfed.org/fred/category/children?category_id=%s&api_key=%s&file_type=json"
+    query_category_series = function(id) {
+        . = title = observation_start = observation_end = frequency = seasonal_adjustment = last_updated = popularity = NULL
+        
+        setDT(fromJSON(sprintf(base_url, sprintf("category/series?category_id=%s&", id), key))[["seriess"]])[
+            , .(symbol=id, name=title, from=observation_start, to=observation_end, frequency, units, seasonal_adjustment, last_updated, popularity)]
+    }
     
-    # i = 32991
-    # fromJSON(sprintf(category_children, i, api_key))
-    # 
-    # i = 94
-    # fromJSON(sprintf(category_series, i, api_key))
-    # fromJSON(sprintf(category_tags, i, api_key))
+    # selecting symbols via category
+    selecting = TRUE
+    while (selecting) {
+        ser_query = try(query_category_series(NULL), silent = TRUE)
+        ser_query_iserror = inherits(sybs_search, "try-error")
+        
+        while(ser_query_iserror) {
+            cate_query = try(rbindlist(lapply(list(32991, 10, 32992, 1, 32455, 32263, 3008, 33060), query_category)), silent = TRUE)
+            cate_query_iserror = inherits(cate_query, "try-error")
+            
+            while (!cate_query_iserror) {
+                print(cate_query)
+                
+                sel_id = readline("select a category via (id) or ('r'+rowid): ")
+                if (grepl("r", sel_id)) {
+                    row_id = as.integer(gsub("^r", "", sel_id))
+                    if (row_id %in% cate_query[,.I]) sel_id = cate_query[row_id, id]  
+                }
+                
+                cate_query = try(query_category_children(as.character(sel_id)), silent = TRUE)
+                cate_query_iserror = inherits(cate_query, "try-error")
+            }
+            
+            ser_query = try(query_category_series(sel_id), silent = TRUE)
+            ser_query_iserror = inherits(ser_query, "try-error")
+        }
+        selecting = menu(c("yes", "no"), title="Choose this category?")-1
+    }
     
-    
-    
-    # "series/search/tags?series_search_text=%s&"
-    # "series/search/related_tags?series_search_text=%s&"
-    # https://api.stlouisfed.org/fred/series/search/tags?series_search_text=monetary+service+index&api_key=abcdefghijklmnopqrstuvwxyz123456&file_type=json
-    # 
-    # 
-    # fl = c("5 year", "annual", "semi", "quarterly", "monthly", "weekly", "daily")
-    # freqs = sybs_search[, unique(frequency)]
-    # freqs[grepl(paste0(fl, collapse = "|"), freqs)]
-    # 
-    # rbindlist(lapply(freqs, function(x) data.table(which(grepl(x, fl))) ), fill = TRUE, id="freq")
-    # 
-    # # # tags
-    # # freq = Frequency
-    # # gen = General or Concept
-    # # geo = Geography
-    # # geot = Geography Type
-    # # rls = Release
-    # # seas = Seasonal Adjustment
-    # # src = Source
-    # 
-    # # all_tags = setDT(fromJSON(sprintf(base_url, "tags?", key))[["tags"]])
-    # # all_sources = setDT(fromJSON(sprintf(base_url, "sources?", key))[["sources"]])
-    # # all_releases = setDT(fromJSON(sprintf(base_url, "releases?", key))[["releases"]])
-    # 
-    # 
-    # 
-    # 
+    return(ser_query)
 }
 
 #' get symbols of economic data in FRED
@@ -211,11 +168,16 @@ geted_symbol_fred_category = function(category) {
 #' 
 #' @export
 geted_fred_symbol = function(keywords = NULL) {
+    . = symbol = name = last_updated = NULL 
+    
     if (is.null(keywords)) {
-        return(geted_symbol_fred_category)
+        series = geted_symbol_fred_category()
     } else {
-        return(geted_symbol_fred_keywords)
+        series = geted_symbol_fred_keywords(keywords=keywords)
     }
+    print(setDF(copy(series)[,.(symbol, name, last_updated)]))
+    
+    return(series)
 }
 
 

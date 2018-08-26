@@ -4,7 +4,7 @@
 #' @importFrom readr read_lines
 #' @importFrom curl curl
 getmd_commodity1_sina = function(symbol, freq, from, to, handle) {
-    doc = V1 = NULL
+    doc = V1 = name = . = high = low = volume = NULL
     
     # symbol and name
     syb = toupper(symbol) 

@@ -16,7 +16,7 @@ Imports: data.table,
     httr, curl, xml2, 
     jsonlite, stringi, 
     readxl, readr, 
-    ggplot2
+    ggplot2, scales
 URL: https://github.com/ShichenXie/getpedr
 BugReports: https://github.com/ShichenXie/getpedr/issues
 RoxygenNote: 6.0.1

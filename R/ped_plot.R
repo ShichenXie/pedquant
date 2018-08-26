@@ -1,9 +1,19 @@
-
-ped1_plot = function(dt, y="close|value", from=NULL, to=NULL, title=NULL, type="line",  yaxis_log=FALSE, perf=FALSE, linear_trend=FALSE) {
-    ggplot = geom_line = aes = scale_y_continuous = scale_x_date = labs = theme_bw = NULL
+#' @importFrom scales trans_breaks trans_format math_format
+ped1_plot = function(dt, y="close|value", date_range="max", from=NULL, to=Sys.Date(), title=NULL, type="line",  yaxis_log=FALSE, linear_trend=FALSE) {
+    .x = symbol = ggplot = geom_line = aes = scale_y_continuous = scale_x_date = labs = theme_bw = NULL
+    
+    # set dt as datatable
+    setDT(dt, key="date")
     
     # y
     y = names(dt)[grepl(y, names(dt))][1]
+    
+    # from to 
+    if (is.null(to)) to = dt[, max(date)]
+    to = check_fromto(to, type = tolower(dt[, class(date)]), shift=1) 
+    from = get_from_daterange(dt, date_range, to)
+    # set range for data
+    dat = dt[date>=from & date<=to]
     
     # remove 0 rows in variable
     dt = dt[eval(parse(text=y)) != 0]
@@ -13,36 +23,30 @@ ped1_plot = function(dt, y="close|value", from=NULL, to=NULL, title=NULL, type="
     }
     
     # plot title 
-    if (is.null(title)) {
-        if ("symbol" %in% names(dt)) {
-            title = dt[1,symbol]
-        } else {
-            title = y
-        }
-    }
-    title_str = sprintf("%s [%s/%s]", title, dt[,date[1]], dt[,date[.N]] )
+    tit = y
+    if ("symbol" %in% names(dt)) tit = dt[1, symbol]
+    title_str = sprintf("[%s/%s] %s", dt[,date[1]], dt[,date[.N]], paste(tit, title) )
     
     # final price
     final_y = dt[.N][[y]]
     
     
     # plot
-    p = ggplot(data = dt) + 
+    p = ggplot(data = dat) + 
         stat_identity(aes(x = date, y = eval(parse(text=y))), geom = type) + 
         geom_hline(yintercept=final_y, color="gray", size=0.1) + 
         annotate("text", x=dt[.N, date], y=final_y, label=final_y, color="gray", hjust=0, size=3) + 
         # scale_x_date(date_breaks="2 year", date_minor_breaks = "1 year", date_labels = "%y")+
             #breaks = seq(as.Date("1990-01-01"), as.Date("2020-01-01"), by="5 year"), labels = seq(1990,2020,5)) +
         labs(title=title_str, x=NULL, y=NULL) + 
-        xlim(from, to) + 
         theme_bw()
     
     if (yaxis_log) {
         p = p + scale_y_log10(
-            breaks = scales::trans_breaks("log10", function(x) 10^x),
-            labels = scales::trans_format("log10", scales::math_format(10^.x)),
+            breaks = trans_breaks("log10", function(x) 10^x),
+            labels = trans_format("log10", math_format(10^.x)),
             position = "right"
-        ) + annotation_logticks(side = "lr") 
+        ) + annotation_logticks(sides = "l") 
             
     } else {
         p = p + scale_y_continuous(position = "right")
@@ -60,6 +64,54 @@ ped1_plot = function(dt, y="close|value", from=NULL, to=NULL, title=NULL, type="
     return(p)
 }
 
+pedn_plot = function(dt, y="close|value", date_range="max", from=NULL, to=Sys.Date(), title=NULL, type="line",  yaxis_log=FALSE) {
+    . = symbol = .x = NULL
+    
+    # bind list of dataframe
+    if (is.list(dt) & !is.data.frame(dt)) {
+        dat = rbindlist(dt, fill = TRUE, idcol = "id")
+    }
+    setkeyv(dat, c("id","date"))
+    
+    # y
+    y = names(dat)[grepl(y, names(dat))][1]
+    
+    # from to 
+    if (is.null(to)) to = dt[, max(date)]
+    to = check_fromto(to, type = tolower(dt[, class(date)]), shift=1) 
+    from = get_from_daterange(dat, date_range, to)
+    # set range for data
+    dat = dat[date>=from & date<=to]
+    
+    # plot title 
+    if (is.null(title)) title = ""
+    title_str = sprintf("[%s/%s] %s", dat[,date[1]], dat[,date[.N]], title )
+    
+    # final x y vlaues
+    x_final = dat[, .(date = date[.N]), by=symbol]
+    y_final = dat[x_final, on=c("symbol", "date")]
+
+    p = ggplot(data = dat) + 
+        stat_identity(aes(x = date, y = eval(parse(text=y)), color=symbol), geom = type) + 
+        geom_hline(yintercept=y_final[[y]], color="gray", size=0.1) +
+        annotate("text", x=x_final[["date"]], y=y_final[[y]], label=y_final[[y]], color="gray", hjust=0, size=3) +
+        labs(title=title_str, x=NULL, y=NULL) + 
+        theme_bw() +
+        theme(legend.position=c(0.1,0.9), legend.background=element_blank(), legend.key=element_blank()) 
+    
+    
+    if (yaxis_log) {
+        p = p + scale_y_log10(
+            breaks = trans_breaks("log10", function(x) 10^x),
+            labels = trans_format("log10", math_format(10^.x)),
+            position = "right"
+        ) + annotation_logticks(sides = "l") 
+    } else {
+        p = p + scale_y_continuous(position = "right")
+    }
+    
+    return(p)
+}
 #' create a chart for timeseries data
 #' 
 #' `ped_plot` creates a charts for a time series dataset. 
@@ -70,9 +122,11 @@ ped1_plot = function(dt, y="close|value", from=NULL, to=NULL, title=NULL, type="
 #' @param from the start date. Default is max date in input data.
 #' @param to the end date. Default is min date in data.
 #' @param title chart title. If it is not specified, the symbol of dataset will be used as chart title.
-#' @param type chart style, including line, step, candle.
+#' @param type chart type, including line, step, candle.
 #' @param yaxis_log logical, default is FALSE.
-#' @param perf logical, default is FALSE. If it is TRUE, the chart will display its performance.
+#' @param perf logical, whether to show the performance of input data. Default is FALSE. 
+#' @param multi_series logical, whether to show multiple series. Default is FALSE. 
+#' @param linear_trend logical, whether to show a linear trend line. Default is FALSE. 
 #' 
 #' @examples 
 #' \dontrun{
@@ -84,49 +138,42 @@ ped1_plot = function(dt, y="close|value", from=NULL, to=NULL, title=NULL, type="
 #' 
 #' @import ggplot2
 #' @export
-ped_plot = function(dt, y="close|value", date_range="Max", from=NULL, to=NULL, title=NULL, type="line", yaxis_log=FALSE, perf=FALSE, linear_trend = FALSE) {
+ped_plot = function(dt, y="close|value", date_range="max", from=NULL, to=Sys.Date(), title=NULL, type="line", yaxis_log=FALSE, perf=FALSE, multi_series=FALSE, linear_trend=FALSE) {
+    symbol = NULL
     
     # check arguments
     ## date range
-    date_range = check_arg(as.character(date_range), c("YTD", "Max", 1:1000), default = "Max")
-    ## from to
-    if (is.null(to)) to = setDT(dt)[, max(date)]
-    if (is.null(from)) {
-        if (date_range == "Max") {
-            from = setDT(dt)[, min(date)]
-        } else if (date_range == "YTD") {
-            from = sub("-[0-9]{2}-[0-9]{2}", "-01-01", as.character(to))
-        } else {
-            year = as.integer(format(to, "%Y"))-as.integer(date_range)
-            from = sub("^[0-9]{4}", year, to)
-        }
-        
-        if (class(to) == "Date") {
-            from = as.Date(from)
-        } else {
-            from = as.POSIXct(from)
-        }
-    }
-    to = check_fromto(to, type = tolower(dt[,class(date)]))
-    from = check_fromto(from, type = tolower(dt[,class(date)]))
+    date_range = check_arg(tolower(date_range), c(paste0(1:11,"m"), "ytd", "max", paste0(1:500,"y")), default = "max")
     ## chart type
     type = check_arg(type, c("line", "step")) # candle
     
+    # change data to performance
+    if (perf) {
+        dt = ped_perf(dt, y=y, date_range=date_range, from=from, to=to)
+        title = paste(title,"perf")
+    }
     
-    # plot symbol
+    
+    # plot graphic
+    ## multiple series
+    if (multi_series) return(do.call(pedn_plot, args = list(dt=dt, y=y, date_range=date_range, from=from, to=to, title=title, type=type, yaxis_log=yaxis_log)))
+    
+    ## single series
     plist = NULL
     dt_names = names(dt)
     if (is.list(dt) & !is.data.frame(dt)) {
+        dt = lapply(dt, setDT)
         for (i in dt_names) {
             if (is.null(title)) title = i
-            plist[[i]] = do.call(ped1_plot, args = list(dt=dt[[i]], y=y, from=from, to=to, title=title, type=type, yaxis_log=yaxis_log, perf=perf, linear_trend=linear_trend))
+            plist[[i]] = do.call(ped1_plot, args = list(dt=dt[[i]], y=y, date_range=date_range, from=from, to=to, title=title, type=type, yaxis_log=yaxis_log, linear_trend=linear_trend))
         }
         
     } else if (is.data.frame(dt)) {
+        setDT(dt)
         i = 1
         if ("symbol" %in% dt_names) i = dt[1, symbol]
         
-        plist[[i]] = do.call(ped1_plot, args = list(dt=dt, y=y, from=from, to=to, title=title, type=type, yaxis_log=yaxis_log, perf=perf, linear_trend=linear_trend))
+        plist[[i]] = do.call(ped1_plot, args = list(dt=dt, y=y, date_range=date_range, from=from, to=to, title=title, type=type, yaxis_log=yaxis_log, linear_trend=linear_trend))
         
     }
     

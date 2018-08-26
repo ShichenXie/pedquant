@@ -14,7 +14,7 @@
 #' @param from the start date. Default is '2010-01-01'.
 #' @param to the end date. Default is current system date.
 #' @param adjust logical. Argument for data download from yahoo. Default is FALSE. If it is TRUE, the open, high, low and close values will adjusted based on close_adj. 
-#' @param fillzero logical. Argument for data download from 163. Default is FALSE. If it is TRUE, the zeros in dataset will be filled with last non-zero values.
+#' @param fillzero logical. Argument for data download from 163. Default is TRUE If it is TRUE, the zeros in dataset will be filled with last non-zero values.
 #' @param print_step A non-negative integer, which will print symbol name by each print_step iteration. Default is 1. 
 #' 
 #' @examples 
@@ -51,7 +51,7 @@
 #' 
 #' @export
 #' 
-getmd = function(symbol, source = "yahoo", freq = "daily", from = "2010-01-01", to = Sys.Date(), adjust=FALSE, fillzero = FALSE, print_step = 1L) {
+getmd = function(symbol, source = "yahoo", freq = "daily", from = "2010-01-01", to = Sys.Date(), adjust=FALSE, fillzero = TRUE, print_step = 1L) {
     cat(source,"\n")
     
     args = list(symbol=symbol, freq=freq, from=from, to=to, print_step=print_step)

@@ -13,6 +13,8 @@ geted_fred(symbol, from = "1776-07-04", to = "9999-12-31",
 \item{from}{the start date. Default is '1776-07-04'.}
 
 \item{to}{the end date. Default is current system date.}
+
+\item{print_step}{A non-negative integer, which will print symbol name by each print_step iteration. Default is 1.}
 }
 \description{
 geted_fred provides an interface to access the economic data provided by FRED (\url{https://fred.stlouisfed.org})

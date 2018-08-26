@@ -13,7 +13,7 @@ check_arg = function(arg, choices, default=NULL) {
 }
 
 # check date format of from/to
-check_fromto = function(fromto, type="date") {
+check_fromto = function(fromto, type="date", shift = 0) {
     type = check_arg(type, c("date", "time"), "date")
     
     # type: dates or times
@@ -28,10 +28,43 @@ check_fromto = function(fromto, type="date") {
             }
         }
         
-        if (type != "date") fromto = as.POSIXct(paste(fromto, "00:00:00"))
+        if (type != "date") fromto = as.POSIXct(paste(fromto+shift, "00:00:00"))
     }
     
     return(fromto)
+}
+
+get_from_daterange = function(dt, date_range, to) {
+    if (date_range == "max") {
+        from = dt[, min(date)]
+    } else if (date_range == "ytd") {
+        from = sub("-[0-9]{2}-[0-9]{2}", "-01-01", as.character(to))
+        
+    } else if (grepl("[0-9]+m", date_range)) {
+        month_range = as.integer(sub("m","",date_range))
+        month_to = as.integer(sub("^[0-9]{4}-([0-9]{1,2})-.+$", "\\1", to))
+        year_to = as.integer(format(as.Date(to), "%Y"))
+        if (month_to <= month_range) {
+            from = paste(year_to-1, 12+month_to-month_range, sub("[0-9]{4}-[0-9]{1,2}-","",to), sep="-")
+        } else {
+            from = paste(year_to, month_to-month_range, sub("[0-9]{4}-[0-9]{1,2}-","",to), sep="-")
+        }
+        
+    } else if (grepl("[0-9]+y", date_range)) {
+        year_range = as.integer(sub("y","",date_range))
+        year_from = as.integer(format(as.Date(to), "%Y")) - year_range
+        from = sub("^[0-9]{4}", year_from, to)
+    }
+    
+    
+    # set class
+    if (class(to) == "Date") {
+        from = as.Date(from)
+    } else {
+        from = as.POSIXct(from)
+    }
+    
+    return(from)
 }
 
 # get tags for a China stock symbol
@@ -216,9 +249,9 @@ date_to_sec = function(date=Sys.time()) {
 }
 
 
-# loop on download data function
+# loop on get_data1
 load_dat_loop = function(symbol, func, args=list(), print_step) {
-    dt_list = NULL
+    runif = dt_list = NULL
     symbol_len = length(symbol)
     for (i in 1:symbol_len) {
         symbol_i = symbol[i]
@@ -264,16 +297,7 @@ xml_table = function(wb, num=NULL, sup_rm = NULL) {
 # #' lwd(1)
 # #' lwd(3, "20160101")
 # #' 
-lwd <- function(n, d = NULL, tz = NULL) {
-    #timezone
-    if (is.null(tz)) {
-        tz = "CET"
-    }
-    
-    #the current or reference date
-    if (is.null(d)) {
-        d = as.Date(Sys.Date(), format("%Y%m%d"), tz = tz)
-    }
+lwd <- function(n = 0, d = Sys.Date(), tz = Sys.timezone()) {
     
     #weekday
     w <- as.numeric(format(d, format = "%w", tz = tz))
@@ -302,7 +326,7 @@ lwd <- function(n, d = NULL, tz = NULL) {
         n <- n - 1
     }
     
-    lwd <- format(d, format = "%Y%m%d", tz = tz)
+    lwd <- as.Date(d)#format(d, format = "%Y%m%d", tz = tz)
     return(lwd)
 }
 

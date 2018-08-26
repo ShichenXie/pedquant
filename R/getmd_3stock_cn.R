@@ -135,7 +135,7 @@ getmd_stockall_sina = function(symbol = "a,index", only_symbol = FALSE) {
 
 # get spot data from tx
 getmd_stock_spot1_tx = function(symbol1) {
-  dat = doc = . = name = high = low = prev_close = change = change_pct = volume = amount = turnover = cap_market = cap_total = time = NULL
+  dat = doc = . = name = high = low = prev_close = change = change_pct = volume = amount = turnover = cap_market = cap_total = time = symbol = NULL
   
   syb = sapply(symbol1, check_symbol_for_tx)
   dt = readLines(sprintf("http://qt.gtimg.cn/q=%s", paste0(syb, collapse=",")))
@@ -192,7 +192,7 @@ getmd_stock_spot1_tx = function(symbol1) {
 #' @import data.table
 #' @importFrom readr read_csv locale col_date col_character col_double col_integer
 getmd_stock_hist1_163 = function(symbol1, from="1900-01-01", to=Sys.Date(), fillzero=FALSE) {
-  change_pct = NULL
+  change_pct = symbol = NULL
   # http://quotes.money.163.com/service/chddata.html?code=0000001&start=19901219&end=20180615&fields=TCLOSE;HIGH;LOW;TOPEN;LCLOSE;CHG;PCHG;VOTURNOVER;VATURNOVER
   # http://quotes.money.163.com/service/chddata.html?code=1399001&start=19910403&end=20180615&fields=TCLOSE;HIGH;LOW;TOPEN;LCLOSE;CHG;PCHG;VOTURNOVER;VATURNOVER
   # https://query1.finance.yahoo.com/v7/finance/download/^SSEC?period1=1526631424&period2=1529309824&interval=1d&events=history&crumb=mO08ZCtWRMI
@@ -228,15 +228,15 @@ getmd_stock_hist1_163 = function(symbol1, from="1900-01-01", to=Sys.Date(), fill
     file=link, locale = locale(encoding = "GBK"), na=c("", "NA", "None"),
     col_types=list(col_date(format = ""), col_character(), col_character(), col_double(), col_double(), col_double(), col_double(), col_double(), col_double(), col_double(), col_double(), col_double(), col_double(), col_double(), col_double()))
   # dt <- load_read_csv(link, "GBK")
-  dt = as.data.frame(dt)
   
+  # set names of datatable
   cols_name = c("date", "symbol", "name", "open", "high", "low", "close", "prev_close", "change", "change_pct", "volume", "amount", "turnover", "cap_market", "cap_total")
   setnames(dt, cols_name)
-  setDT(dt, key="date")
   
-  dt = dt[, `:=`(
-          symbol = symbol1#, date = as.Date(date)
-       )][, (cols_name), with=FALSE]#[, (cols_name[-(1:3)]) := lapply(.SD, function(x) as.numeric(gsub(",","",x))), .SDcols = cols_name[-(1:3)] ]
+  
+  if (max(dt[["date"]]) < lwd()) dt = rbindlist(list(dt, getmd_stock_spot1_tx(symbol1)), fill = TRUE)
+  dt = setDT(dt, key="date")[, symbol := symbol1][, (cols_name), with=FALSE]
+  if (max(dt[["date"]]) < lwd()) unique(dt, by="date")
   
   # fill zeros in dt
   if (fillzero) {

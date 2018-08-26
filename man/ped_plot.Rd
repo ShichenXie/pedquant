@@ -4,16 +4,32 @@
 \alias{ped_plot}
 \title{create a chart for timeseries data}
 \usage{
-ped_plot(dt, y = "close|value", type = "line", title = NULL)
+ped_plot(dt, y = "close|value", date_range = "max", from = NULL,
+  to = Sys.Date(), title = NULL, type = "line", yaxis_log = FALSE,
+  perf = FALSE, multi_series = FALSE, linear_trend = FALSE)
 }
 \arguments{
 \item{dt}{a time series dataset}
 
 \item{y}{the variable display on chart}
 
-\item{type}{chart style, including line, candle, bar}
+\item{date_range}{date range. Available value including YTD, Max and integers from 1 to 1000. Default is Max.}
 
-\item{title}{chart title}
+\item{from}{the start date. Default is max date in input data.}
+
+\item{to}{the end date. Default is min date in data.}
+
+\item{title}{chart title. If it is not specified, the symbol of dataset will be used as chart title.}
+
+\item{type}{chart type, including line, step, candle.}
+
+\item{yaxis_log}{logical, default is FALSE.}
+
+\item{perf}{logical, whether to show the performance of input data. Default is FALSE.}
+
+\item{multi_series}{logical, whether to show multiple series. Default is FALSE.}
+
+\item{linear_trend}{logical, whether to show a linear trend line. Default is FALSE.}
 }
 \description{
 `ped_plot` creates a charts for a time series dataset.
