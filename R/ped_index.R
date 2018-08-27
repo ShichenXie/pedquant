@@ -38,7 +38,7 @@ fbi_cpicn = function(sybs = c("A01010101", "A01010201","A01030101", "A01030201")
     cpicn = geted_nbs(geo_type = "n", freq = "m", symbol = sybs, na_rm = TRUE, from="1900-01-01")
     
     cpicn2 = dcast(
-        cpicn[, value := value/100], date~symbol_name, value.var = "value"
+        cpicn[, value := value/100], date~name, value.var = "value"
     )[, date := as.Date(paste0(date,"01"),format="%Y%m%d")]
     setnames(cpicn2, c("date", "cpi_yoy", "cpi_mom"))
     
@@ -66,7 +66,8 @@ ped_rp1 = function(dt, region="cn", columns = c("open", "high", "low", "close"))
    
    return(dt_rp)
 }
-# ssec_real = ped_rp1(getmd("^000001", print_step = 0, from="1900-01-01", source="163"))
+# ssec_nomial = getmd("^000001", from="1900-01-01", source="163")
+# ssec_real = getpedr:::ped_rp1(ssec_nomial)
 
 
 
@@ -82,6 +83,7 @@ ped_rp1 = function(dt, region="cn", columns = c("open", "high", "low", "close"))
 #' 
 #' @examples 
 #' \dontrun{
+#' # example I bank share index
 #' banks_symbol = c("601988", "601288", "601398", "601939", "601328")
 #' 
 #' dat = getmd(banks_symbol, source="163", from="1900-01-01")
@@ -91,6 +93,21 @@ ped_rp1 = function(dt, region="cn", columns = c("open", "high", "low", "close"))
 #' return(x)})
 #' 
 #' bankindex = ped_index(dat, chain_index="change_pct", weight="cap_total")
+#' 
+#' # example II golden share index
+#' # sybs = getmd_symbol(market = "stock", source="163")
+#' # sybs_sub = sybs[sector == "有色金属采选" & grepl("黄金|金", name)]
+#' 
+#' gold_symbol = c("600489", "600547", "600766", "600988", "601069", "601899", "601958", "002155")
+#' 
+#' dat = getmd(symbol_gold, source="163", from="1900-01-01")
+#' 
+#' dat = lapply(dat, function(x) {
+#'   x$change_pct = x$change_pct/100+1
+#'   return(x)})
+#' 
+#' gold_index = ped_index(dat, chain_index="change_pct", weight="cap_total")
+#' 
 #' }
 #' 
 #' @import data.table

@@ -29,7 +29,7 @@ ped_plot(dt, y = "close|value", date_range = "max", from = NULL,
 
 \item{multi_series}{logical, whether to show multiple series. Default is FALSE.}
 
-\item{linear_trend}{logical, whether to show a linear trend line. Default is FALSE.}
+\item{linear_trend}{non-negative numeric. Default is 0, which donot show linear trend line. If it larger than 0, show linear_trend*sd from linear trend line.}
 }
 \description{
 `ped_plot` creates a charts for a time series dataset.

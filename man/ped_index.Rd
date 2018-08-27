@@ -22,6 +22,7 @@ ped_index using the method of geometrically weighted averages to create an index
 }
 \examples{
 \dontrun{
+# example I bank share index
 banks_symbol = c("601988", "601288", "601398", "601939", "601328")
 
 dat = getmd(banks_symbol, source="163", from="1900-01-01")
@@ -31,6 +32,21 @@ x$change_pct = x$change_pct/100+1
 return(x)})
 
 bankindex = ped_index(dat, chain_index="change_pct", weight="cap_total")
+
+# example II golden share index
+# sybs = getmd_symbol(market = "stock", source="163")
+# sybs_sub = sybs[sector == "有色金属采选" & grepl("黄金|金", name)]
+
+gold_symbol = c("600489", "600547", "600766", "600988", "601069", "601899", "601958", "002155")
+
+dat = getmd(symbol_gold, source="163", from="1900-01-01")
+
+dat = lapply(dat, function(x) {
+  x$change_pct = x$change_pct/100+1
+  return(x)})
+
+gold_index = ped_index(dat, chain_index="change_pct", weight="cap_total")
+
 }
 
 }

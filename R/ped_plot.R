@@ -1,5 +1,5 @@
 #' @importFrom scales trans_breaks trans_format math_format
-ped1_plot = function(dt, y="close|value", date_range="max", from=NULL, to=Sys.Date(), title=NULL, type="line",  yaxis_log=FALSE, linear_trend=FALSE) {
+ped1_plot = function(dt, y="close|value", date_range="max", from=NULL, to=Sys.Date(), title=NULL, type="line",  yaxis_log=FALSE, linear_trend=0) {
     .x = symbol = ggplot = geom_line = aes = scale_y_continuous = scale_x_date = labs = theme_bw = NULL
     
     # set dt as datatable
@@ -42,21 +42,23 @@ ped1_plot = function(dt, y="close|value", date_range="max", from=NULL, to=Sys.Da
         theme_bw()
     
     if (yaxis_log) {
-        p = p + scale_y_log10(
-            breaks = trans_breaks("log10", function(x) 10^x),
-            labels = trans_format("log10", math_format(10^.x)),
-            position = "right"
-        ) + annotation_logticks(sides = "l") 
+        p = p + scale_y_continuous(trans='log10', position = "right") +
+        #     scale_y_log10(
+        #     breaks = trans_breaks("log10", function(x) 10^x),
+        #     labels = trans_format("log10", math_format(10^.x)),
+        #     position = "right"
+        # ) + 
+            annotation_logticks(sides = "r") 
             
     } else {
         p = p + scale_y_continuous(position = "right")
     }
     
-    if (linear_trend) {
+    if (linear_trend > 0) {
         p = p + 
             geom_smooth(data=dt, aes(x=date, y=eval(parse(text=y))), method=lm, formula=y~x, na.rm=TRUE, se=FALSE, color="red", size=0.2) + 
-            geom_smooth(data=dt, aes(x=date, y=eval(parse(text=y))), method=lm, formula=y-0.5*sd(y)~x, na.rm=TRUE, se=FALSE, color="blue", size=0.2) + 
-            geom_smooth(data=dt, aes(x=date, y=eval(parse(text=y))), method=lm, formula=y+0.5*sd(y)~x, na.rm=TRUE, se=FALSE, color="blue", size=0.2)
+            geom_smooth(data=dt, aes(x=date, y=eval(parse(text=y))), method=lm, formula=y-linear_trend*sd(y)~x, na.rm=TRUE, se=FALSE, color="blue", size=0.2) + 
+            geom_smooth(data=dt, aes(x=date, y=eval(parse(text=y))), method=lm, formula=y+linear_trend*sd(y)~x, na.rm=TRUE, se=FALSE, color="blue", size=0.2)
     }
         
     # p <- plot_ly(data=dt, x = ~date, y = ~eval(parse(text=y)), mode = 'lines')
@@ -126,7 +128,7 @@ pedn_plot = function(dt, y="close|value", date_range="max", from=NULL, to=Sys.Da
 #' @param yaxis_log logical, default is FALSE.
 #' @param perf logical, whether to show the performance of input data. Default is FALSE. 
 #' @param multi_series logical, whether to show multiple series. Default is FALSE. 
-#' @param linear_trend logical, whether to show a linear trend line. Default is FALSE. 
+#' @param linear_trend non-negative numeric. Default is 0, which donot show linear trend line. If it larger than 0, show linear_trend*sd from linear trend line. 
 #' 
 #' @examples 
 #' \dontrun{

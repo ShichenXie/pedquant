@@ -162,6 +162,7 @@ getmd_stock_spot1_tx = function(symbol1) {
                   "last_trade", "date", "change", "change_pct", "high", "low", 
                   "", "volume", "amount", "turnover", 
                   "pe_trailing", "", "high", "low", "", "cap_market", "cap_total", "pb", "", "", "", "", "average", "pe_forward", "pe_last" )
+  if (ncol(dt) == 52) colnames_en = colnames_en[1:52]
   setnames(dt, colnames_en)
   
   num_cols = c(
