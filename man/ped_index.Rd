@@ -4,7 +4,8 @@
 \alias{ped_index}
 \title{create an index}
 \usage{
-ped_index(dt, chain_index, weight, base_index = 1, base_date = "2010-01-01")
+ped_index(dt, chain_index, weight, base_index = 1,
+  base_date = "2010-01-01")
 }
 \arguments{
 \item{dt}{input timeseries datasets}

@@ -7,6 +7,7 @@ check_arg = function(arg, choices, default=NULL) {
             arg = choices[menu(choices, cat("Verify the argument"))]
         } else {
             arg = default
+            warning("The argument is set to '",default,"'")
         }
     }
     return(arg)

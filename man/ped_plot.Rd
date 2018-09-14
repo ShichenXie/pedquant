@@ -32,7 +32,7 @@ ped_plot(dt, y = "close|value", date_range = "max", from = NULL,
 \item{linear_trend}{non-negative numeric. Default is 0, which donot show linear trend line. If it larger than 0, show linear_trend*sd from linear trend line.}
 }
 \description{
-`ped_plot` creates a charts for a time series dataset.
+\code{ped_plot} creates a charts for a time series dataset.
 }
 \examples{
 \dontrun{

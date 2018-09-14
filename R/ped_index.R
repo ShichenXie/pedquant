@@ -50,6 +50,8 @@ fbi_cpicn = function(sybs = c("A01010101", "A01010201","A01030101", "A01030201")
 }
 # cpi = fbi_cpicn()
 
+
+
 # ped in real price
 ped_rp1 = function(dt, region="cn", columns = c("open", "high", "low", "close")) {
     date2 = . = index = NULL

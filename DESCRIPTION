@@ -1,25 +1,30 @@
 Package: getpedr
-Title: get public economic data
 Version: 0.0.1
-Authors@R: person("Shichen", "Xie", email = "xie@shichen.name", 
-    role = c("aut", "cre"))
-Description: `getpedr` provides an interface to access public economic 
+Title: get public economic data
+Description: 
+    The `getpedr` provides an interface to access public economic 
     data, which are provided by national statistics, central bank, 
     stock exchange etc. Three kinds of datasets are included in 
     `getpedr`, market data (`getmd*`), financial reports 
     (`getfr`), and economic data (`geted*`).
-Depends: R (>= 3.1.0)
-License: GPL-3 + file LICENSE
-Encoding: UTF-8
-LazyData: true
-Imports: data.table, 
+Authors@R: 
+    person("Shichen", "Xie", email = "xie@shichen.name", role = c("aut", "cre"))
+Depends: 
+    R (>= 3.1.0)
+Imports: 
+    data.table, 
     httr, curl, xml2, 
     jsonlite, stringi, 
     readxl, readr, 
-    ggplot2, scales
+    ggplot2
+Suggests: 
+    knitr,
+    rmarkdown
+License: GPL-3 + file LICENSE
 URL: https://github.com/ShichenXie/getpedr
 BugReports: https://github.com/ShichenXie/getpedr/issues
-RoxygenNote: 6.0.1
-Suggests: knitr,
-    rmarkdown
+LazyData: true
 VignetteBuilder: knitr
+RoxygenNote: 6.1.0
+Roxygen: list(markdown = TRUE)
+Encoding: UTF-8

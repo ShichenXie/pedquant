@@ -123,7 +123,7 @@ geted_nbs_symbol = function(geo_type=NULL, freq=NULL, eng=FALSE) {
 #' 
 #' \code{geted_nbs_region} get province or city code from NBS
 #' 
-#' @param geo_type geography type in NBS, including 'national', 'province', 'city'. Default is NULL.
+#' @param geo_type geography type in NBS, including 'province', 'city'. Default is "".
 #' @param eng logical. Default is FALSE. If it is FALSE, the result is in Chinese, otherwise in English.
 #' 
 #' @examples 
@@ -141,7 +141,7 @@ geted_nbs_symbol = function(geo_type=NULL, freq=NULL, eng=FALSE) {
 #' 
 #' @importFrom jsonlite fromJSON 
 #' @export
-geted_nbs_region = function(geo_type=NULL, eng=FALSE) {
+geted_nbs_region = function(geo_type="", eng=FALSE) {
   dim_region = dim_geo_type = dim_sta_db = . = code = name = NULL
   
   # param
@@ -149,7 +149,7 @@ geted_nbs_region = function(geo_type=NULL, eng=FALSE) {
   time_sec = as.character(date_to_sec()*100)
   
   # geography type
-  geo_type = check_arg(geo_type, c("national", "province", "city"))
+  geo_type = check_arg(geo_type, c("province", "city"), default = NULL)
   if (geo_type == 'national') return(NULL)
   # name of geography in NBS
   nbs_geo = df_nbs_geo()[

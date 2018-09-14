@@ -58,8 +58,8 @@ getmd = function(symbol, source = "yahoo", freq = "daily", from = "2010-01-01", 
     if (source == "163") args['fillzero'] = fillzero
     if (source == "yahoo") args['adjust'] = adjust
     
-    do.call(eval(parse(text = paste0("getmd_", source))), args)
-    
+    rt = try(do.call(paste0("getmd_", source), args), silent = TRUE)
+    return(rt)
 }
 
 #' get symbols of market data
@@ -91,6 +91,6 @@ getmd_symbol = function(market=NULL, source=NULL) {
     ms = check_mkt_src(market=market, source=source)
     
     # get symbols
-    do.call(eval(parse(text = paste0("getmd_symbol_", ms$src))), list(market = ms$mkt))
-    
+    rt = try(do.call(paste0("getmd_symbol_", ms$src), list(market = ms$mkt)), silent = TRUE)
+    return(rt)
 }

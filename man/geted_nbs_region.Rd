@@ -4,10 +4,10 @@
 \alias{geted_nbs_region}
 \title{get code of subregion in China from NBS}
 \usage{
-geted_nbs_region(geo_type = NULL, eng = FALSE)
+geted_nbs_region(geo_type = "", eng = FALSE)
 }
 \arguments{
-\item{geo_type}{geography type in NBS, including 'national', 'province', 'city'. Default is NULL.}
+\item{geo_type}{geography type in NBS, including 'province', 'city'. Default is "".}
 
 \item{eng}{logical. Default is FALSE. If it is FALSE, the result is in Chinese, otherwise in English.}
 }

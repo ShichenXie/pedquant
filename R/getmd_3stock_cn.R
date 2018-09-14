@@ -237,7 +237,7 @@ getmd_stock_hist1_163 = function(symbol1, from="1900-01-01", to=Sys.Date(), fill
   
   if (max(dt[["date"]]) < lwd()) dt = rbindlist(list(dt, getmd_stock_spot1_tx(symbol1)), fill = TRUE)
   dt = setDT(dt, key="date")[, symbol := symbol1][, (cols_name), with=FALSE]
-  if (max(dt[["date"]]) < lwd()) unique(dt, by="date")
+  if (max(dt[["date"]]) < lwd()) dt = unique(dt, by="date")
   
   # fill zeros in dt
   if (fillzero) {

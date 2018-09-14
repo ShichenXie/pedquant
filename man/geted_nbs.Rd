@@ -7,8 +7,9 @@
 \url{http://data.stats.gov.cn/index.htm}
 }
 \usage{
-geted_nbs(geo_type = NULL, freq = NULL, symbol = NULL, region = NULL,
-  from = "2010-01-01", to = Sys.Date(), na_rm = FALSE, eng = FALSE)
+geted_nbs(geo_type = NULL, freq = NULL, symbol = NULL,
+  region = NULL, from = "2010-01-01", to = Sys.Date(),
+  na_rm = FALSE, eng = FALSE)
 }
 \arguments{
 \item{geo_type}{geography type in NBS, including 'national', 'province', 'city'. Default is NULL.}

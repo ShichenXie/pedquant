@@ -1,4 +1,4 @@
-#' @importFrom scales trans_breaks trans_format math_format
+# @importFrom scales trans_breaks trans_format math_format
 ped1_plot = function(dt, y="close|value", date_range="max", from=NULL, to=Sys.Date(), title=NULL, type="line",  yaxis_log=FALSE, linear_trend=0) {
     .x = symbol = ggplot = geom_line = aes = scale_y_continuous = scale_x_date = labs = theme_bw = NULL
     
@@ -23,8 +23,11 @@ ped1_plot = function(dt, y="close|value", date_range="max", from=NULL, to=Sys.Da
     }
     
     # plot title 
-    tit = y
-    if ("symbol" %in% names(dt)) tit = dt[1, symbol]
+    if ("symbol" %in% names(dt)) {
+        tit = dt[1, symbol]
+    } else {
+        tit = y
+    }
     title_str = sprintf("[%s/%s] %s", dt[,date[1]], dt[,date[.N]], paste(tit, title) )
     
     # final price
@@ -47,7 +50,7 @@ ped1_plot = function(dt, y="close|value", date_range="max", from=NULL, to=Sys.Da
         #     breaks = trans_breaks("log10", function(x) 10^x),
         #     labels = trans_format("log10", math_format(10^.x)),
         #     position = "right"
-        # ) + 
+        # ) +
             annotation_logticks(sides = "r") 
             
     } else {
@@ -97,23 +100,39 @@ pedn_plot = function(dt, y="close|value", date_range="max", from=NULL, to=Sys.Da
         stat_identity(aes(x = date, y = eval(parse(text=y)), color=symbol), geom = type) + 
         geom_hline(yintercept=y_final[[y]], color="gray", size=0.1) +
         annotate("text", x=x_final[["date"]], y=y_final[[y]], label=y_final[[y]], color="gray", hjust=0, size=3) +
-        labs(title=title_str, x=NULL, y=NULL) + 
+        labs(title=title_str, x=NULL, y=NULL, color=NULL) + 
         theme_bw() +
         theme(legend.position=c(0.1,0.9), legend.background=element_blank(), legend.key=element_blank()) 
     
     
     if (yaxis_log) {
-        p = p + scale_y_log10(
-            breaks = trans_breaks("log10", function(x) 10^x),
-            labels = trans_format("log10", math_format(10^.x)),
-            position = "right"
-        ) + annotation_logticks(sides = "l") 
+        p = p + 
+            scale_y_continuous(trans='log10', position = "right") +
+            # scale_y_log10(
+            #     breaks = trans_breaks("log10", function(x) 10^x),
+            #     labels = trans_format("log10", math_format(10^.x)),
+            #     position = "right"
+            #     ) + 
+            annotation_logticks(sides = "l") 
     } else {
         p = p + scale_y_continuous(position = "right")
     }
     
     return(p)
 }
+
+
+# ti_plot = function(dat, ti=list(sma=20, sma=50, mm=10), p) {
+#     dat = ped_addti(dt = dat, ti = ti, print_step = 0L)
+#     
+#     names(ti)
+#     # trend_ti = c("mm", "sma", "ema", "smma", "bb", "sar")
+#     # momentum_ti = c("macd", "ppo", "roc", "rsi", "cci")
+#     
+#     
+#     
+#     
+# }
 #' create a chart for timeseries data
 #' 
 #' `ped_plot` creates a charts for a time series dataset. 
@@ -161,12 +180,11 @@ ped_plot = function(dt, y="close|value", date_range="max", from=NULL, to=Sys.Dat
     if (multi_series) return(do.call(pedn_plot, args = list(dt=dt, y=y, date_range=date_range, from=from, to=to, title=title, type=type, yaxis_log=yaxis_log)))
     
     ## single series
-    plist = NULL
+    plist = list()
     dt_names = names(dt)
     if (is.list(dt) & !is.data.frame(dt)) {
         dt = lapply(dt, setDT)
         for (i in dt_names) {
-            if (is.null(title)) title = i
             plist[[i]] = do.call(ped1_plot, args = list(dt=dt[[i]], y=y, date_range=date_range, from=from, to=to, title=title, type=type, yaxis_log=yaxis_log, linear_trend=linear_trend))
         }
         

@@ -107,43 +107,45 @@ geted_symbol_fred_category = function() {
     
     
     query_category = function(id) {
-        setDT(fromJSON(sprintf(base_url, sprintf("category?category_id=%s&", id), key))[["categories"]])[,.(id, name, parent_id)]
+        setDT(fromJSON(sprintf(base_url, sprintf("category?category_id=%s&", unlist(id)), key))[["categories"]])[,.(id, name, parent_id)]
     }
     query_category_children = function(id) {
-        setDT(fromJSON(sprintf(base_url, sprintf("category/children?category_id=%s&", id), key))[["categories"]])[,.(id, name, parent_id)]
+        dt = setDT(fromJSON(sprintf(base_url, sprintf("category/children?category_id=%s&", unlist(id)), key))[["categories"]])
+        if (dt[,.N] > 0) dt = dt[,.(id, name, parent_id)]
+        
+        return(dt)
     }
     query_category_series = function(id) {
         . = title = observation_start = observation_end = frequency = seasonal_adjustment = last_updated = popularity = NULL
         
-        setDT(fromJSON(sprintf(base_url, sprintf("category/series?category_id=%s&", id), key))[["seriess"]])[
-            , .(symbol=id, name=title, from=observation_start, to=observation_end, frequency, units, seasonal_adjustment, last_updated, popularity)]
+        setDT(fromJSON(sprintf(base_url, sprintf("category/series?category_id=%s&", unlist(id)), key))[["seriess"]])[, .(symbol=id, name=title, from=observation_start, to=observation_end, frequency, units, seasonal_adjustment, last_updated, popularity)]
     }
     
     # selecting symbols via category
     selecting = TRUE
     while (selecting) {
         ser_query = try(query_category_series(NULL), silent = TRUE)
-        ser_query_iserror = inherits(sybs_search, "try-error")
         
-        while(ser_query_iserror) {
+        while(inherits(ser_query, "try-error")) {
             cate_query = try(rbindlist(lapply(list(32991, 10, 32992, 1, 32455, 32263, 3008, 33060), query_category)), silent = TRUE)
-            cate_query_iserror = inherits(cate_query, "try-error")
             
-            while (!cate_query_iserror) {
+            while (!inherits(cate_query, "try-error") & nrow(cate_query)>0 & ("id" %in% names(cate_query))) {
                 print(cate_query)
                 
                 sel_id = readline("select a category via (id) or ('r'+rowid): ")
-                if (grepl("r", sel_id)) {
-                    row_id = as.integer(gsub("^r", "", sel_id))
-                    if (row_id %in% cate_query[,.I]) sel_id = cate_query[row_id, id]  
+                while (grepl("^r", sel_id)) {
+                    row_id = as.integer(gsub("[^0-9]", "", sel_id))
+                    if (row_id %in% cate_query[,.I]) {
+                        sel_id = as.character(cate_query[["id"]][row_id]) 
+                    } else {
+                        sel_id = readline("select a category via (id) or ('r'+rowid): ")
+                    }
                 }
                 
-                cate_query = try(query_category_children(as.character(sel_id)), silent = TRUE)
-                cate_query_iserror = inherits(cate_query, "try-error")
+                cate_query = try(query_category_children(sel_id), silent = TRUE)
             }
             
             ser_query = try(query_category_series(sel_id), silent = TRUE)
-            ser_query_iserror = inherits(ser_query, "try-error")
         }
         selecting = menu(c("yes", "no"), title="Choose this category?")-1
     }

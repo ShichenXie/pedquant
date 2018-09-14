@@ -12,7 +12,7 @@
 data(code_country)
 }
 \description{
-Code list for the representation of names 
+Code list for the representation of names
 of countries and their subdivisions.
 }
 \examples{

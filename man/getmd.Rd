@@ -5,7 +5,8 @@
 \title{get market data}
 \usage{
 getmd(symbol, source = "yahoo", freq = "daily", from = "2010-01-01",
-  to = Sys.Date(), adjust = FALSE, fillzero = TRUE, print_step = 1L)
+  to = Sys.Date(), adjust = FALSE, fillzero = TRUE,
+  print_step = 1L)
 }
 \arguments{
 \item{symbol}{symbols market data, which is available via getmd_symbol.}
