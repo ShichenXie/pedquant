@@ -29,7 +29,10 @@
 
 ###### Trend ######
 # moving max and min, mm
-ti_mm = function(dat, n=20, y = "close|value") { 
+ti_mm = function(dat, n=20, m=NULL, y = "close|value") { 
+    # num of min
+    if (is.null(m)) m = n
+    
     mmax = function(p, n) {
         price = NULL
         
@@ -49,7 +52,7 @@ ti_mm = function(dat, n=20, y = "close|value") {
     y = names(dat)[grepl(y, names(dat))][1]
     
     dat[, (paste0("mm_max_",n)) := lapply(.SD, mmax, n=n), .SDcols = y
-      ][, (paste0("mm_min_",n)) := lapply(.SD, mmin, n=n), .SDcols = y]
+      ][, (paste0("mm_min_",n)) := lapply(.SD, mmin, n=m), .SDcols = y]
     
     return(dat)
 }

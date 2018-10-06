@@ -35,13 +35,13 @@ check_fromto = function(fromto, type="date", shift = 0) {
     return(fromto)
 }
 
-get_from_daterange = function(dt, date_range, to) {
+get_from_daterange = function(date_range, to, min_date=NULL) {
     if (date_range == "max") {
-        from = dt[, min(date)]
+        from = min_date
     } else if (date_range == "ytd") {
         from = sub("-[0-9]{2}-[0-9]{2}", "-01-01", as.character(to))
         
-    } else if (grepl("[0-9]+m", date_range)) {
+    } else if (grepl("[1-9,10,11]m", date_range)) {
         month_range = as.integer(sub("m","",date_range))
         month_to = as.integer(sub("^[0-9]{4}-([0-9]{1,2})-.+$", "\\1", to))
         year_to = as.integer(format(as.Date(to), "%Y"))
@@ -51,7 +51,7 @@ get_from_daterange = function(dt, date_range, to) {
             from = paste(year_to, month_to-month_range, sub("[0-9]{4}-[0-9]{1,2}-","",to), sep="-")
         }
         
-    } else if (grepl("[0-9]+y", date_range)) {
+    } else if (grepl("[1-9][0-9]*y", date_range)) {
         year_range = as.integer(sub("y","",date_range))
         year_from = as.integer(format(as.Date(to), "%Y")) - year_range
         from = sub("^[0-9]{4}", year_from, to)

@@ -16,3 +16,9 @@ ped_dailyto(dt, freq, print_step = 1L)
 \description{
 convert the frequency of daily data
 }
+\examples{
+dts = getmd(c("^000001", "000001"), from = "1990-01-01", source = "163")
+
+dts_weekly = ped_dailyto(dts, "weekly")
+
+}

@@ -7,7 +7,7 @@ ped1_dtow = function(dat) {
       ][, wi := cumsum(wi)]
     
     dat2 = dat[, .(
-        date=date[.N], symbol=symbol[1], name=name[1], 
+        date=date[.N],
         open=open[1], high=max(high), low=min(low), close=close[.N], 
         volume=sum(volume)
     ), by = wi][, wi := NULL]
@@ -18,7 +18,7 @@ ped1_dtom = function(dat) {
     .=symbol=name=high=low=volume=NULL
     
     dat2 = dat[, .(
-        date=date[.N], symbol=symbol[1], name=name[1], 
+        date=date[.N], 
         open=open[1], high=max(high), low=min(low), close=close[.N], 
         volume=sum(volume)
     ), by = .(y=year(date), m=month(date))][, (c('y','m')) := NULL]
@@ -29,7 +29,7 @@ ped1_dtoq = function(dat) {
     . = symbol = name = high = low = volume = NULL
     
     dat2 = dat[, .(
-        date=date[.N], symbol=symbol[1], name=name[1], 
+        date=date[.N], 
         open=open[1], high=max(high), low=min(low), close=close[.N], 
         volume=sum(volume)
     ), by = .(y=year(date), q=quarter(date))][, (c('y','q')) := NULL]
@@ -40,7 +40,7 @@ ped1_dtoy = function(dat) {
     .=symbol=name=high=low=volume=NULL
     
     dat2 = dat[, .(
-        date=date[.N], symbol=symbol[1], name=name[1], 
+        date=date[.N], 
         open=open[1], high=max(high), low=min(low), close=close[.N], 
         volume=sum(volume)
     ), by = .(y=year(date))][, (c('y')) := NULL]
@@ -55,6 +55,7 @@ check_freq_isdaily = function(dat) {
 }
 
 ped1_dailyto = function(dat, freq) {
+    . = high = low = name = symbol = volume = NULL
     setkeyv(dat, "date")
     # check freq of input data
     check_freq_isdaily(dat)
@@ -63,6 +64,14 @@ ped1_dailyto = function(dat, freq) {
 
     # change
     dat2 = do.call(paste0("ped1_dto",substr(freq,1,1)), list(dat=dat))
+    
+    # symbol and name
+    if (all(c("symbol","name") %in% names(dat))) {
+      dat2 = dat2[, .(date, symbol=dat[1,symbol], name=dat[1,name], open, high, low, close, volume)]
+    } else if ("symbol" %in% names(dat)) {
+      dat2 = dat2[, .(date, symbol=dat[1,symbol], open, high, low, close, volume)]
+    }
+    
     return(dat2)
 }
 
@@ -71,6 +80,12 @@ ped1_dailyto = function(dat, freq) {
 #' @param dt time series datasets
 #' @param freq the frequency input data will converted to It supports weekly, monthly, quarterly and yearly.
 #' @param print_step A non-negative integer, which will print symbol name by each print_step iteration. Default is 1. 
+#' 
+#' @examples 
+#' dts = getmd(c("^000001", "000001"), from = "1990-01-01", source = "163")
+#' 
+#' dts_weekly = ped_dailyto(dts, "weekly")
+#' 
 #' @export
 #' 
 ped_dailyto = function(dt, freq, print_step=1L) {

@@ -4,6 +4,10 @@
 # - stock, index
 # - commodity
 
+# stock
+# - symbol, name, exchange, sector, industry, first date point, 
+
+
 #' get market data
 #' 
 #' \code{getmd} provides an interface to get historical data for different markets, such as forex, bond, money, stock and commodity, which are provided public sources.
@@ -11,6 +15,7 @@
 #' @param symbol symbols market data, which is available via getmd_symbol.
 #' @param source data sources. The available sources including 'yahoo', '163', 'sina' and 'original'.
 #' @param freq default is daily. It supports daily, weekly and monthly for data from yahoo; daily for data from 163 and sina.
+#' @param date_range date range. Available value including '1m'-'11m', 'ytd', 'max' and '1y'-. Default is max.
 #' @param from the start date. Default is '2010-01-01'.
 #' @param to the end date. Default is current system date.
 #' @param adjust logical. Argument for data download from yahoo. Default is FALSE. If it is TRUE, the open, high, low and close values will adjusted based on close_adj. 
@@ -51,13 +56,25 @@
 #' 
 #' @export
 #' 
-getmd = function(symbol, source = "yahoo", freq = "daily", from = "2010-01-01", to = Sys.Date(), adjust=FALSE, fillzero = TRUE, print_step = 1L) {
+getmd = function(symbol, source = "yahoo", freq = "daily", date_range="3y", from = NULL, to = Sys.Date(), adjust=FALSE, fillzero = TRUE, print_step = 1L) {
     cat(source,"\n")
     
+    # from
+    if (!grepl("ytd|[1-9,10,11]m|[1-9][0-9]*y", tolower(date_range))) date_range = "max"
+    if (is.null(from)) {
+        if (date_range == "max") {
+            from = "1000-01-01"
+        } else {
+            from = get_from_daterange(date_range, to)
+        }
+    }
+    
+    # arguments
     args = list(symbol=symbol, freq=freq, from=from, to=to, print_step=print_step)
     if (source == "163") args['fillzero'] = fillzero
     if (source == "yahoo") args['adjust'] = adjust
     
+    # return data
     rt = try(do.call(paste0("getmd_", source), args), silent = TRUE)
     return(rt)
 }

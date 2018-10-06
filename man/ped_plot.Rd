@@ -4,16 +4,16 @@
 \alias{ped_plot}
 \title{create a chart for timeseries data}
 \usage{
-ped_plot(dt, y = "close|value", date_range = "max", from = NULL,
-  to = Sys.Date(), title = NULL, type = "line", yaxis_log = FALSE,
-  perf = FALSE, multi_series = FALSE, linear_trend = FALSE)
+ped_plot(dt, chart_type = "line", date_range = "max", from = NULL,
+  to = Sys.Date(), rm_weekend = NULL, title = NULL,
+  y = "close|value", yaxis_log = FALSE, color_up = "#F6736D",
+  color_down = "#18C0C4", linear_trend = c(0, 1, -1), perf = FALSE,
+  multi_series = FALSE)
 }
 \arguments{
 \item{dt}{a time series dataset}
 
-\item{y}{the variable display on chart}
-
-\item{date_range}{date range. Available value including YTD, Max and integers from 1 to 1000. Default is Max.}
+\item{date_range}{date range. Available value including '1m'-'11m', 'ytd', 'max' and '1y'-. Default is max.}
 
 \item{from}{the start date. Default is max date in input data.}
 
@@ -21,15 +21,17 @@ ped_plot(dt, y = "close|value", date_range = "max", from = NULL,
 
 \item{title}{chart title. If it is not specified, the symbol of dataset will be used as chart title.}
 
-\item{type}{chart type, including line, step, candle.}
+\item{y}{the variable display on chart}
 
 \item{yaxis_log}{logical, default is FALSE.}
+
+\item{linear_trend}{non-negative numeric. Default is 0, which donot show linear trend line. If it larger than 0, show linear_trend*sd from linear trend line.}
 
 \item{perf}{logical, whether to show the performance of input data. Default is FALSE.}
 
 \item{multi_series}{logical, whether to show multiple series. Default is FALSE.}
 
-\item{linear_trend}{non-negative numeric. Default is 0, which donot show linear trend line. If it larger than 0, show linear_trend*sd from linear trend line.}
+\item{type}{chart type, including line, step, candle.}
 }
 \description{
 \code{ped_plot} creates a charts for a time series dataset.

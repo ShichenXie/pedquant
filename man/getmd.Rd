@@ -4,8 +4,8 @@
 \alias{getmd}
 \title{get market data}
 \usage{
-getmd(symbol, source = "yahoo", freq = "daily", from = "2010-01-01",
-  to = Sys.Date(), adjust = FALSE, fillzero = TRUE,
+getmd(symbol, source = "yahoo", freq = "daily", date_range = "3y",
+  from = NULL, to = Sys.Date(), adjust = FALSE, fillzero = TRUE,
   print_step = 1L)
 }
 \arguments{
@@ -14,6 +14,8 @@ getmd(symbol, source = "yahoo", freq = "daily", from = "2010-01-01",
 \item{source}{data sources. The available sources including 'yahoo', '163', 'sina' and 'original'.}
 
 \item{freq}{default is daily. It supports daily, weekly and monthly for data from yahoo; daily for data from 163 and sina.}
+
+\item{date_range}{date range. Available value including '1m'-'11m', 'ytd', 'max' and '1y'-. Default is max.}
 
 \item{from}{the start date. Default is '2010-01-01'.}
 
