@@ -6,7 +6,7 @@ ped1_perf = function(dt, y="open|close|value", date_range="max", from=NULL, to=S
     # from to 
     if (is.null(to)) to = dt[, max(date)]
     to = check_fromto(to, type = dt[, tolower(class(date))], shift=1) 
-    if (is.null(from)) from = get_from_daterange(dt, date_range, to)
+    if (is.null(from)) from = get_from_daterange(date_range, to, min_date = dt[,date[1]])
     
     # set range for data
     dat = dt[date>=from & date<=to
@@ -26,25 +26,22 @@ ped1_perf = function(dt, y="open|close|value", date_range="max", from=NULL, to=S
 ped_perf = function(dt, y="open|close|value", date_range="max", from=NULL, to=Sys.Date()) {
     symbol = NULL
     
-    date_range = check_arg(tolower(date_range), c(paste0(1:11,"m"), "ytd", "max", paste0(1:500,"y")), default = "max")
+    # bind list of dataframe
+    if (is.list(dt) & !is.data.frame(dt)) {
+        dt = rbindlist(dt, fill = TRUE)
+    }
+    setDT(dt)
+    # check date_range
+    date_range = check_date_range(date_range, default = "max")
     
     # plot symbol
     dt_list = NULL
-    dt_names = names(dt)
-    if (is.list(dt) & !is.data.frame(dt)) {
-        dt = lapply(dt, setDT)
-        for (i in dt_names) {
-            if (is.null(title)) title = i
-            dt_list[[i]] = do.call(ped1_perf, args = list(dt=dt[[i]], y=y, date_range=date_range, from=from, to=to))
-        }
+    sybs = dt[, unique(symbol)]
+    for (s in sybs) {
+        dt_s = dt[symbol == s]
+        setkeyv(dt_s, "date")
         
-    } else if (is.data.frame(dt)) {
-        setDT(dt)
-        i = 1
-        if ("symbol" %in% dt_names) i = dt[1, symbol]
-        
-        dt_list[[i]] = do.call(ped1_perf, args = list(dt=dt, y=y, date_range=date_range, from=from, to=to))
-        
+        dt_list[[s]] = do.call(ped1_perf, args = list(dt=dt_s, y=y, date_range=date_range, from=from, to=to))
     }
     
     return(dt_list)

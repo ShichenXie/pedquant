@@ -5,13 +5,15 @@
 \title{create a chart for timeseries data}
 \usage{
 ped_plot(dt, chart_type = "line", date_range = "max", from = NULL,
-  to = Sys.Date(), rm_weekend = NULL, title = NULL,
-  y = "close|value", yaxis_log = FALSE, color_up = "#F6736D",
-  color_down = "#18C0C4", linear_trend = c(0, 1, -1), perf = FALSE,
-  multi_series = FALSE)
+  to = Sys.Date(), y = "close|value", yaxis_log = FALSE,
+  color_up = "#F6736D", color_down = "#18C0C4", linear_trend = NULL,
+  multi_series = list(nrow = NULL, ncol = NULL), perf = FALSE,
+  rm_weekend = NULL, title = NULL)
 }
 \arguments{
 \item{dt}{a time series dataset}
+
+\item{chart_type}{chart type, including line, step, candle.}
 
 \item{date_range}{date range. Available value including '1m'-'11m', 'ytd', 'max' and '1y'-. Default is max.}
 
@@ -19,19 +21,23 @@ ped_plot(dt, chart_type = "line", date_range = "max", from = NULL,
 
 \item{to}{the end date. Default is min date in data.}
 
-\item{title}{chart title. If it is not specified, the symbol of dataset will be used as chart title.}
-
 \item{y}{the variable display on chart}
 
 \item{yaxis_log}{logical, default is FALSE.}
 
-\item{linear_trend}{non-negative numeric. Default is 0, which donot show linear trend line. If it larger than 0, show linear_trend*sd from linear trend line.}
+\item{color_up}{the color indicates price going up}
 
-\item{perf}{logical, whether to show the performance of input data. Default is FALSE.}
+\item{color_down}{the color indicates price going down}
+
+\item{linear_trend}{a vector of numeric. Default is NULL, which donot show linear trend line. If it is not 0, show linear_trend*sd from linear trend line.}
 
 \item{multi_series}{logical, whether to show multiple series. Default is FALSE.}
 
-\item{type}{chart type, including line, step, candle.}
+\item{perf}{logical, whether to show the performance of input data. Default is FALSE.}
+
+\item{rm_weekend}{weather to remove weekend in xaxis. The default is TRUE for candle and bar chart, and FALSE for line and step chart.}
+
+\item{title}{chart title. If it is not specified, the symbol of dataset will be used as chart title.}
 }
 \description{
 \code{ped_plot} creates a charts for a time series dataset.

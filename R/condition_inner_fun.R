@@ -13,6 +13,14 @@ check_arg = function(arg, choices, default=NULL) {
     return(arg)
 }
 
+check_date_range = function(date_range, default = "max") {
+    if (!grepl("max|ytd|[1-9,10,11]m|[1-9][0-9]*y", tolower(date_range))) {
+        date_range = default
+        warning("The `date_range` is set to '", default, "'")
+    }
+    return(date_range)
+}
+
 # check date format of from/to
 check_fromto = function(fromto, type="date", shift = 0) {
     type = check_arg(type, c("date", "time"), "date")
