@@ -29,7 +29,8 @@
 
 ###### Trend ######
 # moving max and min, mm
-ti_mm = function(dat, n=20, m=NULL, y = "close|value") { 
+ti_mm = function(dt, n=20, m=NULL, y = "close|value", only_ti = FALSE, return_formula=FALSE, ...) { 
+    formula_str = NULL
     # num of min
     if (is.null(m)) m = n
     
@@ -48,13 +49,19 @@ ti_mm = function(dat, n=20, m=NULL, y = "close|value") {
             ][, apply(.SD, 1, min)]
     }
     
-    setkeyv(dat, "date")
-    y = names(dat)[grepl(y, names(dat))][1]
+    dt = copy(setDT(dt))
+    setkeyv(dt, "date")
+    y = names(dt)[grepl(y, names(dt))][1]
     
-    dat[, (paste0("mm_max_",n)) := lapply(.SD, mmax, n=n), .SDcols = y
+    dt[, (paste0("mm_max_",n)) := lapply(.SD, mmax, n=n), .SDcols = y
       ][, (paste0("mm_min_",n)) := lapply(.SD, mmin, n=m), .SDcols = y]
     
-    return(dat)
+    if (only_ti) {
+      dt = dt[,c("date", names(dt)[grepl("^mm_max_|^mm_min_", names(dt))]), with = FALSE]
+    }
+    
+    if (return_formula) dt = dt[, formula_str := sprintf("MinMax(%s,%s)",n,m)]
+    return(dt)
 }
 
 # Simple Moving Average, SMA
@@ -69,13 +76,23 @@ sma = function(p, n = 20) {
         , shift(price, n=0:(n-1), fill=NA, type="lag")
         ][, rowMeans(.SD)]
 }
-ti_sma = function(dat, n = 20, y = "close|value") {
-    setkeyv(dat, "date")
-    y = names(dat)[grepl(y, names(dat))][1]
+ti_sma = function(dt, n = 20, y = "close|value", only_ti = FALSE, return_formula=FALSE, ...) {
+    formula_str = NULL
+    dt = copy(setDT(dt))
+    setkeyv(dt, "date")
+    
+    y = names(dt)[grepl(y, names(dt))][1]
+    if (is.na(y)) stop("y is na")
     sma_name = paste0("sma_", n)
     
-    dat[, (sma_name) := lapply(.SD, sma, n = n), .SDcols = y]
-    return(dat)
+    dt[, (sma_name) := lapply(.SD, function(x) sma(x, n)), .SDcols = y]
+    
+    if (only_ti) {
+      dt = dt[,c("date", names(dt)[grepl("^sma_", names(dt))]), with = FALSE]
+    }
+    
+    if (return_formula) dt = dt[, formula_str := sprintf("SMA(%s)",n)]
+    return(dt)
 }
 
 # Exponential Moving Average, EMA
@@ -96,13 +113,21 @@ ema = function(p, n = 20) {
     # cumsum(p*k/(1-k)^(1:length(p)))*(1-k)^(1:length(p))
     return(dt[, ema_n])
 }
-ti_ema = function(dat, n = 20, y = "close|value") {
-    setkeyv(dat, "date")
-    y = names(dat)[grepl(y, names(dat))][1]
+ti_ema = function(dt, n = 20, y = "close|value", only_ti = FALSE, return_formula=FALSE, ...) {
+    formula_str = NULL
+    dt = copy(setDT(dt))
+    setkeyv(dt, "date")
+    y = names(dt)[grepl(y, names(dt))][1]
     ema_name = paste0("ema_", n)
 
-    dat[, (ema_name) := lapply(.SD, ema, n=n), .SDcols = y]
-    return(dat)
+    dt[, (ema_name) := lapply(.SD, ema, n=n), .SDcols = y]
+    
+    if (only_ti) {
+      dt = dt[,c("date", names(dt)[grepl("^ema_", names(dt))]), with = FALSE]
+    }
+    
+    if (return_formula) dt = dt[, formula_str := sprintf("EMA(%s)",n)]
+    return(dt)
 }
 
 # Smoothed Moving Average
@@ -119,13 +144,21 @@ smma = function(p, n = 14) {
   }
   return(ddtt[, smma])
 }
-ti_smma = function(dat, n = 14, y = "close|value") {
-    setkeyv(dat, "date")
-    y = names(dat)[grepl(y, names(dat))][1]
+ti_smma = function(dt, n = 14, y = "close|value", only_ti = FALSE, return_formula=FALSE, ...) {
+    formula_str = NULL
+    dt = copy(setDT(dt))
+    setkeyv(dt, "date")
+    y = names(dt)[grepl(y, names(dt))][1]
     smma_name = paste0("smma_", n)
     
-    dat[, (smma_name) := lapply(.SD, smma, n=n), .SDcols = y]
-    return(dat)
+    dt[, (smma_name) := lapply(.SD, smma, n=n), .SDcols = y]
+    
+    if (only_ti) {
+      dt = dt[,c("date", names(dt)[grepl("^smma_", names(dt))]), with = FALSE]
+    }
+    
+    if (return_formula) dt = dt[, formula_str := sprintf("SMMA(%s)",n)]
+    return(dt)
 }
 
 # Bollinger Bands, BB
@@ -133,8 +166,8 @@ ti_smma = function(dat, n = 14, y = "close|value") {
 # Upper Band = 20-day SMA + (20-day standard deviation of price x 2) 
 # Lower Band = 20-day SMA - (20-day standard deviation of price x 2)
 #' @importFrom stats sd
-ti_bb = function(dat, n=26, m=2, y="close|value") {
-    boll = NULL
+ti_bb = function(dt, n=26, m=2, y="close|value", only_ti = FALSE, return_formula=FALSE, ...) {
+    formula_str = boll = NULL
     bb = function(p, n=26, m=2) {
         price = NULL
         
@@ -144,30 +177,38 @@ ti_bb = function(dat, n=26, m=2, y="close|value") {
         upper_band = sma_n + m*sd_lastn
         lower_band = sma_n - m*sd_lastn
         
-        rt = data.table(sma_n, upper_band, lower_band)
-        setnames(rt, paste0("bb_",c(paste0("sma_", n), "upper", "lower")) )
+        rt = data.table(lower_band, sma_n, upper_band)
+        setnames(rt, paste0("bb_",c("lower", paste0("sma_", n), "upper")) )
         return(rt)
     }
     
-    setkeyv(dat, "date")
-    y = names(dat)[grepl(y, names(dat))][1]
+    dt = copy(setDT(dt))
+    setkeyv(dt, "date")
+    y = names(dt)[grepl(y, names(dt))][1]
     
-    dat = cbind(dat, boll(dat[[y]], n=n, m=m))
-    return(dat)
+    dt = cbind(dt, bb(dt[[y]], n=n, m=m))
+    
+    if (only_ti) {
+      dt = dt[,c("date", names(dt)[grepl("^bb_", names(dt))]), with = FALSE]
+    }
+    
+    if (return_formula) dt = dt[, formula_str := sprintf("BB(%s,%s)",n,m)]
+    return(dt)
 }
 
 # Stop-And-Reversal, SAR
 # https://blog.csdn.net/xmuecor/article/details/78383352
 # sar = sar_1 + af*(ep - sar_1)
-ti_sar = function(dat, n=4, step = 0.02, max_step = 0.2) {
-    . = high = low = updown = sar = NULL
+ti_sar = function(dt, n=4, step = 0.02, max_step = 0.2, only_ti = FALSE, return_formula=FALSE, ...) {
+    . = high = low = updown = sar = formula_str = NULL
     # rising: SAR < CL AND SAR.1 >= CL.1
     # falling: SAR > CL AND SAR.1 <= CL.1
 
     # extreme point (ep), highest high of the current uptrend, or lowest low of the current downtrend
     # Acceleration Factor (af), starting at 0.02, increases by .02 each time the ep makes a new high or low
-    setkeyv(dat, "date")
-    dt = dat[,.(date, open, high, low, close)]
+    dt = copy(setDT(dt))
+    setkeyv(dt, "date")
+    dt = dt[,.(date, open, high, low, close)]
 
     # initial sar
     initial_sar = function(dt, i) {
@@ -242,7 +283,13 @@ ti_sar = function(dat, n=4, step = 0.02, max_step = 0.2) {
         
     }
     
-    return(dat[,sar := dt[,sar]])
+    dt = dt[,sar := dt[,sar]]
+    if (only_ti) {
+      dt = dt[,c("date", "sar"), with = FALSE]
+    }
+    
+    if (return_formula) dt = dt[, formula_str := sprintf("SAR(%s,%s,%s)",n,step,max_step)]
+    return(dt)
 }
 
 
@@ -259,42 +306,55 @@ ti_sar = function(dat, n=4, step = 0.02, max_step = 0.2) {
 # MACD Line: (12-day EMA - 26-day EMA)
 # Signal Line: 9-day EMA of MACD Line
 # MACD Histogram: MACD Line - Signal Line
-ti_macd = function(dat, n = 12, n1 = 26, m = 9, y="close") {
-    macd = macd_signal = macd_hist = NULL
+ti_macd = function(dt, n = 12, n1 = 26, m = 9, y = "close", only_ti = FALSE, return_formula=FALSE, ...) {
+    macd = macd_signal = macd_hist = formula_str = NULL
   
-    setkeyv(dat, "date")
-    y = names(dat)[grepl(y, names(dat))][1]
+    dt = copy(setDT(dt))
+    setkeyv(dt, "date")
+    y = names(dt)[grepl(y, names(dt))][1]
     
-    dat = dat[, macd := ema(close, n) - ema(close, n1)
-            ][, macd_signal := ema(macd, m)
+    dt = dt[, macd := ema(close, n) - ema(close, n1)
+            ][!is.na(macd), macd_signal := ema(macd, m)
             ][, macd_hist := macd - macd_signal]
     
-    return(dat)
+    if (only_ti) {
+      dt = dt[,c("date", names(dt)[grepl("^macd", names(dt))]), with = FALSE]
+    }
+    
+    if (return_formula) dt = dt[, formula_str := sprintf("MACD(%s,%s,%s)",n,n1,m)]
+    return(dt)
 }
 
 # Rate of Change, ROC
-ti_roc = function(dat, n = 20, y="close|value") {
-    prev_close = change_pct = . = roc1 = lag_price = price = NULL
+ti_roc = function(dt, n = 20, y="close|value", only_ti = FALSE, return_formula=FALSE, ...) {
+    prev_close = change_pct = . = roc1 = lag_price = price = formula_str = NULL
   
-    setkeyv(dat, "date")
-    y = names(dat)[grepl(y, names(dat))][1]
+    dt = copy(setDT(dt))
+    setkeyv(dt, "date")
+    y = names(dt)[grepl(y, names(dt))][1]
     
-    if ("change_pct" %in% names(dat)) {
-        rocn = dat[, prev_close := shift(close, 1, type="lag")
+    if ("change_pct" %in% names(dt)) {
+        rocn = dt[, prev_close := shift(close, 1, type="lag")
           ][is.na(change_pct), change_pct := (close/prev_close-1)*100
           ][, .(roc1 = change_pct/100+1)
           ][, shift(roc1, n=0:(n-1), fill=NA, type="lag")
           ][, apply(.SD, 1, function(x) (Reduce(prod, x))-1)*100]
         
     } else {
-        dt = dat[, y, with=FALSE]
+        dt = dt[, y, with=FALSE]
         setnames(dt, "price")
         
         rocn = dt[, lag_price := shift(price, n, type="lag")
          ][, (price-lag_price)/lag_price*100]
     }
     
-    return(dat[, (paste0("roc_",n)) := rocn])
+    dt = dt[, (paste0("roc_",n)) := rocn]
+    if (only_ti) {
+      dt = dt[,c("date", names(dt)[grepl("^roc_", names(dt))]), with = FALSE]
+    }
+    
+    if (return_formula) dt = dt[, formula_str := sprintf("ROC(%s)",n)]
+    return(dt)
 }
 
 
@@ -302,26 +362,33 @@ ti_roc = function(dat, n = 20, y="close|value") {
 # oversold, overbought
 
 # Percentage Price Oscillator, PPO
-ti_ppo = function(dat, n = 12, n1 = 26, m = 9, y="close") {
-    ppo = ema_n = ema_n1 = ppo_signal = ppo_hist = NULL
+ti_ppo = function(dt, n = 12, n1 = 26, m = 9, y="close", only_ti = FALSE, return_formula=FALSE, ...) {
+    ppo = ema_n = ema_n1 = ppo_signal = ppo_hist = formula_str = NULL
   
-    setkeyv(dat, "date")
+    dt = copy(setDT(dt))
+    setkeyv(dt, "date")
     
-    dat = dat[,`:=`(
+    dt = dt[,`:=`(
         ema_n = ema(close, n), ema_n1 = ema(close, n1)
     )][, ppo := (ema_n - ema_n1)/ema_n1*100
      ][!is.na(ppo), ppo_signal := ema(ppo, m)
      ][, ppo_hist := ppo - ppo_signal
      ][, (c("ema_n", "ema_n1")) := NULL]
     
-    return(dat)
+    if (only_ti) {
+      dt = dt[,c("date", names(dt)[grepl("^ppo", names(dt))]), with = FALSE]
+    }
+    
+    if (return_formula) dt = dt[, formula_str := sprintf("PPO(%s,%s,%s)",n,n1,m)]
+    return(dt)
 }
 
 
 # Relative Strength Index, RSI
 # RSI = 100 - 100/(1+RS)
 # RS = Average Gain / Average Loss
-ti_rsi = function(dat, n=14, y="close|value") {
+ti_rsi = function(dt, n=14, y="close|value", only_ti = FALSE, return_formula=FALSE, ...) {
+    formula_str = NULL
     rsi = function(p, n=14) {
         price_prev = price = avgG = avgL = NULL
         
@@ -334,20 +401,27 @@ ti_rsi = function(dat, n=14, y="close|value") {
             ][, 100 - 100/(1 + avgG/avgL)]
     }
     
-    setkeyv(dat, "date")
-    y = names(dat)[grepl(y, names(dat))][1]
+    dt = copy(setDT(dt))
+    setkeyv(dt, "date")
+    y = names(dt)[grepl(y, names(dt))][1]
     rsi_name = paste0("rsi_", n)
     
-    dat[, (rsi_name) := lapply(.SD, rsi, n=n), .SDcols = y]
-    return(dat)
+    dt[, (rsi_name) := lapply(.SD, rsi, n=n), .SDcols = y]
+    
+    if (only_ti) {
+      dt = dt[,c("date", names(dt)[grepl("^rsi_", names(dt))]), with = FALSE]
+    }
+    
+    if (return_formula) dt = dt[, formula_str := sprintf("RSI(%s)",n)]
+    return(dt)
 }
 
 
 # Commodity Channel Index, CCI
 # CCI = (Typical Price  -  20-period SMA of TP) / (.015 x Mean Deviation)
 # Typical Price (TP) = (High + Low + Close)/3
-ti_cci = function(dat, n = 14) {
-    tp = high = low = NULL
+ti_cci = function(dt, n = 14, only_ti = FALSE, return_formula=FALSE, ...) {
+    tp = high = low = formula_str = NULL
     cci = function(p, n = 14) {
         price = sman = md = NULL
       
@@ -364,13 +438,19 @@ ti_cci = function(dat, n = 14) {
           ][, (price-sman)/(0.015*md)]
     }
     
-    setkeyv(dat, "date")
+    dt = copy(setDT(dt))
+    setkeyv(dt, "date")
     sma_name = paste0("cci_",n)
     
-    dat[, tp := (high + low + close)/3
+    dt[, tp := (high + low + close)/3
       ][, (sma_name) := cci(tp, n)][, tp := NULL]
     
-    return(dat)
+    if (only_ti) {
+      dt = dt[,c("date", names(dt)[grepl("^cci_", names(dt))]), with = FALSE]
+    }
+    
+    if (return_formula) dt = dt[, formula_str := sprintf("CCI(%s)",n)]
+    return(dt)
 }
 
 # - KDJ
@@ -401,13 +481,14 @@ ti_cci = function(dat, n = 14) {
 # Standard deviation (σ)
 
 # Average True Range, ATR
-ti_atr = function(dat, n=26) {
-    prev_close = high = low = TR = ATR = NULL
+ti_atr = function(dt, n=26, only_ti = FALSE, return_formula=FALSE, ...) {
+    prev_close = high = low = TR = ATR = formula_str = NULL
   
-    setkeyv(dat, "date")
+    dt = copy(setDT(dt))
+    setkeyv(dt, "date")
     sma_name = paste0("cci_",n)
     
-    dat[, prev_close := shift(close, 1, type="lag")
+    dt[, prev_close := shift(close, 1, type="lag")
       ][, `:=`(
           h_l = high - low, 
           h_cp = abs(high - prev_close),
@@ -416,61 +497,75 @@ ti_atr = function(dat, n=26) {
        ][, ATR := sma(TR, n)
        ][, (c("h_l", "h_cp", "l_cp")) := NULL]
     
-    return(dat)
-}
-
-
-
-ped1_addti = function(dat, ti=list(sma=20, sma=50)) {
-  for (i in 1:length(ti)) {
-    arg = list(dat)
-    if (!is.null(ti[[i]])) {
-      if (!is.list(ti[[i]])) ti_i = list(ti[[i]])
-      arg = c(arg, ti_i)
+    if (only_ti) {
+      dt = dt[,c("date", names(dt)[grepl("^ATR", names(dt))]), with = FALSE]
     }
     
-    func = paste0("ti_",names(ti[i]))
-    do.call(func, arg)
+    if (return_formula) dt = dt[, formula_str := sprintf("ATR(%s)",n)]
+    return(dt)
+}
+
+
+
+ped1_addti = function(dt, ti = list(sma = list(n=20), sma = list(n=50)), only_ti = FALSE, return_formula = FALSE, ...) {
+  for (i in seq_len(length(ti)) ) {
+    arg = list(dt = dt, return_formula = return_formula)
+    
+    if (!is.null(ti[[i]])) arg = c(arg, ti[[i]])
+    
+    dt = do.call(paste0("ti_",names(ti[i])), arg)
   }
   
-  return(dat)
+  if (only_ti) {
+    ti_names = names(dt)[grepl(paste0("^", unique(names(ti)), collapse = "|"), names(dt))]
+      
+    dt = dt[,c("date", ti_names), with = FALSE]
+  }
+  
+  return(dt)
 }
+
 #' create technical indicators
 #' 
-#' `ped_addti` adds technical indicators to a dataset
+#' `ped_ti` adds technical indicators to a dataset
 #' 
 #' @param dt time series datasets
-#' @param ti list of technical indicators, overlay indicators include mm, sma, ema, smma, bb, sar, and oscillators indicators such as macd, ppo, roc, rsi, cci. 
-#' @param print_step A non-negative integer, which will print symbol name by each print_step iteration. Default is 1. 
+#' @param ti list of technical indicators, overlay indicators include mm, sma, ema, smma, bb, sar, and oscillators indicators such as macd, roc, ppo, rsi, cci. 
+#' @param ... ignored
 #' 
 #' @examples 
 #' dt = getmd("^000001", source=163)
 #' 
-#' dt_ti = ped_addti(dt, ti=list(sma=20, sma=50))
+#' dt_ti = ped_ti(dt, ti=list(sma=20, sma=50))
 #' 
 #' @export
-ped_addti = function(dt, ti=list(sma=20, sma=50), print_step=1L) {
-  dt_list = list()
-  
-  if (is.list(dt) & !is.data.frame(dt)) {
-    dt = lapply(dt, setDT)
-    dt_names = names(dt)
-    len_names = length(dt_names)
+ped_ti = function(dt, ti = list(sma=list(n=20), sma=list(n=50)), ...) {
     
-    for (i in 1:len_names) {
-      if ((print_step>0) & (i %% print_step == 0)) cat(paste0(format(c(i,len_names)),collapse = "/"), dt_names[i],"\n")
+    symbol = NULL
+    
+    only_ti = return_formula = FALSE
+    if ("return_formula" %in% names(list(...))) 
+      return_formula = list(...)[["return_formula"]]
+    if ("only_ti" %in% names(list(...))) 
+      only_ti = list(...)[["only_ti"]]
+    
+    # bind list of dataframes
+    if (is.list(dt) & !is.data.frame(dt)) {
+      dt = rbindlist(dt, fill = TRUE)
+    }
+    dt = copy(dt)
+    
+    ## single series
+    dt_list = list()
+    sybs = dt[, unique(symbol)]
+    for (s in sybs) {
+      dt_s = dt[symbol == s]
+      setkeyv(dt_s, "date")
       
-      dt_list[[i]] = do.call(ped1_addti, args = list(dat=dt[[i]], ti=ti))
+      dt_list[[s]] = do.call(ped1_addti, args = list(dt = dt_s, only_ti = only_ti, ti = ti, return_formula = return_formula))
     }
     
-  } else if (is.data.frame(dt)) {
-    setDT(dt)
-    i = 1
-    dt_list[[i]] =do.call(ped1_addti, args = list(dat=dt, ti=ti))
-    
-  }
-  
-  return(dt_list)
+    return(dt_list)
 }
 
 # main indicators ------

@@ -250,7 +250,7 @@ getmd_stock_hist1_163 = function(symbol1, from="1900-01-01", to=Sys.Date(), fill
 
 
 #' @import data.table
-getmd_163 = function(symbol, from="1900-01-01", to=Sys.Date(), print_step=1L, freq = "daily", fillzero=FALSE) {
+getmd_163 = function(symbol, from="1900-01-01", to=Sys.Date(), print_step=1L, freq = "daily", fillzero=FALSE, ...) {
   # fromt to 
   from = check_fromto(from)
   to = check_fromto(to)

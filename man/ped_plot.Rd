@@ -4,22 +4,27 @@
 \alias{ped_plot}
 \title{create a chart for timeseries data}
 \usage{
-ped_plot(dt, chart_type = "line", date_range = "max", from = NULL,
-  to = Sys.Date(), y = "close|value", yaxis_log = FALSE,
+ped_plot(dt, chart_type = "line", freq = NULL, date_range = "max",
+  from = NULL, to = Sys.Date(), ti = list(sma = list(n = 20), sma =
+  list(n = 50)), y = "close|value", yaxis_log = FALSE,
   color_up = "#F6736D", color_down = "#18C0C4", linear_trend = NULL,
   multi_series = list(nrow = NULL, ncol = NULL), perf = FALSE,
-  rm_weekend = NULL, title = NULL)
+  rm_weekend = NULL, title = NULL, ...)
 }
 \arguments{
 \item{dt}{a time series dataset}
 
 \item{chart_type}{chart type, including line, step, candle.}
 
+\item{freq}{the frequency that the input data will converted to. It supports weekly, monthly, quarterly and yearly.}
+
 \item{date_range}{date range. Available value including '1m'-'11m', 'ytd', 'max' and '1y'-. Default is max.}
 
 \item{from}{the start date. Default is max date in input data.}
 
 \item{to}{the end date. Default is min date in data.}
+
+\item{ti}{list of technical indicators, overlay indicators include mm, sma, ema, smma, bb, sar, and oscillators indicators such as macd, roc, ppo, rsi, cci.}
 
 \item{y}{the variable display on chart}
 
@@ -38,6 +43,8 @@ ped_plot(dt, chart_type = "line", date_range = "max", from = NULL,
 \item{rm_weekend}{weather to remove weekend in xaxis. The default is TRUE for candle and bar chart, and FALSE for line and step chart.}
 
 \item{title}{chart title. If it is not specified, the symbol of dataset will be used as chart title.}
+
+\item{...}{ignored}
 }
 \description{
 \code{ped_plot} creates a charts for a time series dataset.

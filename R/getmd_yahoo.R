@@ -1,8 +1,12 @@
 #' @importFrom curl handle_setopt new_handle curl_download handle_cookies
-handle_new_session = function(url="https://finance.yahoo.com", curl_options=list()) {
-    tmp <- tempfile()
-    on.exit(unlink(tmp))
-    for (i in 1:5) {
+handle_new_session = function(url="https://finance.yahoo.com", curl_options=list(), env = NULL, handle_name = ".handle") {
+    h = NULL
+    if (!is.null(env)) h = get0(handle_name, env)
+    
+    if (is.null(h)) {
+      tmp <- tempfile()
+      on.exit(unlink(tmp))
+      for (i in 1:5) {
         h = new_handle()
         handle_setopt(h, .list = curl_options)
         # random query to avoid cache
@@ -10,8 +14,12 @@ handle_new_session = function(url="https://finance.yahoo.com", curl_options=list
         curl_download(cu, tmp, handle = h) #req = curl_fetch_memory(cu, handle = h)
         if (nrow(handle_cookies(h)) > 0) break
         Sys.sleep(0.1)
+      }
+      if (nrow(handle_cookies(h)) == 0) stop("Could not establish session after 5 attempts.")
+      
+      if (!is.null(env)) assign(handle_name, h, env)
     }
-    if (nrow(handle_cookies(h)) == 0) stop("Could not establish session after 5 attempts.")
+    
     return(h)
 }
 
@@ -99,9 +107,10 @@ getmd_curcom1_yahoo = function(symbol, handle, crumb, freq="daily", from="1900-0
 }
 
 # get market data from yahoo
-getmd_yahoo = function(symbol, freq="daily", from="1900-01-01", to=Sys.time(), print_step=1L, adjust=FALSE) {
-    
-    handle = handle_new_session()
+getmd_yahoo = function(symbol, freq="daily", from="1900-01-01", to=Sys.time(), print_step=1L, adjust=FALSE, ...) {
+  
+    yahoo_env = list(...)[["env"]]
+    handle = handle_new_session(env = yahoo_env, handle_name = "yahoo_handle")
     crumb = yahoo_crumb(handle)
     
     # frequency

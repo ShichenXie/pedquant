@@ -10,7 +10,7 @@ ped1_perf = function(dt, y="open|close|value", date_range="max", from=NULL, to=S
     
     # set range for data
     dat = dt[date>=from & date<=to
-           ][, (y) := lapply(.SD, function(x) fill0(x)/x[1]), .SDcols = y]
+           ][, (y) := lapply(.SD, function(x) fill0(x)/x[1]-1), .SDcols = y]
     
     cols = c("date", y)
     if ("symbol" %in% names(dat)) cols = c(cols, "symbol")

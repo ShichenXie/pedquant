@@ -16,7 +16,7 @@ Imports:
     httr, curl, xml2, 
     jsonlite, stringi, 
     readxl, readr, 
-    ggplot2
+    ggplot2, gridExtra
 Suggests: 
     knitr,
     rmarkdown

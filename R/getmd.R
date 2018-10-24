@@ -60,19 +60,11 @@ getmd = function(symbol, source = "yahoo", freq = "daily", date_range="3y", from
     cat(source,"\n")
     
     # from
-    if (!grepl("ytd|[1-9,10,11]m|[1-9][0-9]*y", tolower(date_range))) date_range = "max"
-    if (is.null(from)) {
-        if (date_range == "max") {
-            from = "1000-01-01"
-        } else {
-            from = get_from_daterange(date_range, to)
-        }
-    }
+    date_range = check_date_range(date_range, default = "max")
+    from = get_from_daterange(date_range, to, min_date = "1000-01-01")
     
     # arguments
-    args = list(symbol=symbol, freq=freq, from=from, to=to, print_step=print_step)
-    if (source == "163") args['fillzero'] = fillzero
-    if (source == "yahoo") args['adjust'] = adjust
+    args = list(symbol=symbol, freq=freq, from=from, to=to, print_step=print_step, env = parent.frame(), fillzero = fillzero, adjust = adjust)
     
     # return data
     rt = try(do.call(paste0("getmd_", source), args), silent = TRUE)
