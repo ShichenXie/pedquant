@@ -1,18 +1,18 @@
-#' commodity exchanges list
-#'
-#' List of commodities exchanges
-#'
-#' @docType data
-#' @keywords data
-#' @name exchange_commodity
-#' @usage data(exchange_commodity)
-#' @format A data frame with 97 rows and 7 columns.
-#' @source \url{https://en.wikipedia.org/wiki/List_of_commodities_exchanges}
-#' @examples
-#' # load commodity exchange
-#' data(exchange_commodity)
-#' 
-NULL
+# commodity exchanges list
+#
+# List of commodities exchanges
+#
+# @docType data
+# @keywords data
+# @name exchange_commodity
+# @usage data(exchange_commodity)
+# @format A data frame with 97 rows and 7 columns.
+# @source \url{https://en.wikipedia.org/wiki/List_of_commodities_exchanges}
+# @examples
+# # load commodity exchange
+# data(exchange_commodity)
+# 
+# NULL
 
 
 #' @import data.table xml2 

@@ -82,6 +82,7 @@ ped_rp1 = function(dt, region="cn", columns = c("open", "high", "low", "close"))
 #' @param weight the name of weight variable
 #' @param base_index the base value of index, default is 1
 #' @param base_date the date base of index, default is "2010-01-01"
+#' @param name the index name, default is NULL
 #' 
 #' @examples 
 #' \dontrun{
@@ -100,9 +101,9 @@ ped_rp1 = function(dt, region="cn", columns = c("open", "high", "low", "close"))
 #' # sybs = getmd_symbol(market = "stock", source="163")
 #' # sybs_sub = sybs[sector == "有色金属采选" & grepl("黄金|金", name)]
 #' 
-#' gold_symbol = c("600489", "600547", "600766", "600988", "601069", "601899", "601958", "002155")
+#' gold_share = c("002155", "002237", "600146", "600311", "600489", "600547", "600687", "600766", "600988", "601069", "601899", "601958")
 #' 
-#' dat = getmd(symbol_gold, source="163", from="1900-01-01")
+#' dat = getmd(gold_share, source="163", from="1900-01-01")
 #' 
 #' dat = lapply(dat, function(x) {
 #'   x$change_pct = x$change_pct/100+1
@@ -110,11 +111,24 @@ ped_rp1 = function(dt, region="cn", columns = c("open", "high", "low", "close"))
 #' 
 #' gold_index = ped_index(dat, chain_index="change_pct", weight="cap_total")
 #' 
+#' 
+#' # III
+#' securities = sybs[sector == '证券' & !is.na(board), symbol]
+#' 
+#' dat = getmd(securities, source="163", date_range = 'max')
+#' dat = lapply(dat, function(x) {
+#'   x$change_pct = x$change_pct/100+1
+#'   return(x)})
+#' 
+#' securities_index = ped_index(dat, chain_index="change_pct", weight="cap_total")
+#' 
+#' # ped_plot(securities_index)
+#' 
 #' }
 #' 
 #' @import data.table
 #' @export
-ped_index = function(dt, chain_index, weight, base_index=1, base_date="2010-01-01") {
+ped_index = function(dt, chain_index, weight, base_index=1, base_date="2010-01-01", name=NULL) {
     w = ci = cw = ped_fbi = V1 = . = index = NULL
     
     if (is.list(dt) & !is.data.frame(dt)) dt = rbindlist(dt, fill = TRUE)
@@ -127,7 +141,8 @@ ped_index = function(dt, chain_index, weight, base_index=1, base_date="2010-01-0
      ][, prod(cw), by=date
      ][V1 != 0]
     
-    return(ped_fbi(dt, "V1", base_index=base_index, base_date=base_date)[,.(date, index)])
+    if (is.null(name)) name = 'index'
+    return(ped_fbi(dt, "V1", base_index=base_index, base_date=base_date)[,.(date, symbol = name, value=index)])
 }
 
 

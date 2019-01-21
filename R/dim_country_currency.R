@@ -1,38 +1,38 @@
-#' country code list
-#'
-#' Code list for the representation of names 
-#' of countries and their subdivisions.
-#'
-#' @docType data
-#' @keywords data
-#' @name code_country
-#' @usage data(code_country)
-#' @format A data frame with 249 rows and 4 columns.
-#' @source \url{https://en.wikipedia.org/wiki/ISO_3166-1}
-#' @examples
-#' # load code of country
-#' data(code_country)
-#' 
-NULL
+# country code list
+#
+# Code list for the representation of names 
+# of countries and their subdivisions.
+#
+# @docType data
+# @keywords data
+# @name code_country
+# @usage data(code_country)
+# @format A data frame with 249 rows and 4 columns.
+# @source \url{https://en.wikipedia.org/wiki/ISO_3166-1}
+# @examples
+# # load code of country
+# data(code_country)
+# 
+# NULL
 
 
 
 
-#' currency code list
-#'
-#' Current currency & funds code list.
-#'
-#' @docType data
-#' @keywords data
-#' @name code_currency
-#' @usage data(code_currency)
-#' @format A data frame with 278 rows and 3 columns.
-#' @source \url{https://en.wikipedia.org/wiki/ISO_4217}, \url{https://www.currency-iso.org/en/home/tables/table-a1.html}
-#' @examples
-#' # load code of currency
-#' data(code_currency)
-#' 
-NULL
+# currency code list
+#
+# Current currency & funds code list.
+#
+# @docType data
+# @keywords data
+# @name code_currency
+# @usage data(code_currency)
+# @format A data frame with 278 rows and 3 columns.
+# @source \url{https://en.wikipedia.org/wiki/ISO_4217}, \url{https://www.currency-iso.org/en/home/tables/table-a1.html}
+# @examples
+# # load code of currency
+# data(code_currency)
+# 
+# NULL
 
 
 

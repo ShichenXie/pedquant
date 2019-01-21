@@ -5,11 +5,10 @@
 \title{create a chart for timeseries data}
 \usage{
 ped_plot(dt, chart_type = "line", freq = NULL, date_range = "max",
-  from = NULL, to = Sys.Date(), ti = list(sma = list(n = 20), sma =
-  list(n = 50)), y = "close|value", yaxis_log = FALSE,
-  color_up = "#F6736D", color_down = "#18C0C4", linear_trend = NULL,
-  multi_series = list(nrow = NULL, ncol = NULL), perf = FALSE,
-  rm_weekend = NULL, title = NULL, ...)
+  from = NULL, to = Sys.Date(), ti = list(), y = "close|value",
+  yaxis_log = FALSE, color_up = "#F6736D", color_down = "#18C0C4",
+  linear_trend = NULL, multi_series = list(nrow = NULL, ncol = NULL),
+  perf = FALSE, rm_weekend = NULL, title = NULL, ...)
 }
 \arguments{
 \item{dt}{a time series dataset}
@@ -51,10 +50,28 @@ ped_plot(dt, chart_type = "line", freq = NULL, date_range = "max",
 }
 \examples{
 \dontrun{
+# single symbol
 ssec = getmd("^000001", source="163")
 
-p = ped_plot(ssec, title="SSEC")
-print(p)
+# chart type
+ped_plot(ssec) # line chart (default)
+# ped_plot(ssec, chart_type = "candle") # candlestick
+# ped_plot(ssec, chart_type = "bar") # bar chart
+# ped_plot(ssec, chart_type = "step") # step line
+
+# add technical indicators
+ped_plot(ssec, chart_type = "candle", 
+  ti = list(sma = list(n = 50), macd = list()))
+
+
+# multiple symbols
+dat1 = getmd(c('^000001', '^399001'), date_range = 'max', source='163')
+ped_plot(dat1, linear_trend = c(-0.8, 0, 0.8), multi_series = list(nrow=1, scales = 'free_y'))
+
+
+dat2 = getmd(c('^000016', '^000300'), date_range = 'max', source='163')
+ped_plot(dat2, linear_trend = c(-0.8, 0, 0.8), multi_series = list(nrow=1, scales = 'free_y'))
+
 }
 
 }

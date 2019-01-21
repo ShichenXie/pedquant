@@ -1,3 +1,15 @@
+# #Industrial Classification
+# http://finviz.com/
+#     
+# Basic Materials
+# Consumer Goods
+# Financial
+# Healthcare
+# Industrial Goods
+# Services
+# Technology
+# Utilities
+
 
 # # Market Data
 # - froex
@@ -29,8 +41,7 @@
 
 
 # Internal data # http://r-pkgs.had.co.nz/data.html
-# devtools::use_data(finance_report_163, prov_indu_163, symbol_future_sina, symbol_stock_163, internal = TRUE, overwrite = TRUE)
-
+# usethis::use_data(financial_statements_163, prov_indu_163, symbol_future_sina, symbol_stock_163, code_commodity_exchange, code_stock_exchange, code_country, code_currency, internal = TRUE, overwrite = TRUE)
 
 
 # Symbol          Name

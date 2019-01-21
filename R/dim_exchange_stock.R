@@ -1,20 +1,20 @@
-#' stock exchanges list
-#'
-#' List of major stock exchanges by January 2015 (top 20 by market capitalization)
-#'
-#' @docType data
-#' @keywords data
-#' @name exchange_stock
-#' @usage data(exchange_stock)
-#' @format A data frame with 65 rows and 13 columns.
-#'
-#' @source \url{https://en.wikipedia.org/wiki/List_of_stock_exchange_trading_hours}
-#' 
-#' @examples
-#' # load stock exchange
-#' data(exchange_stock)
-#' 
-NULL
+# stock exchanges list
+#
+# List of major stock exchanges by January 2015 (top 20 by market capitalization)
+#
+# @docType data
+# @keywords data
+# @name exchange_stock
+# @usage data(exchange_stock)
+# @format A data frame with 65 rows and 13 columns.
+#
+# @source \url{https://en.wikipedia.org/wiki/List_of_stock_exchange_trading_hours}
+# 
+# @examples
+# # load stock exchange
+# data(exchange_stock)
+# 
+# NULL
 
 
 #' @import data.table xml2 

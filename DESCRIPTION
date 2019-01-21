@@ -1,12 +1,12 @@
-Package: getpedr
+Package: pedar
 Version: 0.0.1
-Title: get public economic data
+Title: public economic and financial data
 Description: 
-    The `getpedr` provides an interface to access public economic 
-    data, which are provided by national statistics, central bank, 
-    stock exchange etc. Three kinds of datasets are included in 
-    `getpedr`, market data (`getmd*`), financial reports 
-    (`getfr`), and economic data (`geted*`).
+    The `pedar` provides an interface to access public economic and financial 
+    data for analyst and researcher. The data souces include NBS, FRED, Yahoo 
+    Finance, 163 Finance etc. The functions are grouped into four categories, 
+    market data (md_*), financial statements (fs_*), economic data (ed_*) and 
+    analysis functions (ped_*).
 Authors@R: 
     person("Shichen", "Xie", email = "xie@shichen.name", role = c("aut", "cre"))
 Depends: 
@@ -21,10 +21,10 @@ Suggests:
     knitr,
     rmarkdown
 License: GPL-3 + file LICENSE
-URL: https://github.com/ShichenXie/getpedr
-BugReports: https://github.com/ShichenXie/getpedr/issues
+URL: https://github.com/ShichenXie/pedar
+BugReports: https://github.com/ShichenXie/pedar/issues
 LazyData: true
 VignetteBuilder: knitr
-RoxygenNote: 6.1.0
+RoxygenNote: 6.1.1
 Roxygen: list(markdown = TRUE)
 Encoding: UTF-8

@@ -1,6 +1,6 @@
 # d, w, m, q, ytd, y, 
 
-ped1_perf = function(dt, y="open|close|value", date_range="max", from=NULL, to=Sys.Date()) {
+ped1_perf = function(dt, date_range="max", from=NULL, to=Sys.Date(), y="open|close|value") {
     y = names(dt)[grepl(y, names(dt))]
     
     # from to 
@@ -12,18 +12,18 @@ ped1_perf = function(dt, y="open|close|value", date_range="max", from=NULL, to=S
     dat = dt[date>=from & date<=to
            ][, (y) := lapply(.SD, function(x) fill0(x)/x[1]-1), .SDcols = y]
     
-    cols = c("date", y)
-    if ("symbol" %in% names(dat)) cols = c(cols, "symbol")
-    if ("name" %in% names(dat)) cols = c(cols, "name")
-    dat = dat[, cols, with = FALSE]
+    cols = y
+    for (i in c('name', 'symbol', 'date')) {
+        if (i %in% names(dat)) cols = c(i, cols)
+    }
     
-    return(dat)
+    return(dat[, cols, with = FALSE])
 }
 
 # create performance of data sets
 # 
 # 
-ped_perf = function(dt, y="open|close|value", date_range="max", from=NULL, to=Sys.Date()) {
+ped_perf = function(dt, date_range="max", from=NULL, to=Sys.Date(), y="open|close|value") {
     symbol = NULL
     
     # bind list of dataframe
@@ -35,7 +35,7 @@ ped_perf = function(dt, y="open|close|value", date_range="max", from=NULL, to=Sy
     date_range = check_date_range(date_range, default = "max")
     
     # plot symbol
-    dt_list = NULL
+    dt_list = list()
     sybs = dt[, unique(symbol)]
     for (s in sybs) {
         dt_s = dt[symbol == s]

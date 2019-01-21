@@ -51,13 +51,18 @@ pp_candle = function(
             scale_color_manual(values = c("up" = color_up, "down" = color_down)) + 
             geom_text(x = dat[1, x], y = Inf, aes(label = date), data = dat[,.SD[.N], by=symbol], hjust = 0, vjust = 1, color = "black", na.rm = TRUE, alpha = 0.6, size = rel(3)) +
             geom_text(x = dat[.N, x], y = Inf, aes(label = subtitle_str), data=subtitle_str, hjust = 1, vjust = 1, color = "black", parse = TRUE, na.rm = TRUE, alpha = 0.6, size = rel(3)) +
-            annotate("text", label="@getpedr", x=dat[, x[.N %/% 2], by=symbol][,V1[1]], y=-Inf, vjust = -1, color = "gray", alpha = 0.2) + 
+            # annotate("text", label="@http://shichen.name/getpedr/", x=dat[, x[.N %/% 2], by=symbol][,V1[1]], y=-Inf, vjust = -1, color = "gray", alpha = 0.2) + 
+            geom_text(aes(label="@http://shichen.name/getpedr", x=dat[, x[.N], by=symbol][,V1[1]], y=Inf), vjust = -0.5, hjust = 1, color = "#F0F0F0") + 
+            coord_cartesian(clip = 'off') + 
             guides(fill = FALSE, color = FALSE) + 
             labs(x=NULL, y=NULL) + theme_bw()
         
         # facet 
         if (num_syb>1) {
-            p = p + facet_wrap(~ symbol, nrow = multi_series$nrow, ncol = multi_series$ncol, scales = multi_series$scales)
+            p = p + 
+                facet_wrap(~ symbol, nrow = multi_series$nrow, ncol = multi_series$ncol, scales = multi_series$scales) + 
+                theme(strip.background = element_blank(),
+                      strip.text = element_text(hjust = 0))
         }
         
         ###### overlay techinal indicators ######
@@ -138,13 +143,18 @@ pp_bar = function(
             scale_color_manual(values = c("up" = color_up, "down" = color_down)) +
             geom_text(x = dat[1, x], y = Inf, aes(label = date), data = dat[,.SD[.N], by=symbol], hjust = 0, vjust = 1, color = "black", na.rm = TRUE, alpha = 0.6, size = rel(3)) +
             geom_text(x = dat[.N, x], y = Inf, aes(label = subtitle_str), data=subtitle_str, hjust = 1, vjust = 1, color = "black", parse = TRUE, na.rm = TRUE, alpha = 0.6, size = rel(3)) +
-            annotate("text", label="@getpedr", x=dat[, x[.N %/% 2], by=symbol][,V1[1]], y=-Inf, vjust = -1, color = "gray", alpha = 0.2) + 
+            # annotate("text", label="@http://shichen.name/getpedr/", x=dat[, x[.N %/% 2], by=symbol][,V1[1]], y=-Inf, vjust = -1, color = "gray", alpha = 0.2) + 
+            geom_text(aes(label="@http://shichen.name/getpedr", x=dat[, x[.N], by=symbol][,V1[1]], y=Inf), vjust = -0.5, hjust = 1, color = "#F0F0F0") + 
+            coord_cartesian(clip = 'off') + 
             guides(color = FALSE) + 
             labs(x=NULL, y=NULL) + theme_bw()
         
         # facet 
         if (num_syb>1) {
-            p = p + facet_wrap(~ symbol, nrow = multi_series$nrow, ncol = multi_series$ncol, scales = multi_series$scales)
+            p = p + 
+                facet_wrap(~ symbol, nrow = multi_series$nrow, ncol = multi_series$ncol, scales = multi_series$scales) + 
+                theme(strip.background = element_blank(),
+                      strip.text = element_text(hjust = 0))
         }
         
         ##### overlay techinal indicators #####
@@ -215,7 +225,9 @@ pp_line = function(
         p = ggplot(data = dat) + 
             geom_line(aes(x = x, y = close, color = symbol)) + 
             scale_color_discrete(labels = subtitle_str[, paste(symbol, date, round(close,2), sep=", ")]) + 
-            annotate("text", label="@getpedr", x=dat[, x[.N %/% 2], by=symbol][,V1[1]], y=-Inf, vjust = -1, color = "gray", alpha = 0.2) + 
+            # annotate("text", label="@http://shichen.name/getpedr/", x=dat[, x[.N %/% 2], by=symbol][,V1[1]], y=-Inf, vjust = -1, color = "gray", alpha = 0.2) + 
+            geom_text(aes(label="@http://shichen.name/getpedr", x=dat[, x[.N], by=symbol][,V1[1]], y=Inf), vjust = -0.5, hjust = 1, color = "#F0F0F0") + 
+            coord_cartesian(clip = 'off') + 
             labs(x=NULL, y=NULL, color=NULL) + theme_bw() +
             theme(
                 legend.position = c(0,1), 
@@ -229,12 +241,17 @@ pp_line = function(
             geom_segment(aes(x = x1, y = y1, xend = x2, yend = y2), color = color_down, na.rm = TRUE) +
             geom_text(x = dat[1, x], y = Inf, aes(label = date), data = dat[,.SD[.N], by=symbol], hjust = 0, vjust = 1, color = "black", na.rm = TRUE, alpha = 0.6, size = rel(3)) +
             geom_text(x = dat[.N, x], y = Inf, aes(label = subtitle_str), data=subtitle_str, hjust = 1, vjust = 1, color = "black", parse = TRUE, na.rm = TRUE, alpha = 0.6, size = rel(3)) +
-            annotate("text", label="@getpedr", x=dat[, x[.N %/% 2], by=symbol][,V1[1]], y=-Inf, vjust = -1, color = "gray", alpha = 0.2) + 
+            # annotate("text", label="@http://shichen.name/getpedr/", x=dat[, x[.N %/% 2], by=symbol][,V1[1]], y=-Inf, vjust = -1, color = "gray", alpha = 0.2) + 
+            geom_text(aes(label="@http://shichen.name/getpedr", x=dat[, x[.N], by=symbol][,V1[1]], y=Inf), vjust = -0.5, hjust = 1, color = "#F0F0F0") + 
+            coord_cartesian(clip = 'off') + 
             labs(x=NULL, y=NULL) + theme_bw()
         
         # facet 
         if (num_syb>1) {
-            p = p + facet_wrap(~ symbol, nrow = multi_series$nrow, ncol = multi_series$ncol, scales = multi_series$scales)
+            p = p + 
+                facet_wrap(~ symbol, nrow = multi_series$nrow, ncol = multi_series$ncol, scales = multi_series$scales) + 
+                theme(strip.background = element_blank(),
+                      strip.text = element_text(hjust = 0))
         }
         
         ###### overlay techinal indicators ######
@@ -316,7 +333,9 @@ pp_step = function(
         p = ggplot(data = dat) + 
             geom_step(aes(x = x, y = close, color = symbol)) + 
             scale_color_discrete(labels = subtitle_str[, paste(symbol, date, round(close,2), sep=", ")]) + 
-            annotate("text", label="@getpedr", x=dat[, x[.N %/% 2], by=symbol][,V1[1]], y=-Inf, vjust = -1, color = "gray", alpha = 0.2) + 
+            # annotate("text", label="@http://shichen.name/getpedr/", x=dat[, x[.N %/% 2], by=symbol][,V1[1]], y=-Inf, vjust = -1, color = "gray", alpha = 0.2) + 
+            geom_text(aes(label="@http://shichen.name/getpedr", x=dat[, x[.N], by=symbol][,V1[1]], y=Inf), vjust = -0.5, hjust = 1, color = "#F0F0F0") + 
+            coord_cartesian(clip = 'off') + 
             labs(x=NULL, y=NULL, color=NULL) + theme_bw() +
             theme(
                 legend.position = c(0,1), 
@@ -331,12 +350,17 @@ pp_step = function(
             geom_segment(aes(x = x2, y = y1, xend = x2, yend = y2), color = color_down, na.rm = TRUE) +
             geom_text(x = dat[1, x], y = Inf, aes(label = date), data=dt_N, hjust = 0, vjust = 1, color = "black", na.rm = TRUE, alpha = 0.6, size = rel(3)) +
             geom_text(x = dat[.N, x], y = Inf, aes(label = subtitle_str), data=subtitle_str, hjust = 1, vjust = 1, color = "black", parse = TRUE, na.rm = TRUE, alpha = 0.6, size = rel(3)) +
-            annotate("text", label="@getpedr", x=dat[, x[.N %/% 2], by=symbol][,V1[1]], y=-Inf, vjust = -1, color = "gray", alpha = 0.2) + 
+            # annotate("text", label="@http://shichen.name/getpedr/", x=dat[, x[.N %/% 2], by=symbol][,V1[1]], y=-Inf, vjust = -1, color = "gray", alpha = 0.2) + 
+            geom_text(aes(label="@http://shichen.name/getpedr", x=dat[, x[.N], by=symbol][,V1[1]], y=Inf), vjust = -0.5, hjust = 1, color = "#F0F0F0") + 
+            coord_cartesian(clip = 'off') + 
             labs(x=NULL, y=NULL) + theme_bw()
         
         # facet 
         if (num_syb>1) {
-            p = p + facet_wrap(~ symbol, nrow = multi_series$nrow, ncol = multi_series$ncol, scales = multi_series$scales)
+            p = p + 
+                facet_wrap(~ symbol, nrow = multi_series$nrow, ncol = multi_series$ncol, scales = multi_series$scales) + 
+                theme(strip.background = element_blank(),
+                      strip.text = element_text(hjust = 0))
         }
         
         ###### overlay techinal indicators ######
@@ -575,7 +599,7 @@ pp_add_ti_overlay = function(
     }
     
     for (i in seq_len(length(ti))) {
-        dtti = do.call( ped_ti, args = list(dt = dt, ti = ti[i], only_ti = FALSE, return_formula = TRUE) )
+        dtti = do.call( ped_addti, args = list(dt = dt, ti = ti[i], only_ti = FALSE, return_formula = TRUE) )
         # bind list of dataframes
         if (is.list(dtti) & !is.data.frame(dtti)) dtti = rbindlist(dtti, fill = TRUE)
         dat = dtti[date>=from & date <= to]
@@ -656,7 +680,7 @@ pp_add_ti_oscillator = function(
     top_plist = bottom_plist = NULL
     for (i in seq_len(length(ti))) {
         # dataset with technical indicators
-        dtti = do.call( ped_ti, args = list(dt = dt, ti = ti[i], only_ti = FALSE, return_formula = TRUE) )
+        dtti = do.call( ped_addti, args = list(dt = dt, ti = ti[i], only_ti = FALSE, return_formula = TRUE) )
         # # bind list of dataframes
         if (is.list(dtti) & !is.data.frame(dtti)) dtti = rbindlist(dtti, fill = TRUE)
         dat = dtti[date>=from & date <= to]
@@ -696,12 +720,12 @@ pp_add_ti_oscillator = function(
         # 
         if (names(ti[i]) == "rsi") {
             pi = pi + 
-                geom_hline(yintercept = 50, size=0.2, linetype="longdash") + 
-                geom_hline(yintercept = 70, size=0.2) + 
-                geom_hline(yintercept = 30, size=0.2)
+                geom_hline(yintercept = 50, size=0.2, alpha=0.6, linetype="longdash") + 
+                geom_hline(yintercept = 70, size=0.2, alpha=0.6) + 
+                geom_hline(yintercept = 30, size=0.2, alpha=0.6)
         } else if (names(ti[i]) %in% c("macd", "ppo", "roc", "rsi", "cci")) {
             pi = pi + 
-                geom_hline(yintercept = 0, size=0.2, linetype="longdash")
+                geom_hline(yintercept =  0, size=0.2, alpha=0.6, linetype="longdash")
         }
         
         # set xaxis
@@ -726,8 +750,8 @@ pp_add_ti_oscillator = function(
     # if (!is.null(bottom_plist)) bottom_plist = grid.arrange(grobs = bottom_plist, ncol = 1)
 
     # return p
-    heights = c(rep(100, length(top_plist)), 330)
-    if (length(bottom_plist)>0) heights = c(heights, rep(100, length(bottom_plist)-1), 125)
+    heights = c(rep(100, length(top_plist)), 320)
+    if (length(bottom_plist)>0) heights = c(heights, rep(100, length(bottom_plist)-1), 115)
     
     p = grid.arrange(grobs = c(top_plist, list(p0=p), bottom_plist), ncol = 1, heights = heights)
     return(p)
@@ -758,18 +782,37 @@ pp_add_ti_oscillator = function(
 #' 
 #' @examples 
 #' \dontrun{
+#' # single symbol
 #' ssec = getmd("^000001", source="163")
 #' 
-#' p = ped_plot(ssec, title="SSEC")
-#' print(p)
+#' # chart type
+#' ped_plot(ssec) # line chart (default)
+#' # ped_plot(ssec, chart_type = "candle") # candlestick
+#' # ped_plot(ssec, chart_type = "bar") # bar chart
+#' # ped_plot(ssec, chart_type = "step") # step line
+#' 
+#' # add technical indicators
+#' ped_plot(ssec, chart_type = "candle", 
+#'   ti = list(sma = list(n = 50), macd = list()))
+#' 
+#' 
+#' # multiple symbols
+#' dat1 = getmd(c('^000001', '^399001'), date_range = 'max', source='163')
+#' ped_plot(dat1, linear_trend = c(-0.8, 0, 0.8), multi_series = list(nrow=1, scales = 'free_y'))
+#' 
+#' 
+#' dat2 = getmd(c('^000016', '^000300'), date_range = 'max', source='163')
+#' ped_plot(dat2, linear_trend = c(-0.8, 0, 0.8), multi_series = list(nrow=1, scales = 'free_y'))
+#' 
 #' }
 #' 
 #' @import ggplot2 gridExtra
+#' @importFrom stats lm
 #' @export
 ped_plot = function(
     dt, chart_type = "line", freq = NULL, 
     date_range="max", from = NULL, to = Sys.Date(), 
-    ti = list(sma = list(n=20), sma = list(n=50)), 
+    ti = list(), 
     y = "close|value", yaxis_log = FALSE, 
     color_up = "#F6736D", color_down = "#18C0C4", 
     linear_trend = NULL, 
@@ -811,7 +854,7 @@ ped_plot = function(
     y = names(dt)[grepl(y, names(dt))]
     if (anyNA(y)) {
         stop("The specified y is not existed in dataframe.")
-    } else if (length(y) > 1) {
+    } else if (length(y) >= 1) {
         y = y[1]
         if (y != "close") {
             dt[["close"]] = dt[[y]]
@@ -895,39 +938,4 @@ ped_plot = function(
     return(plist)
 }
 
-
-#' @importFrom stats lm predict
-ped_plot_rp = function(dt, type = "line", title=NULL) {
-    log_close = ggplot = geom_line = aes = lm0 = lm_p2 = lm_p1 = lm_m1 = scale_y_continuous = scale_x_date = labs = theme_bw = NULL
-    
-    
-    dt = dt[, log_close := log10(close)
-            ][, `:=`(
-                lm0 = predict(lm(log_close~date)),
-                lm_p2 = predict(lm((log_close+sd(log_close)*2)~date)),
-                lm_p1 = predict(lm((log_close+sd(log_close))~date)),
-                lm_m1 = predict(lm((log_close-sd(log_close))~date))
-                # log_close_p2sd = log_close + sd(log_close)*2,
-                # log_close_p1sd = log_close + sd(log_close),
-                # log_close_m1sd = log_close - sd(log_close)
-            )]
-    
-    title_str = sprintf("[%s/%s]", dt[,date[1]], dt[,date[.N]])
-    if (!is.null(title)) title_str = paste(title_str,title)
-    ggplot(data = dt) + 
-        geom_line(aes(x=date, y=log_close)) +
-        geom_line(aes(date, lm0), color="red") +
-        geom_line(aes(date, lm_p2), color="grey") +
-        geom_line(aes(date, lm_p1), color="grey") +
-        geom_line(aes(date, lm_m1), color="grey") + 
-        scale_y_continuous(position = "right") +
-        scale_x_date(breaks = seq(as.Date("1990-01-01"), as.Date("2020-01-01"), by="5 year"), labels = seq(1990,2020,5)) +
-        labs(title=title_str, x=NULL) +
-        theme_bw()
-}
-# ssec_real = ped_rp1(getmd("^000001", source="163", from="1900-01-01"))
-# ped_plot_rp(ssec_real, title="ssec")
-# szsec_real = ped_rp1(getmd("^399001", source="163", from="1900-01-01"))
-# ped_plot_rp(szsec_real, title="szsec")
-# ped_plot(szsec_real, title="szsec")
 
