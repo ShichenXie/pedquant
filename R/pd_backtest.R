@@ -27,7 +27,7 @@
 # rule
 
 
-ped_backtest = function(
+pd_backtest = function(
     type = 'long', # 'short'
     
     stop_limit

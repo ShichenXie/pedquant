@@ -84,7 +84,7 @@ md_bond_chinabond = function(symbol, from=NULL, to=Sys.Date(), print_step=1L) {
         df = df[, `:=`(
             date = as.Date(date),
             value = as.numeric(value)
-        )][,.(date, symbol=paste0('cn',maturity,'dy_b'), name=paste('China', toupper(maturity), 'Bond Daily Yield'), value)]
+        )][,.(symbol=paste0('cn',maturity,'dy_b'), name=paste('China', toupper(maturity), 'Bond Daily Yield'), date, value)]
     })
     dflist = rbindlist(dflist, fill = TRUE)
     
@@ -108,7 +108,7 @@ md_bond1_fred = function(syb, from, to) {
         bond_symbol_fred[symbol == syb, symbol_fred], from=from, to=to, print_step=0L
     )[[1]][,`:=`(symbol_fred = symbol, symbol = NULL, name = NULL
     )][bond_symbol_fred, on='symbol_fred', nomatch=0
-       ][, .(date, symbol, name, value)
+       ][, .(symbol, name, date, value)
          ][!is.na(value)]
     
     setkey(dt_bond_hist, 'date')
@@ -130,7 +130,7 @@ md_bond_fred = function(symbol, from=NULL, to=Sys.Date(), print_step=1L) {
 # 
 # 
 # @export
-md_bond = function(symbol=NULL, date_range = '3y', from=NULL, to=Sys.Date(), print_step=1L) {
+md_bond = function(symbol=NULL, date_range = '3y', from=NULL, to=Sys.Date(), print_step=1L, ...) {
     # arguments
     syb = tolower(symbol)
     ## symbol

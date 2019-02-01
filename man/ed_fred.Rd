@@ -4,8 +4,8 @@
 \alias{ed_fred}
 \title{get economic data from FRED}
 \usage{
-ed_fred(symbol, from = "1776-07-04", to = "9999-12-31",
-  print_step = 1L)
+ed_fred(symbol = NULL, date_range = "10y", from = NULL,
+  to = Sys.Date(), na_rm = TRUE, print_step = 1L)
 }
 \arguments{
 \item{symbol}{symbol of indicators in FRED, which is available via function ed_FRED_symbol or its website.}

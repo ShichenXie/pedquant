@@ -14,7 +14,7 @@ md_commodity1_fred = function(syb, from, to) {
         syb_fred, from=from, to=to, print_step=0L
     )[[1]][,`:=`(symbol_fred = symbol, symbol = NULL, name = NULL
     )][commodity_symbol_fred, on='symbol_fred', nomatch=0
-       ][, .(date, symbol, name, value)
+       ][, .(symbol, name, date, value)
          ][!is.na(value)]
     
     setkey(dt_commo_hist, 'date')

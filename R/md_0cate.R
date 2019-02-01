@@ -34,9 +34,3 @@ md_cate = function(cate=NULL, symbol=NULL, date_range = "3y", from = NULL, to = 
     return(dat_lst)
 }
 
-
-# md_cate_symbol = function(cate=NULL) {
-#     if (is.null(cate)) cate = select_rows_df(mkt_cate, column='market_category', onerow=TRUE)[,market_category]
-#     syb = select_rows_df(md_symbol[market_category==cate,.(symbol,name)], column='symbol')[,symbol]
-#     return(syb)
-# }

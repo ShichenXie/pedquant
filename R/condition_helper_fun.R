@@ -1,14 +1,13 @@
 ########################### condition functions ###########################
 # check arguments
-check_arg = function(arg, choices, default=NULL) {
+check_arg = function(arg, choices, default=NULL, arg_name = 'argument') {
+    while (is.null(arg) || length(arg)==0) {
+        arg = choices[menu(choices, cat(sprintf("Select the value of %s", arg_name)))]
+    }
     arg = try(match.arg(arg, choices), silent = TRUE)
     if (inherits(arg, "try-error")) {
-        if (is.null(default)) {
-            arg = choices[menu(choices, cat("Verify the argument"))]
-        } else {
-            arg = default
-            warning("The argument is set to '",default,"'")
-        }
+        arg = default
+        warning(sprintf("The argument is set to \'%s\'", default))
     }
     return(arg)
 }
@@ -139,13 +138,15 @@ check_symbol_for_tx = function(symbol) {
     return(symbol)
 }
 check_symbol_for_yahoo = function(symbol) {
-    syb = sub("^.*?([0-9]+).*$","\\1",symbol)
+    if (grepl('[0-9]{6}', symbol)) {
+        syb = sub("^.*?([0-9]+).*$","\\1",symbol)
     if (nchar(syb)==6 & (nchar(symbol)==7 | nchar(symbol)==6)) {
         mkt = ifelse(grepl("\\^",symbol),"index","stock")
         tags = tags_symbol_stockcn(symbol, mkt)
         
         ex_code = ifelse(grepl("sse|szse",tags), substr(tags,1,2), NULL)
         if (!is.null(ex_code)) symbol = paste(syb, ex_code, sep=".")
+    }
     }
     return(symbol)
 }
@@ -285,7 +286,7 @@ load_dat_loop = function(symbol, func, args=list(), print_step) {
         syb_i = symbol[i]
         # print
         if ((print_step>0) & (i %% print_step == 0)) cat(sprintf('%s %s\n', paste0(format(c(i, syb_len)), collapse = '/'), syb_i))
-        dt_list[[syb_i]] = do.call(func, c(syb_i, args))
+        dt_list[[syb_i]] = try(do.call(func, c(syb_i, args)), silent = TRUE)
         # sleep for 1s
         # Sys.sleep(runif(1))
     }
@@ -296,7 +297,7 @@ load_dat_loop = function(symbol, func, args=list(), print_step) {
 # extract table from html via xml2 package
 #' @import data.table
 xml_table = function(wb, num=NULL, sup_rm=NULL, attr=NULL, header=FALSE) {
-    doc0 = xml_find_all(wb, paste0("//table",attr))
+    doc0 = xml_find_all(wb, paste0("//table",attr)) # attr = '[@cellpadding="2"]'
     if (!is.null(num)) doc0 = doc0[num]
     
     doc = lapply(
@@ -368,10 +369,14 @@ api_key = function(src){
 
 
 # select rows from a dataframe
+# dt, a dataframe to be selected
+# column, the targe column
+# input_string, the pattern to match the rows in target column
+# onerow, whether to return one row or multiple rows
 select_rows_df = function(dt, column=NULL, input_string=NULL, onerow=FALSE) {
     seleted_rows = NULL
     
-    while (is.null(seleted_rows) || nrow(seleted_rows) == 0) {
+    while (is.null(seleted_rows) || nrow(seleted_rows) == 0) { # stop looping, if selected rows >=1
         if (is.null(input_string)) {
             print(copy(dt)[,lapply(.SD, format)])
             if (is.null(column)) {
@@ -381,13 +386,14 @@ select_rows_df = function(dt, column=NULL, input_string=NULL, onerow=FALSE) {
             }
             if (onerow) txt = sub('rows', 'one row', txt)
             sel_id = readline(txt)
+            # if (sel_id == 'back') return('back')
         } else {
             sel_id = input_string
         }
         
-        if (grepl('^r[1-9]', sel_id)) {
+        if (grepl('^r[1-9]+$', sel_id)) { # select rows via rowid 
             while (grepl("^r", sel_id)) {
-                sel_id_string = gsub('-',':',gsub("[^(0-9|:)]+", ",", sel_id))
+                sel_id_string = gsub("[^(0-9|:)]+", ",", gsub('-',':',sel_id))
                 sel_id_string = gsub('^[^0-9]+|[^0-9]+$','',sel_id_string)
                 sel_id = eval(parse( text = sprintf('c(%s)',sel_id_string) ))
                 sel_id = intersect(sel_id, dt[,.I])
@@ -398,15 +404,19 @@ select_rows_df = function(dt, column=NULL, input_string=NULL, onerow=FALSE) {
                     break
                 }
             }
-        } else {
-            seleted_rows=dt[grepl(sel_id, eval(parse(text = column)))]
+        } else { # select rows via pattern matching
+            seleted_rows=dt[grep(sel_id, dt[[column]], fixed = FALSE)]
+            if (nrow(seleted_rows) == 0) seleted_rows=dt[grep(sel_id, dt[[column]], fixed = TRUE)]
+            if (nrow(seleted_rows) == 0) input_string = NULL
         }
-        if (onerow & nrow(seleted_rows) >1) {
-            # cat(sprintf('Only %s was selected\n.', seleted_rows[1]))
-            seleted_rows = seleted_rows[1]
-        }
+        
     }
     
+    # if return only one row, then return the first row in the selected rows
+    if (onerow & nrow(seleted_rows) >1) {
+        # cat(sprintf('Only %s was selected\n.', seleted_rows[1]))
+        seleted_rows = seleted_rows[1]
+    }
     return(seleted_rows)
 }
 

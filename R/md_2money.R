@@ -60,7 +60,7 @@ md_shibor = function(symbol, from=NULL, to=Sys.Date(), print_step=1L) {
         
     }
     dt = melt(dt_shibor[date>=from & date<=to], id.vars = 'date', variable.name = 'symbol'
-             )[shibor_symbol, on='symbol'][, .(date, symbol, name, value)]
+             )[shibor_symbol, on='symbol'][, .(symbol, name, date, value)]
     
     # return data list
     dt_list = list()
@@ -107,7 +107,7 @@ md_libor1_hist = function(syb, from, to) {
         libor_symbol[symbol == syb, symbol_fred], from=from, to=to, print_step=0L
     )[[1]][,`:=`(symbol_fred = symbol, symbol = NULL, name = NULL
     )][libor_symbol, on='symbol_fred', nomatch=0
-     ][, .(date, symbol, name, value)
+     ][, .(symbol, name, date, value)
      ][!is.na(value)]
     # return
     return(dt_libor_hist)
@@ -144,7 +144,7 @@ md_libor = function(symbol, from=NULL, to=Sys.Date(), print_step=1L) {
 # interbank offerd rate
 # 
 # @export
-md_money = function(symbol=NULL, date_range = '3y', from=NULL, to=Sys.Date(), print_step=1L) {
+md_money = function(symbol=NULL, date_range = '3y', from=NULL, to=Sys.Date(), print_step=1L, ...) {
     # arguments
     ## symbol
     if (is.null(symbol)) {

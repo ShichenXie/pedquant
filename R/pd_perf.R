@@ -1,6 +1,6 @@
 # d, w, m, q, ytd, y, 
 
-ped1_perf = function(dt, date_range="max", from=NULL, to=Sys.Date(), y="open|close|value") {
+pd1_perf = function(dt, date_range="max", from=NULL, to=Sys.Date(), y="open|close|value") {
     y = names(dt)[grepl(y, names(dt))]
     
     # from to 
@@ -23,7 +23,7 @@ ped1_perf = function(dt, date_range="max", from=NULL, to=Sys.Date(), y="open|clo
 # create performance of data sets
 # 
 # 
-ped_perf = function(dt, date_range="max", from=NULL, to=Sys.Date(), y="open|close|value") {
+pd_perf = function(dt, date_range="max", from=NULL, to=Sys.Date(), y="open|close|value") {
     symbol = NULL
     
     # bind list of dataframe
@@ -41,7 +41,7 @@ ped_perf = function(dt, date_range="max", from=NULL, to=Sys.Date(), y="open|clos
         dt_s = dt[symbol == s]
         setkeyv(dt_s, "date")
         
-        dt_list[[s]] = do.call(ped1_perf, args = list(dt=dt_s, y=y, date_range=date_range, from=from, to=to))
+        dt_list[[s]] = do.call(pd1_perf, args = list(dt=dt_s, y=y, date_range=date_range, from=from, to=to))
     }
     
     return(dt_list)

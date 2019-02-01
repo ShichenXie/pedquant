@@ -51,8 +51,8 @@ pp_candle = function(
             scale_color_manual(values = c("up" = color_up, "down" = color_down)) + 
             geom_text(x = dat[1, x], y = Inf, aes(label = date), data = dat[,.SD[.N], by=symbol], hjust = 0, vjust = 1, color = "black", na.rm = TRUE, alpha = 0.6, size = rel(3)) +
             geom_text(x = dat[.N, x], y = Inf, aes(label = subtitle_str), data=subtitle_str, hjust = 1, vjust = 1, color = "black", parse = TRUE, na.rm = TRUE, alpha = 0.6, size = rel(3)) +
-            # annotate("text", label="@http://shichen.name/getpedr/", x=dat[, x[.N %/% 2], by=symbol][,V1[1]], y=-Inf, vjust = -1, color = "gray", alpha = 0.2) + 
-            geom_text(aes(label="@http://shichen.name/getpedr", x=dat[, x[.N], by=symbol][,V1[1]], y=Inf), vjust = -0.5, hjust = 1, color = "#F0F0F0") + 
+            # annotate("text", label="@http://shichen.name/pedar/", x=dat[, x[.N %/% 2], by=symbol][,V1[1]], y=-Inf, vjust = -1, color = "gray", alpha = 0.2) + 
+            geom_text(aes(label="@http://shichen.name/pedar", x=dat[, x[.N], by=symbol][,V1[1]], y=Inf), vjust = -0.5, hjust = 1, color = "#F0F0F0") + 
             coord_cartesian(clip = 'off') + 
             guides(fill = FALSE, color = FALSE) + 
             labs(x=NULL, y=NULL) + theme_bw()
@@ -143,8 +143,8 @@ pp_bar = function(
             scale_color_manual(values = c("up" = color_up, "down" = color_down)) +
             geom_text(x = dat[1, x], y = Inf, aes(label = date), data = dat[,.SD[.N], by=symbol], hjust = 0, vjust = 1, color = "black", na.rm = TRUE, alpha = 0.6, size = rel(3)) +
             geom_text(x = dat[.N, x], y = Inf, aes(label = subtitle_str), data=subtitle_str, hjust = 1, vjust = 1, color = "black", parse = TRUE, na.rm = TRUE, alpha = 0.6, size = rel(3)) +
-            # annotate("text", label="@http://shichen.name/getpedr/", x=dat[, x[.N %/% 2], by=symbol][,V1[1]], y=-Inf, vjust = -1, color = "gray", alpha = 0.2) + 
-            geom_text(aes(label="@http://shichen.name/getpedr", x=dat[, x[.N], by=symbol][,V1[1]], y=Inf), vjust = -0.5, hjust = 1, color = "#F0F0F0") + 
+            # annotate("text", label="@http://shichen.name/pedar/", x=dat[, x[.N %/% 2], by=symbol][,V1[1]], y=-Inf, vjust = -1, color = "gray", alpha = 0.2) + 
+            geom_text(aes(label="@http://shichen.name/pedar", x=dat[, x[.N], by=symbol][,V1[1]], y=Inf), vjust = -0.5, hjust = 1, color = "#F0F0F0") + 
             coord_cartesian(clip = 'off') + 
             guides(color = FALSE) + 
             labs(x=NULL, y=NULL) + theme_bw()
@@ -225,8 +225,8 @@ pp_line = function(
         p = ggplot(data = dat) + 
             geom_line(aes(x = x, y = close, color = symbol)) + 
             scale_color_discrete(labels = subtitle_str[, paste(symbol, date, round(close,2), sep=", ")]) + 
-            # annotate("text", label="@http://shichen.name/getpedr/", x=dat[, x[.N %/% 2], by=symbol][,V1[1]], y=-Inf, vjust = -1, color = "gray", alpha = 0.2) + 
-            geom_text(aes(label="@http://shichen.name/getpedr", x=dat[, x[.N], by=symbol][,V1[1]], y=Inf), vjust = -0.5, hjust = 1, color = "#F0F0F0") + 
+            # annotate("text", label="@http://shichen.name/pedar/", x=dat[, x[.N %/% 2], by=symbol][,V1[1]], y=-Inf, vjust = -1, color = "gray", alpha = 0.2) + 
+            geom_text(aes(label="@http://shichen.name/pedar", x=dat[, x[.N], by=symbol][,V1[1]], y=Inf), vjust = -0.5, hjust = 1, color = "#F0F0F0") + 
             coord_cartesian(clip = 'off') + 
             labs(x=NULL, y=NULL, color=NULL) + theme_bw() +
             theme(
@@ -241,8 +241,8 @@ pp_line = function(
             geom_segment(aes(x = x1, y = y1, xend = x2, yend = y2), color = color_down, na.rm = TRUE) +
             geom_text(x = dat[1, x], y = Inf, aes(label = date), data = dat[,.SD[.N], by=symbol], hjust = 0, vjust = 1, color = "black", na.rm = TRUE, alpha = 0.6, size = rel(3)) +
             geom_text(x = dat[.N, x], y = Inf, aes(label = subtitle_str), data=subtitle_str, hjust = 1, vjust = 1, color = "black", parse = TRUE, na.rm = TRUE, alpha = 0.6, size = rel(3)) +
-            # annotate("text", label="@http://shichen.name/getpedr/", x=dat[, x[.N %/% 2], by=symbol][,V1[1]], y=-Inf, vjust = -1, color = "gray", alpha = 0.2) + 
-            geom_text(aes(label="@http://shichen.name/getpedr", x=dat[, x[.N], by=symbol][,V1[1]], y=Inf), vjust = -0.5, hjust = 1, color = "#F0F0F0") + 
+            # annotate("text", label="@http://shichen.name/pedar/", x=dat[, x[.N %/% 2], by=symbol][,V1[1]], y=-Inf, vjust = -1, color = "gray", alpha = 0.2) + 
+            geom_text(aes(label="@http://shichen.name/pedar", x=dat[, x[.N], by=symbol][,V1[1]], y=Inf), vjust = -0.5, hjust = 1, color = "#F0F0F0") + 
             coord_cartesian(clip = 'off') + 
             labs(x=NULL, y=NULL) + theme_bw()
         
@@ -333,8 +333,8 @@ pp_step = function(
         p = ggplot(data = dat) + 
             geom_step(aes(x = x, y = close, color = symbol)) + 
             scale_color_discrete(labels = subtitle_str[, paste(symbol, date, round(close,2), sep=", ")]) + 
-            # annotate("text", label="@http://shichen.name/getpedr/", x=dat[, x[.N %/% 2], by=symbol][,V1[1]], y=-Inf, vjust = -1, color = "gray", alpha = 0.2) + 
-            geom_text(aes(label="@http://shichen.name/getpedr", x=dat[, x[.N], by=symbol][,V1[1]], y=Inf), vjust = -0.5, hjust = 1, color = "#F0F0F0") + 
+            # annotate("text", label="@http://shichen.name/pedar/", x=dat[, x[.N %/% 2], by=symbol][,V1[1]], y=-Inf, vjust = -1, color = "gray", alpha = 0.2) + 
+            geom_text(aes(label="@http://shichen.name/pedar", x=dat[, x[.N], by=symbol][,V1[1]], y=Inf), vjust = -0.5, hjust = 1, color = "#F0F0F0") + 
             coord_cartesian(clip = 'off') + 
             labs(x=NULL, y=NULL, color=NULL) + theme_bw() +
             theme(
@@ -350,8 +350,8 @@ pp_step = function(
             geom_segment(aes(x = x2, y = y1, xend = x2, yend = y2), color = color_down, na.rm = TRUE) +
             geom_text(x = dat[1, x], y = Inf, aes(label = date), data=dt_N, hjust = 0, vjust = 1, color = "black", na.rm = TRUE, alpha = 0.6, size = rel(3)) +
             geom_text(x = dat[.N, x], y = Inf, aes(label = subtitle_str), data=subtitle_str, hjust = 1, vjust = 1, color = "black", parse = TRUE, na.rm = TRUE, alpha = 0.6, size = rel(3)) +
-            # annotate("text", label="@http://shichen.name/getpedr/", x=dat[, x[.N %/% 2], by=symbol][,V1[1]], y=-Inf, vjust = -1, color = "gray", alpha = 0.2) + 
-            geom_text(aes(label="@http://shichen.name/getpedr", x=dat[, x[.N], by=symbol][,V1[1]], y=Inf), vjust = -0.5, hjust = 1, color = "#F0F0F0") + 
+            # annotate("text", label="@http://shichen.name/pedar/", x=dat[, x[.N %/% 2], by=symbol][,V1[1]], y=-Inf, vjust = -1, color = "gray", alpha = 0.2) + 
+            geom_text(aes(label="@http://shichen.name/pedar", x=dat[, x[.N], by=symbol][,V1[1]], y=Inf), vjust = -0.5, hjust = 1, color = "#F0F0F0") + 
             coord_cartesian(clip = 'off') + 
             labs(x=NULL, y=NULL) + theme_bw()
         
@@ -599,7 +599,7 @@ pp_add_ti_overlay = function(
     }
     
     for (i in seq_len(length(ti))) {
-        dtti = do.call( ped_addti, args = list(dt = dt, ti = ti[i], only_ti = FALSE, return_formula = TRUE) )
+        dtti = do.call( pd_addti, args = list(dt = dt, ti = ti[i], only_ti = FALSE, return_formula = TRUE) )
         # bind list of dataframes
         if (is.list(dtti) & !is.data.frame(dtti)) dtti = rbindlist(dtti, fill = TRUE)
         dat = dtti[date>=from & date <= to]
@@ -680,7 +680,7 @@ pp_add_ti_oscillator = function(
     top_plist = bottom_plist = NULL
     for (i in seq_len(length(ti))) {
         # dataset with technical indicators
-        dtti = do.call( ped_addti, args = list(dt = dt, ti = ti[i], only_ti = FALSE, return_formula = TRUE) )
+        dtti = do.call( pd_addti, args = list(dt = dt, ti = ti[i], only_ti = FALSE, return_formula = TRUE) )
         # # bind list of dataframes
         if (is.list(dtti) & !is.data.frame(dtti)) dtti = rbindlist(dtti, fill = TRUE)
         dat = dtti[date>=from & date <= to]
@@ -760,7 +760,7 @@ pp_add_ti_oscillator = function(
 
 #' create a chart for timeseries data
 #' 
-#' `ped_plot` creates a charts for a time series dataset. 
+#' `pd_plot` creates a charts for a time series dataset. 
 #' 
 #' @param dt a time series dataset
 #' @param chart_type chart type, including line, step, candle.
@@ -786,30 +786,30 @@ pp_add_ti_oscillator = function(
 #' ssec = getmd("^000001", source="163")
 #' 
 #' # chart type
-#' ped_plot(ssec) # line chart (default)
-#' # ped_plot(ssec, chart_type = "candle") # candlestick
-#' # ped_plot(ssec, chart_type = "bar") # bar chart
-#' # ped_plot(ssec, chart_type = "step") # step line
+#' pd_plot(ssec) # line chart (default)
+#' # pd_plot(ssec, chart_type = "candle") # candlestick
+#' # pd_plot(ssec, chart_type = "bar") # bar chart
+#' # pd_plot(ssec, chart_type = "step") # step line
 #' 
 #' # add technical indicators
-#' ped_plot(ssec, chart_type = "candle", 
+#' pd_plot(ssec, chart_type = "candle", 
 #'   ti = list(sma = list(n = 50), macd = list()))
 #' 
 #' 
 #' # multiple symbols
 #' dat1 = getmd(c('^000001', '^399001'), date_range = 'max', source='163')
-#' ped_plot(dat1, linear_trend = c(-0.8, 0, 0.8), multi_series = list(nrow=1, scales = 'free_y'))
+#' pd_plot(dat1, linear_trend = c(-0.8, 0, 0.8), multi_series = list(nrow=1, scales = 'free_y'))
 #' 
 #' 
 #' dat2 = getmd(c('^000016', '^000300'), date_range = 'max', source='163')
-#' ped_plot(dat2, linear_trend = c(-0.8, 0, 0.8), multi_series = list(nrow=1, scales = 'free_y'))
+#' pd_plot(dat2, linear_trend = c(-0.8, 0, 0.8), multi_series = list(nrow=1, scales = 'free_y'))
 #' 
 #' }
 #' 
 #' @import ggplot2 gridExtra
 #' @importFrom stats lm
 #' @export
-ped_plot = function(
+pd_plot = function(
     dt, chart_type = "line", freq = NULL, 
     date_range="max", from = NULL, to = Sys.Date(), 
     ti = list(), 
@@ -834,12 +834,12 @@ ped_plot = function(
             chart_type = "line"
             warning("The `chart_type` should be line or step, if you want to display performance trend. It is set to 'line'.")
         }
-        dt = ped_perf(dt, y=y, date_range=date_range, from=from, to=to)
+        dt = pd_perf(dt, y=y, date_range=date_range, from=from, to=to)
         title = paste(title, "perf")
     }
     
     # change freq of input data
-    if (!is.null(freq) || match.arg(freq, "daily")!="daily") dt = ped_dailyto(dt, freq)
+    if (!is.null(freq) || match.arg(freq, "daily")!="daily") dt = pd_to_freq(dt, freq)
     # bind list of dataframes
     if (is.list(dt) & !is.data.frame(dt)) dt = rbindlist(dt, fill = TRUE)
     # from

@@ -24,13 +24,13 @@ md_stock_spotall_163 = function(symbol = "a,index", only_symbol = FALSE) {
         date = as.Date(substr(jsonDat$time,1,10)), 
         time = jsonDat$time#,
         #strptime(jsonDat$time, "%Y-%m-%d %H:%M:%S", tz = "Asia/Shanghai")
-      )][, .(date, symbol, name, open, high, low, close=price, prev_close=yestclose, change=updown, change_pct=percent*100, volume, amount=turnover, turnover=hs*100, cap_market=mcap, cap_total=tcap, pe_last=pe, eps=mfsum, net_income, revenue, plate_ids, time=as.POSIXct(time))]
+      )][, .(symbol, name, date, open, high, low, close=price, prev_close=yestclose, change=updown, change_pct=percent*100, volume, amount=turnover, turnover=hs*100, cap_market=mcap, cap_total=tcap, pe_last=pe, eps=mfsum, net_income, revenue, plate_ids, time=as.POSIXct(time))]
     } else if (mkt == "index") {
       names(jsonDF) = tolower(names(jsonDF))
       
       jsonDF = setDT(jsonDF)[,`:=`(
         date = as.Date(substr(jsonDat$time,1,10))
-      )][, .(date, symbol, name, open, high, low, close=price, prev_close=yestclose, change=updown, change_pct=percent*100, volume, amount=turnover, time=as.POSIXct(time))]
+      )][, .(symbol, name, date, open, high, low, close=price, prev_close=yestclose, change=updown, change_pct=percent*100, volume, amount=turnover, time=as.POSIXct(time))]
     }
     
     return(jsonDF[, `:=`(market = mkt, region = "cn")])
@@ -68,7 +68,7 @@ md_stock_spotall_163 = function(symbol = "a,index", only_symbol = FALSE) {
   }
   
   
-  return(df_stock_cn)
+  return(df_stock_cn[,unit := 'CNY'])
 }
 
 
@@ -108,7 +108,7 @@ md_stock_spot1_tx = function(symbol1) {
     "open", "high", "low", "close", "prev_close", "change", "change_pct", "volume", "amount", "turnover", "cap_market", "cap_total", "pb", "pe_last", "pe_trailing", "pe_forward"
   )
   dt = dt[,.(
-    date, symbol, name, open, high, low, close, prev_close, change, change_pct, volume, amount, turnover, cap_market, cap_total, pb, pe_last, pe_trailing, pe_forward#, 
+    symbol, name, date, open, high, low, close, prev_close, change, change_pct, volume, amount, turnover, cap_market, cap_total, pb, pe_last, pe_trailing, pe_forward#, 
     #buy, sell, 
     #bid1, bid1_volume, bid2, bid2_volume, bid3, bid3_volume, bid4, bid4_volume, bid5, bid5_volume, 
     #ask1, ask1_volume, ask2, ask2_volume, ask3, ask3_volume, ask4, ask4_volume, ask5, ask5_volume
@@ -125,7 +125,7 @@ md_stock_spot1_tx = function(symbol1) {
   if (dt[1,time] < as.POSIXct(paste(dt[1,date], '15:00:00')))
     cat("The close price is spot price at", dt[1,as.character(time)], "\n")
   
-  return(dt)
+  return(dt[,unit := 'CNY'])
 }
 
 
@@ -141,7 +141,7 @@ md_stock_hist1_163 = function(symbol1, from="1900-01-01", to=Sys.Date(), fillzer
   # {'D': 'akdaily', 'W': 'akweekly', 'M': 'akmonthly'}
   
   # symbol
-  syb = check_symbol_for_163(symbol1)
+  syb = check_symbol_for_163(symbol1) # print(syb)
 
   # date range
   fromto = lapply(list(from=from,to=to), function(x) format(check_fromto(x), "%Y%m%d"))
@@ -184,9 +184,27 @@ md_stock_hist1_163 = function(symbol1, from="1900-01-01", to=Sys.Date(), fillzer
     dt = dt[, (cols_name) := lapply(.SD, fill0), .SDcols = cols_name]
   }
   
-  return(dt)
+  return(dt[,unit := 'CNY'])
 }
 
+md_stock_divsplit_163 = function(symbol1, from, to) {
+  urli = sprintf('http://quotes.money.163.com/f10/fhpg_%s.html#01d05', sub('.*?([0-9]{6}).*?','\\1',symbol1))
+  wb = read_html(urli)
+  tbls = html_table(wb, fill = TRUE, header = TRUE)
+               
+  fenhong = setDT(tbls[[4]])[-1,c(3:5,7)][, lapply(.SD, function(x) replace(x, x=='--', NA))]
+  setnames(fenhong, c('送股', '转增', '分红', 'date'))
+  fenhong = melt(dt, id='date')[, value := as.numeric(value)][value != 0 & !is.na(value)]
+  
+  # 送股 转增 分红 
+  # 配股 增发
+  peigu = setDT(tbls[[5]])[,c(8,2,3,5,4,6,7)]
+  setnames(peigu, c('date', '配股', '配股价', '实际配股数量', '配股对象', '配股前总股本', '实际配股比例'))
+  zengfa = setDT(tbls[[6]])[,c(7,5,3,4)]
+  setnames(zengfa, c('date', '增发价', '增发数量', '募资总额'))
+  
+  return(list(fenhong, peigu, zengfa))
+}
 
 #' @import data.table
 md_stock_163 = function(symbol, from="1900-01-01", to=Sys.Date(), print_step=1L, freq = "daily", fillzero=FALSE, ...) {
@@ -204,14 +222,13 @@ md_stock_163 = function(symbol, from="1900-01-01", to=Sys.Date(), print_step=1L,
     } else {
       fuc = 'md_stock_spot1_tx'
     }
-    
     dat_list <- try(do.call(fuc, args=list(symbol=symbol)), silent = TRUE)
-    return(dat_list)
     
   } else {
     dat_list = load_dat_loop(symbol, "md_stock_hist1_163", args = list(from = from, to = to, fillzero = fillzero), print_step=print_step)
-    return(dat_list)
+    
   }
+  return(dat_list)
 }
 
 

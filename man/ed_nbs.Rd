@@ -7,17 +7,20 @@
 \url{http://data.stats.gov.cn/index.htm}
 }
 \usage{
-ed_nbs(geo_type = NULL, freq = NULL, symbol = NULL, region = NULL,
-  from = "2010-01-01", to = Sys.Date(), na_rm = FALSE, eng = FALSE)
+ed_nbs(symbol = NULL, freq = NULL, geo_type = NULL,
+  subregion = NULL, date_range = "10y", from = NULL,
+  to = Sys.Date(), na_rm = FALSE, eng = FALSE)
 }
 \arguments{
-\item{geo_type}{geography type in NBS, including 'national', 'province', 'city'. Default is NULL.}
+\item{symbol}{symbol of indicators in NBS, which is available via ed_nbs_symbol. Default is NULL.}
 
 \item{freq}{the frequency of indicators in NBS, including 'monthly', 'quarterly', 'yearly'. Default is NULL.}
 
-\item{symbol}{symbol of indicators in NBS, which is available via ed_nbs_symbol. Default is NULL.}
+\item{geo_type}{geography type in NBS, including 'national', 'province', 'city'. Default is NULL.}
 
-\item{region}{region codes of province or city, which is available via ed_nbs_region. Default is NULL.}
+\item{subregion}{codes of province or city, which is available via ed_nbs_subregion. Default is NULL.}
+
+\item{date_range}{}
 
 \item{from}{the start date. Default is '2010-01-01'.}
 
@@ -43,13 +46,13 @@ dt1 = ed_nbs(geo_type='national', freq='quarterly',
 dt2 = ed_nbs(geo_type='n', freq='q', symbol='A010101')
 
 
-# query data of one region
+# query data of one subregion
 dt3 = ed_nbs(geo_type='province', freq='quarterly', 
-  symbol='A010101', region='110000', from='2010-03-01', to='2010-03-01')
+  symbol='A010101', subregion='110000', from='2010-03-01', to='2010-03-01')
   
 # query data of all province
 dt4 = ed_nbs(geo_type='province', freq='quarterly', 
-  symbol='A010101', region='all', from='2010-03-01', to='2010-03-01')
+  symbol='A010101', subregion='all', from='2010-03-01', to='2010-03-01')
 }
 
 }

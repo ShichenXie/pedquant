@@ -1,6 +1,6 @@
 # to_period in xts package
 
-ped1_dtow = function(dat) {
+pd1_dtow = function(dat) {
     w=wi=.=symbol=name=high=low=volume=NULL
     
     dat[, w := isoweek(date)
@@ -16,7 +16,7 @@ ped1_dtow = function(dat) {
     
     return(dat2)
 }
-ped1_dtom = function(dat) {
+pd1_dtom = function(dat) {
     .=symbol=name=high=low=volume=NULL
     
     dat2 = dat[, .(
@@ -27,7 +27,7 @@ ped1_dtom = function(dat) {
     
     return(dat2)
 }
-ped1_dtoq = function(dat) {
+pd1_dtoq = function(dat) {
     . = symbol = name = high = low = volume = NULL
     
     dat2 = dat[, .(
@@ -38,7 +38,7 @@ ped1_dtoq = function(dat) {
     
     return(dat2)
 }
-ped1_dtoy = function(dat) {
+pd1_dtoy = function(dat) {
     .=symbol=name=high=low=volume=NULL
     
     dat2 = dat[, .(
@@ -59,14 +59,14 @@ check_freq_isdaily = function(dat) {
   return(isdaily)
 }
 
-ped1_to_freq = function(dat, freq) {
+pd1_to_freq = function(dat, freq) {
     . = high = low = name = symbol = volume = NULL
     
     if (freq == "daily" || !check_freq_isdaily(dat)) return(dat)
     setkeyv(dat, "date")
     
     # change
-    dat2 = do.call(paste0("ped1_dto",substr(freq,1,1)), list(dat=dat))
+    dat2 = do.call(paste0("pd1_dto",substr(freq,1,1)), list(dat=dat))
     
     # symbol and name
     if (all(c("symbol","name") %in% names(dat))) {
@@ -85,13 +85,13 @@ ped1_to_freq = function(dat, freq) {
 #' @param print_step A non-negative integer, which will print symbol name by each print_step iteration. Default is 1. 
 #' 
 #' @examples 
-#' dts = md(c("^000001", "000001"), from = "1990-01-01", source = "163")
+#' dts = md_stock(c("^000001", "000001"), date_range = 'max', source = '163')
 #' 
-#' dts_weekly = ped_to_freq(dts, "weekly")
+#' dts_weekly = pd_to_freq(dts, "weekly")
 #' 
 #' @export
 #' 
-ped_to_freq = function(dt, freq, print_step=0L) {
+pd_to_freq = function(dt, freq, print_step=0L) {
     symbol = len_names = dt_names = NULL
     # check freq argument
     freq = check_arg(freq, c("weekly","monthly","quarterly","yearly"), "weekly")
@@ -106,7 +106,7 @@ ped_to_freq = function(dt, freq, print_step=0L) {
       setkeyv(dt_s, "date")
       
       if ((print_step>0) & (i %% print_step == 0)) cat(sprintf('%s/%s %s\n', i, len_names, dt_names[i]))
-      dt_list[[s]] = do.call(ped1_to_freq, args = list(dat=dt_s, freq=freq))
+      dt_list[[s]] = do.call(pd1_to_freq, args = list(dat=dt_s, freq=freq))
     }
     
     

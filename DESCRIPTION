@@ -12,8 +12,8 @@ Authors@R:
 Depends: 
     R (>= 3.1.0)
 Imports: 
-    data.table, 
-    httr, curl, xml2, 
+    data.table, TTR, 
+    httr, curl, xml2, rvest,
     jsonlite, stringi, 
     readxl, readr, 
     ggplot2, gridExtra

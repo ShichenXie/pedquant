@@ -3,31 +3,21 @@
 
 # selecting nbs_url in Chinese or English
 sel_nbs_url = function(eng) {
-  nbs_url = 'http://data.stats.gov.cn/easyquery.htm'
-  if (eng) nbs_url = 'http://data.stats.gov.cn/english/easyquery.htm'
-  
-  return(nbs_url)
+  url = 'http://data.stats.gov.cn/easyquery.htm'
+  if (eng) url = 'http://data.stats.gov.cn/english/easyquery.htm'
+  return(url)
 }
 
+# dimension of NBS database
 #' @import data.table
-df_nbs_geo = function() {
-  dim_region = rep('cn',8)
-  dim_geo_type = rep(c('national', 'province', 'city'), c(3,3,2))
-  dim_freq = c("monthly","quarterly","yearly", "monthly","quarterly","yearly", "monthly","yearly")
-  dim_sta_db = c("hgyd","hgjd","hgnd","fsyd","fsjd","fsnd","csyd","csnd")
-  
-  dfdim_sta_db = data.table(dim_region, dim_geo_type, dim_freq, dim_sta_db)
-  return(dfdim_sta_db)
-}
-
-# check frequency
-check_arg_nbsfreq = function(freq, geo_type) {
-  # frequency_list
-  freq_list = c("monthly", "quarterly", "yearly")
-  if (geo_type=="city") freq_list = setdiff(freq_list, "quarterly")
-  
-  freq = check_arg(freq, freq_list)
-  return(freq)
+dim_nbs_db = function() {
+  nbs_db = setDT(list(
+    dim_region   = rep('cn',8),
+    dim_geo_type = rep(c('national', 'province', 'city'), c(3,3,2)),
+    dim_freq     = c("monthly","quarterly","yearly", "monthly","quarterly","yearly", "monthly","yearly"),
+    dim_sta_db   = c("hgyd","hgjd","hgnd","fsyd","fsjd","fsnd","csyd","csnd")
+  ))
+  return(nbs_db)
 }
 
 # check http status
@@ -36,10 +26,10 @@ check_http_status_nbs = function(x) {
   if (http_status(x)$category != "Success") stop(http_status(x)$message)
 }
 
-# query symbols in nbs
+# query a symbol from nbs
 #' @import data.table httr
 #' @importFrom jsonlite fromJSON 
-ed_nbs_1symbol = function(geo_type=NULL, freq=NULL, symbol='zb', eng=FALSE) {
+nbs_symbol1 = function(geo_type=NULL, freq=NULL, symbol='zb', eng=FALSE) {
   dim_geo_type = dim_freq = dim_region = dim_sta_db = . = id = name = isParent = pid = NULL
   
   #param
@@ -47,7 +37,7 @@ ed_nbs_1symbol = function(geo_type=NULL, freq=NULL, symbol='zb', eng=FALSE) {
   time_sec = as.character(date_to_sec()*100)
   if (is.null(symbol)) symbol = 'zb'
   # name of geography in NBS
-  nbs_geo = df_nbs_geo()[
+  nbs_geo = dim_nbs_db()[
     dim_region=='cn' & dim_geo_type==geo_type & dim_freq==freq , dim_sta_db]
   
   # query symbol list from nbs
@@ -80,40 +70,22 @@ ed_nbs_symbol = function(geo_type=NULL, freq=NULL, eng=FALSE) {
   symbol = isParent = NULL
   
   # geography type
-  geo_type = check_arg(geo_type, c("national", "province", "city"))
+  geo_type = check_arg(geo_type, choices = c("national", "province", "city"), arg_name = 'geo_type')
   # frequency
-  freq = check_arg_nbsfreq(freq, geo_type)
-  
-  selecting = TRUE
-  while (selecting) {
-  # type in selected symbol
-    sel_symbol = NULL
-    is_parent = TRUE
-    while (is_parent) {
-      symbol_df = ed_nbs_1symbol(geo_type, freq, sel_symbol, eng)
-      print(symbol_df)
-      
-      sel_symbol = readline("Select a symbol (until isParent==FALSE): ")
-      while (grepl("r", sel_symbol)) {
-        row_id = as.integer(gsub("^r", "", sel_symbol))
-        if (row_id %in% symbol_df[,.I]) {
-          sel_symbol = symbol_df[row_id, symbol]  
-        } else {
-          sel_symbol = readline("Select a symbol (until isParent==FALSE): ")
-        }
-      }
-      
-      if ( sel_symbol %in% symbol_df$symbol ) {
-        is_parent = symbol_df[symbol==sel_symbol, isParent]
-      } else if (sel_symbol %in% symbol_df$symbolParent) {
-        is_parent = TRUE
-      } else {
-        sel_symbol = readline("Incorrect input. Select the symbol again: ")
-      }
-    }
-    selecting = menu(c("yes", "no"), title="Choose this symbol?")-1
+  if (geo_type=="city") {
+    freq = check_arg(freq, choices = c("monthly", "yearly"), arg_name = 'freq')
+  } else {
+    freq = check_arg(freq, choices = c("monthly", "quarterly", "yearly"), arg_name = 'freq')
   }
-   
+  
+  sel_symbol = NULL
+  is_parent = TRUE
+  while (is_parent) {
+    symbol_df = nbs_symbol1(geo_type, freq, sel_symbol, eng)
+    sel_symbol = select_rows_df(symbol_df, column='symbol', onerow=TRUE)
+    is_parent = sel_symbol[, isParent]
+    sel_symbol = sel_symbol[, symbol]
+  }
   return(sel_symbol)
 }
 
@@ -121,27 +93,27 @@ ed_nbs_symbol = function(geo_type=NULL, freq=NULL, eng=FALSE) {
 
 #' query code of subregion in China from NBS
 #' 
-#' \code{ed_nbs_region} query province or city code from NBS
+#' \code{ed_nbs_subregion} query province or city code from NBS
 #' 
 #' @param geo_type geography type in NBS, including 'province', 'city'. Default is "".
 #' @param eng logical. Default is FALSE. If it is FALSE, the result is in Chinese, otherwise in English.
 #' 
 #' @examples 
 #' #  province code 
-#' prov1 = ed_nbs_region(geo_type = 'province') 
+#' prov1 = ed_nbs_subregion(geo_type = 'province') 
 #' # or using 'p' represents 'province'
-#' prov2 = ed_nbs_region(geo_type = 'p') 
+#' prov2 = ed_nbs_subregion(geo_type = 'p') 
 #' 
 #' \dontrun{
 #' #  city code in Chinese
-#' city = ed_nbs_region(geo_type = 'c', eng = FALSE) 
+#' city = ed_nbs_subregion(geo_type = 'c', eng = FALSE) 
 #' #  city code in English
-#' city = ed_nbs_region(geo_type = 'c', eng = TRUE) 
+#' city = ed_nbs_subregion(geo_type = 'c', eng = TRUE) 
 #' }
 #' 
 #' @importFrom jsonlite fromJSON 
 #' @export
-ed_nbs_region = function(geo_type="", eng=FALSE) {
+ed_nbs_subregion = function(geo_type="", eng=FALSE) {
   dim_region = dim_geo_type = dim_sta_db = . = code = name = NULL
   
   # param
@@ -149,17 +121,17 @@ ed_nbs_region = function(geo_type="", eng=FALSE) {
   time_sec = as.character(date_to_sec()*100)
   
   # geography type
-  geo_type = check_arg(geo_type, c("province", "city"), default = NULL)
+  geo_type = check_arg(geo_type, c("province", "city"), default = NULL, arg_name = 'geo_type')
   if (geo_type == 'national') return(NULL)
   # name of geography in NBS
-  nbs_geo = df_nbs_geo()[
+  nbs_geo = dim_nbs_db()[
     dim_region=='cn' & dim_geo_type==geo_type, ][.N,dim_sta_db]
   
   # wds
   wds='[{"wdcode":"reg","valuecode":"00"}]'
   if (geo_type == 'city') wds='[{"wdcode":"reg","valuecode":"000000"}]'
   
-  # query region
+  # query subregion
   query_list = list(
     m="getOtherWds",
     dbcode=nbs_geo,
@@ -176,58 +148,10 @@ ed_nbs_region = function(geo_type="", eng=FALSE) {
   
   return(regdf)
 }
-# check region
-check_nbs_region = function(region, geo_type, eng){
-  code = NULL
-  
-  if (grepl('^n', geo_type)) {
-    return(NULL)
-  } else if (grepl('^p|^c', geo_type)) {
-    if (any(region =='all')) return(region)
-    
-    # dataframe of subregions in CHina
-    regdf = ed_nbs_region(geo_type, eng)
-    
-    # all regions?
-    all_regioin_notin_regdf = is.null(region) || any((region %in% regdf$code) == FALSE)
-    if (all_regioin_notin_regdf) {
-      print(setDF(copy(regdf)))
-      sel_region = readline("Select regions' rowid: ")
-      
-      if (sel_region=='all') return(sel_region)
-      sel_region = sprintf('c(%s)', gsub('-',':',gsub(' ','',sel_region))) 
-      sel_region = eval(parse(text = sel_region))
-      sel_region = regdf[sel_region, code]
-    }
-    return(sel_region)
-  }
-  
-}
 
-
-
-# transform the from/to date to monthly, quarterly, or anuual 
-# (ex:'2000-01-01' --> '200001', '2000A', '2000')
-date_to_mqa = function(from, to, freq) {
-  if (freq == 'monthly') {
-    from2 = format(as.Date(from), '%Y%m')
-    to2 = format(as.Date(to), '%Y%m')
-  } else if (freq == 'quarterly') {
-    y = sapply(list(from,to), function(x) format(as.Date(x), '%Y'))
-    q = LETTERS[ceiling(sapply(list(from,to), function(x) as.integer(format(as.Date(x), '%m')))/3)]
-    from2 = paste0(y[1], q[1])
-    to2 = paste0(y[2], q[2])
-  } else {
-    from2 = format(as.Date(from), '%Y')
-    to2 = format(as.Date(to), '%Y')
-  }
-  
-  return(list(from2, to2))
-}
-
-#  query data # zb symbol, sj date, reg region
+#  query data # zb symbol, sj date, reg subregion
 #' @importFrom jsonlite fromJSON 
-ed1_nbs = function(nbs_geo, symbol1, region=NULL, from, eng=FALSE) {
+ed1_nbs = function(nbs_geo, symbol1, subregion=NULL, from, eng=FALSE) {
   url_nbs = sel_nbs_url(eng)
   time_sec = as.character(date_to_sec()*100)
   
@@ -237,13 +161,13 @@ ed1_nbs = function(nbs_geo, symbol1, region=NULL, from, eng=FALSE) {
   date_rng = floor( date_rng/(c(30, 90, 365)[freq_mqa]) )
   sj_value = paste0("LAST",date_rng)
   
-  # region parm
-  wds = ifelse( is.null(region), '[]',
-    paste0('[{"wdcode":"reg","valuecode":"',region,'"}]') )
+  # subregion parm
+  wds = ifelse( is.null(subregion), '[]',
+    paste0('[{"wdcode":"reg","valuecode":"',subregion,'"}]') )
   
   rowcode = 'zb'
-  if (!is.null(region)) {
-    if (grepl('^fs|^cs', nbs_geo) & ('all' %in% region || length(region)>1)) rowcode = 'reg'
+  if (!is.null(subregion)) {
+    if (grepl('^fs|^cs', nbs_geo) & ('all' %in% subregion || length(subregion)>1)) rowcode = 'reg'
   }
   
   # query list
@@ -288,15 +212,29 @@ nbs_jsondat_format = function(jsondat) {
     code_df, dat[,.(value= as.numeric(gsub(',| ','',strdata)))]
   )[syb_df, on='symbol']
   
-  # merge region with data
+  # merge subregion with data
   if ('reg' %in% code_names) {
     reg_df = setDT(jsondat$returndata$wdnodes$nodes[[which('reg' == code_names)]])[,.(region_name=cname, region_code=code)]
     
-    dat2 = dat2[reg_df, on='region_code'][, c("date", "symbol", "name", "value", "unit", "region_code", "region_name"), with=FALSE]
+    dat2 = dat2[reg_df, on='region_code'][, c("symbol", "name", "date", "value", "unit", "region_code", "region_name"), with=FALSE]
   } else {
-    dat2 = dat2[, c("date", "symbol", "name", "value", "unit"), with=FALSE]
+    dat2 = dat2[, c("symbol", "name", "date", "value", "unit"), with=FALSE]
   }
   
+  # date formating
+  if (dat2[,unique(nchar(date))]==6) { # monthly
+    dat2[, date := paste0(date,'01')]
+  } else if (dat2[,unique(nchar(date))]==5) { # quarterly
+    dat2[grepl('A$',date), date := paste0(substr(date,1,4),'0101')
+       ][grepl('B$',date), date := paste0(substr(date,1,4),'0401')
+       ][grepl('C$',date), date := paste0(substr(date,1,4),'0701')
+       ][grepl('D$',date), date := paste0(substr(date,1,4),'1001')]
+  } else { # yearly
+    dat2[, date := paste0(date,'0101')]
+  }
+  dat2[, date := as.Date(date, format='%Y%m%d')]
+  
+  # set date as key
   setkeyv(dat2, c("symbol", "date"))
   return(dat2)
 }
@@ -306,10 +244,11 @@ nbs_jsondat_format = function(jsondat) {
 #' 
 #' \code{ed_nbs} provides an interface to query economic data from National Bureau of Statistics of China (NBS).
 #' 
-#' @param geo_type geography type in NBS, including 'national', 'province', 'city'. Default is NULL.
-#' @param freq the frequency of indicators in NBS, including 'monthly', 'quarterly', 'yearly'. Default is NULL.
 #' @param symbol symbol of indicators in NBS, which is available via ed_nbs_symbol. Default is NULL.
-#' @param region region codes of province or city, which is available via ed_nbs_region. Default is NULL.
+#' @param freq the frequency of indicators in NBS, including 'monthly', 'quarterly', 'yearly'. Default is NULL.
+#' @param geo_type geography type in NBS, including 'national', 'province', 'city'. Default is NULL.
+#' @param subregion codes of province or city, which is available via ed_nbs_subregion. Default is NULL.
+#' @param date_range 
 #' @param from the start date. Default is '2010-01-01'.
 #' @param to the end date. Default is current system date.
 #' @param na_rm logical. If it is TRUE, the missing values will be removed. Default is FALSE.
@@ -330,57 +269,63 @@ nbs_jsondat_format = function(jsondat) {
 #' dt2 = ed_nbs(geo_type='n', freq='q', symbol='A010101')
 #' 
 #' 
-#' # query data of one region
+#' # query data of one subregion
 #' dt3 = ed_nbs(geo_type='province', freq='quarterly', 
-#'   symbol='A010101', region='110000', from='2010-03-01', to='2010-03-01')
+#'   symbol='A010101', subregion='110000', from='2010-03-01', to='2010-03-01')
 #'   
 #' # query data of all province
 #' dt4 = ed_nbs(geo_type='province', freq='quarterly', 
-#'   symbol='A010101', region='all', from='2010-03-01', to='2010-03-01')
+#'   symbol='A010101', subregion='all', from='2010-03-01', to='2010-03-01')
 #' }
 #' 
 #' @import data.table
 #' @export
-ed_nbs = function(geo_type=NULL, freq=NULL, symbol=NULL, region=NULL, from='2010-01-01', to=Sys.Date(), na_rm=FALSE, eng=FALSE) {
+ed_nbs = function(symbol=NULL, freq=NULL, geo_type=NULL, subregion=NULL, date_range='10y', from=NULL, to=Sys.Date(), na_rm=FALSE, eng=FALSE) {
   dim_region = dim_geo_type = dim_freq = dim_sta_db = value = NULL
   
-  # geography type
-  geo_type = check_arg(geo_type, c("national", "province", "city"))
-  # frequency
-  freq = check_arg_nbsfreq(freq, geo_type)
-  
-  # name of geography in NBS
-  nbs_geo = df_nbs_geo()[
-    dim_region=='cn' & dim_geo_type==geo_type & dim_freq==freq , dim_sta_db]
-  
-  # symbol
+  # arguments
+  ## geography type
+  geo_type = check_arg(geo_type, c("national", "province", "city"), arg_name = 'geo_type')
+  ## frequency
+  if (geo_type=="city") {
+    freq = check_arg(freq, choices = c("monthly", "yearly"), arg_name = 'freq')
+  } else {
+    freq = check_arg(freq, choices = c("monthly", "quarterly", "yearly"), arg_name = 'freq')
+  }
+  ## symbol
   if (is.null(symbol)) symbol = ed_nbs_symbol(geo_type, freq, eng)
-  # region
-  if (is.null(region)) region = check_nbs_region(region, geo_type, eng)
-  # from/to
-  from = check_fromto(from)
-  to = check_fromto(to)
-  fromto = date_to_mqa(from, to, freq)
+  ## subregion
+  while (geo_type %in% c('province', 'city') & (is.null(subregion) || length(subregion)==0)) {
+    subregion_df = ed_nbs_subregion(geo_type, eng)
+    subregion = select_rows_df(subregion_df, column='code')[,code]
+  }
+  ## from/to
+  date_range = check_date_range(date_range, default = "max")
+  from = get_from_daterange(date_range, to, min_date = "1000-01-01")
+  # fromto = date_to_mqa(from, to, freq)
   
   # jsondat
-  jsondat = NULL
+  jsondat_list = NULL
+  # name database
+  nbs_geo = dim_nbs_db()[dim_geo_type==geo_type & dim_freq==freq, dim_sta_db]
   for (s in symbol) {
-    jsondat[[s]] = ed1_nbs(nbs_geo, symbol1=s, region, from, eng)
+    temp = ed1_nbs(nbs_geo, symbol1=s, subregion, from, eng)
+    temp = nbs_jsondat_format(temp)[date>=from & date<=to,]
+    if (!is.null(subregion)) temp = temp[region_code %in% subregion]
+    if (na_rm) temp = temp[!is.na(value)]
+    jsondat_list[[s]] = temp
   }
-  # rbindlist jsondat
-  dat = rbindlist(lapply(jsondat, nbs_jsondat_format), fill=TRUE)[date>=fromto[[1]] & date<=fromto[[2]],]
+  dat = rbindlist(jsondat_list, fill = TRUE)
   
-  # filter dat by region if length(region)>1
-  if (length(region) > 1 & !("all" %in% region)) {
-    row_idx = which(dat$region %in% region)
-    dat = dat[row_idx,]
+  # data list
+  sybs = dat[,unique(symbol)]
+  dat_lst = NULL
+  for (i in sybs) {
+    temp = dat[symbol==i]
+    setkey(temp, 'date')
+    dat_lst[[i]] = temp
   }
-  
-  # remove na rows
-  if (na_rm) dat = dat[!is.na(value)]
-  setkey(dat, "date")
-    
-  return(dat)
+  return(dat_lst)
 }
 
 # library(data.table)

@@ -6,7 +6,7 @@
 #' @export
 md_future_symbol = function() {
     # cat("More commodity symbols go to\n", "http://vip.stock.finance.sina.com.cn/quotes_service/view/qihuohangqing.html\n\n")
-    syb = setDT(copy(symbol_future_sina))[,.(exchange, board, symbol, name)]
+    syb = setDT(copy(symbol_future_sina))[,.(symbol, name, board, exchange)]
     return(syb)
 }
 
@@ -44,10 +44,10 @@ md_future1_sina = function(symbol, freq, from, to, handle, ...) {
     dt = dt[, `:=`(
         V1 = NULL, symbol=syb, name=nam
     )][date >= from & date <= to,
-     ][,.(date, symbol, name, open, high, low, close, volume)]
+     ][,.(symbol, name, date, open, high, low, close, volume)]
     
     setkeyv(dt, "date")
-    return(dt)
+    return(dt[,unit := 'CNY'])
 }
 
 #' get future data
@@ -60,9 +60,9 @@ md_future = function(symbol=NULL, freq="daily", date_range='3y', from=NULL, to=S
     symbol_sina = md_future_symbol()
     ## symbol
     if (is.null(symbol)) {
-        syb = select_rows_df(symbol_sina[,.(symbol,name)], column='symbol')[,symbol]
+        syb = select_rows_df(symbol_sina, column='symbol')[,symbol]
     } else if (length(symbol)==1) {
-        syb = select_rows_df(symbol_sina[,.(symbol,name)], column='symbol', input_string=syb)[,symbol]
+        syb = select_rows_df(symbol_sina, column='symbol', input_string=syb)[,symbol]
     }
     syb = intersect(syb, symbol_sina$symbol)
     ## from

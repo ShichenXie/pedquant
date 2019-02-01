@@ -7,7 +7,7 @@
 
 # create a fixed-base index from chain index
 #' @import data.table
-ped_fbi = function(dt, chain_index, num=1, base_index=1, base_date="2006-01-01") {
+pd_fbi = function(dt, chain_index, num=1, base_index=1, base_date="2006-01-01") {
     index = NULL
     
     # the row index of base
@@ -42,8 +42,8 @@ fbi_cpicn = function(sybs = c("A01010101", "A01010201","A01030101", "A01030201")
     )[, date := as.Date(paste0(date,"01"),format="%Y%m%d")]
     setnames(cpicn2, c("date", "cpi_yoy", "cpi_mom"))
     
-    cpi_fbi = ped_fbi(
-        dt = ped_fbi(cpicn2, chain_index = "cpi_mom"),
+    cpi_fbi = pd_fbi(
+        dt = pd_fbi(cpicn2, chain_index = "cpi_mom"),
         chain_index = "cpi_yoy", num=12)
     
     return(cpi_fbi[,.(date,index)])
@@ -53,7 +53,7 @@ fbi_cpicn = function(sybs = c("A01010101", "A01010201","A01030101", "A01030201")
 
 
 # ped in real price
-ped_rp1 = function(dt, region="cn", columns = c("open", "high", "low", "close")) {
+pd_rp1 = function(dt, region="cn", columns = c("open", "high", "low", "close")) {
     date2 = . = index = NULL
     
     if (is.list(dt) & !is.data.frame(dt)) dt = rbindlist(dt, fill = TRUE)
@@ -69,13 +69,13 @@ ped_rp1 = function(dt, region="cn", columns = c("open", "high", "low", "close"))
    return(dt_rp)
 }
 # ssec_nomial = getmd("^000001", from="1900-01-01", source="163")
-# ssec_real = getpedr:::ped_rp1(ssec_nomial)
+# ssec_real = getpedr:::pd_rp1(ssec_nomial)
 
 
 
 #' create an index 
 #' 
-#' ped_index using the method of geometrically weighted averages to create an index based on multiple timeseries datasets.
+#' pd_index using the method of geometrically weighted averages to create an index based on multiple timeseries datasets.
 #' 
 #' @param dt input timeseries datasets
 #' @param chain_index the name of chain index
@@ -95,7 +95,7 @@ ped_rp1 = function(dt, region="cn", columns = c("open", "high", "low", "close"))
 #' x$change_pct = x$change_pct/100+1
 #' return(x)})
 #' 
-#' bankindex = ped_index(dat, chain_index="change_pct", weight="cap_total")
+#' bankindex = pd_index(dat, chain_index="change_pct", weight="cap_total")
 #' 
 #' # example II golden share index
 #' # sybs = getmd_symbol(market = "stock", source="163")
@@ -109,7 +109,7 @@ ped_rp1 = function(dt, region="cn", columns = c("open", "high", "low", "close"))
 #'   x$change_pct = x$change_pct/100+1
 #'   return(x)})
 #' 
-#' gold_index = ped_index(dat, chain_index="change_pct", weight="cap_total")
+#' gold_index = pd_index(dat, chain_index="change_pct", weight="cap_total")
 #' 
 #' 
 #' # III
@@ -120,16 +120,16 @@ ped_rp1 = function(dt, region="cn", columns = c("open", "high", "low", "close"))
 #'   x$change_pct = x$change_pct/100+1
 #'   return(x)})
 #' 
-#' securities_index = ped_index(dat, chain_index="change_pct", weight="cap_total")
+#' securities_index = pd_index(dat, chain_index="change_pct", weight="cap_total")
 #' 
-#' # ped_plot(securities_index)
+#' # pd_plot(securities_index)
 #' 
 #' }
 #' 
 #' @import data.table
 #' @export
-ped_index = function(dt, chain_index, weight, base_index=1, base_date="2010-01-01", name=NULL) {
-    w = ci = cw = ped_fbi = V1 = . = index = NULL
+pd_index = function(dt, chain_index, weight, base_index=1, base_date="2010-01-01", name=NULL) {
+    w = ci = cw = V1 = . = index = NULL
     
     if (is.list(dt) & !is.data.frame(dt)) dt = rbindlist(dt, fill = TRUE)
     setkey(dt, "date")
@@ -142,7 +142,7 @@ ped_index = function(dt, chain_index, weight, base_index=1, base_date="2010-01-0
      ][V1 != 0]
     
     if (is.null(name)) name = 'index'
-    return(ped_fbi(dt, "V1", base_index=base_index, base_date=base_date)[,.(date, symbol = name, value=index)])
+    return(pd_fbi(dt, "V1", base_index=base_index, base_date=base_date)[,.(date, symbol = name, value=index)])
 }
 
 

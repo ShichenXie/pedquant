@@ -1,9 +1,9 @@
 #' @importFrom curl handle_setopt new_handle curl_download handle_cookies
-handle_new_session = function(url="https://finance.yahoo.com", curl_options=list(), env = NULL, handle_name = ".handle") {
+handle_new_session = function(url="https://finance.yahoo.com", curl_options=list(), env = NULL, handle_name = ".handle", reload = FALSE) {
     h = NULL
     if (!is.null(env)) h = get0(handle_name, env)
     
-    if (is.null(h)) {
+    if (is.null(h) || reload) {
       tmp <- tempfile()
       on.exit(unlink(tmp))
       for (i in 1:5) {
@@ -26,7 +26,7 @@ handle_new_session = function(url="https://finance.yahoo.com", curl_options=list
 yahoo_crumb = function(handle) {
     # crumb
     url_getcrumb = sprintf("https://query%s.finance.yahoo.com/v1/test/getcrumb", ifelse(unclass(Sys.time()) %% 1L >= 0.5, 1L, 2L))
-    cres = curl_fetch_memory(url_getcrumb, handle = handle)
+    cres = try(curl_fetch_memory(url_getcrumb, handle = handle), silent = TRUE)
     crumb = rawToChar(cres$content)
     
     return(crumb)
@@ -45,26 +45,27 @@ get_symbol_name_yahoo = function(syb, encode='UTF-8', handle=new_handle()) {
   syb_nam = xml_text(xml_find_all(dat, '//h1'))
   syb_nam = unlist(strsplit(syb_nam, ' - '))
   # Location, Currency
-  # syb_nam2 = xml_text(xml_find_all(dat, '//div[@id="quote-header-info"]//span'))
-  # syb_nam2 = unlist(strsplit(syb_nam2[1], ' - |\\. Currency in '))[c(1,3)]
-  return(syb_nam)#list(sn=syb_nam, lc=syb_nam2))
+  syb_nam2 = xml_text(xml_find_all(dat, '//div[@id="quote-header-info"]//span'))
+  syb_nam2 = unlist(strsplit(syb_nam2[1], ' - |\\. Currency in '))[c(1,3)]
+  return(list(symbol=syb_nam[1], name=syb_nam[2], currency=syb_nam2[2]))#list(sn=syb_nam, lc=syb_nam2))
 }
 # stock, world index
 # type = c("history", "div", "split")
 # https://query1.finance.yahoo.com/v7/finance/download/000001.SZ?period1=1511841299&period2=1543377299&interval=1d&events=split&crumb=j/T2/8/3fvH
 #' @importFrom curl curl_fetch_memory 
-md_stock1_yahoo = function(symbol, handle, crumb, freq="daily", from="1900-01-01", to=Sys.time(), type="history", adjust = FALSE, ...) {
+md_stock1_yahoo = function(symbol, handle, crumb, freq="daily", from="1900-01-01", to=Sys.time(), type="history", na_rm = FALSE, adjust = FALSE, ...) {
     . = high = low = close_adj = volume = NULL
     
     # symbol
     syb = check_symbol_for_yahoo(symbol)
     # type
-    type = check_arg(type, c('history', 'div', 'split'), default = 'history')
+    type = check_arg(type, c('history', 'dividends', 'splits'), default = 'history')
+    if (type=='dividends') {type = 'div'} else if (type=='splits') {type = 'split'}
+    # symbol, name, currency
+    syb_nam_cur = get_symbol_name_yahoo(syb, handle = handle)
     
     # url of eod 
-    urli <- sprintf("https://query%s.finance.yahoo.com/v7/finance/download/%s?period1=%.0f&period2=%.0f&interval=%s&events=%s&crumb=%s", ifelse(unclass(Sys.time()) %% 1L >= 0.5, 1L, 2L), syb, from, to, freq, type, crumb)
-    
-    syb_nam = get_symbol_name_yahoo(syb, handle = handle)
+    urli <- sprintf("https://query%s.finance.yahoo.com/v7/finance/download/%s?period1=%.0f&period2=%.0f&interval=%s&events=%s&crumb=%s", ifelse(unclass(Sys.time()) %% 1L >= 0.5, 1L, 2L), syb, from, to, freq, type, crumb) #print(urli)
     dat = load_read_csv(urli, handle = handle)
     if (type=='history') {
       cols_num = c("open", "high", "low", "close", "close_adj", "volume")
@@ -72,28 +73,35 @@ md_stock1_yahoo = function(symbol, handle, crumb, freq="daily", from="1900-01-01
       
       dat[dat=="null"] = NA
       dat = dat[, `:=`(
-        date = as.Date(date), symbol = tolower(syb_nam[1]), name = syb_nam[2]
-      )][, (cols_num) := lapply(.SD, as.numeric), 
-         .SDcols = cols_num
-         ][,.(date, symbol, name, open, high, low, close, close_adj, volume)]
+        symbol = syb_nam_cur$symbol, name = syb_nam_cur$name, unit=syb_nam_cur$currency
+      )][, (cols_num) := lapply(.SD, as.numeric), .SDcols = cols_num
+       ][,.(symbol, name, date, open, high, low, close, close_adj, volume, unit)]
       
+      if (na_rm) dat = dat[!is.na(close)]
       # adjusting ohlc
       if (adjust) dat = adjust_ohlc(dat)
     } else {
-      setnames(setDT(dat), tolower(names(dat)))
-      dat = dat[, `:=`(symbol = tolower(syb_nam[1]), name = syb_nam[2])
-              ][, c('date', 'symbol', 'name', names(dat)[2]), with=FALSE]
+      col_name = ifelse(type=='div', 'dividends', 'splits')
+      setnames(setDT(dat), c('date', col_name))
+      dat = dat[, `:=`(symbol = syb_nam_cur$symbol, name = syb_nam_cur$name)
+              ][, c('symbol', 'name', 'date', col_name), with=FALSE]
     }
-    setkey(dat, 'date')
+    setkey(dat[, date := as.Date(date)], 'date')
     return(dat)
 }
 
 # query market data from yahoo
-md_stock_yahoo = function(symbol, freq="daily", from="1900-01-01", to=Sys.time(), print_step=1L, adjust=FALSE, ...) {
+md_stock_yahoo = function(symbol, freq="daily", from="1900-01-01", to=Sys.time(), print_step=1L, na_rm=TRUE, adjust=FALSE, ...) {
   
     yahoo_env = list(...)[["env"]]
+    reload = list(...)[["reload"]]
+    if (is.null(reload)) reload = FALSE
     handle = handle_new_session(env = yahoo_env, handle_name = "yahoo_handle")
-    crumb = yahoo_crumb(handle)
+    crumb = try(yahoo_crumb(handle), silent = TRUE)
+    if (inherits(crumb, 'try-error') || reload) {
+      handle = handle_new_session(env = yahoo_env, handle_name = "yahoo_handle", reload = TRUE)
+      crumb = yahoo_crumb(handle)
+    }
     
     # frequency
     intervals = c(daily = "1d", weekly = "1wk", monthly = "1mo")
@@ -105,7 +113,7 @@ md_stock_yahoo = function(symbol, freq="daily", from="1900-01-01", to=Sys.time()
     to = date_to_sec(check_fromto(to))
     
     # load data
-    dat_list = load_dat_loop(tolower(symbol), "md_stock1_yahoo", args = list(handle = handle, crumb = crumb, freq=freq, from = from, to = to, adjust = adjust, ...), print_step=print_step)
+    dat_list = load_dat_loop(toupper(symbol), "md_stock1_yahoo", args = list(handle = handle, crumb = crumb, freq=freq, from = from, to = to, adjust = adjust, na_rm=na_rm, ...), print_step=print_step)
     return(dat_list)
 }
 
@@ -131,6 +139,8 @@ md_stock_yahoo = function(symbol, freq="daily", from="1900-01-01", to=Sys.time()
 
 
 
+
+#######
 # query symbols from yahoo
 # query symbols of currency, commodity and world-indices from yahoo
 #' @import data.table xml2

@@ -17,7 +17,7 @@
 
 #' @import data.table
 #' @importFrom jsonlite fromJSON
-ed1_fred = function(symbol1, from="1776-07-04", to="9999-12-31") {
+ed_fred1 = function(symbol1, from="1776-07-04", to="9999-12-31", na_rm=FALSE) {
     . = title = value = NULL
     
     key = api_key("fred")
@@ -27,12 +27,15 @@ ed1_fred = function(symbol1, from="1776-07-04", to="9999-12-31") {
     series = setDT(fromJSON(sprintf(base_url, sprintf("series?series_id=%s&", symbol1), key))[["seriess"]])
 
     # observation data of symbol1
-    observ = setDT(fromJSON(sprintf(base_url, sprintf("series/observations?series_id=%s&observation_start=%s&observation_end=%s&", symbol1, from, to), key))[["observations"]])[,.(date=as.Date(date), symbol=symbol1, name=series[1,title], value=as.numeric(value), unit=series[1,units])]
+    observ = setDT(
+        fromJSON(sprintf(base_url, sprintf("series/observations?series_id=%s&observation_start=%s&observation_end=%s&", symbol1, from, to), key))[["observations"]]
+    )[,`:=`(name=series[1,title], unit=series[1,units]
+    )][,.(symbol=symbol1, name, date=as.Date(date), value=suppressWarnings(as.numeric(value)), unit)]
+    if (na_rm) observ = observ[!is.na(value)]
     setkeyv(observ, "date")
-
     return(observ)
 }
-# dt = ed1_fred("GNPCA")
+# dt = ed_fred1("GNPCA")
 
 #' get economic data from FRED
 #' 
@@ -50,21 +53,22 @@ ed1_fred = function(symbol1, from="1776-07-04", to="9999-12-31") {
 #' }
 #' 
 #' @export
-ed_fred = function(symbol, from="1776-07-04", to="9999-12-31", print_step=1L) {
-    # fromt to 
-    if (from < as.Date("1776-07-04") || !isdatetime(from)) from = as.Date("1776-07-04")
-    to=as.Date(to)
+ed_fred = function(symbol=NULL, date_range='10y', from=NULL, to=Sys.Date(), na_rm=TRUE, print_step=1L) {
+    # 
+    if (is.null(symbol)) symbol = ed_fred_symbol()[,symbol]
+    # from/to # "1776-07-04"/"9999-12-31"
+    date_range = check_date_range(date_range, default = "max")
+    from = get_from_daterange(date_range, to, min_date = "1776-07-04")
     
     # data list
-    dat_list = load_dat_loop(symbol, "ed1_fred", args = list(from = from, to = to), print_step=print_step)
-    
+    dat_list = load_dat_loop(symbol, "ed_fred1", args = list(from = from, to = to, na_rm = na_rm), print_step = print_step)
     return(dat_list)
 }
 
 
 #' @importFrom jsonlite fromJSON
 #' @import data.table
-ed_symbol_fred_keywords = function(keywords) {
+ed_fred_symbol_keywords = function(keywords) {
     . = name = popularity = series_count = frequency = id = title = observation_start = observation_end = seasonal_adjustment = last_updated = NULL
     
     key = api_key("fred")
@@ -101,13 +105,13 @@ ed_symbol_fred_keywords = function(keywords) {
     return(sybs_search)
 }
 
-ed_symbol_fred_category = function() {
+ed_fred_symbol_category = function(category=NULL) {
     . = name = popularity = series_count = frequency = id = title = observation_start = observation_end = seasonal_adjustment = last_updated = parent_id = sybs_search = NULL
     
     key = api_key("fred")
     base_url = "https://api.stlouisfed.org/fred/%sapi_key=%s&file_type=json"
     
-    
+    # functions
     query_category = function(id) {
         setDT(fromJSON(sprintf(base_url, sprintf("category?category_id=%s&", unlist(id)), key))[["categories"]])[,.(id, name, parent_id)]
     }
@@ -123,35 +127,25 @@ ed_symbol_fred_category = function() {
         setDT(fromJSON(sprintf(base_url, sprintf("category/series?category_id=%s&", unlist(id)), key))[["seriess"]])[, .(symbol=id, name=title, from=observation_start, to=observation_end, frequency, units, seasonal_adjustment, last_updated, popularity)]
     }
     
-    # selecting symbols via category
-    selecting = TRUE
-    while (selecting) {
-        ser_query = try(query_category_series(NULL), silent = TRUE)
-        
-        while(inherits(ser_query, "try-error")) {
-            cate_query = try(rbindlist(lapply(list(32991, 10, 32992, 1, 32455, 32263, 3008, 33060), query_category)), silent = TRUE)
-            
-            while (!inherits(cate_query, "try-error") & nrow(cate_query)>0 & ("id" %in% names(cate_query))) {
-                print(cate_query)
-                
-                sel_id = readline("select a category via (id) or ('r'+rowid): ")
-                while (grepl("^r", sel_id)) {
-                    row_id = as.integer(gsub("[^0-9]", "", sel_id))
-                    if (row_id %in% cate_query[,.I]) {
-                        sel_id = as.character(cate_query[["id"]][row_id]) 
-                    } else {
-                        sel_id = readline("select a category via (id) or ('r'+rowid): ")
-                    }
-                }
-                
-                cate_query = try(query_category_children(sel_id), silent = TRUE)
-            }
-            
-            ser_query = try(query_category_series(sel_id), silent = TRUE)
-        }
-        selecting = menu(c("yes", "no"), title="Choose this category?")-1
+    # selecting symbols via category id
+    ## initializing
+    cate_query = NULL
+    category_id = category
+    if (is.null(category_id)) {
+        cate_query = setDT(list(
+            id = c(32991, 10, 32992, 1, 32455, 32263, 3008, 33060),
+            name = c("Money, Banking, & Finance", "Population, Employment, & Labor Markets",  "National Accounts", "Production & Business Activity",  "Prices", "International Data",  "U.S. Regional Data", "Academic Data"),
+            parent_id = rep_len(0,8) ))
+        # try(rbindlist(lapply(list(32991, 10, 32992, 1, 32455, 32263, 3008, 33060), query_category)), silent = TRUE)
+    } else {
+        cate_query = try(query_category_children(category_id), silent = TRUE)
     }
-    
+    ## selecting
+    while (!inherits(cate_query, "try-error") & nrow(cate_query)>0 & ("id" %in% names(cate_query))) {
+        category_id = select_rows_df(cate_query, column='id', onerow=TRUE)[,id]
+        cate_query = try(query_category_children(category_id), silent = TRUE)
+    }
+    ser_query = try(query_category_series(category_id), silent = TRUE)
     return(ser_query)
 }
 
@@ -171,20 +165,16 @@ ed_symbol_fred_category = function() {
 #' }
 #' 
 #' @export
-ed_fred_symbol = function(keywords = NULL) {
+ed_fred_symbol = function(category=NULL, keywords = NULL) {
     . = symbol = name = last_updated = NULL 
     
     if (is.null(keywords)) {
-        series = ed_symbol_fred_category()
+        series = ed_fred_symbol_category(category = category)
     } else {
-        series = ed_symbol_fred_keywords(keywords=keywords)
+        series = ed_fred_symbol_keywords(keywords = keywords)
     }
-    
-    if (!is.null(series)) {
-        print(setDF(copy(series)[,.(symbol, name, last_updated)]))
-    }
-    
-    return(series)
+    symbol_rows = select_rows_df(series, column='symbol', onerow=FALSE)
+    return(symbol_rows)
 }
 
 

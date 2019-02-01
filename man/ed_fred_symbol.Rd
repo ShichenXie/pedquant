@@ -4,7 +4,7 @@
 \alias{ed_fred_symbol}
 \title{query symbols of economic data in FRED}
 \usage{
-ed_fred_symbol(keywords = NULL)
+ed_fred_symbol(category = NULL, keywords = NULL)
 }
 \arguments{
 \item{keywords}{the query text. If it is NULL, the function will search symbols by category.}
