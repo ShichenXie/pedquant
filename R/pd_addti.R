@@ -34,12 +34,56 @@
 
 # [1] "adjRatios" "growth" "lags" "rollSFM" "runPercentRank"  
 # Technical Overlays / Indicators
-ttr = list(
-  TO = c('SMA', 'EMA', 'DEMA', 'WMA', 'EVWMA', 'ZLEMA', 'VWAP', 'VMA', 'HMA', 'ALMA', 'GMMA', 'runMin', 
-         'runMax', 'runMean', 'runMedian', 'BBands', 'PBands', 'DonchianChannel', 'SAR', 'ZigZag'),
-  TI = c()
-)
-  
+ti_overlays_indicators = function() {
+  list(
+    overlays = c('SMA', 'EMA', 'DEMA', 'WMA', 'EVWMA', 'ZLEMA', 'VWAP', 'HMA', 'ALMA', 
+                 'runMin', 'runMax', 'runMean', 'runMedian', 
+                 'BBands', 'PBands', 
+                 'DonchianChannel', 'SAR', 'ZigZag'),
+    indicators = c('runSD', 'runMAD', 'aroon', 'CCI', 'VHF', 'TDI', 'ADX', 'ATR', 'EMV', 'chaikinVolatility', 'volatility', 'OBV', 'chaikinAD', 'CLV', 'CMF', 'MFI', 'williamsAD', 'ROC', 'momentum', 'KST', 'TRIX', 'MACD', 'DPO', 'DVI', 'ultimateOscillator', 'RSI', 'CMO', 'stoch', 'SMI', 'WPR')
+  )
+}
+
+# hline for technical indicators in pd_plot
+ti_idicators_hline = function() {list(
+  bbands = c(0.5, 0, 1),
+  aroon = c(50),
+  cci = c(0, -100, 100),
+  tdi = c(0),
+  emv = c(0),
+  chaikinvolatility = c(0),
+  clv = c(0),
+  cmf = c(0),
+  mfi = c(20, 80),
+  roc = c(0),
+  momentum = c(0),
+  kst = c(0),
+  trix = c(0),
+  macd = c(0),
+  dpo = c(0),
+  dvi = c(0.5),
+  ultimateoscillator = c(50, 30, 70),
+  rsi = c(50, 30, 70),
+  cmo = c(0),
+  stoch = c(0.5),
+  smi = c(0),
+  wpr = c(0.5)
+)}
+
+
+
+# number of columns returned from ti 
+# BBands, PBands, DonchianChannel, 
+# aroon, TDI, ADX, ATR, EMV, KST, TRIX, MACD, DVI, stoch, SMI 
+# numcol = sapply(unlist(ti_oi()), function(x) {
+#   arg_lst = list()
+#   arg_lst[['dt']] = dt
+#   arg_lst[[x]] = list()
+#   
+#   ncol(do.call(pd_addti, args = arg_lst)[[1]])
+# } )
+# unlist(ti_oi())[which(numcol>1)]
+
 ###### 
 # Technical Overlays
 
@@ -57,7 +101,6 @@ ttr = list(
 # GMMA(x, short = c(3, 5, 8, 10, 12, 15), long = c(30, 35, 40, 45, 50, 60), maType): Guppy Multiple Moving Averages
 
 # rolling function over a n-period moving window ------
-# runSum(x, n = 10, cumulative = FALSE): returns sums 
 # runMin(x, n = 10, cumulative = FALSE): returns minimums 
 # runMax(x, n = 10, cumulative = FALSE): returns maximums 
 # runMean(x, n = 10, cumulative = FALSE): returns means 
@@ -66,7 +109,7 @@ ttr = list(
 # runCor(x, y, n = 10, use = "all.obs", sample = TRUE, cumulative = FALSE): returns correlations 
 # runVar(x, y = NULL, n = 10, sample = TRUE, cumulative = FALSE): returns variances 
 # runSD(x, n = 10, sample = TRUE, cumulative = FALSE): returns standard deviations 
-# runMAD(x, n = 10, center = NULL, stat = "median", constant = 1.4826, non.unique = "mean", cumulative = FALSE): returns median/mean absolute deviations 
+# runMAD(x, n = 10, center = NULL, stat = "median", constant = 1.4826, non.unique = "mean", cumulative = FALSE): returns median/mean absolute deviations # runSum(x, n = 10, cumulative = FALSE): returns sums 
 # wilderSum(x, n = 10): retuns a Welles Wilder style weighted sum 
 
 # Bands/Channels ------
@@ -74,12 +117,13 @@ ttr = list(
 # PBands(prices, n = 20, maType = "SMA", sd = 2, ..., fastn = 2, centered = FALSE, lavg = FALSE): Construct volatility bands around prices
 # DonchianChannel(HL, n = 10, include.lag = FALSE): Donchian Channel
 
+
 # SAR(HL, accel = c(0.02, 0.2)): Parabolic Stop-and-Reverse
 # ZigZag(HL, change = 10, percent = TRUE, retrace = FALSE, lastExtreme = TRUE): Zig Zag
 
 
 ######
-# Technical Overlays # Momentum/Oscillators
+# Technical Indicators
 
 # trend direction/strength ------
 # aroon(HL, n = 20): Aroon
@@ -209,10 +253,11 @@ addti1 = function(dt, ti, col_formula = FALSE, ...) {
   ncol_dtti = ncol(dtti) 
   if (ncol_dtti == 1) {
     par_str = paste(unlist(param_list), collapse='_') 
-    setnames(dtti, paste(ti,par_str, sep = '_'))
+    setnames(dtti, tolower(paste(ti, par_str, sep = '_')))
   } else {
-    setnames(dtti, paste(ti, names(dtti), sep = '_'))
+    setnames(dtti, tolower(paste(ti, names(dtti), sep = '_')))
   }
+  if (tolower(ti) == 'adx') dtti = dtti[,.(adx_dx, adx_adx, adx_dip, adx_din)]
   
   # formula
   if (col_formula) {
@@ -252,10 +297,15 @@ pd1_addti = function(dt, ...) {
   ti_df = setDT(unlist(dtti_list, recursive = FALSE))[] # do.call(cbind, dtti_list) # 
   
   # merge ti-df with dt
-  col_inter = intersect(names(dt), col_kp)
-  if (!is.null(col_kp) & length(col_inter) > 0) {
-    ti_df = cbind(dt[,col_inter,with=FALSE], ti_df)
+  if (is.logical(col_kp) & isTRUE(col_kp)) {
+    ti_df = cbind(dt, ti_df)
+  } else {
+    col_inter = intersect(names(dt), col_kp)
+    if (!is.null(col_kp) & length(col_inter) > 0) {
+      ti_df = cbind(dt[,col_inter,with=FALSE], ti_df)
+    }
   }
+  
   return(ti_df)
 }
 
@@ -297,6 +347,8 @@ pd1_addti = function(dt, ...) {
 #' 
 #' @export
 pd_addti = function(dt, ...) {
+  # col_kp, col_formula
+  
   # bind list of dataframes
   if (is.list(dt) & !is.data.frame(dt)) {
     dt = rbindlist(dt, fill = TRUE)

@@ -67,7 +67,7 @@ md_future = function(symbol=NULL, freq="daily", date_range='3y', from=NULL, to=S
     syb = intersect(syb, symbol_sina$symbol)
     ## from
     date_range = check_date_range(date_range, default = "max")
-    from = get_from_daterange(date_range, to, min_date = "1000-01-01")
+    from = get_from_daterange(date_range, from, to, min_date = "1000-01-01")
     ## handle
     hd = new_handle()#handle_new_session(url="http://vip.stock.finance.sina.com.cn/quotes_service/view/qihuohangqing.html")
     ## frequency

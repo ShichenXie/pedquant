@@ -175,16 +175,19 @@ md_stock_hist1_163 = function(symbol1, from="1900-01-01", to=Sys.Date(), fillzer
   
   
   # if (max(dt[["date"]]) < lwd()) dt = rbindlist(list(dt, md_stock_spot1_tx(symbol1)[,names(dt), with=FALSE]), fill = FALSE)
-  dt = setDT(dt, key="date")[, symbol := symbol1][, (cols_name), with=FALSE]
+  dt = setDT(dt, key="date")[, symbol := symbol1][, (cols_name[c(2,3,1,4:15)]), with=FALSE]
   if (max(dt[["date"]]) < lwd()) dt = unique(dt, by="date")
   
   # fill zeros in dt
   if (fillzero) {
     cols_name = c("open", "high", "low", "close")
     dt = dt[, (cols_name) := lapply(.SD, fill0), .SDcols = cols_name]
+  } else {
+    dt = dt[close != 0]
   }
   
-  return(dt[,unit := 'CNY'])
+  dt = dt[, unit := 'CNY'][, name := name[.N]]
+  return(dt)
 }
 
 md_stock_divsplit_163 = function(symbol1, from, to) {

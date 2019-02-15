@@ -39,7 +39,7 @@ md_commodity = function(symbol=NULL, date_range = '3y', from=NULL, to=Sys.Date()
     syb = intersect(syb, commodity_symbol_fred$symbol)
     ## from
     date_range = check_date_range(date_range, default = "max")
-    from = get_from_daterange(date_range, to, min_date = "1000-01-01")
+    from = get_from_daterange(date_range, from, to, min_date = "1000-01-01")
 
     # data
     dat_list = load_dat_loop(syb, "md_commodity1_fred", args = list(from = from, to = to), print_step=print_step)

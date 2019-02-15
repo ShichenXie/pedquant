@@ -19,9 +19,10 @@ fs_type1_cn = function(symbol, row_type=NULL) {
     
     # types of financial statements
     fr_163 = setDT(copy(financial_statements_163))
+    setkey(fr_163, 'type')
     
     # load data from 163
-    fr_url = sprintf(fr_163[row_type,]$urls, symbol)
+    fr_url = sprintf(fr_163[row_type,urls], symbol)
     dat = suppressWarnings(read_csv(file=fr_url, col_types=cols(.default = "c"), locale = locale(encoding = "GBK"), na = c("", "NA", "--")))
     setnames(setDT(dat), c("var_name", names(dat)[-1]))
     
@@ -30,16 +31,15 @@ fs_type1_cn = function(symbol, row_type=NULL) {
         dat[!(var_name %in% c(NA, "", "\t\t"))][, var_id := .I], 
         id=c("var_id","var_name"), measure=patterns("\\d{4}-"),
         variable.name = "date", value.name = "value"
-    )[, `:=`(date = as.Date(date))
+    )[, date := as.Date(date)
     ][!is.na(date)][, `:=`(
         value = as.numeric(value),
-        fr_id = fr_163[row_type, type],
-        fr_name = fr_163[row_type, name]
-    )#][, c("var_name", "unit") := tstrsplit(var_name, "\\(|\\)", fixed=F, keep = c(1,2))
-     ][,.(fr_id, fr_name, var_id, var_name, date, value)]
+        fs_type = fr_163[row_type, type],
+        fs_name = fr_163[row_type, name]
+    )][,.(fs_type, fs_name, var_id, var_name, date, value)]
     
     # setkey
-    setkeyv(dat_melt, c("date","var_id"))
+    setkeyv(dat_melt, c("date", "var_id"))
     
     return(dat_melt)
 } 
@@ -56,14 +56,13 @@ fs_symbol1_cn = function(symbol, type) {
 
 #' @import data.table
 #' @importFrom readr read_csv stop_for_problems cols
-fs_cn = function(symbol, type=NULL, print_step=1) {
+fs_cn = function(symbol, type=NULL, print_step=1L) {
     # type
     fs_type_163 = setDT(copy(financial_statements_163))
     while ((is.null(type) || length(type)==0)) {
         type = select_rows_df(dt = fs_type_163[,.(type, name, name_en)], column = 'type')[,type]
     }
-    type = intersect(type, fs_type_163$type)
-    
+
     # data list
     dat_list = load_dat_loop(symbol, "fs_symbol1_cn", args = list(type=type), print_step=print_step)
     return(dat_list)

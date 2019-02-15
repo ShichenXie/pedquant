@@ -46,7 +46,7 @@ nbs_symbol1 = function(geo_type=NULL, freq=NULL, symbol='zb', eng=FALSE) {
   check_http_status_nbs(zb_req)
   zb_list = fromJSON(content(zb_req, "text", encoding="utf-8"))
   
-  zb_list = setDT(zb_list)[,.(symbol=id, name, isParent, symbolParent=pid)]
+  zb_list = setDT(zb_list)[,.(symbol=id, name, is_parent=isParent, parent_symbol=pid)]
   return(zb_list)
 }
 #' query symbol of China economic indicator from NBS
@@ -67,7 +67,7 @@ nbs_symbol1 = function(geo_type=NULL, freq=NULL, symbol='zb', eng=FALSE) {
 #' @importFrom utils menu data
 #' @export
 ed_nbs_symbol = function(geo_type=NULL, freq=NULL, eng=FALSE) {
-  symbol = isParent = NULL
+  symbol = is_parent = NULL
   
   # geography type
   geo_type = check_arg(geo_type, choices = c("national", "province", "city"), arg_name = 'geo_type')
@@ -83,7 +83,7 @@ ed_nbs_symbol = function(geo_type=NULL, freq=NULL, eng=FALSE) {
   while (is_parent) {
     symbol_df = nbs_symbol1(geo_type, freq, sel_symbol, eng)
     sel_symbol = select_rows_df(symbol_df, column='symbol', onerow=TRUE)
-    is_parent = sel_symbol[, isParent]
+    is_parent = sel_symbol[, is_parent]
     sel_symbol = sel_symbol[, symbol]
   }
   return(sel_symbol)
@@ -113,7 +113,7 @@ ed_nbs_symbol = function(geo_type=NULL, freq=NULL, eng=FALSE) {
 #' 
 #' @importFrom jsonlite fromJSON 
 #' @export
-ed_nbs_subregion = function(geo_type="", eng=FALSE) {
+ed_nbs_subregion = function(geo_type=NULL, eng=FALSE) {
   dim_region = dim_geo_type = dim_sta_db = . = code = name = NULL
   
   # param
@@ -198,7 +198,7 @@ nbs_jsondat_format = function(jsondat) {
   
   # code names
   code_names = jsondat$returndata$wdnodes$wdcode
-  code_names2 = sub('sj','date',sub('reg','region_code',sub('zb','symbol',code_names)))
+  code_names2 = sub('sj','date',sub('reg','geo_code',sub('zb','symbol',code_names)))
   # code dataframe
   code_df = data.table(code = jsondat$returndata$datanodes$code)[
     , tstrsplit(code, "_", fixed=TRUE) 
@@ -214,12 +214,13 @@ nbs_jsondat_format = function(jsondat) {
   
   # merge subregion with data
   if ('reg' %in% code_names) {
-    reg_df = setDT(jsondat$returndata$wdnodes$nodes[[which('reg' == code_names)]])[,.(region_name=cname, region_code=code)]
+    reg_df = setDT(jsondat$returndata$wdnodes$nodes[[which('reg' == code_names)]])[,.(geo=cname, geo_code=code)]
     
-    dat2 = dat2[reg_df, on='region_code'][, c("symbol", "name", "date", "value", "unit", "region_code", "region_name"), with=FALSE]
+    dat2 = dat2[reg_df, on = 'geo_code']
   } else {
-    dat2 = dat2[, c("symbol", "name", "date", "value", "unit"), with=FALSE]
+    dat2 = dat2[, `:=`(geo_code = 'cn', geo = 'china')]
   }
+  dat2 = dat2[,.(symbol, name, date, value, geo_code, geo, unit)]
   
   # date formating
   if (dat2[,unique(nchar(date))]==6) { # monthly
@@ -281,7 +282,7 @@ nbs_jsondat_format = function(jsondat) {
 #' @import data.table
 #' @export
 ed_nbs = function(symbol=NULL, freq=NULL, geo_type=NULL, subregion=NULL, date_range='10y', from=NULL, to=Sys.Date(), na_rm=FALSE, eng=FALSE) {
-  dim_region = dim_geo_type = dim_freq = dim_sta_db = value = NULL
+  # dim_region = dim_geo_type = dim_freq = dim_sta_db = value = NULL
   
   # arguments
   ## geography type
@@ -301,7 +302,7 @@ ed_nbs = function(symbol=NULL, freq=NULL, geo_type=NULL, subregion=NULL, date_ra
   }
   ## from/to
   date_range = check_date_range(date_range, default = "max")
-  from = get_from_daterange(date_range, to, min_date = "1000-01-01")
+  from = get_from_daterange(date_range, from, to, min_date = "1000-01-01")
   # fromto = date_to_mqa(from, to, freq)
   
   # jsondat
@@ -311,7 +312,7 @@ ed_nbs = function(symbol=NULL, freq=NULL, geo_type=NULL, subregion=NULL, date_ra
   for (s in symbol) {
     temp = ed1_nbs(nbs_geo, symbol1=s, subregion, from, eng)
     temp = nbs_jsondat_format(temp)[date>=from & date<=to,]
-    if (!is.null(subregion)) temp = temp[region_code %in% subregion]
+    if (!is.null(subregion)) temp = temp[geo_code %in% subregion]
     if (na_rm) temp = temp[!is.na(value)]
     jsondat_list[[s]] = temp
   }
@@ -322,7 +323,7 @@ ed_nbs = function(symbol=NULL, freq=NULL, geo_type=NULL, subregion=NULL, date_ra
   dat_lst = NULL
   for (i in sybs) {
     temp = dat[symbol==i]
-    setkey(temp, 'date')
+    setkeyv(temp, c('geo_code','date'))
     dat_lst[[i]] = temp
   }
   return(dat_lst)

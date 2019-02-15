@@ -43,7 +43,8 @@ check_fromto = function(fromto, type="date", shift = 0) {
     return(fromto)
 }
 
-get_from_daterange = function(date_range, to, min_date) {
+get_from_daterange = function(date_range, from, to, min_date) {
+    if (is.null(from)) {
     if (date_range == "max") {
         from = min_date
     } else if (date_range == "ytd") {
@@ -70,7 +71,7 @@ get_from_daterange = function(date_range, to, min_date) {
     } else {
         from = min_date
     }
-    
+    }
     
     # set class
     if (class(to) == "Date") {
@@ -378,7 +379,7 @@ select_rows_df = function(dt, column=NULL, input_string=NULL, onerow=FALSE) {
     
     while (is.null(seleted_rows) || nrow(seleted_rows) == 0) { # stop looping, if selected rows >=1
         if (is.null(input_string)) {
-            print(copy(dt)[,lapply(.SD, format)])
+            print(setDT(copy(dt))[,lapply(.SD, format)], topn = 50)
             if (is.null(column)) {
                 txt = "select rows via ('r'+rowid): "
             } else {
@@ -391,17 +392,18 @@ select_rows_df = function(dt, column=NULL, input_string=NULL, onerow=FALSE) {
             sel_id = input_string
         }
         
-        if (grepl('^r[1-9]+$', sel_id)) { # select rows via rowid 
-            while (grepl("^r", sel_id)) {
-                sel_id_string = gsub("[^(0-9|:)]+", ",", gsub('-',':',sel_id))
-                sel_id_string = gsub('^[^0-9]+|[^0-9]+$','',sel_id_string)
-                sel_id = eval(parse( text = sprintf('c(%s)',sel_id_string) ))
+        if (grepl('^r[1-9].*$', sel_id)) { # select rows via rowid 
+            while (any(grepl("^r", sel_id))) {
+                sel_id_string = gsub('r', '', sel_id)
+                sel_id_string = gsub("[^[0-9:-]+", ",", sel_id_string)
+                sel_id_string = gsub('-', ':', sel_id_string)
+                sel_id_string = gsub('^[,:]+|[,:]+$', '', sel_id_string)
+                sel_id = eval(parse( text = sprintf('c(%s)', sel_id_string) ))
                 sel_id = intersect(sel_id, dt[,.I])
                 if (length(sel_id)==0) {
                     sel_id = 'r'
                 } else {
-                    seleted_rows=dt[sel_id]
-                    break
+                    seleted_rows=dt[sel_id,]
                 }
             }
         } else { # select rows via pattern matching

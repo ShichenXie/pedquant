@@ -4,7 +4,7 @@
 \alias{ed_nbs_subregion}
 \title{query code of subregion in China from NBS}
 \usage{
-ed_nbs_subregion(geo_type = "", eng = FALSE)
+ed_nbs_subregion(geo_type = NULL, eng = FALSE)
 }
 \arguments{
 \item{geo_type}{geography type in NBS, including 'province', 'city'. Default is "".}

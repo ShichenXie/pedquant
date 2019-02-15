@@ -142,7 +142,7 @@ md_bond = function(symbol=NULL, date_range = '3y', from=NULL, to=Sys.Date(), pri
     syb = intersect(syb, bond_symbol$symbol)
     ## from
     date_range = check_date_range(date_range, default = "max")
-    from = get_from_daterange(date_range, to, min_date = "1000-01-01")
+    from = get_from_daterange(date_range, from, to, min_date = "1000-01-01")
     
     # data
     dt_list = c(

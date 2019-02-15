@@ -5,10 +5,11 @@
 \title{create a chart for timeseries data}
 \usage{
 pd_plot(dt, chart_type = "line", freq = NULL, date_range = "max",
-  from = NULL, to = Sys.Date(), ti = list(), y = "close|value",
+  from = NULL, to = Sys.Date(), addti = list(),
+  linear_trend = NULL, perf = FALSE, x = "close|value",
   yaxis_log = FALSE, color_up = "#F6736D", color_down = "#18C0C4",
-  linear_trend = NULL, multi_series = list(nrow = NULL, ncol = NULL),
-  perf = FALSE, rm_weekend = NULL, title = NULL, ...)
+  multi_series = list(nrow = NULL, ncol = NULL), rm_weekend = NULL,
+  ...)
 }
 \arguments{
 \item{dt}{a time series dataset}
@@ -23,9 +24,13 @@ pd_plot(dt, chart_type = "line", freq = NULL, date_range = "max",
 
 \item{to}{the end date. Default is min date in data.}
 
-\item{ti}{list of technical indicators, overlay indicators include mm, sma, ema, smma, bb, sar, and oscillators indicators such as macd, roc, ppo, rsi, cci.}
+\item{addti}{list of technical indicators, overlay indicators include mm, sma, ema, smma, bb, sar, and oscillators indicators such as macd, roc, ppo, rsi, cci.}
 
-\item{y}{the variable display on chart}
+\item{linear_trend}{a vector of numeric. Default is NULL, which donot show linear trend line. If it is not 0, show linear_trend*sd from linear trend line.}
+
+\item{perf}{logical, whether to show the performance of input data. Default is FALSE.}
+
+\item{x}{the variable display on chart}
 
 \item{yaxis_log}{logical, default is FALSE.}
 
@@ -33,17 +38,13 @@ pd_plot(dt, chart_type = "line", freq = NULL, date_range = "max",
 
 \item{color_down}{the color indicates price going down}
 
-\item{linear_trend}{a vector of numeric. Default is NULL, which donot show linear trend line. If it is not 0, show linear_trend*sd from linear trend line.}
-
 \item{multi_series}{logical, whether to show multiple series. Default is FALSE.}
-
-\item{perf}{logical, whether to show the performance of input data. Default is FALSE.}
 
 \item{rm_weekend}{weather to remove weekend in xaxis. The default is TRUE for candle and bar chart, and FALSE for line and step chart.}
 
-\item{title}{chart title. If it is not specified, the symbol of dataset will be used as chart title.}
-
 \item{...}{ignored}
+
+\item{title}{chart title. If it is not specified, the symbol of dataset will be used as chart title.}
 }
 \description{
 \code{pd_plot} creates a charts for a time series dataset.
@@ -51,7 +52,7 @@ pd_plot(dt, chart_type = "line", freq = NULL, date_range = "max",
 \examples{
 \dontrun{
 # single symbol
-ssec = getmd("^000001", source="163")
+ssec = md_stock("^000001", source="163")
 
 # chart type
 pd_plot(ssec) # line chart (default)
@@ -61,15 +62,15 @@ pd_plot(ssec) # line chart (default)
 
 # add technical indicators
 pd_plot(ssec, chart_type = "candle", 
-  ti = list(sma = list(n = 50), macd = list()))
+  addti = list(sma = list(n = 50), macd = list()))
 
 
 # multiple symbols
-dat1 = getmd(c('^000001', '^399001'), date_range = 'max', source='163')
+dat1 = md_stock(c('^000001', '^399001'), date_range = 'max', source='163')
 pd_plot(dat1, linear_trend = c(-0.8, 0, 0.8), multi_series = list(nrow=1, scales = 'free_y'))
 
 
-dat2 = getmd(c('^000016', '^000300'), date_range = 'max', source='163')
+dat2 = md_stock(c('^000016', '^000300'), date_range = 'max', source='163')
 pd_plot(dat2, linear_trend = c(-0.8, 0, 0.8), multi_series = list(nrow=1, scales = 'free_y'))
 
 }
