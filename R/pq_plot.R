@@ -15,7 +15,7 @@ pp_candle = function(
     rm_weekend = TRUE, rm_xaxis = FALSE, yaxis_log = FALSE, x = "open|high|low|close", 
     linear_trend = NULL, multi_series = list(nrow=NULL,ncol=NULL), 
     addti = list(sma = list(n=50), mm = list(n=25)),
-    x_scale = 0.6, ...
+    x_scale = 0.6, subtitle_str = NULL, ...
 ) {
     prev_close = change = change_pct = high = low = updn_1day = updn_2day = symbol = V1 = NULL
     
@@ -28,12 +28,6 @@ pp_candle = function(
     
     # x and updn
     dt[, updn_1day := ifelse(close > open, "hollow", paste("filled", updn_2day, sep = "_"))]
-    
-    # subtitle string
-    xcol = x
-    subtitle_str = dt[, .SD[.N], by = symbol
-                    ][, price_str := sprintf("atop(bold('%s')~'%.2f'~bold('Chg')~'%.2f(%.2f%%)')", xcol, close, change, change_pct), by = symbol]
-    
     
     # plot
     ## change dt date range to from/to
@@ -94,7 +88,7 @@ pp_bar = function(
     rm_weekend = TRUE, rm_xaxis = FALSE, yaxis_log = FALSE, x = "open|high|low|close", 
     linear_trend = NULL, multi_series = list(nrow=NULL,ncol=NULL), 
     addti = list(sma = list(n=50), mm = list(n=25)),
-    x_scale = 0.6, ...
+    x_scale = 0.6, subtitle_str = NULL, ...
 ) {
     prev_close = change = change_pct = high = low = updn_2day = symbol = V1 = NULL
     
@@ -109,15 +103,6 @@ pp_bar = function(
     # if (!("prev_close" %in% names(dt))) dt = dt[, prev_close := shift(close, 1, type = "lag")]
     # if (!("change"     %in% names(dt))) dt = dt[, change := close - prev_close]
     # if (!("change_pct" %in% names(dt))) dt = dt[, change_pct := change/close*100]
-    
-    # subtitle string
-    # subtitle_str = 
-    #     dt[, .SD[.N], by = symbol
-    #        ][, subtitle_str := sprintf("atop(bold('O')~'%.2f'~bold('H')~'%.2f'~bold('L')~'%.2f'~bold('C')~'%.2f'~bold('Chg')~'%.2f(%.2f%%)')", open, high, low, close, change, change_pct), by = symbol]
-    xcol = x
-    subtitle_str = dt[, .SD[.N], by = symbol
-                    ][, price_str := sprintf("atop(bold('%s')~'%.2f'~bold('Chg')~'%.2f(%.2f%%)')", xcol, close, change, change_pct), by = symbol]
-    
     
     # plot
     ## change dt date range to from/to
@@ -178,7 +163,7 @@ pp_line = function(
     color_up = "#F6736D", color_down = "#18C0C4", title = title, 
     rm_weekend = FALSE, rm_xaxis = FALSE, yaxis_log = FALSE, x = "close|value", 
     linear_trend = NULL, multi_series = list(nrow=NULL,ncol=NULL), 
-    addti = list(sma = list(n=50), mm = list(n=25)), ...
+    addti = list(sma = list(n=50), mm = list(n=25)), subtitle_str = NULL, ...
 ) {
     prev_close = symbol = change = change_pct = high = low = prev_x = updn_2day = x1 = y1 = x2 = y2 = V1 = NULL
     
@@ -192,12 +177,6 @@ pp_line = function(
     # x and updn
     dt[, prev_x := shift(x, 1, type="lag"), by = symbol
        ][updn_2day=="down", `:=`(x1 = prev_x, x2 = x, y1 = prev_close, y2 = close)]
-    
-    
-    # subtitle string
-    xcol = x
-    subtitle_str = dt[, .SD[.N], by = symbol
-                    ][, price_str := sprintf("atop(bold('%s')~'%.2f'~bold('Chg')~'%.2f(%.2f%%)')", xcol, close, change, change_pct), by = symbol]
 
     
     # plot
@@ -207,7 +186,8 @@ pp_line = function(
     if (multi_series_all1) {
         p = ggplot(data = dat) + 
             geom_line(aes(x = x, y = close, color = symbol)) + 
-            scale_color_discrete(labels = subtitle_str[, paste(symbol, date, round(close,2), sep=", ")]) + 
+            scale_color_discrete(labels = subtitle_str[, price_str11]) + 
+            geom_rug(aes(x=x, y=close), data = subtitle_str, sides='r', color='gray') + 
             # annotate("text", label="@http://shichen.name/pedar/", x=dat[, x[.N %/% 2], by=symbol][,V1[1]], y=-Inf, vjust = -1, color = "gray", alpha = 0.2) + 
             # geom_text(aes(label="@http://shichen.name/pedar", x=dat[, x[.N], by=symbol][,V1[1]], y=Inf), vjust = -0.5, hjust = 1, color = "#F0F0F0") + 
             coord_cartesian(clip = 'off') + 
@@ -224,6 +204,7 @@ pp_line = function(
             geom_segment(aes(x = x1, y = y1, xend = x2, yend = y2), color = color_down, na.rm = TRUE) +
             geom_text(x = dat[1, x], y = Inf, aes(label = date), data = dat[,.SD[.N], by=symbol], hjust = 0, vjust = 1, color = "black", na.rm = TRUE, alpha = 0.6, size = rel(3)) +
             geom_text(x = dat[.N, x], y = Inf, aes(label = price_str), data=subtitle_str, hjust = 1, vjust = 1, color = "black", parse = TRUE, na.rm = TRUE, alpha = 0.6, size = rel(3)) +
+            geom_rug(aes(x=x, y=close), data = subtitle_str, sides='r', color='gray') + 
             # annotate("text", label="@http://shichen.name/pedar/", x=dat[, x[.N %/% 2], by=symbol][,V1[1]], y=-Inf, vjust = -1, color = "gray", alpha = 0.2) + 
             # geom_text(aes(label="@http://shichen.name/pedar", x=dat[, x[.N], by=symbol][,V1[1]], y=Inf), vjust = -0.5, hjust = 1, color = "#F0F0F0") + 
             coord_cartesian(clip = 'off') + 
@@ -269,7 +250,7 @@ pp_step = function(
     color_up = "#F6736D", color_down = "#18C0C4", title = title, 
     rm_weekend = FALSE, rm_xaxis = FALSE, yaxis_log = FALSE, x = "close|value", 
     linear_trend = NULL, multi_series = list(nrow=NULL,ncol=NULL), 
-    addti = list(sma = list(n=50), mm = list(n=25)), ...
+    addti = list(sma = list(n=50), mm = list(n=25)), subtitle_str = NULL, ...
 ) {
     prev_close = symbol = change = change_pct = high = low = prev_x = updn_2day = x1 = y1 = x2 = y2 = V1 = NULL
     
@@ -283,12 +264,6 @@ pp_step = function(
     # x and updn
     dt[, prev_x := shift(x, 1, type="lag"), by = symbol
        ][updn_2day=="down", `:=`(x1 = prev_x, x2 = x, y1 = prev_close, y2 = close)]
-    
-    
-    # subtitle string
-    xcol = x
-    subtitle_str = dt[, .SD[.N], by = symbol
-                    ][, price_str := sprintf("atop(bold('%s')~'%.2f'~bold('Chg')~'%.2f(%.2f%%)')", xcol, close, change, change_pct), by = symbol]
     
     
     # last row
@@ -310,7 +285,8 @@ pp_step = function(
     if (multi_series_all1) {
         p = ggplot(data = dat) + 
             geom_step(aes(x = x, y = close, color = symbol)) + 
-            scale_color_discrete(labels = subtitle_str[, paste(symbol, date, round(close,2), sep=", ")]) + 
+            scale_color_discrete(labels = subtitle_str[, price_str11]) + 
+            geom_rug(aes(x=x, y=close), data = subtitle_str, sides='r', color='gray') + 
             # annotate("text", label="@http://shichen.name/pedar/", x=dat[, x[.N %/% 2], by=symbol][,V1[1]], y=-Inf, vjust = -1, color = "gray", alpha = 0.2) + 
             # geom_text(aes(label="@http://shichen.name/pedar", x=dat[, x[.N], by=symbol][,V1[1]], y=Inf), vjust = -0.5, hjust = 1, color = "#F0F0F0") + 
             coord_cartesian(clip = 'off') + 
@@ -328,6 +304,7 @@ pp_step = function(
             geom_segment(aes(x = x2, y = y1, xend = x2, yend = y2), color = color_down, na.rm = TRUE) +
             geom_text(x = dat[1, x], y = Inf, aes(label = date), data=dt_N, hjust = 0, vjust = 1, color = "black", na.rm = TRUE, alpha = 0.6, size = rel(3)) +
             geom_text(x = dat[.N, x], y = Inf, aes(label = price_str), data=subtitle_str, hjust = 1, vjust = 1, color = "black", parse = TRUE, na.rm = TRUE, alpha = 0.6, size = rel(3)) +
+            geom_rug(aes(x=x, y=close), data = subtitle_str, sides='r', color='gray') + 
             # annotate("text", label="@http://shichen.name/pedar/", x=dat[, x[.N %/% 2], by=symbol][,V1[1]], y=-Inf, vjust = -1, color = "gray", alpha = 0.2) + 
             # geom_text(aes(label="@http://shichen.name/pedar", x=dat[, x[.N], by=symbol][,V1[1]], y=Inf), vjust = -0.5, hjust = 1, color = "#F0F0F0") + 
             coord_cartesian(clip = 'off') + 
@@ -567,7 +544,7 @@ pp_add_ti_overlay = function(
         # add ti columns to dt
         args_list = c(list(dt=dt, col_kp=TRUE, col_formula=TRUE), 
                       lapply(addti[i], function(x) x[setdiff(names(x), c('color', 'position', 'hl'))]) )
-        dtti = do.call(pd_addti, args = args_list)
+        dtti = do.call(pq_addti, args = args_list)
         # bind list of dataframes
         if (inherits(dtti,'list')) dtti = rbindlist(dtti, fill = TRUE)
         if (names(addti[i]) == 'bbands') dtti = dtti[,bbands_pctb := NULL]
@@ -588,9 +565,8 @@ pp_add_ti_overlay = function(
         ti_names = names(dtti)[grep(sprintf("^%s",names(addti[i])), names(dtti))]
         for (t in ti_names) {
             p = p + 
-                stat_identity(
-                data = dat, 
-                aes_string(x="x",y=t), geom = geom_type, color = color) # linetype = "longdash", 
+                stat_identity(aes_string(x="x",y=t), data = dat, geom = geom_type, color = color) + 
+                geom_rug(aes_string(x='x', y=t), data=dat[.N], sides='r', color='gray')# linetype = "longdash", 
         }
         
         # addti formula value
@@ -613,12 +589,11 @@ pp_add_ti_oscillator = function(
     rm_weekend = NULL) {
     
     # oscillator technical indicators
-    # c("macd", "ppo", "roc", "rsi", "cci")
     names(addti) <- tolower(names(addti))
-    ti_topbottom = names(addti)[sapply(addti, function(x) any(x[["position"]] %in% c("top","bottom")))]
+    ti_topbottom   = names(addti)[sapply(addti, function(x)  any(x[["position"]] %in% c("top","bottom")))]
     ti_not_overlay = names(addti)[sapply(addti, function(x) !any(x[["position"]] %in% c("overlay")))]
-    ti_oscillator = c(intersect(ti_topbottom, tolower(ti_overlays_indicators()[['overlays']])),
-                      intersect(ti_not_overlay, tolower(ti_overlays_indicators()[['indicators']])) )
+    ti_oscillator  = c(intersect(ti_topbottom, tolower(ti_overlays_indicators()[['overlays']])),
+                       intersect(ti_not_overlay, tolower(ti_overlays_indicators()[['indicators']])) )
     if ('bbands' %in% names(addti)) ti_oscillator = c(ti_oscillator, 'bbands')
     addti = addti[names(addti) %in% ti_oscillator]
     # return p if no oscillator ti
@@ -627,32 +602,44 @@ pp_add_ti_oscillator = function(
     # colorblind palette
     cb_palette = c("#000000", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7") # c("black", "red", "blue") # 
 
-    # add x column
+    # add x column in dataset
     if (!("rowid" %in% names(dt))) dt[, rowid := seq_len(.N), by=symbol]
     if (!("x" %in% names(dt))) {
         dt[, x := date]
         if (rm_weekend) dt[, x := rowid]
     }
     
+    # check height
+    addti = lapply(addti, function(x) {
+        if (is.null(x[["height"]])) x[["height"]] = 3
+        return(x)
+    })
     # check position
     addti = lapply(addti, function(x) {
         if (is.null(x[["position"]])) x[["position"]] = "bottom"
         return(x)
     })
-    # the plot of last bottom ti will add xaxis
-    last_bottom = which.max(sapply(addti, function(x) {
+    # the plot of last bottom ti will add x-axis
+    last_bottom = max(which(sapply(addti, function(x) {
         any(x[["position"]] == "bottom")
-    }))
+    })))
 
     # plist
     top_plist = bottom_plist = NULL
     for (i in seq_along(addti)) {
+        pbpe_cols = intersect(c('pb', 'pe_last', 'pe_trailing', 'pe_forward', 'ps'), names(dt))
         # dataset with technical indicators
-        args_list = c(list(dt=dt, col_kp=TRUE, col_formula=TRUE), 
-                      lapply(addti[i], function(x) x[setdiff(names(x), c('color', 'position', 'hl'))]) )
-        dtti = do.call(pd_addti, args=args_list)
+        if (names(addti[i]) %in% pbpe_cols) {
+            dtti = copy(dt)
+        } else {
+            args_list = c(list(dt=dt, col_kp=TRUE, col_formula=TRUE), 
+                          lapply(addti[i], function(x) x[setdiff(names(x), c('color', 'position', 'hl', 'height'))]) )
+            dtti = do.call(pq_addti, args=args_list)
+        }
+        
         # # bind list of dataframes
         if (inherits(dtti, 'list')) dtti = rbindlist(dtti, fill = TRUE)
+        # # modify indicators
         if (names(addti[i]) == 'bbands') dtti = dtti[,(c('bbands_dn', 'bbands_mavg', 'bbands_up')) := NULL]
         if (names(addti[i]) == 'adx')    dtti = dtti[,(c('adx_dx')) := NULL]
         if (names(addti[i]) == 'atr')    dtti = dtti[,(c('atr_tr', 'atr_truehigh', 'atr_truelow')) := NULL]
@@ -667,20 +654,22 @@ pp_add_ti_oscillator = function(
             # color
             color = cb_palette[ifelse(iti_names %% length(cb_palette) == 0, length(cb_palette), iti_names %% length(cb_palette))]
             
-            pi = pi + geom_line(aes_string(y=t), stat = "identity", color = color)
+            pi = pi + 
+                geom_line(aes_string(y=t), stat = "identity", color = color) + 
+                geom_rug(aes_string(x='x', y=t), data=dat[.N], sides='r', color='gray')
         }
         
+        if (!("formula_str" %in% names(dat))) dat[, formula_str := paste0(ti_names, collapse = ',')]
         # addti formula value
         dat_n = dat[,.SD[.N]
-                    ][, (ti_names) := lapply(.SD, round, digits = 2), .SDcols = ti_names
-                    ][,c("formula_str", ti_names),with=FALSE]
+                  ][, (ti_names) := lapply(.SD, round, digits = 2), .SDcols = ti_names
+                  ][,c("formula_str", ti_names),with=FALSE]
         dat_n[, ti_str := paste0(dat_n, collapse = " ")]
         
-        # add text, remove labs
+        # set text/labs format
         pi = pi + 
             geom_text(x = dat[1, x], y = Inf, aes(label = ti_str), data = dat_n, hjust = 0, vjust = 1, color = "black", na.rm = TRUE, alpha = 0.6, size = rel(3)) + 
-            labs(x=NULL, y=NULL)  + 
-            theme_bw() + 
+            labs(x=NULL, y=NULL) + theme_bw() + 
             theme(plot.margin = unit(rep(0, 4), "cm"),
                   text = element_text(family = switch(Sys.info()[['sysname']],
                                                       Windows= 'SimHei',
@@ -725,10 +714,16 @@ pp_add_ti_oscillator = function(
     # if (!is.null(top_plist)) top_plist2 = grid.arrange(grobs = top_plist, ncol = 1)
     # if (!is.null(bottom_plist)) bottom_plist = grid.arrange(grobs = bottom_plist, ncol = 1)
 
+    # heights of subplots
+    h = min(unique(sapply(addti, function(x) x[['height']])))
+    h = as.character(which.min(abs(h - 1:3)))
+    h = list('3' = c(115, 100, 320),
+             '2' = c(111, 100, 222),
+             '1' = c(109, 100, 127))[[h]]
+    heights = c(rep(h[2], length(top_plist)), h[3])
+    if (length(bottom_plist)>0) heights = c(heights, rep(h[2], length(bottom_plist)-1), h[1])
+
     # return p
-    heights = c(rep(100, length(top_plist)), 320)
-    if (length(bottom_plist)>0) heights = c(heights, rep(100, length(bottom_plist)-1), 115)
-    
     p = grid.arrange(grobs = c(top_plist, list(p0=p), bottom_plist), ncol = 1, heights = heights)
     return(p)
 }
@@ -736,7 +731,7 @@ pp_add_ti_oscillator = function(
 
 #' create a chart for timeseries data
 #' 
-#' `pd_plot` creates a charts for a time series dataset. 
+#' `pq_plot` creates a charts for a time series dataset. 
 #' 
 #' @param dt a time series dataset
 #' @param chart_type chart type, including line, step, candle.
@@ -762,30 +757,30 @@ pp_add_ti_oscillator = function(
 #' ssec = md_stock("^000001", source="163")
 #' 
 #' # chart type
-#' pd_plot(ssec) # line chart (default)
-#' # pd_plot(ssec, chart_type = "candle") # candlestick
-#' # pd_plot(ssec, chart_type = "bar") # bar chart
-#' # pd_plot(ssec, chart_type = "step") # step line
+#' pq_plot(ssec) # line chart (default)
+#' # pq_plot(ssec, chart_type = "candle") # candlestick
+#' # pq_plot(ssec, chart_type = "bar") # bar chart
+#' # pq_plot(ssec, chart_type = "step") # step line
 #' 
 #' # add technical indicators
-#' pd_plot(ssec, chart_type = "candle", 
+#' pq_plot(ssec, chart_type = "candle", 
 #'   addti = list(sma = list(n = 50), macd = list()))
 #' 
 #' 
 #' # multiple symbols
 #' dat1 = md_stock(c('^000001', '^399001'), date_range = 'max', source='163')
-#' pd_plot(dat1, linear_trend = c(-0.8, 0, 0.8), multi_series = list(nrow=1, scales = 'free_y'))
+#' pq_plot(dat1, linear_trend = c(-0.8, 0, 0.8), multi_series = list(nrow=1, scales = 'free_y'))
 #' 
 #' 
 #' dat2 = md_stock(c('^000016', '^000300'), date_range = 'max', source='163')
-#' pd_plot(dat2, linear_trend = c(-0.8, 0, 0.8), multi_series = list(nrow=1, scales = 'free_y'))
+#' pq_plot(dat2, linear_trend = c(-0.8, 0, 0.8), multi_series = list(nrow=1, scales = 'free_y'))
 #' 
 #' }
 #' 
 #' @import ggplot2 gridExtra
 #' @importFrom stats lm
 #' @export
-pd_plot = function(
+pq_plot = function(
     dt, chart_type = "line", freq = NULL, 
     date_range="max", from = NULL, to = Sys.Date(), 
     addti = list(), linear_trend = NULL, 
@@ -793,38 +788,38 @@ pd_plot = function(
     x = "close|value", yaxis_log = FALSE, 
     color_up = "#F6736D", color_down = "#18C0C4", 
     multi_series = list(nrow=NULL, ncol=NULL), 
-    rm_weekend = NULL, ...) {
-    
-    
-    ## title
-    title = list(...)[['title']]
+    rm_weekend = NULL, title = NULL, ...) {
     
     ## change freq of input data
     if (!is.null(freq) || match.arg(freq, "daily")!="daily") {
-        dt = pd_to_freq(dt, freq)
+        dt = pq_to_freq(dt, freq)
     }
     
     # change into performance
     if (perf) {
-        dt = pd_perf(dt, x=x, date_range=date_range, from=from, to=to)
-        title = paste(title, "performance")
+        dt = pq_perf(dt, x=x, date_range=date_range, from=from, to=to)
+        title = ifelse(is.null(title), 'performance', paste(title, "performance")) 
     }
     
     ## bind list of dataframes
     if (inherits(dt, 'list')) dt = rbindlist(dt, fill = TRUE)
+    dt = dt[, symbol := factor(symbol, levels = dt[,unique(symbol)])]
     setkeyv(dt, c('symbol','date'))
     
     ## date range # from
     date_range = check_date_range(date_range, default = "max")
     from = get_from_daterange(date_range, from, to, min_date = dt[,min(date)])
+    from = check_fromto(from)
+    to   = check_fromto(to)
     
     ## x columns
     x = intersect(names(dt), unlist(strsplit(x,'\\|')))
     if (x != "close") dt[["close"]] = dt[[x]]
     
-    # add columns of prev_close, change, change_pct, x, title1, title2, updn_2day, 
+    # add columns of rowid, prev_close, change, change_pct, x, title1, title2, updn_2day, 
+    # rowid
     dt = dt[unique(dt[,.(date)])[order(date)][,rowid := .I][], on='date']
-    setkeyv(dt, c('symbol', 'date'))
+    # prev_close, change, change_pct, x, title1, title2, updn_2day, 
     dt = dt[, prev_close := shift(close, 1, type = "lag"), by = symbol
      ][, `:=`(
          change = close - prev_close,
@@ -835,7 +830,21 @@ pd_plot = function(
          title2 = sprintf("[%s/%s]", date[1], date[.N]),
          updn_2day = ifelse(close > prev_close, "up", "down")
      ), by = symbol]
+    # set title1 as factor
+    dt = dt[, `:=`(title1 = factor(title1, levels = dt[,unique(title1)]))]
+    # updn_2day
     if (all(c("close", "open") %in% names(dt))) dt[is.na(updn_2day), updn_2day := ifelse(close > open, "up", "down")]
+    
+    # subtitle / legend string
+    xcol = x
+    subtitle_str = dt[, .SD[.N], by = symbol]
+    subtitle_str = subtitle_str[, `:=`(
+        price_str = sprintf("atop(bold('%s')~'%.2f'~bold('Chg')~'%.2f(%.2f%%)')", xcol,close,change,change_pct),
+        price_str11 = sprintf("%s, %s, %.2f", symbol, date, close) )]
+    # set price_str11 as factor, 
+    # price_str11 is the legend for multiple series when nrow & ncol=1
+    subtitle_str = subtitle_str[, price_str11 := factor(price_str11, levels = subtitle_str[,price_str11])]
+    
     
     ## multiple series options
     multi_series_allnull = all(sapply(multi_series, is.null))
@@ -862,7 +871,8 @@ pd_plot = function(
     plist = list()
     if (!multi_series_allnull) {
         ## multiple series
-        if (dt[,length(unique(symbol)) > 1]) title = paste0("multiple series", title) 
+        if (dt[,length(unique(symbol)) > 1]) ifelse(is.null(title), 'multiple series', title)  
+        
         plist[["multi_series"]] = 
             do.call(paste0("pp_",chart_type), args = list(
                 dt = dt, 
@@ -874,7 +884,8 @@ pd_plot = function(
                 rm_weekend = rm_weekend, title = title, 
                 multi_series = multi_series,
                 linear_trend = linear_trend, 
-                multi_series_all1=multi_series_all1
+                multi_series_all1=multi_series_all1,
+                subtitle_str = subtitle_str
             ))
     } else {
         ## single series
@@ -894,7 +905,8 @@ pd_plot = function(
                     rm_weekend = rm_weekend, title = title, 
                     multi_series = multi_series,
                     linear_trend = linear_trend,
-                    multi_series_all1=multi_series_all1
+                    multi_series_all1=multi_series_all1,
+                    subtitle_str = subtitle_str[symbol == s]
                 ))
         }
     }

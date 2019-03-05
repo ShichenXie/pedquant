@@ -107,7 +107,7 @@ md_libor1_hist = function(syb, from, to) {
         libor_symbol[symbol == syb, symbol_fred], from=from, to=to, print_step=0L
     )[[1]][,`:=`(symbol_fred = symbol, symbol = NULL, name = NULL
     )][libor_symbol, on='symbol_fred', nomatch=0
-     ][, .(symbol, name, date, value)
+     ][, .(symbol, name, date, value, geo, unit)
      ][!is.na(value)]
     # return
     return(dt_libor_hist)
@@ -132,9 +132,13 @@ md_libor = function(symbol, from=NULL, to=Sys.Date(), print_step=1L) {
         # print step info
         if ((print_step>0) & (i %% print_step == 0)) cat(sprintf('%s %s\n', paste0(format(c(i, syb_len)), collapse = '/'), syb_i))
         # load data
-        temp = rbind(md_libor1_hist(syb_i, from=from, to=to), dat_last5[symbol==syb_i])
+        temp = rbind(md_libor1_hist(syb_i, from=from, to=to), dat_last5[symbol==syb_i],fill=TRUE)
         setkey(temp, 'date')
-        dt_list[[syb_i]] = unique(temp, by='date')
+        cols_fillna = intersect(c('geo', 'unit'), names(temp))
+        if (length(cols_fillna) > 0) {
+            temp = unique(temp, by='date')[, (cols_fillna) := lapply(.SD, function(x) fillna(x)), .SDcols = cols_fillna]
+        }
+        dt_list[[syb_i]] = temp
     }
     return(dt_list)
 }

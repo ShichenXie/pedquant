@@ -45,32 +45,32 @@ check_fromto = function(fromto, type="date", shift = 0) {
 
 get_from_daterange = function(date_range, from, to, min_date) {
     if (is.null(from)) {
-    if (date_range == "max") {
-        from = min_date
-    } else if (date_range == "ytd") {
-        from = sub("-[0-9]{2}-[0-9]{2}", "-01-01", as.character(to))
-        
-    } else if (grepl("[1-9][0-9]*d", date_range)) {
-        from = as.Date(to) - as.integer(sub("d","",date_range))
-    } else if (grepl("[1-9][0-9]*w", date_range)) {
-        from = as.Date(to) - as.integer(sub("d","",date_range))*7
-    } else if (grepl("[1-9,10,11]m", date_range)) {
-        month_range = as.integer(sub("m","",date_range))
-        month_to = as.integer(sub("^[0-9]{4}-([0-9]{1,2})-.+$", "\\1", to))
-        year_to = as.integer(format(as.Date(to), "%Y"))
-        if (month_to <= month_range) {
-            from = paste(year_to-1, 12+month_to-month_range, sub("[0-9]{4}-[0-9]{1,2}-","",to), sep="-")
+        if (date_range == "max") {
+            from = min_date
+        } else if (date_range == "ytd") {
+            from = sub("-[0-9]{2}-[0-9]{2}", "-01-01", as.character(to))
+            
+        } else if (grepl("[1-9][0-9]*d", date_range)) {
+            from = as.Date(to) - as.integer(sub("d","",date_range))
+        } else if (grepl("[1-9][0-9]*w", date_range)) {
+            from = as.Date(to) - as.integer(sub("d","",date_range))*7
+        } else if (grepl("[1-9,10,11]m", date_range)) {
+            month_range = as.integer(sub("m","",date_range))
+            month_to = as.integer(sub("^[0-9]{4}-([0-9]{1,2})-.+$", "\\1", to))
+            year_to = as.integer(format(as.Date(to), "%Y"))
+            if (month_to <= month_range) {
+                from = paste(year_to-1, 12+month_to-month_range, sub("[0-9]{4}-[0-9]{1,2}-","",to), sep="-")
+            } else {
+                from = paste(year_to, month_to-month_range, sub("[0-9]{4}-[0-9]{1,2}-","",to), sep="-")
+            }
+            
+        } else if (grepl("[1-9][0-9]*y", date_range)) {
+            year_range = as.integer(sub("y","",date_range))
+            year_from = as.integer(format(as.Date(to), "%Y")) - year_range
+            from = sub("^[0-9]{4}", year_from, to)
         } else {
-            from = paste(year_to, month_to-month_range, sub("[0-9]{4}-[0-9]{1,2}-","",to), sep="-")
+            from = min_date
         }
-        
-    } else if (grepl("[1-9][0-9]*y", date_range)) {
-        year_range = as.integer(sub("y","",date_range))
-        year_from = as.integer(format(as.Date(to), "%Y")) - year_range
-        from = sub("^[0-9]{4}", year_from, to)
-    } else {
-        from = min_date
-    }
     }
     
     # set class
@@ -149,7 +149,7 @@ check_symbol_for_yahoo = function(symbol) {
         if (!is.null(ex_code)) symbol = paste(syb, ex_code, sep=".")
     }
     }
-    return(symbol)
+    return(toupper(symbol))
 }
 
 
@@ -198,6 +198,15 @@ check_mkt_src = function(market=NULL, source=NULL) {
 }
 
 
+# check frequency is daily data
+check_freq_isdaily = function(dt) {
+    setkeyv(dt, "date")
+    # check freq of input data
+    diff_date = dt[, as.numeric(mean(date - shift(date, n=1, type="lag"), na.rm=TRUE)) ]
+    
+    isdaily = ifelse(diff_date > 2, FALSE, TRUE)
+    return(isdaily)
+}
 ########################### helper functions ###########################
 # # select rows in a dataframe
 # sel_row_df = function(df, col_name = NULL, stop_condi = NULL) {
@@ -241,27 +250,33 @@ load_read_csv = function(url, encode="UTF-8", handle=new_handle()) {
 
 
 # fill 0/na in a vector with last non 0/na value
-fill0 = function(x) {
-    # index of x==0
-    ind = which(x==0)
-    while (length(ind) >0 & any(!(ind %in% 1:length(ind))) ) {
-        # replace value with last
-        x[ind] <- x[ind-1]
-        # index of x==0
-        ind = which(x==0)
-    }
-    return(x)
+fill0 = function(x, from_last = FALSE) {
+    x[x==0] <- NA
+    x2 = na.locf0(x, fromLast = from_last)
+    
+    # xdt = data.table(x = x)
+    # while (xdt[x==0,.N] & xdt[,rowid:=.I][x==0, !all(rowid == .I)]) {
+    #     xdt[, x_lag := shift(x, type='lag')
+    #         ][x==0, x := x_lag]
+    # }
+    # x2 = xdt$x
+    
+    return(x2)
 }
-fillna = function(x) {
-    # index of x==na
-    ind = which(is.na(x))
-    while (length(ind) >0 & any(!(ind %in% 1:length(ind))) ) {
-        # replace value with last
-        x[ind] <- x[ind-1]
-        # index of x==na
-        ind = which(is.na(x))
-    }
-    return(x)
+#' @importFrom zoo na.locf0
+fillna = function(x, from_last = FALSE) {
+    # https://stackoverflow.com/questions/7735647/replacing-nas-with-latest-non-na-value
+    
+    x2 = na.locf0(x, fromLast = from_last)
+    
+    # xdt = data.table(x = x)
+    # while (xdt[is.na(x),.N] & xdt[,rowid:=.I][is.na(x), !all(rowid == .I)]) {
+    #     xdt[, x_lag := shift(x, type='lag')
+    #       ][is.na(x), x := x_lag]
+    # }
+    # x2 = xdt$x
+    
+    return(x2)
 }
 
 

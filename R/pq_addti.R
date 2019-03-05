@@ -32,42 +32,44 @@
 # }
 
 
+
 # [1] "adjRatios" "growth" "lags" "rollSFM" "runPercentRank"  
 # Technical Overlays / Indicators
 ti_overlays_indicators = function() {
   list(
-    overlays = c('SMA', 'EMA', 'DEMA', 'WMA', 'EVWMA', 'ZLEMA', 'VWAP', 'HMA', 'ALMA', 
+    overlays = c('SMA', 'EMA', 'DEMA', 'WMA', 'EVWMA', 'ZLEMA', 'VWAP', 'VMA', 'HMA', 'ALMA', 
                  'runMin', 'runMax', 'runMean', 'runMedian', 
                  'BBands', 'PBands', 
                  'DonchianChannel', 'SAR', 'ZigZag'),
-    indicators = c('runSD', 'runMAD', 'aroon', 'CCI', 'VHF', 'TDI', 'ADX', 'ATR', 'EMV', 'chaikinVolatility', 'volatility', 'OBV', 'chaikinAD', 'CLV', 'CMF', 'MFI', 'williamsAD', 'ROC', 'momentum', 'KST', 'TRIX', 'MACD', 'DPO', 'DVI', 'ultimateOscillator', 'RSI', 'CMO', 'stoch', 'SMI', 'WPR')
+    indicators = c('runSD', 'runMAD', 'aroon', 'CCI', 'VHF', 'TDI', 'ADX', 'ATR', 'EMV', 'chaikinVolatility', 'volatility', 'OBV', 'chaikinAD', 'CLV', 'CMF', 'MFI', 'williamsAD', 'ROC', 'momentum', 'KST', 'TRIX', 'MACD', 'DPO', 'DVI', 'ultimateOscillator', 'RSI', 'CMO', 'stoch', 'SMI', 'WPR', 
+                   'pb', 'pe_last', 'pe_trailing', 'pe_forward', 'ps')
   )
 }
 
-# hline for technical indicators in pd_plot
+# hline for technical indicators in pq_plot
 ti_idicators_hline = function() {list(
   bbands = c(0.5, 0, 1),
-  aroon = c(50),
-  cci = c(0, -100, 100),
-  tdi = c(0),
-  emv = c(0),
+  aroon  = c(50),
+  cci    = c(0, -100, 100),
+  tdi    = c(0),
+  emv    = c(0),
   chaikinvolatility = c(0),
-  clv = c(0),
-  cmf = c(0),
-  mfi = c(20, 80),
-  roc = c(0),
+  clv    = c(0),
+  cmf    = c(0),
+  mfi    = c(20, 80),
+  roc    = c(0),
   momentum = c(0),
-  kst = c(0),
-  trix = c(0),
-  macd = c(0),
-  dpo = c(0),
-  dvi = c(0.5),
+  kst    = c(0),
+  trix   = c(0),
+  macd   = c(0),
+  dpo    = c(0),
+  dvi    = c(0.5),
   ultimateoscillator = c(50, 30, 70),
-  rsi = c(50, 30, 70),
-  cmo = c(0),
-  stoch = c(0.5),
-  smi = c(0),
-  wpr = c(0.5)
+  rsi    = c(50, 30, 70),
+  cmo    = c(0),
+  stoch  = c(0.5),
+  smi    = c(0),
+  wpr    = c(0.5)
 )}
 
 
@@ -80,7 +82,7 @@ ti_idicators_hline = function() {list(
 #   arg_lst[['dt']] = dt
 #   arg_lst[[x]] = list()
 #   
-#   ncol(do.call(pd_addti, args = arg_lst)[[1]])
+#   ncol(do.call(pq_addti, args = arg_lst)[[1]])
 # } )
 # unlist(ti_oi())[which(numcol>1)]
 
@@ -176,7 +178,6 @@ ti_idicators_hline = function() {list(
 
 
 
-
 ######
 ti_fst_arg = function() {
   list(
@@ -187,14 +188,14 @@ ti_fst_arg = function() {
     prices = 'PBands',
     x = c('ROC','momentum','SMA','EMA','DEMA','WMA','ZLEMA','VMA','HMA','ALMA','GMMA','runSum','runMin','runMax','runMean','runMedian','runCov','runCor','runVar','runSD','runMAD','wilderSum','MACD','DPO','CMO')
   )
-}  
+}
 ti_sec_arg = function() {
   list(
     volume = c('EMV','OBV','chaikinAD','CMF','MFI','EVWMA','VWAP'),
     y = c('runCov', 'runCor', 'runVar'), 
     w = 'VMA'
   )
-} 
+}
 
 # add one technical indicator
 #' @import TTR
@@ -270,7 +271,7 @@ addti1 = function(dt, ti, col_formula = FALSE, ...) {
 }
 
 # add technical indcators for one dataset
-pd1_addti = function(dt, ...) {
+pq1_addti = function(dt, ...) {
   col_formula = FALSE
   if ("col_formula" %in% names(list(...)))  col_formula = list(...)[["col_formula"]]
   col_kp = NULL
@@ -313,7 +314,7 @@ pd1_addti = function(dt, ...) {
 
 #' create technical indicators
 #' 
-#' `pd_addti` adds technical indicators to a dataset
+#' `pq_addti` adds technical indicators to a dataset
 #' 
 #' @param dt time series datasets
 #' @param ti list of technical indicators, overlay indicators include mm, sma, ema, smma, bb, sar, and oscillators indicators such as macd, roc, ppo, rsi, cci. 
@@ -343,10 +344,10 @@ pd1_addti = function(dt, ...) {
 #' @examples 
 #' dt = md_stock("^000001", source='163')
 #' 
-#' dt_ti = pd_addti(dt, SMA=list(n=20), SMA=list(n=50))
+#' dt_ti = pq_addti(dt, SMA=list(n=20), SMA=list(n=50))
 #' 
 #' @export
-pd_addti = function(dt, ...) {
+pq_addti = function(dt, ...) {
   # col_kp, col_formula
   
   # bind list of dataframes
@@ -360,7 +361,7 @@ pd_addti = function(dt, ...) {
   for (s in sybs) {
     dt_s = dt[symbol == s]
     setkeyv(dt_s, "date")
-    dt_list[[s]] = pd1_addti(dt=dt_s, ...)
+    dt_list[[s]] = pq1_addti(dt=dt_s, ...)
   }
   return(dt_list)
 }

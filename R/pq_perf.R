@@ -1,6 +1,6 @@
 # d, w, m, q, ytd, y, 
 
-pd1_perf = function(dt, date_range="max", from=NULL, to=Sys.Date(), x="close|value") {
+pq1_perf = function(dt, date_range="max", from=NULL, to=Sys.Date(), x="close|value") {
     x = intersect(names(dt), unlist(strsplit(x,'\\|')))[1]
     if (x %in% c('open','high','low','close')) {
         cols = intersect(names(dt), c('open','high','low','close'))
@@ -22,7 +22,7 @@ pd1_perf = function(dt, date_range="max", from=NULL, to=Sys.Date(), x="close|val
 #' create performance of data sets
 #' 
 #' @export
-pd_perf = function(dt, date_range="max", from=NULL, to=Sys.Date(), x="close|value") {
+pq_perf = function(dt, date_range="max", from=NULL, to=Sys.Date(), x="close|value") {
     symbol = NULL
     
     # bind list of dataframe
@@ -35,7 +35,7 @@ pd_perf = function(dt, date_range="max", from=NULL, to=Sys.Date(), x="close|valu
         dt_s = dt[symbol == s]
         setkeyv(dt_s, "date")
         
-        dt_list[[s]] = do.call(pd1_perf, args = list(dt=dt_s, x=x, date_range=date_range, from=from, to=to))
+        dt_list[[s]] = do.call(pq1_perf, args = list(dt=dt_s, x=x, date_range=date_range, from=from, to=to))
     }
     
     return(dt_list)

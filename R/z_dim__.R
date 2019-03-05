@@ -1,5 +1,21 @@
 # #Industrial Classification
 # http://finviz.com/
+# https://www.sec.gov
+
+# - https://pandas-datareader.readthedocs.io/en/latest/
+# - https://github.com/mortada/fredapi
+
+# - https://stooq.com/db/h/
+# - https://tradingeconomics.com/
+# - https://www.investing.com
+# - https://www.quandl.com
+
+# http://blog.sina.com.cn/s/blog_afae4ee50102wu8a.html
+# http://hq.sinajs.cn/list=sz000913,s_sh000001
+
+
+
+
 #     
 # Basic Materials
 # Consumer Goods
@@ -44,6 +60,9 @@
 # usethis::use_data(financial_statements_163, prov_indu_163, symbol_future_sina, symbol_stock_163, code_commodity_exchange, code_stock_exchange, code_country, code_currency, internal = TRUE, overwrite = TRUE)
 
 
+
+
+
 # Symbol          Name
 # CPIYUS.M        US CPI Y/Y
 # CPIYCN.M        CN CPI Y/Y
@@ -52,18 +71,6 @@
 # region: au, ca, ch, cn, de, eu, fr, it, jp, no, pl, uk, us
 # period: D, W, M, S, A
 
-
-# # ref:
-# - https://pandas-datareader.readthedocs.io/en/latest/
-# - https://github.com/mortada/fredapi
-
-# - https://stooq.com/db/h/
-# - https://tradingeconomics.com/
-# - https://www.investing.com
-# - https://www.quandl.com
-
-# http://blog.sina.com.cn/s/blog_afae4ee50102wu8a.html
-# http://hq.sinajs.cn/list=sz000913,s_sh000001
 
 
 

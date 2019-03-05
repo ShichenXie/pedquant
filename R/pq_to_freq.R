@@ -1,6 +1,6 @@
 # to_period in xts package
 
-pd1_dtow = function(dat) {
+pq1_dtow = function(dat) {
     w=wi=.=symbol=name=high=low=volume=NULL
     
     dat[, w := isoweek(date)
@@ -16,7 +16,7 @@ pd1_dtow = function(dat) {
     
     return(dat2)
 }
-pd1_dtom = function(dat) {
+pq1_dtom = function(dat) {
     .=symbol=name=high=low=volume=NULL
     
     dat2 = dat[, .(
@@ -27,7 +27,7 @@ pd1_dtom = function(dat) {
     
     return(dat2)
 }
-pd1_dtoq = function(dat) {
+pq1_dtoq = function(dat) {
     . = symbol = name = high = low = volume = NULL
     
     dat2 = dat[, .(
@@ -38,7 +38,7 @@ pd1_dtoq = function(dat) {
     
     return(dat2)
 }
-pd1_dtoy = function(dat) {
+pq1_dtoy = function(dat) {
     .=symbol=name=high=low=volume=NULL
     
     dat2 = dat[, .(
@@ -50,32 +50,18 @@ pd1_dtoy = function(dat) {
     return(dat2)
 }
 
-check_freq_isdaily = function(dat) {
-  setkeyv(dat, "date")
-  # check freq of input data
-  diff_date = dat[, as.numeric(mean(date - shift(date, n=1, type="lag"), na.rm=TRUE)) ]
-  
-  isdaily = ifelse(diff_date > 2, FALSE, TRUE)
-  return(isdaily)
-}
-
-pd1_to_freq = function(dat, freq) {
+pq1_to_freq = function(dat, freq) {
     . = high = low = name = symbol = volume = NULL
     
     if (freq == "daily" || !check_freq_isdaily(dat)) return(dat)
     setkeyv(dat, "date")
     
     # change
-    dat2 = do.call(paste0("pd1_dto",substr(freq,1,1)), list(dat=dat))
+    dat2 = do.call(paste0("pq1_dto",substr(freq,1,1)), list(dat=dat))
     
     # symbol and name
-    if (all(c("symbol","name") %in% names(dat))) {
-      dat2 = dat2[, .(date, symbol=dat[1,symbol], name=dat[1,name], open, high, low, close, volume)]
-    } else if ("symbol" %in% names(dat)) {
-      dat2 = dat2[, .(date, symbol=dat[1,symbol], open, high, low, close, volume)]
-    }
-    
-    return(dat2)
+    cols_ret = intersect(c('symbol', 'name', 'date', 'open', 'high', 'low', 'close', 'volume'), names(dat2))
+    return(dat2[, cols_ret, with=FALSE])
 }
 
 #' convert the frequency of daily data
@@ -87,12 +73,12 @@ pd1_to_freq = function(dat, freq) {
 #' @examples 
 #' dts = md_stock(c("^000001", "000001"), date_range = 'max', source = '163')
 #' 
-#' dts_weekly = pd_to_freq(dts, "weekly")
+#' dts_weekly = pq_to_freq(dts, "weekly")
 #' 
 #' @export
 #' 
-pd_to_freq = function(dt, freq, print_step=0L) {
-    symbol = len_names = dt_names = NULL
+pq_to_freq = function(dt, freq, print_step=0L) {
+    # symbol = len_names = dt_names = NULL
     # check freq argument
     freq = check_arg(freq, c("weekly","monthly","quarterly","yearly"), "weekly")
   
@@ -100,13 +86,13 @@ pd_to_freq = function(dt, freq, print_step=0L) {
     
     dt_list = list()
     sybs = dt[, unique(symbol)]
-    for (i in seq_len(length(sybs))) {
+    for (i in seq_along(sybs)) {
       s = sybs[i]
       dt_s = dt[symbol == s]
       setkeyv(dt_s, "date")
       
-      if ((print_step>0) & (i %% print_step == 0)) cat(sprintf('%s/%s %s\n', i, len_names, dt_names[i]))
-      dt_list[[s]] = do.call(pd1_to_freq, args = list(dat=dt_s, freq=freq))
+      if ((print_step>0) & (i %% print_step == 0)) cat(sprintf('%s/%s %s\n', i, length(sybs), s))
+      dt_list[[s]] = do.call(pq1_to_freq, args = list(dat=dt_s, freq=freq))
     }
     
     

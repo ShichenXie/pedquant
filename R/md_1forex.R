@@ -114,7 +114,7 @@ md_forex1_fred = function(syb, from, to) {
         syb_fred, from=from, to=to, print_step=0L
     )[[1]][,`:=`(symbol_fred = symbol, symbol = NULL, name = NULL
     )][forex_symbol_fred, on='symbol_fred', nomatch=0
-       ][, .(symbol, name, date, value)
+       ][, .(symbol, name, date, value, geo, unit)
          ][!is.na(value)]
     # return
     return(dt_forex_hist)
@@ -166,7 +166,12 @@ md_forex = function(symbol=NULL, date_range = '3y', from=NULL, to=Sys.Date(), pr
         }
         
         setkey(temp, 'date')
-        dt_list[[syb_i]] = unique(temp, by='date')
+        cols_fillna = intersect(c('geo', 'unit'), names(temp))
+        if (length(cols_fillna) > 0) {
+            temp = unique(temp, by='date')[, (cols_fillna) := lapply(.SD, function(x) fillna(x)), .SDcols = cols_fillna]
+        }
+        
+        dt_list[[syb_i]] = temp
     }
     return(dt_list)
 }

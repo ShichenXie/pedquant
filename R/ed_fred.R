@@ -32,7 +32,7 @@ ed_fred1 = function(symbol1, from="1776-07-04", to="9999-12-31", na_rm=FALSE) {
     query_series_tags = function(symbol1) {
         setDT(fromJSON(sprintf(base_url, sprintf("series/tags?series_id=%s&", unlist(symbol1)), key))[["tags"]])[]
     }
-    for (i in 1:5) {
+    for (i in 1:2) {
         tags = try(query_series_tags(symbol1), silent = TRUE)
         # print(i)
         if (!inherits(tags, 'try-error')) {

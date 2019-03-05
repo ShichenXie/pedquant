@@ -68,11 +68,13 @@ md_stock_spotall_163 = function(symbol = "a,index", only_symbol = FALSE) {
   }
   
   
-  return(df_stock_cn[,unit := 'CNY'])
+  return(df_stock_cn[,unit := 'CNY'][, symbol := check_symbol_for_yahoo(symbol)])
 }
 
 
 # query spot data from tx
+# hq.sinajs.cn/list=sz150206
+# http://qt.gtimg.cn/q=sz000001
 md_stock_spot1_tx = function(symbol1) {
   dat = doc = . = name = high = low = prev_close = change = change_pct = volume = amount = turnover = cap_market = cap_total = time = symbol = NULL
   
@@ -114,6 +116,7 @@ md_stock_spot1_tx = function(symbol1) {
     #ask1, ask1_volume, ask2, ask2_volume, ask3, ask3_volume, ask4, ask4_volume, ask5, ask5_volume
     )][, (num_cols) := lapply(.SD, as.numeric), .SDcols= num_cols
      ][, `:=`(
+       symbol = check_symbol_for_yahoo(symbol),
        volume = volume*100,
        amount = amount*10000,
        cap_market = cap_market*10^8, 
@@ -122,8 +125,8 @@ md_stock_spot1_tx = function(symbol1) {
        date = as.Date(date, format="%Y%m%d%H%M%S")
      )]
   
-  if (dt[1,time] < as.POSIXct(paste(dt[1,date], '15:00:00')))
-    cat("The close price is spot price at", dt[1,as.character(time)], "\n")
+  # if (dt[1,time] < as.POSIXct(paste(dt[1,date], '15:00:00')))
+  #   cat("The close is the spot price at", dt[1, as.character(time)], "\n")
   
   return(dt[,unit := 'CNY'])
 }
@@ -131,7 +134,7 @@ md_stock_spot1_tx = function(symbol1) {
 
 #' @import data.table
 #' @importFrom readr read_csv locale col_date col_character col_double col_integer
-md_stock_hist1_163 = function(symbol1, from="1900-01-01", to=Sys.Date(), fillzero=FALSE) {
+md_stock_hist1_163 = function(symbol1, from="1900-01-01", to=Sys.Date(), fillzero=FALSE, adjust=FALSE, ...) {
   change_pct = symbol = NULL
   # http://quotes.money.163.com/service/chddata.html?code=0000001&start=19901219&end=20180615&fields=TCLOSE;HIGH;LOW;TOPEN;LCLOSE;CHG;PCHG;VOTURNOVER;VATURNOVER
   # http://quotes.money.163.com/service/chddata.html?code=1399001&start=19910403&end=20180615&fields=TCLOSE;HIGH;LOW;TOPEN;LCLOSE;CHG;PCHG;VOTURNOVER;VATURNOVER
@@ -147,7 +150,9 @@ md_stock_hist1_163 = function(symbol1, from="1900-01-01", to=Sys.Date(), fillzer
   fromto = lapply(list(from=from,to=to), function(x) format(check_fromto(x), "%Y%m%d"))
   
   # create link
-  link = paste0("http://quotes.money.163.com/service/chddata.html?code=",syb,"&start=",fromto$from,"&end=",fromto$to,"&fields=TOPEN;HIGH;LOW;TCLOSE;LCLOSE;CHG;PCHG;VOTURNOVER;VATURNOVER;TURNOVER;MCAP;TCAP")
+  fields = c('TOPEN','HIGH','LOW','TCLOSE','LCLOSE','CHG','PCHG','VOTURNOVER','VATURNOVER','TURNOVER','MCAP','TCAP')
+  link = sprintf("http://quotes.money.163.com/service/chddata.html?code=%s&start=%s&end=%s&fields=%s", syb, fromto$from, fromto$to, paste0(fields, collapse = ';'))
+    # paste0("http://quotes.money.163.com/service/chddata.html?code=",syb,"&start=",fromto$from,"&end=",fromto$to,"&fields=TOPEN;HIGH;LOW;TCLOSE;LCLOSE;CHG;PCHG;VOTURNOVER;VATURNOVER;TURNOVER;MCAP;TCAP")
   # 开盘价   # TOPEN:       open
   # 最高价   # HIGH:        high
   # 最低价   # LOW:         low
@@ -167,6 +172,8 @@ md_stock_hist1_163 = function(symbol1, from="1900-01-01", to=Sys.Date(), fillzer
   dt <- read_csv(
     file=link, locale = locale(encoding = "GBK"), na=c("", "NA", "None"),
     col_types=list(col_date(format = ""), col_character(), col_character(), col_double(), col_double(), col_double(), col_double(), col_double(), col_double(), col_double(), col_double(), col_double(), col_double(), col_double(), col_double()))
+  attr(dt, 'spec') <- NULL
+  setDT(dt)
   # dt <- load_read_csv(link, "GBK")
   
   # set names of datatable
@@ -175,8 +182,8 @@ md_stock_hist1_163 = function(symbol1, from="1900-01-01", to=Sys.Date(), fillzer
   
   
   # if (max(dt[["date"]]) < lwd()) dt = rbindlist(list(dt, md_stock_spot1_tx(symbol1)[,names(dt), with=FALSE]), fill = FALSE)
-  dt = setDT(dt, key="date")[, symbol := symbol1][, (cols_name[c(2,3,1,4:15)]), with=FALSE]
-  if (max(dt[["date"]]) < lwd()) dt = unique(dt, by="date")
+  dt = setDT(dt, key="date")[, symbol := check_symbol_for_yahoo(symbol1)][, (cols_name[c(2,3,1,4:15)]), with=FALSE]
+  # if (max(dt[["date"]]) < lwd()) dt = unique(dt, by="date")
   
   # fill zeros in dt
   if (fillzero) {
@@ -187,51 +194,217 @@ md_stock_hist1_163 = function(symbol1, from="1900-01-01", to=Sys.Date(), fillzer
   }
   
   dt = dt[, unit := 'CNY'][, name := name[.N]]
+  if (adjust) dt = adjust_ohlc(dt, source = '163')
   return(dt)
 }
 
-md_stock_divsplit_163 = function(symbol1, from, to) {
-  urli = sprintf('http://quotes.money.163.com/f10/fhpg_%s.html#01d05', sub('.*?([0-9]{6}).*?','\\1',symbol1))
-  wb = read_html(urli)
-  tbls = html_table(wb, fill = TRUE, header = TRUE)
-               
-  fenhong = setDT(tbls[[4]])[-1,c(3:5,7)][, lapply(.SD, function(x) replace(x, x=='--', NA))]
-  setnames(fenhong, c('送股', '转增', '分红', 'date'))
-  fenhong = melt(dt, id='date')[, value := as.numeric(value)][value != 0 & !is.na(value)]
+# pe, pb, ps, pcf
+md_stock_hist1_163_pe = function(symbol1, ...) {
   
-  # 送股 转增 分红 
-  # 配股 增发
-  peigu = setDT(tbls[[5]])[,c(8,2,3,5,4,6,7)]
-  setnames(peigu, c('date', '配股', '配股价', '实际配股数量', '配股对象', '配股前总股本', '实际配股比例'))
-  zengfa = setDT(tbls[[6]])[,c(7,5,3,4)]
-  setnames(zengfa, c('date', '增发价', '增发数量', '募资总额'))
+  # 市盈率 = 股价/年度每股盈余(EPS)；公司市值/年度股东权益 Price to Earnings ratio # https://www.zhihu.com/question/36915260
+  # 市销率 = 总市值除以主营业务收入，Price-to-sales,PS
+  # 市现率 = 股票价格与每股现金流量的比率 Price Cash Flow Ratio，PCF
   
-  return(list(fenhong, peigu, zengfa))
+  # symbol1 = '000001'
+  # main financial indicators
+  mainfi = try(fs_type1_cn(symbol1, 'fi0_main'), silent = TRUE)
+  # price dataframe
+  args = list(...)
+  adjust = args$adjust
+  from = args$from
+  
+  args$adjust = FALSE
+  args$from   = '1900-01-01'
+  dat = do.call(md_stock_hist1_163, c(list(symbol1=symbol1), args)) # md_stock_hist1_163(symbol1, ...)
+  if (inherits(mainfi, 'try-error')) return(dat)
+  
+  # main financial indicators
+  # book value per share
+  # Revenue from 
+  # Net profit
+  # Net Increase (Decrease) in Cash and Cash Equivalents
+  mfi = dcast(
+    merge(
+      mainfi[
+        var_id %in% c(18,4,10,13)
+        ][, value := ifelse(value==0, NA, value)], 
+      data.table(var_id = c(18,4,10,13),
+                 var = c('BV', 'REV', 'NP', 'NIDCash')),
+      by = 'var_id', all.x = TRUE
+    ), 
+    date ~ var
+  )[, `:=`(fs_month = month(date), fs_month_diff = mean(month(date) - shift(month(date), type='lag', fill = 0))), by = year(date)
+  # trailing REV/Income from main operation  
+  ][fs_month_diff == 3,                  REV_Q   := REV-shift(REV, type='lag'), by = year(date)
+  ][fs_month_diff == 3 & is.na(REV_Q),   REV_Q   := REV
+  ][fs_month_diff == 3,                  REV_Y := runSum(REV_Q, 4)
+  # trailing NP/Net Income
+  ][fs_month_diff == 3,                  NP_Q := NP-shift(NP, type='lag'), by = year(date)
+  ][fs_month_diff == 3 & is.na(NP_Q),    NP_Q := NP
+  ][fs_month_diff == 3,                  NP_Y := runSum(NP_Q, 4)
+  # last year NP/Net Income              
+  ][fs_month==12, NP_Dec := NP
+  ][, NP_LY := shift(NP_Dec, type='lag')
+  ][, NP_LY := fillna(NP_LY)
+  ][fs_month_diff ==  3, date2 := as.Date(paste(year(date), month(date)- 2, 1, sep='-'))
+  ][fs_month_diff ==  6, date2 := as.Date(paste(year(date), month(date)- 5, 1, sep='-'))
+  ][fs_month_diff == 12, date2 := as.Date(paste(year(date), month(date)-11, 1, sep='-'))
+  ][, date := date2]
+  
+  # merge mfi with dat
+  cols_fillna = c('fs_month',"BV","NIDCash", "REV_Y", 'NP', "NP_Y", 'NP_LY')
+  dat_pbpe = merge(
+    dat[, unit := NULL], 
+    mfi[, c('date', cols_fillna), with=FALSE], all = TRUE, by = 'date'
+  )[, (cols_fillna) := lapply(.SD, fillna), .SDcols = cols_fillna
+  ][!is.na(symbol)
+  ][,`:=`(
+    pb = cap_total/BV/10000,
+    pe_last = cap_total/NP_LY/10000, # last year ratio
+    pe_trailing = cap_total/NP_Y/10000, # trailing twelve month
+    pe_forward = cap_total/(NP/(fs_month/12))/10000, # forward
+    ps = cap_total/REV_Y/10000,
+    pcf = cap_total/NIDCash/10000,
+    unit = 'CNY'
+  )]#[, (cols_fillna) := NULL]
+  
+  if (adjust) dat_pbpe = adjust_ohlc(dat_pbpe, source = '163')[date >= from]
+  return(dat_pbpe)
 }
+
+# dividends
+md_stock_divsplit1_163 = function(symbol1, from=NULL, to=NULL, ret = 'div') {
+  # symbol1 = '000001'
+  stk_price = md_stock_spot1_tx(symbol1)
+  # return dts
+  div_spl = list()
+  
+  # get dividends
+  urli = sprintf('http://quotes.money.163.com/f10/fhpg_%s.html#01d05', sub('.*?([0-9]{6}).*?','\\1', symbol1))
+  wb = read_html(urli)
+  tbls = rvest::html_table(wb, fill = TRUE, header = TRUE)
+  
+  
+  tbl_divspl = setDT(tbls[[4]])[-1][, lapply(.SD, function(x) replace(x, x=='--', NA))][,c(3:5,7,8)]
+  setnames(tbl_divspl, c('songgu', 'zhuanzeng', 'fenhong', 'date1', 'date2'))
+  if (length(unique(unlist(tbl_divspl))) == 1 & nrow(tbl_divspl) == 1) {
+    tbl_divspl = tbl_divspl[.0]
+  } 
+  tbl_divspl = tbl_divspl[
+    , (c('songgu', 'zhuanzeng', 'fenhong')) := lapply(.SD, as.numeric), .SDcols = c('songgu', 'zhuanzeng', 'fenhong')
+    ][, (c('date1', 'date2')) := lapply(.SD, as.Date), .SDcols = c('date1', 'date2')
+      ][is.na(date2), date2 := date1
+        ][order(date1)]
+  
+  if ('div' %in% ret) { # dividend
+    tbl_divident = tbl_divspl[fenhong > 0]
+    if (nrow(tbl_divident) == 0) {
+      div_spl[['div']] = data.table(
+          symbol    = stk_price$symbol,
+          name      = stk_price$name,
+          date      = Sys.Date(),
+          dividends = 1
+        )[.0]
+    } else {
+      div_spl[['div']] = tbl_divident[,.(
+          symbol    = stk_price$symbol,
+          name      = stk_price$name,
+          date      = as.Date(date1),
+          dividends = fenhong/10
+        )]
+    }
+  }
+  
+  if ('spl' %in% ret) { # split
+    tbl_split = rbind(
+      tbl_divspl[, .(spl = songgu, date = date2)][spl > 0],
+      tbl_divspl[, .(spl = zhuanzeng, date = date1)][spl > 0]
+    )[, lapply(.SD, sum), keyby = date]
+    
+    if (nrow(tbl_split) == 0) {
+      div_spl[['spl']] = data.table(
+          symbol = stk_price$symbol,
+          name   = stk_price$name,
+          date   = Sys.Date(),
+          splits = 1
+        )[.0]
+    } else {
+      div_spl[['spl']] = tbl_split[,.(
+          symbol = stk_price$symbol,
+          name   = stk_price$name,
+          date   = as.Date(date),
+          splits = spl/10
+        )]
+    }
+  }
+  
+  if ('rig' %in% ret) { # rights issue/offering
+    rig = setDT(tbls[[5]])[,c(8,5,6,3)]
+    setnames(rig, c('date', 'new_issues', 'old_issues', 'issue_price'))
+    if (length(unique(unlist(rig))) == 1 & nrow(rig) == 1) {
+      div_spl[['rig']] = data.table(
+        symbol = stk_price$symbol, 
+        name = stk_price$name, 
+        date = Sys.Date(), 
+        issue_rate = 1, 
+        issue_price = 1
+      )[.0]
+    } else {
+      div_spl[['rig']] = rig[
+        , (c('new_issues', 'old_issues')) := lapply(.SD, function(x) as.numeric(gsub('[^0-9\\.]', '', x))), .SDcols = c('new_issues', 'old_issues')
+        ][new_issues > 0
+          ][, .(
+            symbol = stk_price$symbol,
+            name   = stk_price$name, 
+            date   = as.Date(date), 
+            issue_rate = new_issues/old_issues, 
+            issue_price
+          )]
+    }
+  }
+  
+  if (!is.null(from) & !is.null(to)) div_spl = lapply(div_spl, function(x) x[date >= from & date <= to]) 
+  div_spl = lapply(div_spl, function(x) setkeyv(x, 'date'))  
+  if (length(div_spl) == 1) div_spl = div_spl[[1]]
+  return(div_spl)
+}
+
+
 
 #' @import data.table
 md_stock_163 = function(symbol, from="1900-01-01", to=Sys.Date(), print_step=1L, freq = "daily", fillzero=FALSE, ...) {
   # fromt to 
   from = check_fromto(from)
   to = check_fromto(to)
-  
   # frequency
   freq = check_arg(freq, c("daily"))
+  # type 
+  type = list(...)[['type']]
+  # return pe pb
+  pe = list(...)[['pe']]
+  if (is.null(pe)) pe = FALSE
   
-  # query data
-  if (from==Sys.Date()) {
-    if (all(unlist(strsplit(symbol,",")) %in% c('a','b','index'))) {
-      fuc = 'md_stock_spotall_163'
-    } else {
+  
+  if (type == 'history') {
+    # query data
+    if (from==Sys.Date()) {
       fuc = 'md_stock_spot1_tx'
+      if (all(unlist(strsplit(symbol,",")) %in% c('a','b','index'))) fuc = 'md_stock_spotall_163'
+      dat_list <- try(do.call(fuc, args=list(symbol=symbol)), silent = TRUE)
+    } else {
+      fuc = 'md_stock_hist1_163'
+      if (pe) fuc = 'md_stock_hist1_163_pe' 
+      dat_list = load_dat_loop(symbol, fuc, args = list(from = from, to = to, fillzero = fillzero, ...), print_step=print_step)
     }
-    dat_list <- try(do.call(fuc, args=list(symbol=symbol)), silent = TRUE)
     
-  } else {
-    dat_list = load_dat_loop(symbol, "md_stock_hist1_163", args = list(from = from, to = to, fillzero = fillzero), print_step=print_step)
+  } else if (type == 'dividend') (
+    dat_list = load_dat_loop(symbol, "md_stock_divsplit1_163", args = list(from = from, to = to, ret = 'div'), print_step=print_step)
     
+  ) else if (type == 'split') {
+    dat_list = load_dat_loop(symbol, "md_stock_divsplit1_163", args = list(from = from, to = to, ret = c('spl','rig')), print_step=print_step)
   }
+  
+  
   return(dat_list)
 }
-
 

@@ -5,8 +5,8 @@
 \title{get stock market data}
 \usage{
 md_stock(symbol, source = "yahoo", freq = "daily", date_range = "3y",
-  from = NULL, to = Sys.Date(), type = "history", print_step = 1L,
-  ...)
+  from = NULL, to = Sys.Date(), type = "history", adjust = FALSE,
+  print_step = 1L, ...)
 }
 \arguments{
 \item{symbol}{symbols stock share.}

@@ -45,19 +45,19 @@
 #' }
 #' 
 #' @export
-md_stock = function(symbol, source = "yahoo", freq = "daily", date_range = "3y", from = NULL, to = Sys.Date(), type='history', print_step = 1L, ...) {
+md_stock = function(symbol, source = "yahoo", freq = "daily", date_range = "3y", from = NULL, to = Sys.Date(), type='history', adjust = TRUE, print_step = 1L, ...) {
     # cat(source,"\n")
     # arguments
     source = check_arg(as.character(source), c('yahoo','163'), default = 'yahoo')
-    type = check_arg(type, c('history', 'dividends', 'splits'), default = 'history')
+    type = check_arg(type, c('history', 'dividend', 'split'), default = 'history')
     syb = tolower(symbol)
     
     na_rm = list(...)[['na_rm']]
     if (is.null(na_rm)) na_rm = TRUE
+    
     fillzero = list(...)[['fillzero']]
     if (is.null(fillzero)) fillzero = FALSE
-    adjust = list(...)[['adjust']]
-    if (is.null(adjust)) adjust = FALSE
+
     env = list(...)[['env']]
     if (is.null(env)) env = parent.frame()
     
@@ -66,6 +66,6 @@ md_stock = function(symbol, source = "yahoo", freq = "daily", date_range = "3y",
     from = get_from_daterange(date_range, from, to, min_date = "1000-01-01")
     
     # data
-    dat = try(do.call(paste0("md_stock_", source), args=list(symbol = syb, freq = freq, from = from, to = to, print_step = print_step, env = env, adjust=adjust, fillzero=fillzero, na_rm=na_rm, ...)), silent = TRUE)
+    dat = try(do.call(paste0("md_stock_", source), args=list(symbol = syb, freq = freq, from = from, to = to, print_step = print_step, env = env, adjust=adjust, fillzero=fillzero, na_rm=na_rm, type=type, ...)), silent = TRUE)
     return(dat)
 }

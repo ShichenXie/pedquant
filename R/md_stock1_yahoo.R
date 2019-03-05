@@ -53,14 +53,14 @@ get_symbol_name_yahoo = function(syb, encode='UTF-8', handle=new_handle()) {
 # type = c("history", "div", "split")
 # https://query1.finance.yahoo.com/v7/finance/download/000001.SZ?period1=1511841299&period2=1543377299&interval=1d&events=split&crumb=j/T2/8/3fvH
 #' @importFrom curl curl_fetch_memory 
-md_stock1_yahoo = function(symbol, handle, crumb, freq="daily", from="1900-01-01", to=Sys.time(), type="history", na_rm = FALSE, adjust = FALSE, ...) {
+md_stock1_yahoo = function(symbol, handle, crumb, freq="daily", from="1900-01-01", to=Sys.time(), type="history", na_rm=TRUE, ...) {
     . = high = low = close_adj = volume = NULL
     
     # symbol
     syb = check_symbol_for_yahoo(symbol)
     # type
-    type = check_arg(type, c('history', 'dividends', 'splits'), default = 'history')
-    if (type=='dividends') {type = 'div'} else if (type=='splits') {type = 'split'}
+    # type = check_arg(type, c('history', 'dividend', 'split'), default = 'history')
+    if (type=='dividend') {type = 'div'} #else if (type=='splits') {type = 'split'}
     # symbol, name, currency
     syb_nam_cur = get_symbol_name_yahoo(syb, handle = handle)
     
@@ -79,19 +79,24 @@ md_stock1_yahoo = function(symbol, handle, crumb, freq="daily", from="1900-01-01
       
       if (na_rm) dat = dat[!is.na(close)]
       # adjusting ohlc
-      if (adjust) dat = adjust_ohlc(dat)
+      adjust = list(...)[['adjust']]
+      if (adjust) dat = adjust_ohlc(dat, source = 'yahoo', ...)
     } else {
       col_name = ifelse(type=='div', 'dividends', 'splits')
       setnames(setDT(dat), c('date', col_name))
       dat = dat[, `:=`(symbol = syb_nam_cur$symbol, name = syb_nam_cur$name)
               ][, c('symbol', 'name', 'date', col_name), with=FALSE]
+      if (col_name == 'splits') {
+        spl = dat[, (c('s1','s2')) := tstrsplit(splits, '/')][, as.numeric(s2)/as.numeric(s1)][]
+        dat = dat[, .(symbol, name, date, splits = spl)]
+      }
     }
     setkey(dat[, date := as.Date(date)], 'date')
     return(dat)
 }
 
 # query market data from yahoo
-md_stock_yahoo = function(symbol, freq="daily", from="1900-01-01", to=Sys.time(), print_step=1L, na_rm=TRUE, adjust=FALSE, ...) {
+md_stock_yahoo = function(symbol, freq="daily", from="1900-01-01", to=Sys.time(), print_step=1L, na_rm=TRUE, ...) {
   
     yahoo_env = list(...)[["env"]]
     reload = list(...)[["reload"]]
@@ -102,7 +107,7 @@ md_stock_yahoo = function(symbol, freq="daily", from="1900-01-01", to=Sys.time()
       handle = handle_new_session(env = yahoo_env, handle_name = "yahoo_handle", reload = TRUE)
       crumb = yahoo_crumb(handle)
     }
-    
+
     # frequency
     intervals = c(daily = "1d", weekly = "1wk", monthly = "1mo")
     freq = check_arg(freq, names(intervals))
@@ -113,7 +118,7 @@ md_stock_yahoo = function(symbol, freq="daily", from="1900-01-01", to=Sys.time()
     to = date_to_sec(check_fromto(to))
     
     # load data
-    dat_list = load_dat_loop(toupper(symbol), "md_stock1_yahoo", args = list(handle = handle, crumb = crumb, freq=freq, from = from, to = to, adjust = adjust, na_rm=na_rm, ...), print_step=print_step)
+    dat_list = load_dat_loop(toupper(symbol), "md_stock1_yahoo", args = list(handle = handle, crumb = crumb, freq=freq, from = from, to = to, na_rm=na_rm, ...), print_step=print_step)
     return(dat_list)
 }
 
@@ -222,7 +227,7 @@ md_curcom1_yahoo = function(symbol, handle, crumb, freq="daily", from="1900-01-0
   setkey(dat, date)
   
   # adjusting ohlc
-  if (adjust) dat = adjust_ohlc(dat)
+  if (adjust) dat = adjust_ohlc(dat, ...)
   # dat[dat=="null"] = NA
   return(dat3)
 }

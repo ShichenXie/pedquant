@@ -1,4 +1,4 @@
-Package: pedar
+Package: pedquant
 Version: 0.0.1
 Title: public economic and financial data
 Description: 
@@ -11,7 +11,7 @@ Authors@R:
 Depends: 
     R (>= 3.1.0)
 Imports: 
-    data.table, TTR, 
+    data.table, TTR, zoo, 
     httr, curl, xml2, rvest,
     jsonlite, stringi, 
     readxl, readr, 
