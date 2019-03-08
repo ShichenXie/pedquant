@@ -2,19 +2,19 @@
 % Please edit documentation in R/pq_to_freq.R
 \name{pq_to_freq}
 \alias{pq_to_freq}
-\title{convert the frequency of daily data}
+\title{converting frequency of daily data}
 \usage{
-pq_to_freq(dt, freq, print_step = 0L)
+pq_to_freq(dt, freq, print_step = 1L)
 }
 \arguments{
-\item{dt}{time series datasets}
+\item{dt}{a list/dataframe of time series dataset.}
 
-\item{freq}{the frequency that the input data will converted to. It supports weekly, monthly, quarterly and yearly.}
+\item{freq}{the frequency that the input daily data will converted to. It supports weekly, monthly, quarterly and yearly.}
 
-\item{print_step}{A non-negative integer, which will print symbol name by each print_step iteration. Default is 1.}
+\item{print_step}{A non-negative integer. Print symbol name by each print_step iteration. Default is 1L.}
 }
 \description{
-convert the frequency of daily data
+\code{pq_to_freq} convert a daily OHLC dataframe into a specified frequency.
 }
 \examples{
 dts = md_stock(c("^000001", "000001"), date_range = 'max', source = '163')

@@ -19,6 +19,10 @@ func_indices_symbol = function() index_symbol_yahoo
 # @export
 md_index = function(symbol=NULL, date_range = '3y', from=NULL, to=Sys.Date(), print_step=1L, ...) {
     # arguments
+    # ## from/to
+    # ft = get_fromto(date_range, from, to, min_date = "1000-01-01", default_date_range = '3y')
+    # from = ft$f
+    # to = ft$t
     ## symbol
     syb = tolower(symbol)
     if (is.null(symbol)) {

@@ -2,23 +2,29 @@
 % Please edit documentation in R/ed_fred.R
 \name{ed_fred_symbol}
 \alias{ed_fred_symbol}
-\title{query symbols of economic data in FRED}
+\title{symbol of FRED ecnomic data}
 \usage{
 ed_fred_symbol(category = NULL, keywords = NULL, ...)
 }
 \arguments{
+\item{category}{the category id. If it is NULL, then search symbols from the top categories step by step.}
+
 \item{keywords}{the query text. If it is NULL, the function will search symbols by category.}
 }
 \description{
-ed_fred_symbol provides an interface to search symbols of economic data in FRED by keywords or category.
+ed_fred_symbol provides an interface to search symbols of economic data from FRED by category or keywords.
 }
 \examples{
 \dontrun{
-# search data by keywords
-sybs1 = ed_fred_symbol("gdp china")
+# search symbols by category
+# from top categories
+symbol_dt1 = ed_fred_symbol()
+# specify the initial categories
+symbol_dt2 = ed_fred_symbol(category = 1)
 
-# search data by category
-sybs1 = ed_fred_symbol()
+# search symbol by keywords
+symbol_dt3 = ed_fred_symbol(keywords = "gdp china")
+
 }
 
 }

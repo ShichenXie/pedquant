@@ -1,0 +1,69 @@
+---
+output: github_document
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%"
+)
+```
+# pedquant
+
+pedquant('Public Economic Data and QUANTitative analysis') provides an interface to access public economic and financial data for ecnomic research and quantitative analysis. The functions are grouped into three main categories, economic data (ed_.), market data (md_.) and quantitative analysis (pq_.).
+
+The data sources include [NBS](http://data.stats.gov.cn), [FRED](http://data.stats.gov.cn), [Yahoo finance](http://finance.yahoo.com), [163 Finance](http://quotes.money.163.com/stock#1b01), and [Sina Finance](https://finance.sina.com.cn/futuremarket/) etc. The loaded data have been carefully cleansed and provided in unified format. And parameters to get data can be interactively set, therefore it's very easy to start.
+
+Most functions in this package are designed to write minimum codes for some common tasks in quantitative analysis process. It indirectly depends on [quantmod](https://github.com/joshuaulrich/quantmod), and provides some similar funnctions. But most data downloaded by this package are dataframes, which can be easy manipulated in [data.table](http://r-datatable.com/) or [tidyverse](http://tidyverse.org) packages. And also easy handle in [tidyquant package](https://github.com/business-science/tidyquant) for more detailed financial analysis.
+
+## Installation
+
+You can install the developing version of pedquant from [github](https://github.com/shichenXie/pedquant) with:
+
+``` r
+install.packages("pedquant")
+```
+
+## Example
+
+The following examples show you how to download data and create charts.
+
+```{r example}
+library(pedquant)
+
+## import eocnomic data
+dat1 = ed_fred('GDPCA')
+head(dat1$GDPCA,3)
+
+dat2 = ed_nbs(geo_type='national', freq='quarterly', symbol='A010101')
+head(dat2$A010101,3)
+
+## import market data
+dat3 = md_stock(c('^000001','^399001'), date_range = 'max') # from yahoo
+head(dat3$`^000001`,3)
+
+dat4 = md_stock(c('^000001','^399001'), date_range = 'max', source = '163')
+head(dat4$`^000001`,3)
+```
+
+```{r charts}
+# candstick chart
+pq_plot(dat4$`^000001`, chart_type = 'candle', date_range = '1y')
+
+# adding technical indicators
+pq_plot(dat4$`^000001`, chart_type = 'candle', date_range = '1y', addti = list(
+    sma = list(n=50), macd=list()
+))
+
+# comparing prices
+pq_plot(dat4, multi_series = list(nrow=1, scales = 'free_y'))
+
+# performace trend
+pq_plot(dat4, multi_series = list(nrow=1, scales = 'free_y'), perf = TRUE, date_range = 'ytd')
+```
+
+

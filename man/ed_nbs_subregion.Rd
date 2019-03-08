@@ -2,29 +2,27 @@
 % Please edit documentation in R/ed_nbs.R
 \name{ed_nbs_subregion}
 \alias{ed_nbs_subregion}
-\title{query code of subregion in China from NBS}
+\title{subregion code of NBS economic data}
 \usage{
 ed_nbs_subregion(geo_type = NULL, eng = FALSE)
 }
 \arguments{
-\item{geo_type}{geography type in NBS, including 'province', 'city'. Default is "".}
+\item{geo_type}{geography type in NBS, including 'province', 'city'. Default is NULL.}
 
-\item{eng}{logical. Default is FALSE. If it is FALSE, the result is in Chinese, otherwise in English.}
+\item{eng}{logical. The language of the query results is in English or in Chinese. Default is FALSE.}
 }
 \description{
 \code{ed_nbs_subregion} query province or city code from NBS
 }
 \examples{
-#  province code 
+# province code 
 prov1 = ed_nbs_subregion(geo_type = 'province') 
 # or using 'p' represents 'province'
 prov2 = ed_nbs_subregion(geo_type = 'p') 
 
-\dontrun{
-#  city code in Chinese
+# city code in Chinese
 city = ed_nbs_subregion(geo_type = 'c', eng = FALSE) 
-#  city code in English
+# city code in English
 city = ed_nbs_subregion(geo_type = 'c', eng = TRUE) 
-}
 
 }

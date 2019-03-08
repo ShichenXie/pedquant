@@ -2,19 +2,26 @@
 % Please edit documentation in R/ed_fred.R
 \name{ed_fred}
 \alias{ed_fred}
-\title{get economic data from FRED}
+\title{query FRED economic data}
 \usage{
 ed_fred(symbol = NULL, date_range = "10y", from = NULL,
-  to = Sys.Date(), na_rm = TRUE, print_step = 1L)
+  to = Sys.Date(), na_rm = FALSE, print_step = 1L)
 }
 \arguments{
-\item{symbol}{symbol of indicators in FRED, which is available via function ed_FRED_symbol or its website.}
+\item{symbol}{symbols of FRED economic indicators. It is available via function \code{ed_fred_symbol} or its website. Default is NULL, which calls \code{ed_fred_symbol} in the back.}
 
-\item{from}{the start date. Default is '1776-07-04'.}
+\item{date_range}{date range. Available value includes '1m'-'11m', 'ytd', 'max' and '1y'-'ny'. Default is '10y'.}
 
-\item{to}{the end date. Default is current system date.}
+\item{from}{the start date. Default is NULL. If it is NULL, then calculate using date_range and end date.}
 
-\item{print_step}{A non-negative integer, which will print symbol name by each print_step iteration. Default is 1.}
+\item{to}{the end date. Default is the current date.}
+
+\item{na_rm}{logical, whether to remove missing values. Default is FALSE}
+
+\item{print_step}{a non-negative integer, which will print symbol name by each print_step iteration. Default is 1L.}
+}
+\value{
+a list of dataframes with columns of symbol, name, date, value, geo, unit. The geo column might be NA according to local internet connection.
 }
 \description{
 ed_fred provides an interface to access the economic data provided by FRED (\url{https://fred.stlouisfed.org})
@@ -22,7 +29,6 @@ ed_fred provides an interface to access the economic data provided by FRED (\url
 \examples{
 \dontrun{
 dat = ed_fred(c("A191RL1A225NBEA", "GDPCA"))
-
 }
 
 }

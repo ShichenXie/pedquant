@@ -2,11 +2,36 @@
 % Please edit documentation in R/md_future.R
 \name{md_future}
 \alias{md_future}
-\title{get future data}
+\title{query future market data}
 \usage{
-md_future(symbol = NULL, freq = "daily", date_range = "3y",
-  from = NULL, to = Sys.Date(), print_step = 1L)
+md_future(symbol = NULL, source = "sina", freq = "daily",
+  date_range = "3y", from = NULL, to = Sys.Date(), print_step = 1L)
+}
+\arguments{
+\item{symbol}{symbols of future market data. It is available via function \code{md_future_symbol} or its website. Default is NULL.}
+
+\item{source}{the data source is sina finance (\url{https://finance.sina.com.cn/futuremarket/}).}
+
+\item{freq}{the frequency of NBS indicators, including '5m','15m','30m','60m','daily'. Default is 'daily'.}
+
+\item{date_range}{date range. Available value includes '1m'-'11m', 'ytd', 'max' and '1y'-'ny'. Default is '3y'.}
+
+\item{from}{the start date. Default is NULL. If it is NULL, then calculate using date_range and end date.}
+
+\item{to}{the end date. Default is the current date.}
+
+\item{print_step}{a non-negative integer, which will print symbol name by each print_step iteration. Default is 1L.}
 }
 \description{
-get future data
+\code{md_future} query future market prices data. Only Chinese future market has been considered currently.
+}
+\examples{
+\dontrun{
+dt1 = md_future(symbol = c('J0', 'RB0', 'M0', 'CF0', 'IH0', 'IF0', 'IC0'))
+
+# interactivly choose symbols
+dt2 = md_future()
+}
+
+
 }

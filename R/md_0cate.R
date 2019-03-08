@@ -12,9 +12,21 @@ func_md_symbol = function() {
     ), idcol = 'category', fill = TRUE)
 }
     
-#' main market data by category
+#' query main market data by category
 #' 
+#' \code{md_cate} provides an interface to access main market data in five categories, including forex, money, bond, index, commodity.
 #' 
+#' @param cate the market category, forex, money, bond, index, commodity. Default is NULL.
+#' @param symbol symbols of main market indicators.
+#' @param date_range date range. Available value includes '1m'-'11m', 'ytd', 'max' and '1y'-'ny'. Default is '3y'.
+#' @param from the start date. Default is NULL. If it is NULL, then calculate using date_range and end date.
+#' @param to the end date. Default is the current date.
+#' @param print_step a non-negative integer, which will print symbol name by each print_step iteration. Default is 1L. 
+#' 
+#' @examples 
+#' \dontrun{
+#' dat = md_cate()
+#' }
 #' 
 #' @export
 md_cate = function(cate=NULL, symbol=NULL, date_range = "3y", from = NULL, to = Sys.Date(), print_step = 1L, ...) {

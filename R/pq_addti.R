@@ -111,7 +111,8 @@ ti_idicators_hline = function() {list(
 # runCor(x, y, n = 10, use = "all.obs", sample = TRUE, cumulative = FALSE): returns correlations 
 # runVar(x, y = NULL, n = 10, sample = TRUE, cumulative = FALSE): returns variances 
 # runSD(x, n = 10, sample = TRUE, cumulative = FALSE): returns standard deviations 
-# runMAD(x, n = 10, center = NULL, stat = "median", constant = 1.4826, non.unique = "mean", cumulative = FALSE): returns median/mean absolute deviations # runSum(x, n = 10, cumulative = FALSE): returns sums 
+# runMAD(x, n = 10, center = NULL, stat = "median", constant = 1.4826, non.unique = "mean", cumulative = FALSE): returns median/mean absolute deviations 
+# runSum(x, n = 10, cumulative = FALSE): returns sums 
 # wilderSum(x, n = 10): retuns a Welles Wilder style weighted sum 
 
 # Bands/Channels ------
@@ -171,7 +172,7 @@ ti_idicators_hline = function() {list(
 # CMO(x, n = 14): Chande Momentum Oscillator
 
 
-# Stochastic Oscillator / Stochastic Momentum Index: ------
+# Stochastic Oscillator / Momentum Index: ------
 # stoch(HLC, nFastK = 14, nFastD = 3, nSlowD = 3, maType, bounded = TRUE, smooth = 1, ...): Stochastic Oscillator
 # WPR(HLC, n = 14): William's %R
 # SMI(HLC, n = 13, nFast = 2, nSlow = 25, nSig = 9, maType, bounded = TRUE, ...): Stochastic Momentum Index
@@ -237,7 +238,7 @@ addti1 = function(dt, ti, col_formula = FALSE, ...) {
     arg_lst = c(arg_lst, list(y=y))
   } else if (ti %in% ti_sec_arg()$w) {
     w = list(...)[['w']]
-    if (length(w)==1 & inherits('a', "character")) w = dt[,w,with=FALSE]
+    if (length(w)==1 & inherits(w, "character")) w = dt[,w,with=FALSE]
     arg_lst = c(arg_lst, list(w=w))
   }
   arg_lst = c(arg_lst, list(...))
@@ -274,7 +275,7 @@ addti1 = function(dt, ti, col_formula = FALSE, ...) {
 pq1_addti = function(dt, ...) {
   col_formula = FALSE
   if ("col_formula" %in% names(list(...)))  col_formula = list(...)[["col_formula"]]
-  col_kp = NULL
+  col_kp = TRUE
   if ("col_kp" %in% names(list(...)))  col_kp = list(...)[["col_kp"]]
   
   
@@ -312,39 +313,41 @@ pq1_addti = function(dt, ...) {
 
 
 
-#' create technical indicators
+#' adding technical indicators
 #' 
-#' `pq_addti` adds technical indicators to a dataset
+#' `pq_addti` creates technical indicators on provided datasets ussing TTR package.
 #' 
-#' @param dt time series datasets
-#' @param ti list of technical indicators, overlay indicators include mm, sma, ema, smma, bb, sar, and oscillators indicators such as macd, roc, ppo, rsi, cci. 
-#' 
-#' 1. overlay technical indicators
-#' 
+#' @param dt a list/dataframe of time serie datasets.
+#' @param ... list of technical indicator parameters: sma = list(n=50), macd = list().
+#' 1. There are four types of parameters. 
 #' \itemize{
-#'    \item sma
-#'    \item ema
-#'    \item smma
-#'    \item bb
-#'    \item sar
+#'    \item setted by default and donot required, such as 'OHLC', 'HLC', 'HL' and 'volume'.
+#'    \item setted by default and can be modified, such as 'price', 'prices', 'x'. Its default value is 'close' or 'value' column.
+#'    \item always required, such as 'y', 'w'.
+#'    \item numeric parameters, such as 'n', 'sd', 'v', 'nFast', 'nSlow', 'nSig', 'accel'. These parameters should be provided, otherwise using default values in corresponding function.
 #' }
-#' 
-#' 2. oscillator technical indicators
-#' 
+#' 2. TTR functions are summaried in below. See TTR package's help document for more detailed parameters. 
 #' \itemize{
-#'    \item macd
-#'    \item ppo
-#'    \item rsi
-#'    \item cci
-#'    \item roc
+#'    \item moving averages: SMA, EMA, DEMA, WMA, EVWMA, ZLEMA, VWAP, VMA, HMA, ALMA, GMMA
+#'    \item rolling functions: runMin, runMax, runMean, runMedian; runCov, runCor; runVar, runSD, runMAD; runSum, wilderSum
+#'    \item bands / channels: BBands, PBands, DonchianChannel
+#'    \item SAR, ZigZag
+#'    \item trend direction/strength: aroon, CCI, ADX, TDI, VHF, EMV
+#'    \item volatility measures: ATR, chaikinVolatility, volatility, SNR
+#'    \item money flowing into/out: OBV, chaikinAD, CLV, CMF, MFI, williamsAD
+#'    \item rate of change / momentum: ROC, momentum, KST, TRIX
+#'    \item oscillator: MACD, DPO, DVI, ultimateOscillator; RSI, CMO; stoch, WPR, SMI
 #' }
-#' 
-#' @param ... ignored
-#' 
+#'
 #' @examples 
-#' dt = md_stock("^000001", source='163')
+#' # load data
+#' dt = md_stock("^000001", source='163', date_range = 'max')
 #' 
-#' dt_ti = pq_addti(dt, SMA=list(n=20), SMA=list(n=50))
+#' # add technical indicators
+#' dt_ti1 = pq_addti(dt, sma=list(n=20), sma=list(n=50), macd = list())
+#' 
+#' # only technical indicators
+#' dt_ti2 = pq_addti(dt, sma=list(n=20), sma=list(n=50), macd = list(), col_kp = FALSE)
 #' 
 #' @export
 pq_addti = function(dt, ...) {
@@ -366,41 +369,8 @@ pq_addti = function(dt, ...) {
   return(dt_list)
 }
 
-# main indicators ------
-# 黑色：焦炭、螺纹
-# 农产：棉花、豆粕
-# IC, IF, IH, 
-# 50ETF, 沪深300ETF, 中证500, 创业板指数
 
 
-# back testing ------
-# [Backtesting Strategies with R](https://timtrice.github.io/backtesting-strategies/)
-# 
 
-# - quantstrat 0.9.1739
-# - blotter 0.9.1741
-
-# - quantmod 0.4-5
-# - TTR 0.23-1
-# - FinancialInstrument
-# - PerformanceAnalytics
-
-# Settings & Variables
-# Sys.setenv(TZ = "UTC")
-# currency('USD')
-# init_date <- "2007-12-31"
-# start_date <- "2008-01-01"
-# end_date <- "2009-12-31"
-# init_equity <- 1e4 # $10,000
-# adjustment <- TRUE
-
-
-# Terminology ------
-# - BTO: Buy to Open (open long positions)
-# - BTC: Buy to close (close short positions)
-# - SL: Stop-limit order
-# - STO: Sell to open (open short positions)
-# - STC: Sell to close (close long positions)
-# - TS: Trailing-stop order
 
 

@@ -2,10 +2,31 @@
 % Please edit documentation in R/md_stock_symbol.R
 \name{md_stock_symbol}
 \alias{md_stock_symbol}
-\title{symbols components of exchange or index}
+\title{symbol components of exchange or index}
 \usage{
 md_stock_symbol(exchange = NULL, index = NULL, print_step = 1L)
 }
+\arguments{
+\item{exchange}{the avaiable stock exchanges are sse, szse, hkex, amex, nasdaq, nyse.}
+
+\item{index}{the stock index symbol provided by China Securities Index Co.Ltd (\url{http://www.csindex.com.cn}).}
+}
 \description{
-symbols components of exchange or index
+\code{md_stock_symbol} returns all stock symbols of stock exchange or index.
+}
+\examples{
+\dontrun{
+# get stock symbols in a stock exchange
+## specify the name of exchange
+ex_syb1 = md_stock_symbol(exchange = c('sse', 'szse'))
+
+## choose stock exchanges interactivly
+ex_syb2 = md_stock_symbol()
+
+
+# get stock components of a stock index (only in sse and szse)
+index_syb = md_stock_symbol(index = c('000001', '000016', '000300', '000905'))
+
+}
+
 }

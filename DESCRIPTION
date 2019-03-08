@@ -1,11 +1,12 @@
 Package: pedquant
 Version: 0.0.1
-Title: public economic and financial data
+Title: public economic data and quantitative analysis
 Description: 
-    The `pedar` provides an interface to access public economic and financial 
-    data for analyst and researcher. The data souces include NBS, FRED, Yahoo 
-    Finance, 163 Finance etc. The functions are grouped into three categories, 
-    market data (md_*), economic data (ed_*) and analysis functions (pd_*).
+    The `pedquant` provides an interface to access public economic data and 
+    functions for quantitative modeling analysis. The data souces include NBS, 
+    FRED, Yahoo Finance, 163 Finance and Sina Finance etc. The functions are 
+    grouped into three categories, economic data (ed_*), market data (md_*) 
+    and quantitative analysis (pq_*).
 Authors@R: 
     person("Shichen", "Xie", email = "xie@shichen.name", role = c("aut", "cre"))
 Depends: 

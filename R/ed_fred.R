@@ -61,33 +61,39 @@ ed_fred1 = function(symbol1, from="1776-07-04", to="9999-12-31", na_rm=FALSE) {
 }
 # dt = ed_fred1("GNPCA")
 
-#' get economic data from FRED
+#' query FRED economic data
 #' 
 #' ed_fred provides an interface to access the economic data provided by FRED (\url{https://fred.stlouisfed.org})
 #' 
-#' @param symbol symbol of indicators in FRED, which is available via function ed_FRED_symbol or its website. 
-#' @param from the start date. Default is '1776-07-04'.
-#' @param to the end date. Default is current system date.
-#' @param print_step A non-negative integer, which will print symbol name by each print_step iteration. Default is 1. 
+#' @param symbol symbols of FRED economic indicators. It is available via function \code{ed_fred_symbol} or its website. Default is NULL, which calls \code{ed_fred_symbol} in the back. 
+#' @param date_range date range. Available value includes '1m'-'11m', 'ytd', 'max' and '1y'-'ny'. Default is '10y'.
+#' @param from the start date. Default is NULL. If it is NULL, then calculate using date_range and end date.
+#' @param to the end date. Default is the current date.
+#' @param na_rm logical, whether to remove missing values. Default is FALSE 
+#' @param print_step a non-negative integer, which will print symbol name by each print_step iteration. Default is 1L. 
+#' 
+#' @return a list of dataframes with columns of symbol, name, date, value, geo, unit. The geo column might be NA according to local internet connection.
 #' 
 #' @examples 
 #' \dontrun{
 #' dat = ed_fred(c("A191RL1A225NBEA", "GDPCA"))
-#' 
 #' }
 #' 
 #' @export
-ed_fred = function(symbol=NULL, date_range='10y', from=NULL, to=Sys.Date(), na_rm=TRUE, print_step=1L) {
+ed_fred = function(symbol=NULL, date_range='10y', from=NULL, to=Sys.Date(), na_rm=FALSE, print_step=1L) {
     # 
     if (is.null(symbol)) symbol = ed_fred_symbol()[,symbol]
     # from/to # "1776-07-04"/"9999-12-31"
-    date_range = check_date_range(date_range, default = "max")
-    from = get_from_daterange(date_range, from, to, min_date = "1776-07-04")
+    ft = get_fromto(date_range, from, to, min_date = "1776-07-04", default_date_range = '10y')
+    from = ft$f
+    to = ft$t
     
     # data list
     dat_list = load_dat_loop(symbol, "ed_fred1", args = list(from = from, to = to, na_rm = na_rm), print_step = print_step)
     return(dat_list)
 }
+
+
 
 
 #' @importFrom jsonlite fromJSON
@@ -154,19 +160,20 @@ ed_fred_symbol_category = function(category=NULL, ...) {
     
     # selecting symbols via category id
     ## initializing
+    init_cate = setDT(list(
+        id = c(32991, 10, 32992, 1, 32455, 32263, 3008, 33060),
+        name = c("Money, Banking, & Finance", "Population, Employment, & Labor Markets",  "National Accounts", "Production & Business Activity",  "Prices", "International Data",  "U.S. Regional Data", "Academic Data"),
+        parent_id = rep_len(0,8) ))
+    
     cate_query = NULL
     ser_query = NULL
     category_id = category
-    if (is.null(category_id)) {
-        cate_query = setDT(list(
-            id = c(32991, 10, 32992, 1, 32455, 32263, 3008, 33060),
-            name = c("Money, Banking, & Finance", "Population, Employment, & Labor Markets",  "National Accounts", "Production & Business Activity",  "Prices", "International Data",  "U.S. Regional Data", "Academic Data"),
-            parent_id = rep_len(0,8) ))
-        # try(rbindlist(lapply(list(32991, 10, 32992, 1, 32455, 32263, 3008, 33060), query_category)), silent = TRUE)
-    } else {
+    if (!is.null(category_id)) {
         cate_query = try(query_category_children(category_id), silent = TRUE)
         ser_query = try(query_category_series(category_id), silent = TRUE)
     }
+    if (inherits(cate_query, 'try-error') || is.null(category_id) || is.null(cate_query)) cate_query = init_cate
+    
     ## selecting
     while (any(!inherits(cate_query, "try-error") & nrow(cate_query)>0 & ("id" %in% names(cate_query)))) {
         if (!(inherits(ser_query,'try-error') || is.null(ser_query))) {
@@ -197,19 +204,24 @@ ed_fred_symbol_category = function(category=NULL, ...) {
     return(ser_query)
 }
 
-#' query symbols of economic data in FRED
+#' symbol of FRED ecnomic data
 #' 
-#' ed_fred_symbol provides an interface to search symbols of economic data in FRED by keywords or category.
+#' ed_fred_symbol provides an interface to search symbols of economic data from FRED by category or keywords.
 #' 
+#' @param category the category id. If it is NULL, then search symbols from the top categories step by step.
 #' @param keywords the query text. If it is NULL, the function will search symbols by category.
 #' 
 #' @examples 
 #' \dontrun{
-#' # search data by keywords
-#' sybs1 = ed_fred_symbol("gdp china")
+#' # search symbols by category
+#' # from top categories
+#' symbol_dt1 = ed_fred_symbol()
+#' # specify the initial categories
+#' symbol_dt2 = ed_fred_symbol(category = 1)
 #' 
-#' # search data by category
-#' sybs1 = ed_fred_symbol()
+#' # search symbol by keywords
+#' symbol_dt3 = ed_fred_symbol(keywords = "gdp china")
+#' 
 #' }
 #' 
 #' @export

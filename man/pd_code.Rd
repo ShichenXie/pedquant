@@ -6,6 +6,20 @@
 \usage{
 pd_code(cate = NULL, ...)
 }
+\arguments{
+\item{cate}{The available category values including 'country', 'currency', 'stock_exchange', 'commodity_exchange'.}
+}
 \description{
-code list by category
+\code{pd_code} get the code list of country, currency, stock exchange and commodity exchange.
+}
+\examples{
+\dontrun{
+  # specify the categories
+  code_list1 = pd_code(cate = c('country', 'currency'))
+  
+  # interactivly return code list
+  code_list2 = pd_code()
+
+}
+
 }

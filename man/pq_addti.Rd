@@ -2,45 +2,47 @@
 % Please edit documentation in R/pq_addti.R
 \name{pq_addti}
 \alias{pq_addti}
-\title{create technical indicators}
+\title{adding technical indicators}
 \usage{
 pq_addti(dt, ...)
 }
 \arguments{
-\item{dt}{time series datasets}
+\item{dt}{a list/dataframe of time serie datasets.}
 
-\item{...}{ignored}
-
-\item{ti}{list of technical indicators, overlay indicators include mm, sma, ema, smma, bb, sar, and oscillators indicators such as macd, roc, ppo, rsi, cci.
+\item{...}{list of technical indicator parameters: sma = list(n=50), macd = list().
 \enumerate{
-\item overlay technical indicators
-}
-
+\item There are four types of parameters.
 \itemize{
-\item sma
-\item ema
-\item smma
-\item bb
-\item sar
+\item setted by default and donot required, such as 'OHLC', 'HLC', 'HL' and 'volume'.
+\item setted by default and can be modified, such as 'price', 'prices', 'x'. Its default value is 'close' or 'value' column.
+\item always required, such as 'y', 'w'.
+\item numeric parameters, such as 'n', 'sd', 'v', 'nFast', 'nSlow', 'nSig', 'accel'. These parameters should be provided, otherwise using default values in corresponding function.
 }
-\enumerate{
-\item oscillator technical indicators
-}
-
+\item TTR functions are summaried in below. See TTR package's help document for more detailed parameters.
 \itemize{
-\item macd
-\item ppo
-\item rsi
-\item cci
-\item roc
+\item moving averages: SMA, EMA, DEMA, WMA, EVWMA, ZLEMA, VWAP, VMA, HMA, ALMA, GMMA
+\item rolling functions: runMin, runMax, runMean, runMedian; runCov, runCor; runVar, runSD, runMAD; runSum, wilderSum
+\item bands / channels: BBands, PBands, DonchianChannel
+\item SAR, ZigZag
+\item trend direction/strength: aroon, CCI, ADX, TDI, VHF, EMV
+\item volatility measures: ATR, chaikinVolatility, volatility, SNR
+\item money flowing into/out: OBV, chaikinAD, CLV, CMF, MFI, williamsAD
+\item rate of change / momentum: ROC, momentum, KST, TRIX
+\item oscillator: MACD, DPO, DVI, ultimateOscillator; RSI, CMO; stoch, WPR, SMI
+}
 }}
 }
 \description{
-\code{pq_addti} adds technical indicators to a dataset
+\code{pq_addti} creates technical indicators on provided datasets ussing TTR package.
 }
 \examples{
-dt = md_stock("^000001", source='163')
+# load data
+dt = md_stock("^000001", source='163', date_range = 'max')
 
-dt_ti = pq_addti(dt, SMA=list(n=20), SMA=list(n=50))
+# add technical indicators
+dt_ti1 = pq_addti(dt, sma=list(n=20), sma=list(n=50), macd = list())
+
+# only technical indicators
+dt_ti2 = pq_addti(dt, sma=list(n=20), sma=list(n=50), macd = list(), col_kp = FALSE)
 
 }

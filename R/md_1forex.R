@@ -139,9 +139,10 @@ md_forex = function(symbol=NULL, date_range = '3y', from=NULL, to=Sys.Date(), pr
         }
         syb = intersect(syb, forex_symbol_fred$symbol)
     }
-    ## from
-    date_range = check_date_range(date_range, default = "max")
-    from = get_from_daterange(date_range, from, to, min_date = "1000-01-01")
+    ## from/to
+    ft = get_fromto(date_range, from, to, min_date = "1000-01-01", default_date_range = '3y')
+    from = ft$f
+    to = ft$t
     
     # data
     syb_len = length(syb)

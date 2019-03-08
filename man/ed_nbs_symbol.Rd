@@ -2,19 +2,19 @@
 % Please edit documentation in R/ed_nbs.R
 \name{ed_nbs_symbol}
 \alias{ed_nbs_symbol}
-\title{query symbol of China economic indicator from NBS}
+\title{symbol of NBS economic data}
 \usage{
 ed_nbs_symbol(geo_type = NULL, freq = NULL, eng = FALSE)
 }
 \arguments{
 \item{geo_type}{geography type in NBS, including 'national', 'province', 'city'. Default is NULL.}
 
-\item{freq}{the frequency of indicators in NBS, including 'monthly', 'quarterly', 'yearly'. Default is NULL.}
+\item{freq}{the frequency of NBS indicators, including 'monthly', 'quarterly', 'yearly'. Default is NULL.}
 
-\item{eng}{logical. If it is FALSE, the result is show in Chinese, otherwise in English. Default is FALSE.}
+\item{eng}{logical. The language of the query results is in English or in Chinese. Default is FALSE.}
 }
 \description{
-\code{ed_nbs_symbol} interactively query economic data symbol from NBS.
+\code{ed_nbs_symbol} provides an interface to query symbols of economic indicators from NBS.
 }
 \examples{
 # query symbol interactively

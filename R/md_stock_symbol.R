@@ -381,7 +381,27 @@ md_stock_symbol_index = function(symbol, print_step=1L) {
 # 'http://www.sse.com.cn/assortment/stock/list/share/'
 # 'http://www.szse.cn/market/stock/list/index.html'
 
-#' symbols components of exchange or index
+#' symbol components of exchange or index
+#' 
+#' \code{md_stock_symbol} returns all stock symbols of stock exchange or index.
+#' 
+#' @param exchange the avaiable stock exchanges are sse, szse, hkex, amex, nasdaq, nyse.
+#' @param index the stock index symbol provided by China Securities Index Co.Ltd (\url{http://www.csindex.com.cn}).
+#' 
+#' @examples 
+#' \dontrun{
+#' # get stock symbols in a stock exchange
+#' ## specify the name of exchange
+#' ex_syb1 = md_stock_symbol(exchange = c('sse', 'szse'))
+#' 
+#' ## choose stock exchanges interactivly
+#' ex_syb2 = md_stock_symbol()
+#' 
+#' 
+#' # get stock components of a stock index (only in sse and szse)
+#' index_syb = md_stock_symbol(index = c('000001', '000016', '000300', '000905'))
+#' 
+#' }
 #' 
 #' @export
 md_stock_symbol = function(exchange=NULL, index=NULL, print_step=1L) {

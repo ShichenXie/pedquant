@@ -130,14 +130,14 @@ fs_cn1_summary = function(symbol1) {
 
 
 
-#' get financial statements
+#' query financial statements
 #' 
 #' \code{md_stock_financials} provides an interface to query financial statements and indicators of listed companies in SSE and SZSE.
 #' 
-#' @param symbol symbol of stock in China.
+#' @param symbol symbol of stock shares.
+#' @param source the data source is '163' (http://money.163.com).
 #' @param type the type of financial statements. 
-#' @param print_step A non-negative integer, which will print symbol name by each print_step iteration. Default is 1.
-#' @param region only cn (China) is available.
+#' @param print_step A non-negative integer. Print symbol name by each print_step iteration. Default is 1L.
 #' 
 #' @examples 
 #' \dontrun{

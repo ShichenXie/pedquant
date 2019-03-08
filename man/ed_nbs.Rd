@@ -2,57 +2,52 @@
 % Please edit documentation in R/ed_nbs.R
 \name{ed_nbs}
 \alias{ed_nbs}
-\title{get economic data from NBS}
-\source{
-\url{http://data.stats.gov.cn/index.htm}
-}
+\title{query NBS economic data}
 \usage{
 ed_nbs(symbol = NULL, freq = NULL, geo_type = NULL,
   subregion = NULL, date_range = "10y", from = NULL,
   to = Sys.Date(), na_rm = FALSE, eng = FALSE)
 }
 \arguments{
-\item{symbol}{symbol of indicators in NBS, which is available via ed_nbs_symbol. Default is NULL.}
+\item{symbol}{symbols of NBS indicators. It is available via \code{ed_nbs_symbol}. Default is NULL.}
 
-\item{freq}{the frequency of indicators in NBS, including 'monthly', 'quarterly', 'yearly'. Default is NULL.}
+\item{freq}{the frequency of NBS indicators, including 'monthly', 'quarterly', 'yearly'. Default is NULL.}
 
 \item{geo_type}{geography type in NBS, including 'national', 'province', 'city'. Default is NULL.}
 
-\item{subregion}{codes of province or city, which is available via ed_nbs_subregion. Default is NULL.}
+\item{subregion}{codes of province or city, which is available via \code{ed_nbs_subregion}. Default is NULL.}
 
-\item{date_range}{}
+\item{date_range}{date range. Available value includes '1m'-'11m', 'ytd', 'max' and '1y'-'ny'. Default is '10y'.}
 
-\item{from}{the start date. Default is '2010-01-01'.}
+\item{from}{the start date. Default is NULL. If it is NULL, then calculate using date_range and end date.}
 
-\item{to}{the end date. Default is current system date.}
+\item{to}{the end date. Default is the current date.}
 
-\item{na_rm}{logical. If it is TRUE, the missing values will be removed. Default is FALSE.}
+\item{na_rm}{logical. Whether to remove missing values from datasets. Default is FALSE.}
 
-\item{eng}{logical. If it is FALSE, the query results are in Chinese, otherwise in English. Default is FALSE.}
+\item{eng}{logical. The language of the query results is in English or in Chinese Default is FALSE.}
 }
 \description{
-\code{ed_nbs} provides an interface to query economic data from National Bureau of Statistics of China (NBS).
+\code{ed_nbs} provides an interface to query economic data from National Bureau of Statistics of China (NBS, \url{http://data.stats.gov.cn/}).
 }
 \examples{
-# interactively setting paratmeters
 \dontrun{
+# query NBS data without setting any parameters
 dt = ed_nbs()
 
 # specify paratmeters
-dt1 = ed_nbs(geo_type='national', freq='quarterly', 
-  symbol='A010101')
-
+dt1 = ed_nbs(geo_type='national', freq='quarterly', symbol='A010101')
 # or using 'n'/'q' represents 'national'/'quarterly'
 dt2 = ed_nbs(geo_type='n', freq='q', symbol='A010101')
 
 
-# query data of one subregion
+# query data in one province
 dt3 = ed_nbs(geo_type='province', freq='quarterly', 
-  symbol='A010101', subregion='110000', from='2010-03-01', to='2010-03-01')
+  symbol='A010101', subregion='110000')
   
-# query data of all province
+# query data in all province
 dt4 = ed_nbs(geo_type='province', freq='quarterly', 
-  symbol='A010101', subregion='all', from='2010-03-01', to='2010-03-01')
+  symbol='A010101', subregion='all')
 }
 
 }

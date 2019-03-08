@@ -2,11 +2,39 @@
 % Please edit documentation in R/pq_return.R
 \name{pq_return}
 \alias{pq_return}
-\title{Returns}
+\title{calculating returns by frequency}
 \usage{
 pq_return(dt, x = "close|value", type = "arithmetic", freq = "all",
-  date_range = "3y", from = NULL, to = Sys.Date(), print_step = 1L)
+  date_range = "max", from = NULL, to = Sys.Date(),
+  print_step = 1L)
+}
+\arguments{
+\item{dt}{a list/dataframe of daily series dataset}
+
+\item{x}{the variable used to calculating returns.}
+
+\item{freq}{the frequency of returns. It supports c('all', 'daily', 'weekly', 'monthly', 'quarterly', 'yearly').}
+
+\item{date_range}{date range. Available value includes '1m'-'11m', 'ytd', 'max' and '1y'-'ny'. Default is max.}
+
+\item{from}{the start date. Default is NULL. If it is NULL, then calculate using date_range and end date.}
+
+\item{to}{the end date. Default is the current date.}
+
+\item{print_step}{a non-negative integer. Print symbol name by each print_step iteration. Default is 1L.}
 }
 \description{
-Returns
+\code{pq_return} calculates returns for daily series based on specified column, frequency and method type.
+}
+\examples{
+dts = md_stock(c('000001', '^000001'), source = '163')
+
+# set freq
+dts_returns1 = pq_return(dts, freq = 'all')
+dts_returns2 = pq_return(dts, freq = 'weekly')
+
+# set method type
+dts_returns3 = pq_return(dts, freq = 'monthly', type = 'arithmetic') # default method type
+dts_returns4 = pq_return(dts, freq = 'monthly', type = 'log')
+
 }

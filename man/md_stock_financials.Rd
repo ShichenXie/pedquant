@@ -2,19 +2,19 @@
 % Please edit documentation in R/md_stock_fs.R
 \name{md_stock_financials}
 \alias{md_stock_financials}
-\title{get financial statements}
+\title{query financial statements}
 \usage{
 md_stock_financials(symbol, type = NULL, source = "163",
   print_step = 1L)
 }
 \arguments{
-\item{symbol}{symbol of stock in China.}
+\item{symbol}{symbol of stock shares.}
 
 \item{type}{the type of financial statements.}
 
-\item{print_step}{A non-negative integer, which will print symbol name by each print_step iteration. Default is 1.}
+\item{source}{the data source is '163' (http://money.163.com).}
 
-\item{region}{only cn (China) is available.}
+\item{print_step}{A non-negative integer. Print symbol name by each print_step iteration. Default is 1L.}
 }
 \description{
 \code{md_stock_financials} provides an interface to query financial statements and indicators of listed companies in SSE and SZSE.

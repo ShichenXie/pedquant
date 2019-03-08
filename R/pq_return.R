@@ -90,9 +90,12 @@ pq1_return = function(dt, x='close|value', type='arithmetic', freq='daily', date
     setkeyv(dt, "date")
     if (freq == 'all') freq = c('daily', 'weekly', 'monthly', 'quarterly', 'yearly')
     
-    # from to 
-    date_range = check_date_range(date_range, default = "max")
-    from = get_from_daterange(date_range, from, to, min_date = dt[1,date])
+    
+    ## from/to
+    ft = get_fromto(date_range, from, to, min_date = dt[1,date], default_date_range = 'max')
+    from = ft$f
+    to = ft$t
+    
     
     dt_rt = lapply(freq, function(f) {
         do.call(sprintf("pq1_%sreturn",substr(f,1,1)), list(dt=dt[date>=from & date<=to], x=x, type=type))
@@ -104,10 +107,31 @@ pq1_return = function(dt, x='close|value', type='arithmetic', freq='daily', date
 }
 
 
-#' Returns
+#' calculating returns by frequency
+#' 
+#' \code{pq_return} calculates returns for daily series based on specified column, frequency and method type.
+#' 
+#' @param dt a list/dataframe of daily series dataset
+#' @param x the variable used to calculating returns.
+#' @param freq the frequency of returns. It supports c('all', 'daily', 'weekly', 'monthly', 'quarterly', 'yearly').
+#' @param date_range date range. Available value includes '1m'-'11m', 'ytd', 'max' and '1y'-'ny'. Default is max.
+#' @param from the start date. Default is NULL. If it is NULL, then calculate using date_range and end date.
+#' @param to the end date. Default is the current date.
+#' @param print_step a non-negative integer. Print symbol name by each print_step iteration. Default is 1L.
+#' 
+#' @examples 
+#' dts = md_stock(c('000001', '^000001'), source = '163')
+#' 
+#' # set freq
+#' dts_returns1 = pq_return(dts, freq = 'all')
+#' dts_returns2 = pq_return(dts, freq = 'weekly')
+#' 
+#' # set method type
+#' dts_returns3 = pq_return(dts, freq = 'monthly', type = 'arithmetic') # default method type
+#' dts_returns4 = pq_return(dts, freq = 'monthly', type = 'log')
 #' 
 #' @export
-pq_return = function(dt, x='close|value', type='arithmetic', freq='all', date_range='3y', from=NULL, to=Sys.Date(), print_step=1L) {
+pq_return = function(dt, x='close|value', type='arithmetic', freq='all', date_range='max', from=NULL, to=Sys.Date(), print_step=1L) {
     type = check_arg(type, c('arithmetic', 'log'), default='arithmetic', arg_name = 'type')
     # arithmetic: p_{t-1} * (r+1) = p_{t}
     # log: p_{t-1} * e^r = p_{t}

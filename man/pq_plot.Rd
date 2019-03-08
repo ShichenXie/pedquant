@@ -2,76 +2,82 @@
 % Please edit documentation in R/pq_plot.R
 \name{pq_plot}
 \alias{pq_plot}
-\title{create a chart for timeseries data}
+\title{creating charts for time series}
 \usage{
 pq_plot(dt, chart_type = "line", freq = NULL, date_range = "max",
-  from = NULL, to = Sys.Date(), addti = list(),
-  linear_trend = NULL, perf = FALSE, x = "close|value",
-  yaxis_log = FALSE, color_up = "#F6736D", color_down = "#18C0C4",
+  from = NULL, to = Sys.Date(), x = "close|value", addti = list(),
+  linear_trend = NULL, perf = FALSE, yaxis_log = FALSE,
+  color_up = "#F6736D", color_down = "#18C0C4",
   multi_series = list(nrow = NULL, ncol = NULL), rm_weekend = NULL,
   title = NULL, ...)
 }
 \arguments{
-\item{dt}{a time series dataset}
+\item{dt}{a list/dataframe of time series dataset}
 
-\item{chart_type}{chart type, including line, step, candle.}
+\item{chart_type}{chart type, including line, step, bar, candle.}
 
-\item{freq}{the frequency that the input data will converted to. It supports weekly, monthly, quarterly and yearly.}
+\item{freq}{the frequency that the input daily data will converted to. It supports weekly, monthly, quarterly and yearly.}
 
-\item{date_range}{date range. Available value including '1m'-'11m', 'ytd', 'max' and '1y'-. Default is max.}
+\item{date_range}{date range. Available value includes '1m'-'11m', 'ytd', 'max' and '1y'-'ny'. Default is max.}
 
-\item{from}{the start date. Default is max date in input data.}
+\item{from}{the start date. Default is NULL. If it is NULL, then calculate using date_range and end date.}
 
-\item{to}{the end date. Default is min date in data.}
+\item{to}{the end date. Default is the current date.}
 
-\item{addti}{list of technical indicators, overlay indicators include mm, sma, ema, smma, bb, sar, and oscillators indicators such as macd, roc, ppo, rsi, cci.}
+\item{x}{the name of column display on chart.}
 
-\item{linear_trend}{a vector of numeric. Default is NULL, which donot show linear trend line. If it is not 0, show linear_trend*sd from linear trend line.}
+\item{addti}{list of technical indicators, including overlay and oscillator indicators. It calls \code{pq_addti} to calculate technical indicators.}
 
-\item{perf}{logical, whether to show the performance of input data. Default is FALSE.}
+\item{linear_trend}{a numeric vector. Default is NULL. If it is not NULL, then display linear trend lines on charts.}
 
-\item{x}{the variable display on chart}
+\item{perf}{logical, display the performance of input series. Default is FALSE. If it is TRUE, then call \code{pq_code} to convert data into performance trends.}
 
-\item{yaxis_log}{logical, default is FALSE.}
+\item{yaxis_log}{logical. Default is FALSE.}
 
 \item{color_up}{the color indicates price going up}
 
 \item{color_down}{the color indicates price going down}
 
-\item{multi_series}{logical, whether to show multiple series. Default is FALSE.}
+\item{multi_series}{a list. It display the number of ncol or nrow, and the yaxis scales in 'free'/'free_y'/'free_x'. Default is NULL.}
 
-\item{rm_weekend}{weather to remove weekend in xaxis. The default is TRUE for candle and bar chart, and FALSE for line and step chart.}
+\item{rm_weekend}{whether to remove weekends in xaxis. The default is TRUE for candle and bar chart, and is FALSE for line and step chart.}
 
-\item{title}{chart title. If it is not specified, the symbol of dataset will be used as chart title.}
+\item{title}{chart title. It will added to the front of chart title if it is specified.}
 
 \item{...}{ignored}
 }
 \description{
-\code{pq_plot} creates a charts for a time series dataset.
+\code{pq_plot} provides an easy way to create charts for time series dataset based on predefined formats.
 }
 \examples{
 \dontrun{
 # single symbol
-ssec = md_stock("^000001", source="163")
+ssec = md_stock("^000001", source="163", date_range = 'max')
 
 # chart type
-pq_plot(ssec) # line chart (default)
-# pq_plot(ssec, chart_type = "candle") # candlestick
-# pq_plot(ssec, chart_type = "bar") # bar chart
-# pq_plot(ssec, chart_type = "step") # step line
+  pq_plot(ssec, chart_type = "line",   date_range = '6m') # line chart (default)
+# pq_plot(ssec, chart_type = "step",   date_range = '6m') # step line
+# pq_plot(ssec, chart_type = "candle", date_range = '6m') # candlestick
+# pq_plot(ssec, chart_type = "bar",    date_range = '6m') # bar chart
 
 # add technical indicators
-pq_plot(ssec, chart_type = "candle", 
-  addti = list(sma = list(n = 50), macd = list()))
+pq_plot(ssec, chart_type = "line", addti = list(sma = list(n = 200), sma = list(n = 50), macd = list()))
+# linear trend with yaxis in log
+pq_plot(ssec, chart_type = "line", linear_trend = c(-0.8, 0, 0.8), yaxis_log = TRUE)
 
 
 # multiple symbols
-dat1 = md_stock(c('^000001', '^399001'), date_range = 'max', source='163')
-pq_plot(dat1, linear_trend = c(-0.8, 0, 0.8), multi_series = list(nrow=1, scales = 'free_y'))
+# download datasets
+# dat = md_stock(c('FB', 'AMZN', 'AAPL', 'NFLX', 'GOOG'), date_range = 'max')
+dat = md_stock(c('^000001', '^399001', '^399006', '^000016', '^000300', '^000905'), date_range = 'max', source='163')
 
+# linear trend
+pq_plot(dat, multi_series = list(nrow=2, scales = 'free_y'), linear_trend = c(-0.8, 0, 0.8))
+pq_plot(dat, multi_series = list(nrow=2, scales = 'free_y'), linear_trend = c(-0.8, 0, 0.8), yaxis_log = TRUE)
 
-dat2 = md_stock(c('^000016', '^000300'), date_range = 'max', source='163')
-pq_plot(dat2, linear_trend = c(-0.8, 0, 0.8), multi_series = list(nrow=1, scales = 'free_y'))
+# performance
+pq_plot(dat, multi_series = list(nrow=2), perf=TRUE, date_range = 'ytd')
+pq_plot(dat, multi_series = list(nrow=1, ncol=1), perf=TRUE, date_range = 'ytd')
 
 }
 

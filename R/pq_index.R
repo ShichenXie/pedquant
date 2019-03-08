@@ -3,17 +3,17 @@
 # I_t/I_{t-1} = \prod{(x_{j,t}/x_{j,t-1})^{w_{j,t}}}
 
 # dat = getmd_stock(sybs, fillzero = FALSE)
-# ssec = getmd_stock("^000001")
+# ssec = getmd_stock('^000001')
 
 # create a fixed-base index from chain index
 #' @import data.table
-pq_fbi = function(dt, chain_index, num=1, base_index=1, base_date="2006-01-01") {
+pq_fbi = function(dt, chain_index, num=1, base_index=1, base_date='2006-01-01') {
     index = NULL
     
     # the row index of base
     base_row = dt[,which.min(abs(as.Date(date) - as.Date(base_date)))]
     base_date = dt[base_row, date]
-    # cat("fixed-base index in", base_date)
+    # cat('fixed-base index in', base_date)
     dt[base_row, index := base_index]
     
     for (r in (base_row+1):nrow(dt)) {
@@ -32,19 +32,19 @@ pq_fbi = function(dt, chain_index, num=1, base_index=1, base_date="2006-01-01") 
 }
 
 # fixed-base index of cpi 
-fbi_cpicn = function(sybs = c("A01010101", "A01010201","A01030101", "A01030201")) {
+fbi_cpicn = function(sybs = c('A01010101', 'A01010201','A01030101', 'A01030201')) {
     value = . = index = NULL
     
-    cpicn = geted_nbs(geo_type = "n", freq = "m", symbol = sybs, na_rm = TRUE, from="1900-01-01")
+    cpicn = geted_nbs(geo_type = 'n', freq = 'm', symbol = sybs, na_rm = TRUE, from='1900-01-01')
     
     cpicn2 = dcast(
-        cpicn[, value := value/100], date~name, value.var = "value"
-    )[, date := as.Date(paste0(date,"01"),format="%Y%m%d")]
-    setnames(cpicn2, c("date", "cpi_yoy", "cpi_mom"))
+        cpicn[, value := value/100], date~name, value.var = 'value'
+    )[, date := as.Date(paste0(date,'01'),format='%Y%m%d')]
+    setnames(cpicn2, c('date', 'cpi_yoy', 'cpi_mom'))
     
     cpi_fbi = pq_fbi(
-        dt = pq_fbi(cpicn2, chain_index = "cpi_mom"),
-        chain_index = "cpi_yoy", num=12)
+        dt = pq_fbi(cpicn2, chain_index = 'cpi_mom'),
+        chain_index = 'cpi_yoy', num=12)
     
     return(cpi_fbi[,.(date,index)])
 }
@@ -53,96 +53,100 @@ fbi_cpicn = function(sybs = c("A01010101", "A01010201","A01030101", "A01030201")
 
 
 # ped in real price
-pq_rp1 = function(dt, region="cn", columns = c("open", "high", "low", "close")) {
+pq_rp1 = function(dt, region='cn', columns = c('open', 'high', 'low', 'close')) {
     date2 = . = index = NULL
     
     if (is.list(dt) & !is.data.frame(dt)) dt = rbindlist(dt, fill = TRUE)
     
    dt_rp = merge(
-        dt[, date2 := as.Date(sub("\\d{2}$", "01", date))],
-        eval(parse(text = paste0("fbi_cpi",region,"()")))[,.(date2 = date, index)],
+        dt[, date2 := as.Date(sub('\\d{2}$', '01', date))],
+        eval(parse(text = paste0('fbi_cpi',region,'()')))[,.(date2 = date, index)],
         all.x = TRUE
     )[, index := fillna(index)
       ][, (columns) := lapply(.SD, function(x) x/(index/index[.N])), .SDcols = columns
-        ][, c("date", columns), with=FALSE]
+        ][, c('date', columns), with=FALSE]
    
    return(dt_rp)
 }
-# ssec_nomial = getmd("^000001", from="1900-01-01", source="163")
+# ssec_nomial = getmd('^000001', from='1900-01-01', source='163')
 # ssec_real = getpedr:::pq_rp1(ssec_nomial)
 
 
 
-#' create an index 
+#' creating weighted index 
 #' 
-#' pq_index using the method of geometrically weighted averages to create an index based on multiple timeseries datasets.
+#' \code{pq_index} creates a sector/industry index using the method of weighted geometric mean, based on a set of data and corresponding weights.
 #' 
-#' @param dt input timeseries datasets
-#' @param chain_index the name of chain index
-#' @param weight the name of weight variable
-#' @param base_index the base value of index, default is 1
-#' @param base_date the date base of index, default is "2010-01-01"
-#' @param name the index name, default is NULL
+#' @param dt a list/dataframe of time series dataset
+#' @param x the name of column to create index. Default is 'close|value'
+#' @param w the name of weights column. Default is 'cap_total'. If x is not available or is NULL, then using equal weights.
+#' @param base_value the base value of index. Default is 1.
+#' @param base_date the base date of index. Default is the minmum date.
+#' @param name the name of index. Default is NULL, then using 'index'.
 #' 
 #' @examples 
 #' \dontrun{
-#' # example I bank share index
-#' banks_symbol = c("601988", "601288", "601398", "601939", "601328")
+#' # Example I bank share index
+#' # load data
+#' bank_symbol = c('601988', '601288', '601398', '601939', '601328')
+#' bank_dat = md_stock(bank_symbol, source='163', date_range = 'max')
 #' 
-#' dat = getmd(banks_symbol, source="163", from="1900-01-01")
-#' 
-#' dat = lapply(dat, function(x) {
-#' x$change_pct = x$change_pct/100+1
-#' return(x)})
-#' 
-#' bankindex = pq_index(dat, chain_index="change_pct", weight="cap_total")
-#' 
-#' # example II golden share index
-#' # sybs = getmd_symbol(market = "stock", source="163")
-#' # sybs_sub = sybs[sector == "有色金属采选" & grepl("黄金|金", name)]
-#' 
-#' gold_share = c("002155", "002237", "600146", "600311", "600489", "600547", "600687", "600766", "600988", "601069", "601899", "601958")
-#' 
-#' dat = getmd(gold_share, source="163", from="1900-01-01")
-#' 
-#' dat = lapply(dat, function(x) {
-#'   x$change_pct = x$change_pct/100+1
-#'   return(x)})
-#' 
-#' gold_index = pq_index(dat, chain_index="change_pct", weight="cap_total")
-#' 
-#' 
-#' # III
-#' securities = sybs[sector == '证券' & !is.na(board), symbol]
-#' 
-#' dat = getmd(securities, source="163", date_range = 'max')
-#' dat = lapply(dat, function(x) {
-#'   x$change_pct = x$change_pct/100+1
-#'   return(x)})
-#' 
-#' securities_index = pq_index(dat, chain_index="change_pct", weight="cap_total")
-#' 
-#' # pq_plot(securities_index)
+#' # creating index
+#' bank_index = pq_index(bank_dat, x='close', w='cap_total')
+#' # pq_plot(bank_index)
 #' 
 #' }
 #' 
 #' @import data.table
 #' @export
-pq_index = function(dt, chain_index, weight, base_index=1, base_date="2010-01-01", name=NULL) {
-    w = ci = cw = V1 = . = index = NULL
+pq_index = function(dt, x='close|value', w='cap_total', base_value=1, base_date=NULL, name = NULL) {
+    # w = ci = cw = V1 = . = index = NULL
+  
+    ## index name
+    if (is.null(name)) {
+      name = 'index'
+      symbol = 'index'
+    }
+
+    ## check columns of x, chain index, weight
+    if (!inherits(dt, 'list') & inherits(dt, 'data.frame')) {
+      dat_lst = list()
+      for (s in dt[,unique(symbol)]) dat_lst[[s]] = dt[symbol == s]
+      dt = dat_lst
+      rm(dat_lst)
+    }
+    dt = lapply(dt, function(d) {
+      x = intersect(names(d), unlist(strsplit(x,'\\|')))[1]
+      if (x != 'close') d[['close']] = d[[x]]
+      d[, chain_index := close/shift(close,type='lag')]
+      
+      # weight column
+      if (is.null(w) || w %in% names(d)) {
+        d[['weight']] = 1
+      } else d[['weight']] = d[[w]]
+      
+      return(d)
+    })
     
-    if (is.list(dt) & !is.data.frame(dt)) dt = rbindlist(dt, fill = TRUE)
-    setkey(dt, "date")
+    ## bind list of dataframes
+    dt = rbindlist(dt, fill = TRUE)
+    dt = dt[, symbol := factor(symbol, levels = dt[,unique(symbol)])]
+    setkeyv(dt, c('symbol','date'))
     
-    # weight
-    dt = dt[, w := eval(parse(text=weight))/sum(eval(parse(text=weight)), na.rm = TRUE), by=date
-     ][, ci := ifelse(is.na(eval(parse(text=chain_index))), 0, eval(parse(text=chain_index)))
-     ][, cw := ci**w
-     ][, prod(cw), by=date
-     ][V1 != 0]
+    ## weight geometric mean index
+    wgm_idx = dt[, w := weight/sum(weight, na.rm = TRUE), keyby=date
+     ][is.na(chain_index), chain_index := 0
+     ][, cw := chain_index**w
+     ][, .(value = prod(cw)), keyby=date
+     ][value != 0]
+
+    ## base date
+    base_date = check_fromto(base_date)
+    if (is.null(base_date) || (base_date < wgm_idx[1,date] || base_date > wgm_idx[.N,date])) base_date = wgm_idx[1,date]
     
-    if (is.null(name)) name = 'index'
-    return(pq_fbi(dt, "V1", base_index=base_index, base_date=base_date)[,.(date, symbol = name, value=index)])
+    ## fixed base index
+    fbi = pq_fbi(wgm_idx, 'value', base_index=base_value, base_date=base_date)[,.(symbol=symbol, name=name, date, value=index)]
+    return(fbi)
 }
 
 

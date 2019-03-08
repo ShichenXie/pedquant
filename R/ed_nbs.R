@@ -49,13 +49,13 @@ nbs_symbol1 = function(geo_type=NULL, freq=NULL, symbol='zb', eng=FALSE) {
   zb_list = setDT(zb_list)[,.(symbol=id, name, is_parent=isParent, parent_symbol=pid)]
   return(zb_list)
 }
-#' query symbol of China economic indicator from NBS
+#' symbol of NBS economic data
 #' 
-#' \code{ed_nbs_symbol} interactively query economic data symbol from NBS.
+#' \code{ed_nbs_symbol} provides an interface to query symbols of economic indicators from NBS.
 #' 
 #' @param geo_type geography type in NBS, including 'national', 'province', 'city'. Default is NULL.
-#' @param freq the frequency of indicators in NBS, including 'monthly', 'quarterly', 'yearly'. Default is NULL.
-#' @param eng logical. If it is FALSE, the result is show in Chinese, otherwise in English. Default is FALSE. 
+#' @param freq the frequency of NBS indicators, including 'monthly', 'quarterly', 'yearly'. Default is NULL.
+#' @param eng logical. The language of the query results is in English or in Chinese. Default is FALSE.
 #' 
 #' @examples 
 #' # query symbol interactively
@@ -91,25 +91,23 @@ ed_nbs_symbol = function(geo_type=NULL, freq=NULL, eng=FALSE) {
 
 
 
-#' query code of subregion in China from NBS
+#' subregion code of NBS economic data
 #' 
 #' \code{ed_nbs_subregion} query province or city code from NBS
 #' 
-#' @param geo_type geography type in NBS, including 'province', 'city'. Default is "".
-#' @param eng logical. Default is FALSE. If it is FALSE, the result is in Chinese, otherwise in English.
+#' @param geo_type geography type in NBS, including 'province', 'city'. Default is NULL.
+#' @param eng logical. The language of the query results is in English or in Chinese. Default is FALSE.
 #' 
 #' @examples 
-#' #  province code 
+#' # province code 
 #' prov1 = ed_nbs_subregion(geo_type = 'province') 
 #' # or using 'p' represents 'province'
 #' prov2 = ed_nbs_subregion(geo_type = 'p') 
 #' 
-#' \dontrun{
-#' #  city code in Chinese
+#' # city code in Chinese
 #' city = ed_nbs_subregion(geo_type = 'c', eng = FALSE) 
-#' #  city code in English
+#' # city code in English
 #' city = ed_nbs_subregion(geo_type = 'c', eng = TRUE) 
-#' }
 #' 
 #' @importFrom jsonlite fromJSON 
 #' @export
@@ -241,42 +239,38 @@ nbs_jsondat_format = function(jsondat) {
 }
 
 
-#' get economic data from NBS
+#' query NBS economic data
 #' 
-#' \code{ed_nbs} provides an interface to query economic data from National Bureau of Statistics of China (NBS).
+#' \code{ed_nbs} provides an interface to query economic data from National Bureau of Statistics of China (NBS, \url{http://data.stats.gov.cn/}).
 #' 
-#' @param symbol symbol of indicators in NBS, which is available via ed_nbs_symbol. Default is NULL.
-#' @param freq the frequency of indicators in NBS, including 'monthly', 'quarterly', 'yearly'. Default is NULL.
+#' @param symbol symbols of NBS indicators. It is available via \code{ed_nbs_symbol}. Default is NULL.
+#' @param freq the frequency of NBS indicators, including 'monthly', 'quarterly', 'yearly'. Default is NULL.
 #' @param geo_type geography type in NBS, including 'national', 'province', 'city'. Default is NULL.
-#' @param subregion codes of province or city, which is available via ed_nbs_subregion. Default is NULL.
-#' @param date_range 
-#' @param from the start date. Default is '2010-01-01'.
-#' @param to the end date. Default is current system date.
-#' @param na_rm logical. If it is TRUE, the missing values will be removed. Default is FALSE.
-#' @param eng logical. If it is FALSE, the query results are in Chinese, otherwise in English. Default is FALSE.
-#' 
-#' @source \url{http://data.stats.gov.cn/index.htm}
+#' @param subregion codes of province or city, which is available via \code{ed_nbs_subregion}. Default is NULL.
+#' @param date_range date range. Available value includes '1m'-'11m', 'ytd', 'max' and '1y'-'ny'. Default is '10y'.
+#' @param from the start date. Default is NULL. If it is NULL, then calculate using date_range and end date.
+#' @param to the end date. Default is the current date.
+#' @param na_rm logical. Whether to remove missing values from datasets. Default is FALSE.
+#' @param eng logical. The language of the query results is in English or in Chinese Default is FALSE.
 #' 
 #' @examples 
-#' # interactively setting paratmeters
 #' \dontrun{
+#' # query NBS data without setting any parameters
 #' dt = ed_nbs()
 #' 
 #' # specify paratmeters
-#' dt1 = ed_nbs(geo_type='national', freq='quarterly', 
-#'   symbol='A010101')
-#' 
+#' dt1 = ed_nbs(geo_type='national', freq='quarterly', symbol='A010101')
 #' # or using 'n'/'q' represents 'national'/'quarterly'
 #' dt2 = ed_nbs(geo_type='n', freq='q', symbol='A010101')
 #' 
 #' 
-#' # query data of one subregion
+#' # query data in one province
 #' dt3 = ed_nbs(geo_type='province', freq='quarterly', 
-#'   symbol='A010101', subregion='110000', from='2010-03-01', to='2010-03-01')
+#'   symbol='A010101', subregion='110000')
 #'   
-#' # query data of all province
+#' # query data in all province
 #' dt4 = ed_nbs(geo_type='province', freq='quarterly', 
-#'   symbol='A010101', subregion='all', from='2010-03-01', to='2010-03-01')
+#'   symbol='A010101', subregion='all')
 #' }
 #' 
 #' @import data.table
@@ -296,14 +290,14 @@ ed_nbs = function(symbol=NULL, freq=NULL, geo_type=NULL, subregion=NULL, date_ra
   ## symbol
   if (is.null(symbol)) symbol = ed_nbs_symbol(geo_type, freq, eng)
   ## subregion
-  while (geo_type %in% c('province', 'city') & (is.null(subregion) || length(subregion)==0)) {
+  if (geo_type %in% c('province', 'city')) {
     subregion_df = ed_nbs_subregion(geo_type, eng)
-    subregion = select_rows_df(subregion_df, column='code')[,code]
+    subregion = select_rows_df(subregion_df, column='code', input_string=subregion)[,code]
   }
   ## from/to
-  date_range = check_date_range(date_range, default = "max")
-  from = get_from_daterange(date_range, from, to, min_date = "1000-01-01")
-  # fromto = date_to_mqa(from, to, freq)
+  ft = get_fromto(date_range, from, to, min_date = "1000-01-01", default_date_range = '10y')
+  from = ft$f
+  to = ft$t
   
   # jsondat
   jsondat_list = NULL

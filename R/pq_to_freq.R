@@ -56,19 +56,28 @@ pq1_to_freq = function(dat, freq) {
     if (freq == "daily" || !check_freq_isdaily(dat)) return(dat)
     setkeyv(dat, "date")
     
-    # change
-    dat2 = do.call(paste0("pq1_dto",substr(freq,1,1)), list(dat=dat))
-    
+    # add volume column if it not exists in dat
+    if (!('volume' %in% names(dat))) dat2 = copy(dat)[, volume := 0]
+    # converting freq
+    dat2 = do.call(paste0("pq1_dto",substr(freq,1,1)), list(dat=dat2))
+    # remove volume column if it not exists in dat
+    if (!('volume' %in% names(dat))) dat2[, volume := NULL]
+      
+    # add symbol and name columns to dat2
+    if ('symbol' %in% names(dat)) dat2[, symbol := dat[.N,symbol]]
+    if ('name'   %in% names(dat)) dat2[, name   := dat[.N,name]]
     # symbol and name
     cols_ret = intersect(c('symbol', 'name', 'date', 'open', 'high', 'low', 'close', 'volume'), names(dat2))
     return(dat2[, cols_ret, with=FALSE])
 }
 
-#' convert the frequency of daily data
+#' converting frequency of daily data
 #' 
-#' @param dt time series datasets
-#' @param freq the frequency that the input data will converted to. It supports weekly, monthly, quarterly and yearly.
-#' @param print_step A non-negative integer, which will print symbol name by each print_step iteration. Default is 1. 
+#' \code{pq_to_freq} convert a daily OHLC dataframe into a specified frequency.
+#' 
+#' @param dt a list/dataframe of time series dataset.
+#' @param freq the frequency that the input daily data will converted to. It supports weekly, monthly, quarterly and yearly.
+#' @param print_step A non-negative integer. Print symbol name by each print_step iteration. Default is 1L.
 #' 
 #' @examples 
 #' dts = md_stock(c("^000001", "000001"), date_range = 'max', source = '163')
@@ -77,10 +86,10 @@ pq1_to_freq = function(dat, freq) {
 #' 
 #' @export
 #' 
-pq_to_freq = function(dt, freq, print_step=0L) {
+pq_to_freq = function(dt, freq, print_step=1L) {
     # symbol = len_names = dt_names = NULL
     # check freq argument
-    freq = check_arg(freq, c("weekly","monthly","quarterly","yearly"), "weekly")
+    freq = check_arg(freq, c("weekly","monthly","quarterly","yearly"))
   
     if (inherits(dt, 'list')) dt = rbindlist(dt, fill = TRUE)
     

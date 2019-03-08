@@ -2,10 +2,18 @@
 % Please edit documentation in R/md_future.R
 \name{md_future_symbol}
 \alias{md_future_symbol}
-\title{symbols of Chinese future}
+\title{symbol of future market data}
 \usage{
 md_future_symbol()
 }
 \description{
-symbols of Chinese future
+\code{md_future_symbol} search the symbols in future market indicators that provided by sina finance only currently.
+}
+\examples{
+\dontrun{
+# interactivly search future market symbols
+sybs = md_future_symbol()
+
+}
+
 }

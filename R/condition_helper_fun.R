@@ -43,7 +43,10 @@ check_fromto = function(fromto, type="date", shift = 0) {
     return(fromto)
 }
 
-get_from_daterange = function(date_range, from, to, min_date) {
+get_fromto = function(date_range, from, to, min_date, default_date_range = 'max') {
+    date_range = check_date_range(date_range, default = default_date_range)
+    to = check_fromto(to)
+    
     if (is.null(from)) {
         if (date_range == "max") {
             from = min_date
@@ -71,6 +74,8 @@ get_from_daterange = function(date_range, from, to, min_date) {
         } else {
             from = min_date
         }
+    } else {
+        from = check_fromto(from)
     }
     
     # set class
@@ -80,74 +85,118 @@ get_from_daterange = function(date_range, from, to, min_date) {
         from = as.POSIXct(from)
     }
     
-    return(from)
+    return(list(f=from, t = to))
 }
 
-# get tags for a China stock symbol
-tags_symbol_stockcn = function(symbol, market) {
-    # 001×××国债现货；110×××120×××企业债券；129×××100×××可转换债券；201×××国债回购；310×××国债期货；
-    #500×××550×××基金；600×××A股；700×××配股；710×××转配股；701×××转配股再配股；711×××转配股再转配股；720×××红利；730×××新股申购；735×××新基金申购；737×××新股配售；900×××B股。
-    symbol2 = sub(".*?(\\d+).*","\\1", symbol)
-    if (nchar(symbol2)==6) {
-        if (market=="stock") {
-            tags = switch (substr(symbol2,1,3),
-                    "600"="sse,A,main",
-                    "601"="sse,A,main",
-                    "603"="sse,A,main",
-                    "900"="sse,B",
-                    "000"="szse,A,main",
-                    "001"="szse,A,main",
-                    "002"="szse,A,sme",
-                    "300"="szse,A,chinext",
-                    "200"="szse,B",
-            )
-        } else if (market=="index") {
-            tags = switch (substr(symbol2,1,3),
-                    "000"="sse",
-                    "399"="szse"
-            )
-        }
-    } else if (nchar(symbol2)==5) {
-        tags = ifelse(substr(symbol2,1,2)=="08", "hkex,,gem", "hkex,,main")
-    }
+# this function has been removed
+tags_symbol_stockcn = function(symbol, mkt) {
+    sm = data.table(
+        syb = sub(".*?(\\d+).*","\\1", symbol), mkt = mkt
+    )[nchar(syb)==6, syb3 := substr(syb,1,3)
+    ][nchar(syb)==5, tags := ifelse(substr(syb,1,2)=="08", "hkex,,gem", "hkex,,main")]
+
+    tags = rbind(
+        merge(sm[nchar(syb)==6][,tags:=NULL], tags_dt(), all.x = TRUE, by = c('mkt', 'syb3')),
+        sm[nchar(syb)==5][],
+        fill = TRUE
+    )#[!is.na(tags)]#[,tags]
+    
+    
+    # # 001×××国债现货；110×××120×××企业债券；129×××100×××可转换债券；201×××国债回购；310×××国债期货；
+    # #500×××550×××基金；600×××A股；700×××配股；710×××转配股；701×××转配股再配股；711×××转配股再转配股；720×××红利；730×××新股申购；735×××新基金申购；737×××新股配售；900×××B股。
+    # symbol2 = sub(".*?(\\d+).*","\\1", syb)
+    # # print(symbol2)
+    # if (nchar(symbol2)==6) {
+    #     if (mkt=="stock") {
+    #         tags = switch (substr(symbol2,1,3),
+    #                 "600"="sse,A,main",
+    #                 "601"="sse,A,main",
+    #                 "603"="sse,A,main",
+    #                 "900"="sse,B",
+    #                 "000"="szse,A,main",
+    #                 "001"="szse,A,main",
+    #                 "002"="szse,A,sme",
+    #                 "003"="szse,A,sme",
+    #                 "004"="szse,A,sme",
+    #                 "300"="szse,A,chinext",
+    #                 "200"="szse,B",
+    #         )
+    #     } else if (mkt=="index") {
+    #         tags = switch (substr(symbol2,1,3),
+    #                 "000"="sse",
+    #                 "399"="szse"
+    #         )
+    #     }
+    # } else if (nchar(symbol2)==5) {
+    #     tags = ifelse(substr(symbol2,1,2)=="08", "hkex,,gem", "hkex,,main")
+    # }
     return(tags)
     # hkex: 
     # 蓝筹股（Blue Chip）
     # 红筹股（Red Chip）
     # 国企股（H股）
 }
-
-# 
-check_symbol_for_163 = function(symbol) {
-    syb = sub("^.*?([0-9]+).*$","\\1",symbol)
-    mkt = ifelse(grepl("\\^",symbol),"index","stock")
-    tags = tags_symbol_stockcn(symbol, mkt)
-    
-    ex_code = ifelse(grepl("sse",tags), "0", 
-                     ifelse(grepl("szse",tags), "1", NULL))
-    if (!is.null(ex_code)) symbol = paste0(ex_code, syb)
-    return(symbol)
+# tags of SSE/SZSE shares symbols
+tags_dt = function() {
+    setDT(list(
+        mkt = c('stock','stock','stock','stock','stock','stock','stock','stock','stock','stock','stock','stock','index','index'),
+        syb3 = c("600","601","603","900","000","001","002","003","004","300","200","201","000","399"),
+        tags = c("sse,A,main", "sse,A,main", "sse,A,main", "sse,B,-", "szse,A,main", "szse,A,main", "szse,A,sme", "szse,A,sme", "szse,A,sme", "szse,A,chinext", "szse,B,-", "szse,B,-", "sse,-,-", "szse,-,-"),
+        city = c(rep('sh',4), rep('sz',8),'sh','sz'),
+        city_code = c(rep('0',4), rep('1',8),'0','1')
+    ))[,(c('exchange','AB','board')) := tstrsplit(tags,',')
+       ][, exchg_code := toupper(substr(tags,1,2))][]
 }
-check_symbol_for_tx = function(symbol) {
-    syb = sub("^.*?([0-9]+).*$","\\1",symbol)
-    mkt = ifelse(grepl("\\^",symbol),"index","stock")
-    tags = tags_symbol_stockcn(symbol, mkt)
+check_symbol_cn = function(symbol, mkt = NULL) {
+    tags = tags_dt()[, exchg_code := tolower(exchg_code)][]
     
-    ex_code = ifelse(grepl("sse",tags), "sh", 
-                     ifelse(grepl("szse",tags), "sz", NULL))
-    if (!is.null(ex_code)) symbol = paste0(ex_code, syb)
-    return(symbol)
-}
-check_symbol_for_yahoo = function(symbol) {
-    if (grepl('[0-9]{6}', symbol)) {
-        syb = sub("^.*?([0-9]+).*$","\\1",symbol)
-    if (nchar(syb)==6 & (nchar(symbol)==7 | nchar(symbol)==6)) {
-        mkt = ifelse(grepl("\\^",symbol),"index","stock")
-        tags = tags_symbol_stockcn(symbol, mkt)
-        
-        ex_code = ifelse(grepl("sse|szse",tags), substr(tags,1,2), NULL)
-        if (!is.null(ex_code)) symbol = paste(syb, ex_code, sep=".")
+    cn_dt = setDT(list(symbol = tolower(symbol)))
+    if (length(mkt) == 1) mkt = rep(mkt, length(symbol))
+    if (is.null(mkt) & !all(grepl('[a-zA-Z]', symbol))) mkt = ifelse(grepl("\\^",symbol),"index","stock")
+    if (!is.null(mkt) & length(symbol) == length(mkt)) cn_dt[, mkt := mkt]
+    
+    cn_dt = cn_dt[, `:=`(
+        syb = sub("^.*?([0-9]+).*$","\\1",symbol),
+        syb_code = gsub("[^a-zA-Z]+",'',symbol)
+    )][,syb3 := substr(syb,1,3)][]
+    
+    if (all(cn_dt[,unique(syb_code)] %in% c('ss','sz'))) {
+        cn_dt[['exchg_code']] = cn_dt[['syb_code']]
+    } else if (all(cn_dt[,unique(syb_code)] %in% c('sh','sz'))) {
+        cn_dt[['city']] = cn_dt[['syb_code']]
     }
+    
+    by_cols = intersect(names(cn_dt), names(tags))
+    cn_tag = merge(cn_dt, tags, by = by_cols, all.x = TRUE, sort = FALSE)
+    
+    return(cn_tag)
+}
+# check SSE/SZSE share symbols to download data from 163/tx/yahoo
+check_symbol_for_163 = function(symbol, mkt = NULL) {
+    symbol_163 = check_symbol_cn(
+        symbol, mkt
+    )[, syb_163 := paste0(city_code,syb)
+    ][is.na(tags), syb_163 := symbol
+    ][, syb_163]
+    
+    return(symbol_163)
+}
+check_symbol_for_tx = function(symbol, mkt = NULL) {
+    symbol_tx = check_symbol_cn(
+        symbol, mkt
+    )[, syb_tx := paste0(city,syb)
+    ][is.na(tags), syb_tx := symbol
+    ][, syb_tx]
+    
+    return(symbol_tx)
+}
+check_symbol_for_yahoo = function(symbol, mkt = NULL) {
+    if (all(grepl('[0-9]{6}', symbol))) {
+        symbol = check_symbol_cn(
+            symbol, mkt
+        )[, syb_yh := paste(syb, exchg_code, sep = '.') #paste0(city,syb)
+        ][is.na(tags), syb_yh := symbol
+        ][][, syb_yh]
     }
     return(toupper(symbol))
 }
@@ -407,7 +456,9 @@ select_rows_df = function(dt, column=NULL, input_string=NULL, onerow=FALSE) {
             sel_id = input_string
         }
         
-        if (grepl('^r[1-9].*$', sel_id)) { # select rows via rowid 
+        if (identical(sel_id, 'all')) {
+            seleted_rows = dt
+        } else if (grepl('^r[1-9].*$', sel_id)) { # select rows via rowid 
             while (any(grepl("^r", sel_id))) {
                 sel_id_string = gsub('r', '', sel_id)
                 sel_id_string = gsub("[^[0-9:-]+", ",", sel_id_string)

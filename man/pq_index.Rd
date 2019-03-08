@@ -2,66 +2,37 @@
 % Please edit documentation in R/pq_index.R
 \name{pq_index}
 \alias{pq_index}
-\title{create an index}
+\title{creating weighted index}
 \usage{
-pq_index(dt, chain_index, weight, base_index = 1,
-  base_date = "2010-01-01", name = NULL)
+pq_index(dt, x = "close|value", w = "cap_total", base_value = 1,
+  base_date = NULL, name = NULL)
 }
 \arguments{
-\item{dt}{input timeseries datasets}
+\item{dt}{a list/dataframe of time series dataset}
 
-\item{chain_index}{the name of chain index}
+\item{x}{the name of column to create index. Default is 'close|value'}
 
-\item{weight}{the name of weight variable}
+\item{w}{the name of weights column. Default is 'cap_total'. If x is not available or is NULL, then using equal weights.}
 
-\item{base_index}{the base value of index, default is 1}
+\item{base_value}{the base value of index. Default is 1.}
 
-\item{base_date}{the date base of index, default is "2010-01-01"}
+\item{base_date}{the base date of index. Default is the minmum date.}
 
-\item{name}{the index name, default is NULL}
+\item{name}{the name of index. Default is NULL, then using 'index'.}
 }
 \description{
-pq_index using the method of geometrically weighted averages to create an index based on multiple timeseries datasets.
+\code{pq_index} creates a sector/industry index using the method of weighted geometric mean, based on a set of data and corresponding weights.
 }
 \examples{
 \dontrun{
-# example I bank share index
-banks_symbol = c("601988", "601288", "601398", "601939", "601328")
+# Example I bank share index
+# load data
+bank_symbol = c('601988', '601288', '601398', '601939', '601328')
+bank_dat = md_stock(bank_symbol, source='163', date_range = 'max')
 
-dat = getmd(banks_symbol, source="163", from="1900-01-01")
-
-dat = lapply(dat, function(x) {
-x$change_pct = x$change_pct/100+1
-return(x)})
-
-bankindex = pq_index(dat, chain_index="change_pct", weight="cap_total")
-
-# example II golden share index
-# sybs = getmd_symbol(market = "stock", source="163")
-# sybs_sub = sybs[sector == "有色金属采选" & grepl("黄金|金", name)]
-
-gold_share = c("002155", "002237", "600146", "600311", "600489", "600547", "600687", "600766", "600988", "601069", "601899", "601958")
-
-dat = getmd(gold_share, source="163", from="1900-01-01")
-
-dat = lapply(dat, function(x) {
-  x$change_pct = x$change_pct/100+1
-  return(x)})
-
-gold_index = pq_index(dat, chain_index="change_pct", weight="cap_total")
-
-
-# III
-securities = sybs[sector == '证券' & !is.na(board), symbol]
-
-dat = getmd(securities, source="163", date_range = 'max')
-dat = lapply(dat, function(x) {
-  x$change_pct = x$change_pct/100+1
-  return(x)})
-
-securities_index = pq_index(dat, chain_index="change_pct", weight="cap_total")
-
-# pq_plot(securities_index)
+# creating index
+bank_index = pq_index(bank_dat, x='close', w='cap_total')
+# pq_plot(bank_index)
 
 }
 

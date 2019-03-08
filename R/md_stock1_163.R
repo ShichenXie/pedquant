@@ -1,7 +1,7 @@
 
 #' @import data.table 
 #' @importFrom jsonlite fromJSON
-md_stock_spotall_163 = function(symbol = "a,index", only_symbol = FALSE) {
+md_stock_spotall_163 = function(symbol = c('a','index'), only_symbol = FALSE) {
   tags = market = exchange = time = . = submarket = region = board = name = NULL
     
   fun_stock_163 = function(urli, mkt) {
@@ -46,12 +46,12 @@ md_stock_spotall_163 = function(symbol = "a,index", only_symbol = FALSE) {
   
   df_stock_cn = rbindlist(mapply(
     fun_stock_163, urls_163[idx], c("stock","stock","index","index")[idx], SIMPLIFY = FALSE
-  ), fill = TRUE)
+  ), fill = TRUE, idcol = 'mkt')[mkt %in% c('a','b'), mkt := 'stock']
   
   # date time of download
   datetime = gsub("[^(0-9)]","",df_stock_cn[1,time])
-  if (df_stock_cn[1,time] < as.POSIXct(paste(df_stock_cn[1,date], "15:00:00"))) 
-    cat("The close price is spot price at", as.character(datetime), "\n")
+  # if (df_stock_cn[1,time] < as.POSIXct(paste(df_stock_cn[1,date], "15:00:00"))) 
+  #   cat("The close price is spot price at", as.character(datetime), "\n")
   
   
   if (only_symbol) {
@@ -64,21 +64,20 @@ md_stock_spotall_163 = function(symbol = "a,index", only_symbol = FALSE) {
   } else {
     df_stock_cn = df_stock_cn[, c("market", "region") := NULL]
       
-    if (symbol != "index") df_stock_cn = df_stock_cn[, c("plate_ids", "eps", "net_income", "revenue") := NULL]
+    if (!identical(symbol, 'index')) df_stock_cn = df_stock_cn[, c("plate_ids", "eps", "net_income", "revenue") := NULL]
   }
   
-  
-  return(df_stock_cn[,unit := 'CNY'][, symbol := check_symbol_for_yahoo(symbol)])
+  df = df_stock_cn[,unit := 'CNY'][, symbol := check_symbol_for_yahoo(symbol, mkt)][, mkt := NULL][]
+  return(df)
 }
 
 
 # query spot data from tx
 # hq.sinajs.cn/list=sz150206
 # http://qt.gtimg.cn/q=sz000001
-md_stock_spot1_tx = function(symbol1) {
-  dat = doc = . = name = high = low = prev_close = change = change_pct = volume = amount = turnover = cap_market = cap_total = time = symbol = NULL
-  
-  syb = sapply(symbol1, check_symbol_for_tx)
+md_stock_spot_tx = function(symbol1, ...) {
+  # dat = doc = . = name = high = low = prev_close = change = change_pct = volume = amount = turnover = cap_market = cap_total = time = symbol = NULL
+  syb = check_symbol_for_tx(symbol1)
   dt = readLines(sprintf("http://qt.gtimg.cn/q=%s", paste0(syb, collapse=",")))
   # ff_ 资金流量 # s_pk 盘口 # s_ 简要信息
   
@@ -116,7 +115,7 @@ md_stock_spot1_tx = function(symbol1) {
     #ask1, ask1_volume, ask2, ask2_volume, ask3, ask3_volume, ask4, ask4_volume, ask5, ask5_volume
     )][, (num_cols) := lapply(.SD, as.numeric), .SDcols= num_cols
      ][, `:=`(
-       symbol = check_symbol_for_yahoo(symbol),
+       symbol = check_symbol_for_yahoo(symbol1),
        volume = volume*100,
        amount = amount*10000,
        cap_market = cap_market*10^8, 
@@ -134,7 +133,7 @@ md_stock_spot1_tx = function(symbol1) {
 
 #' @import data.table
 #' @importFrom readr read_csv locale col_date col_character col_double col_integer
-md_stock_hist1_163 = function(symbol1, from="1900-01-01", to=Sys.Date(), fillzero=FALSE, adjust=FALSE, ...) {
+md_stock_hist1_163 = function(symbol1, from="1900-01-01", to=Sys.Date(), zero_rm=TRUE, ...) {
   change_pct = symbol = NULL
   # http://quotes.money.163.com/service/chddata.html?code=0000001&start=19901219&end=20180615&fields=TCLOSE;HIGH;LOW;TOPEN;LCLOSE;CHG;PCHG;VOTURNOVER;VATURNOVER
   # http://quotes.money.163.com/service/chddata.html?code=1399001&start=19910403&end=20180615&fields=TCLOSE;HIGH;LOW;TOPEN;LCLOSE;CHG;PCHG;VOTURNOVER;VATURNOVER
@@ -144,7 +143,7 @@ md_stock_hist1_163 = function(symbol1, from="1900-01-01", to=Sys.Date(), fillzer
   # {'D': 'akdaily', 'W': 'akweekly', 'M': 'akmonthly'}
   
   # symbol
-  syb = check_symbol_for_163(symbol1) # print(syb)
+  syb = check_symbol_for_163(symbol1) 
 
   # date range
   fromto = lapply(list(from=from,to=to), function(x) format(check_fromto(x), "%Y%m%d"))
@@ -186,36 +185,43 @@ md_stock_hist1_163 = function(symbol1, from="1900-01-01", to=Sys.Date(), fillzer
   # if (max(dt[["date"]]) < lwd()) dt = unique(dt, by="date")
   
   # fill zeros in dt
-  if (fillzero) {
+  if (zero_rm) {
+    dt = dt[close != 0]
+  } else {
     cols_name = c("open", "high", "low", "close")
     dt = dt[, (cols_name) := lapply(.SD, fill0), .SDcols = cols_name]
-  } else {
-    dt = dt[close != 0]
   }
   
+  
+  # adding valuation ratios and adjust for dividend
+  chk_syb = try(check_symbol_for_yahoo(dt[1, tstrsplit(symbol, '\\.')][,V1]), silent = TRUE)
+  if (chk_syb == dt[1,symbol]) {
+    valuation = list(...)[['valuation']]
+    if (is.null(valuation)) valuation = FALSE
+    if (valuation) dt = md_stock_pe1_163(dt)
+    
+    adjust = list(...)[['adjust']]
+    if (is.null(adjust)) adjust = FALSE
+    adjust_on = ifelse(adjust, 'dividend', 'split') 
+    dt = adjust_ohlc(dt, source = '163', adjust_on = adjust_on)
+  }
+  
+  # create unit/name columns
   dt = dt[, unit := 'CNY'][, name := name[.N]]
-  if (adjust) dt = adjust_ohlc(dt, source = '163')
   return(dt)
 }
 
-# pe, pb, ps, pcf
-md_stock_hist1_163_pe = function(symbol1, ...) {
+# valuation ratios pe, pb, ps, pcf
+md_stock_pe1_163 = function(dat) {
   
   # 市盈率 = 股价/年度每股盈余(EPS)；公司市值/年度股东权益 Price to Earnings ratio # https://www.zhihu.com/question/36915260
   # 市销率 = 总市值除以主营业务收入，Price-to-sales,PS
   # 市现率 = 股票价格与每股现金流量的比率 Price Cash Flow Ratio，PCF
   
   # symbol1 = '000001'
+  symbol1 = dat[1, tstrsplit(symbol, '\\.')][,V1]
   # main financial indicators
   mainfi = try(fs_type1_cn(symbol1, 'fi0_main'), silent = TRUE)
-  # price dataframe
-  args = list(...)
-  adjust = args$adjust
-  from = args$from
-  
-  args$adjust = FALSE
-  args$from   = '1900-01-01'
-  dat = do.call(md_stock_hist1_163, c(list(symbol1=symbol1), args)) # md_stock_hist1_163(symbol1, ...)
   if (inherits(mainfi, 'try-error')) return(dat)
   
   # main financial indicators
@@ -254,7 +260,7 @@ md_stock_hist1_163_pe = function(symbol1, ...) {
   # merge mfi with dat
   cols_fillna = c('fs_month',"BV","NIDCash", "REV_Y", 'NP', "NP_Y", 'NP_LY')
   dat_pbpe = merge(
-    dat[, unit := NULL], 
+    dat, 
     mfi[, c('date', cols_fillna), with=FALSE], all = TRUE, by = 'date'
   )[, (cols_fillna) := lapply(.SD, fillna), .SDcols = cols_fillna
   ][!is.na(symbol)
@@ -264,18 +270,16 @@ md_stock_hist1_163_pe = function(symbol1, ...) {
     pe_trailing = cap_total/NP_Y/10000, # trailing twelve month
     pe_forward = cap_total/(NP/(fs_month/12))/10000, # forward
     ps = cap_total/REV_Y/10000,
-    pcf = cap_total/NIDCash/10000,
-    unit = 'CNY'
-  )]#[, (cols_fillna) := NULL]
+    pcf = cap_total/NIDCash/10000
+  )][, (cols_fillna) := NULL]
   
-  if (adjust) dat_pbpe = adjust_ohlc(dat_pbpe, source = '163')[date >= from]
   return(dat_pbpe)
 }
 
 # dividends
 md_stock_divsplit1_163 = function(symbol1, from=NULL, to=NULL, ret = 'div') {
   # symbol1 = '000001'
-  stk_price = md_stock_spot1_tx(symbol1)
+  stk_price = md_stock_spot_tx(symbol1)
   # return dts
   div_spl = list()
   
@@ -372,36 +376,32 @@ md_stock_divsplit1_163 = function(symbol1, from=NULL, to=NULL, ret = 'div') {
 
 
 #' @import data.table
-md_stock_163 = function(symbol, from="1900-01-01", to=Sys.Date(), print_step=1L, freq = "daily", fillzero=FALSE, ...) {
-  # fromt to 
-  from = check_fromto(from)
-  to = check_fromto(to)
+md_stock_163 = function(symbol, from="1900-01-01", to=Sys.Date(), print_step=1L, freq = "daily", zero_rm=TRUE, ...) {
   # frequency
   freq = check_arg(freq, c("daily"))
   # type 
   type = list(...)[['type']]
-  # return pe pb
-  pe = list(...)[['pe']]
-  if (is.null(pe)) pe = FALSE
+  type = check_arg(type, c('spot', 'history', 'dividend', 'split'), default = 'history')
+  # return valuation ratios
+  arg_lst = list(...)
+  if (!('valuation' %in% names(arg_lst))) arg_lst[['valuation']] = FALSE
+  if (!('adjust' %in% names(arg_lst))) arg_lst[['adjust']] = TRUE
   
-  
-  if (type == 'history') {
-    # query data
-    if (from==Sys.Date()) {
-      fuc = 'md_stock_spot1_tx'
-      if (all(unlist(strsplit(symbol,",")) %in% c('a','b','index'))) fuc = 'md_stock_spotall_163'
-      dat_list <- try(do.call(fuc, args=list(symbol=symbol)), silent = TRUE)
-    } else {
-      fuc = 'md_stock_hist1_163'
-      if (pe) fuc = 'md_stock_hist1_163_pe' 
-      dat_list = load_dat_loop(symbol, fuc, args = list(from = from, to = to, fillzero = fillzero, ...), print_step=print_step)
-    }
+  # query data
+  if (type == 'spot') {
+    fuc = 'md_stock_spot_tx'
+    if (length(intersect(symbol, c('a','b','index'))) > 0) fuc = 'md_stock_spotall_163'
+    dat_list <- try(do.call(fuc, args=list(symbol=symbol)), silent = TRUE)
+      
+  }  else if (type == 'history') {
+    dat_list = load_dat_loop(symbol, 'md_stock_hist1_163', args = c(list(from = from, to = to, zero_rm = zero_rm), arg_lst), print_step=print_step)
     
   } else if (type == 'dividend') (
     dat_list = load_dat_loop(symbol, "md_stock_divsplit1_163", args = list(from = from, to = to, ret = 'div'), print_step=print_step)
     
   ) else if (type == 'split') {
     dat_list = load_dat_loop(symbol, "md_stock_divsplit1_163", args = list(from = from, to = to, ret = c('spl','rig')), print_step=print_step)
+    
   }
   
   

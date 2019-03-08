@@ -142,9 +142,10 @@ md_bond = function(symbol=NULL, date_range = '3y', from=NULL, to=Sys.Date(), pri
         syb = select_rows_df(bond_symbol[,.(symbol,name)], column='symbol', input_string=syb)[,symbol]
     }
     syb = intersect(syb, bond_symbol$symbol)
-    ## from
-    date_range = check_date_range(date_range, default = "max")
-    from = get_from_daterange(date_range, from, to, min_date = "1000-01-01")
+    ## from/to
+    ft = get_fromto(date_range, from, to, min_date = "1000-01-01", default_date_range = '3y')
+    from = ft$f
+    to = ft$t
     
     # data
     dt_list = c(
