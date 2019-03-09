@@ -81,7 +81,7 @@ pq_rp1 = function(dt, region='cn', columns = c('open', 'high', 'low', 'close')) 
 #' @param x the name of column to create index. Default is 'close|value'
 #' @param w the name of weights column. Default is 'cap_total'. If x is not available or is NULL, then using equal weights.
 #' @param base_value the base value of index. Default is 1.
-#' @param base_date the base date of index. Default is the minmum date.
+#' @param base_date the base date of index. Default is the minimum date.
 #' @param name the name of index. Default is NULL, then using 'index'.
 #' 
 #' @examples 

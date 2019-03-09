@@ -32,7 +32,7 @@
 
 <meta property="og:title" content="adding technical indicators — pq_addti" />
 
-<meta property="og:description" content="pq_addti creates technical indicators on provided datasets ussing TTR package." />
+<meta property="og:description" content="pq_addti creates technical indicators on provided datasets use TTR package." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -107,7 +107,7 @@
 
     <div class="ref-description">
     
-    <p><code>pq_addti</code> creates technical indicators on provided datasets ussing TTR package.</p>
+    <p><code>pq_addti</code> creates technical indicators on provided datasets use TTR package.</p>
     
     </div>
 
@@ -118,18 +118,18 @@
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>dt</th>
-      <td><p>a list/dataframe of time serie datasets.</p></td>
+      <td><p>a list/dataframe of time series datasets.</p></td>
     </tr>
     <tr>
       <th>...</th>
       <td><p>list of technical indicator parameters: sma = list(n=50), macd = list().</p><ol>
 <li><p>There are four types of parameters.</p><ul>
-<li><p>setted by default and donot required, such as 'OHLC', 'HLC', 'HL' and 'volume'.</p></li>
-<li><p>setted by default and can be modified, such as 'price', 'prices', 'x'. Its default value is 'close' or 'value' column.</p></li>
+<li><p>set by default and do not required, such as 'OHLC', 'HLC', 'HL' and 'volume'.</p></li>
+<li><p>set by default and can be modified, such as 'price', 'prices', 'x'. Its default value is 'close' or 'value' column.</p></li>
 <li><p>always required, such as 'y', 'w'.</p></li>
 <li><p>numeric parameters, such as 'n', 'sd', 'v', 'nFast', 'nSlow', 'nSig', 'accel'. These parameters should be provided, otherwise using default values in corresponding function.</p></li>
 </ul></li>
-<li><p>TTR functions are summaried in below. See TTR package's help document for more detailed parameters.</p><ul>
+<li><p>TTR functions are summarised in below. See TTR package's help document for more detailed parameters.</p><ul>
 <li><p>moving averages: SMA, EMA, DEMA, WMA, EVWMA, ZLEMA, VWAP, VMA, HMA, ALMA, GMMA</p></li>
 <li><p>rolling functions: runMin, runMax, runMean, runMedian; runCov, runCor; runVar, runSD, runMAD; runSum, wilderSum</p></li>
 <li><p>bands / channels: BBands, PBands, DonchianChannel</p></li>

@@ -18,7 +18,7 @@ pq_perf(dt, date_range = "max", from = NULL, to = Sys.Date(),
 
 \item{x}{the name of column to calculate. Default is 'close|value'.}
 
-\item{base_value}{the base value of perfmance index. Default is 0.}
+\item{base_value}{the base value of performance index. Default is 0.}
 }
 \description{
 \code{pq_perf} provides an easy way to create the performance trends for a set of time series data.

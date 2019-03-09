@@ -2,7 +2,7 @@
 % Please edit documentation in R/md_stock1_.R
 \name{md_stock}
 \alias{md_stock}
-\title{qurey stock market data}
+\title{query stock market data}
 \usage{
 md_stock(symbol, source = "yahoo", freq = "daily", date_range = "3y",
   from = NULL, to = Sys.Date(), type = "history", adjust = FALSE,

@@ -31,7 +31,7 @@ pq1_perf = function(dt, date_range='max', from=NULL, to=Sys.Date(), x='close|val
 #' @param from the start date. Default is NULL. If it is NULL, then calculate using date_range and end date.
 #' @param to the end date. Default is the current date.
 #' @param x the name of column to calculate. Default is 'close|value'.
-#' @param base_value the base value of perfmance index. Default is 0.
+#' @param base_value the base value of performance index. Default is 0.
 #' 
 #' @examples  
 #' dat = md_stock(c('000001', '^000001'), date_range = 'max', source = '163')

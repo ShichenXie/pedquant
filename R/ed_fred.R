@@ -204,7 +204,7 @@ ed_fred_symbol_category = function(category=NULL, ...) {
     return(ser_query)
 }
 
-#' symbol of FRED ecnomic data
+#' symbol of FRED economic data
 #' 
 #' ed_fred_symbol provides an interface to search symbols of economic data from FRED by category or keywords.
 #' 

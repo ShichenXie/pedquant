@@ -317,18 +317,18 @@ pq1_addti = function(dt, ...) {
 
 #' adding technical indicators
 #' 
-#' `pq_addti` creates technical indicators on provided datasets ussing TTR package.
+#' `pq_addti` creates technical indicators on provided datasets use TTR package.
 #' 
-#' @param dt a list/dataframe of time serie datasets.
+#' @param dt a list/dataframe of time series datasets.
 #' @param ... list of technical indicator parameters: sma = list(n=50), macd = list().
 #' 1. There are four types of parameters. 
 #' \itemize{
-#'    \item setted by default and donot required, such as 'OHLC', 'HLC', 'HL' and 'volume'.
-#'    \item setted by default and can be modified, such as 'price', 'prices', 'x'. Its default value is 'close' or 'value' column.
+#'    \item set by default and do not required, such as 'OHLC', 'HLC', 'HL' and 'volume'.
+#'    \item set by default and can be modified, such as 'price', 'prices', 'x'. Its default value is 'close' or 'value' column.
 #'    \item always required, such as 'y', 'w'.
 #'    \item numeric parameters, such as 'n', 'sd', 'v', 'nFast', 'nSlow', 'nSig', 'accel'. These parameters should be provided, otherwise using default values in corresponding function.
 #' }
-#' 2. TTR functions are summaried in below. See TTR package's help document for more detailed parameters. 
+#' 2. TTR functions are summarised in below. See TTR package's help document for more detailed parameters. 
 #' \itemize{
 #'    \item moving averages: SMA, EMA, DEMA, WMA, EVWMA, ZLEMA, VWAP, VMA, HMA, ALMA, GMMA
 #'    \item rolling functions: runMin, runMax, runMean, runMedian; runCov, runCor; runVar, runSD, runMAD; runSum, wilderSum

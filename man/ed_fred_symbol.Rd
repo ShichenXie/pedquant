@@ -2,7 +2,7 @@
 % Please edit documentation in R/ed_fred.R
 \name{ed_fred_symbol}
 \alias{ed_fred_symbol}
-\title{symbol of FRED ecnomic data}
+\title{symbol of FRED economic data}
 \usage{
 ed_fred_symbol(category = NULL, keywords = NULL, ...)
 }

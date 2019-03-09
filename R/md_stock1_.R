@@ -1,5 +1,5 @@
 
-#' qurey stock market data 
+#' query stock market data 
 #' 
 #' \code{md_stock} provides an interface to query EOD (end of date) stock prices.
 #' 

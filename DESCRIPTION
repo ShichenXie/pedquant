@@ -3,7 +3,7 @@ Version: 0.1.0
 Title: public economic data and quantitative analysis
 Description: 
     The `pedquant` provides an interface to access public economic data and 
-    functions for quantitative modeling analysis. The data souces include NBS, 
+    functions for quantitative modeling analysis. The data sources include NBS, 
     FRED, Yahoo Finance, 163 Finance and Sina Finance etc. The functions are 
     grouped into three categories, economic data (ed_*), market data (md_*) 
     and quantitative analysis (pq_*).

@@ -16,7 +16,7 @@ pq_index(dt, x = "close|value", w = "cap_total", base_value = 1,
 
 \item{base_value}{the base value of index. Default is 1.}
 
-\item{base_date}{the base date of index. Default is the minmum date.}
+\item{base_date}{the base date of index. Default is the minimum date.}
 
 \item{name}{the name of index. Default is NULL, then using 'index'.}
 }
