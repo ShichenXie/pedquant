@@ -7,11 +7,11 @@
 #' 
 #' @examples 
 #' \dontrun{
-#'   # specify the categories
-#'   code_list1 = pd_code(cate = c('country', 'currency'))
-#'   
-#'   # interactivly return code list
-#'   code_list2 = pd_code()
+#' # specify the categories
+#' code_list1 = pd_code(cate = c('country', 'currency'))
+#' 
+#' # interactivly return code list
+#' code_list2 = pd_code()
 #' 
 #' }
 #' 

@@ -25,9 +25,14 @@ pq_perf(dt, date_range = "max", from = NULL, to = Sys.Date(),
 }
 \examples{
  
+\dontrun{
+# load data
 dat = md_stock(c('000001', '^000001'), date_range = 'max', source = '163')
 
+# create performance trends
 perf = pq_perf(dat)
 # pq_plot(perf)
+
+}
 
 }

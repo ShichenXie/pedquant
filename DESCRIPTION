@@ -1,6 +1,6 @@
 Package: pedquant
 Version: 0.1.0
-Title: public economic data and quantitative analysis
+Title: Public Economic Data and Quantitative Analysis
 Description: 
     The `pedquant` provides an interface to access public economic data and 
     functions for quantitative modeling analysis. The data sources include NBS, 

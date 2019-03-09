@@ -17,26 +17,26 @@
 #' 
 #' @examples 
 #' \dontrun{
-#'  # Example I
-#'  # query history prices from yahoo
-#'  dt_yahoo1 = md_stock(symbol=c("^GSPC", "000001.SS"))
-#'  
-#'  # FAANG
-#'  FAANG = md_stock(c('FB', 'AMZN', 'AAPL', 'NFLX', 'GOOG'), date_range = 'max')
-#'  
-#'  # for Chinese shares
-#'  ## the symbol without suffix
-#'  dt_yahoo2 = md_stock(c("000001", "^000001"))
-#'  ## the symbol with suffix
-#'  dt_yahoo3 = md_stock(c("000001.sz", "000001.ss"))
-#'  
-#'  # split
-#'  dt_split = md_stock(symbol=c("AAPL", "000001.SZ", "000001.SS"), 
-#'                      type='split', date_range='max')
-#'  # dividend
-#'  dt_dividend = md_stock(symbol=c("AAPL", "000001.SZ", "000001.SS"), 
-#'                         type='dividend', date_range='max')
-#'  
+#' # Example I
+#' # query history prices from yahoo
+#' dt_yahoo1 = md_stock(symbol=c("^GSPC", "000001.SS"))
+#' 
+#' # FAANG
+#' FAANG = md_stock(c('FB', 'AMZN', 'AAPL', 'NFLX', 'GOOG'), date_range = 'max')
+#' 
+#' # for Chinese shares
+#' ## the symbol without suffix
+#' dt_yahoo2 = md_stock(c("000001", "^000001"))
+#' ## the symbol with suffix
+#' dt_yahoo3 = md_stock(c("000001.sz", "000001.ss"))
+#' 
+#' # split
+#' dt_split = md_stock(symbol=c("AAPL", "000001.SZ", "000001.SS"), 
+#'                     type='split', date_range='max')
+#' # dividend
+#' dt_dividend = md_stock(symbol=c("AAPL", "000001.SZ", "000001.SS"), 
+#'                        type='dividend', date_range='max')
+#' 
 #'  
 #' # Example II
 #' # query history prices from 163

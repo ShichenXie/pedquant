@@ -104,8 +104,6 @@ tags_symbol_stockcn = function(symbol, mkt) {
     )#[!is.na(tags)]#[,tags]
     
     
-    # # 001×××国债现货；110×××120×××企业债券；129×××100×××可转换债券；201×××国债回购；310×××国债期货；
-    # #500×××550×××基金；600×××A股；700×××配股；710×××转配股；701×××转配股再配股；711×××转配股再转配股；720×××红利；730×××新股申购；735×××新基金申购；737×××新股配售；900×××B股。
     # symbol2 = sub(".*?(\\d+).*","\\1", syb)
     # # print(symbol2)
     # if (nchar(symbol2)==6) {
@@ -513,3 +511,8 @@ ceiling2 = function(x) {
 isdatetime = function(x) {
     any(class(x) %in% c("Date","POSIXlt","POSIXct","POSIXt"))
 }
+
+
+
+# Internal data # http://r-pkgs.had.co.nz/data.html
+# usethis::use_data(financial_statements_163, prov_indu_163, symbol_future_sina, symbol_stock_163, code_commodity_exchange, code_stock_exchange, code_country, code_currency, internal = TRUE, overwrite = TRUE)

@@ -80,21 +80,13 @@ md_stock_spot_tx = function(symbol1, ...) {
   
   syb = check_symbol_for_tx(symbol1)
   dt = readLines(sprintf("http://qt.gtimg.cn/q=%s", paste0(syb, collapse=",")))
-  # ff_ 资金流量 # s_pk 盘口 # s_ 简要信息
-  
+
   dt = data.table(
     doc = dt
   )[, doc := iconv(doc, "GB18030", "UTF-8")
     ][, doc := sub(".+=\"\\d+~(.+)\".+", "\\1", doc)
       ][, tstrsplit(doc, "~")]
   
-  # colnames_cn = c("名字", "代码", "当前价格", "昨收", "今开", 
-  #   "成交量（手）", "外盘", "内盘", 
-  #   "买一", "买一量（手）", "买二","买二","买三","买三","买四","买四","买五","买五", 
-  #   "卖一", "卖一量", "卖二","卖二","卖三","卖三","卖四","卖四","卖五","卖五", 
-  #   "最近逐笔成交", "时间", "涨跌", "涨跌%", "最高", "最低", 
-  #   "价格/成交量(手)/成交额", "成交量(手)", "成交额(万)", "换手率", 
-  #   "市盈率(TTM)", "", "最高", "最低", "振幅", "流通市值", "总市值", "市净率", "涨停价", "跌停价", "量比", "", "均价", "市盈率(动)", "市盈率(静)")
   
   colnames_en = c("name", "symbol", "close", "prev_close", "open",
                   "volume", "buy", "sell", 
@@ -153,18 +145,6 @@ md_stock_hist1_163 = function(symbol1, from="1900-01-01", to=Sys.Date(), zero_rm
   fields = c('TOPEN','HIGH','LOW','TCLOSE','LCLOSE','CHG','PCHG','VOTURNOVER','VATURNOVER','TURNOVER','MCAP','TCAP')
   link = sprintf("http://quotes.money.163.com/service/chddata.html?code=%s&start=%s&end=%s&fields=%s", syb, fromto$from, fromto$to, paste0(fields, collapse = ';'))
     # paste0("http://quotes.money.163.com/service/chddata.html?code=",syb,"&start=",fromto$from,"&end=",fromto$to,"&fields=TOPEN;HIGH;LOW;TCLOSE;LCLOSE;CHG;PCHG;VOTURNOVER;VATURNOVER;TURNOVER;MCAP;TCAP")
-  # 开盘价   # TOPEN:       open
-  # 最高价   # HIGH:        high
-  # 最低价   # LOW:         low
-  # 收盘价   # TCLOSE:      close
-             # LCLOSE:      last close
-  # 涨跌额   # CHG:         chg
-  # 涨跌幅   # PCHG:        chg percent
-  # 成交量   # VOTURNOVER:  volume turnover
-  # 成交金额 # VATURNOVER:  amount turnover
-  # 换手率   # TURNOVER:    turnour
-  # 流通市值 # MCAP:        tradable market capitalisation
-  # 总市值   # TCAP:        total market capitalisation
              
    
   
@@ -217,9 +197,6 @@ md_stock_hist1_163 = function(symbol1, from="1900-01-01", to=Sys.Date(), zero_rm
 md_stock_pe1_163 = function(dat) {
   symbol=V1=var_id=value=fs_month_diff=REV_Q=REV=REV_Y=NP_Q=NP=NP_Y=fs_month=NP_Dec=NP_LY=date2=cap_total=BV=NIDCash=NULL
   
-  # 市盈率 = 股价/年度每股盈余(EPS)；公司市值/年度股东权益 Price to Earnings ratio # https://www.zhihu.com/question/36915260
-  # 市销率 = 总市值除以主营业务收入，Price-to-sales,PS
-  # 市现率 = 股票价格与每股现金流量的比率 Price Cash Flow Ratio，PCF
   
   # symbol1 = '000001'
   symbol1 = dat[1, tstrsplit(symbol, '\\.')][,V1]

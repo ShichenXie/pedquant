@@ -115,8 +115,9 @@ This package still on the developing stage. If you have any issue when
 using this package, please update to the latest version from github. If
 the issue still exists, report it at [github
 page](https://github.com/ShichenXie/pedquant/issues). Contributions in
-any forms to this project are welcome. And if you like this package, you
-can buy me a coffee.
+any forms to this project are welcome.
+
+If you like this package, you can buy me a coffee.
 
 ![alipay](man/figures/README-p-alipay.jpg)
 ![wechat](man/figures/README-p-wechat.jpg)

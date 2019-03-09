@@ -66,28 +66,13 @@ fs_cn = function(symbol, type=NULL, print_step=1L) {
 fs_cn1_summary = function(symbol1) {
   var_id = value = var14_2 = var14 = fs_num = var04_q = var04 = var10_q = var10 = var01 = var02 = var19 = var03 = var16 = . = EPS = revenue = revenueYOY = revenueQOQ = NP = NPYOY = NPQOQ = ROE_w = CFPS = asset_liability = asset_turnover = profit_margin = ROA = ROE = BVPS = NULL
   
-    # '1, 每股收益',                      EPS, Earning Per Share, EPS
-    # '2, 每股净资产',                    BVPS, book value per share
-    # '3, 每股现金流',                    CFPS, Cash Flow From Operations Per Share
-    # 
-    # '4 , 主营业务收入',                  Income from main operation,
-    # '10, 净利润',                       NP, net profit
-    # '11, 净利润_扣除非经常性损益后',
-    # '12, 经营活动产生的现金流量净额',
-    # '13, 现金及现金等价物净增加额',
-    # '14, 总资产',                      Total Assets
-    # '16, 总负债',                      Total Liabilities
-    # '18, 股东权益',                    Common Stockholders’ Equity
-    # '19, 净资产收益率',                ROE, Rate of Return on Common Stockholders’ Equity
-    # 
-    # 
-    # # DuPont Analysis
-    # # https://en.wikipedia.org/wiki/DuPont_analysis
-    # 净资产收益率 = 总资产收益率 * 1/(1-资产负债率) ROE
-    # 总资产收益率 = 销售净利率 * 总资产周转率       ROA, return on total assets
-    # 销售净利率   = 净利润/营业收入                 profit_margin
-    # 总资产周转率 = 营业收入/总资产                 asset_turnover
-    # 资产负债率   = 总负债/总资产                   asset-liability_ratio
+  # # DuPont Analysis
+  # # https://en.wikipedia.org/wiki/DuPont_analysis
+  # ROE
+  # ROA, return on total assets
+  # profit_margin
+  # asset_turnover
+  # asset-liability_ratio
   
   # ROE = (Profit margin)*(Asset turnover)*(Equity multiplier) 
   #     = (Net profit/Sales)*(Sales/Average Total Assets)*(Average Total Assets/Average Equity) 
