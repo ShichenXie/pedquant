@@ -81,9 +81,11 @@ pq1_to_freq = function(dat, freq) {
 #' @param print_step A non-negative integer. Print symbol name by each print_step iteration. Default is 1L.
 #' 
 #' @examples 
+#' \dontrun{
 #' dts = md_stock(c("^000001", "000001"), date_range = 'max', source = '163')
 #' 
 #' dts_weekly = pq_to_freq(dts, "weekly")
+#' }
 #' 
 #' @export
 #' 

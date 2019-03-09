@@ -36,6 +36,7 @@ pq_addti(dt, ...)
 \code{pq_addti} creates technical indicators on provided datasets use TTR package.
 }
 \examples{
+\dontrun{
 # load data
 dt = md_stock("^000001", source='163', date_range = 'max')
 
@@ -44,5 +45,6 @@ dt_ti1 = pq_addti(dt, sma=list(n=20), sma=list(n=50), macd = list())
 
 # only technical indicators
 dt_ti2 = pq_addti(dt, sma=list(n=20), sma=list(n=50), macd = list(), col_kp = FALSE)
+}
 
 }

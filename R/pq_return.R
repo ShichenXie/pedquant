@@ -130,7 +130,8 @@ pq1_return = function(dt, x='close|value', type='arithmetic', freq='daily', date
 #' @param print_step a non-negative integer. Print symbol name by each print_step iteration. Default is 1L.
 #' 
 #' @examples 
-#' dts = md_stock(c('000001', '^000001'), source = '163')
+#' \dontrun{
+#' #' dts = md_stock(c('000001', '^000001'), source = '163')
 #' 
 #' # set freq
 #' dts_returns1 = pq_return(dts, freq = 'all')
@@ -139,6 +140,7 @@ pq1_return = function(dt, x='close|value', type='arithmetic', freq='daily', date
 #' # set method
 #' dts_returns3 = pq_return(dts, freq = 'monthly', method = 'arithmetic') # default method
 #' dts_returns4 = pq_return(dts, freq = 'monthly', method = 'log')
+#' }
 #' 
 #' @export
 pq_return = function(dt, x='close|value', method='arithmetic', freq='all', date_range='max', from=NULL, to=Sys.Date(), print_step=1L) {

@@ -131,10 +131,6 @@ tags_symbol_stockcn = function(symbol, mkt) {
     #     tags = ifelse(substr(symbol2,1,2)=="08", "hkex,,gem", "hkex,,main")
     # }
     return(tags)
-    # hkex: 
-    # 蓝筹股（Blue Chip）
-    # 红筹股（Red Chip）
-    # 国企股（H股）
 }
 # tags of SSE/SZSE shares symbols
 tags_dt = function() {
