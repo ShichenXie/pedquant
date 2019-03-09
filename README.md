@@ -103,20 +103,11 @@ pq_plot(INDX$`^000001`, chart_type = 'candle', date_range = '1y', addti = list(
 
 ``` r
 # comparing prices
-pq_plot(FAAG, multi_series = list(nrow=2, scales = 'free_y'))
+pq_plot(FAAG, multi_series = list(nrow=2, scales = 'free_y'), date_range = '3y')
 #> $multi_series
 ```
 
 <img src="man/figures/README-charts2-1.png" width="100%" />
-
-``` r
-
-# convert to performace trends
-pq_plot(FAAG, multi_series = list(nrow=2, scales = 'free_y'), perf = TRUE, date_range = '1y')
-#> $multi_series
-```
-
-<img src="man/figures/README-charts2-2.png" width="100%" />
 
 ## Issues and Contributions
 

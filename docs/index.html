@@ -23,7 +23,7 @@
 <![endif]-->
 </head>
 <body>
-    <div class="container template-article">
+    <div class="container template-home">
       <header><div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
   <div class="container">
     <div class="navbar-header">
@@ -69,12 +69,7 @@
 
       
       </header><div class="row">
-  <div class="col-md-9 contents">
-    
-
-    
-    
-<!-- README.md is generated from README.Rmd. Please edit that file -->
+  <div class="contents col-md-9">
 <div id="pedquant" class="section level1">
 <div class="page-header"><h1 class="hasAnchor">
 <a href="#pedquant" class="anchor"></a>pedquant</h1></div>
@@ -93,11 +88,11 @@
 <ul>
 <li>Install the release version of <code>pedquant</code> from CRAN with:</li>
 </ul>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/install.packages">install.packages</a></span>(<span class="st">"pedquant"</span>)</a></code></pre></div>
+<!-- end list --><div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/install.packages">install.packages</a></span>(<span class="st">"pedquant"</span>)</a></code></pre></div>
 <ul>
 <li>Install the developing version of <code>pedquant</code> from <a href="https://github.com/shichenXie/pedquant">github</a> with:</li>
 </ul>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1">devtools<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/devtools/topics/reexports">install_github</a></span>(<span class="st">"shichenxie/pedquant"</span>)</a></code></pre></div>
+<!-- end list --><div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1">devtools<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/devtools/topics/reexports">install_github</a></span>(<span class="st">"shichenxie/pedquant"</span>)</a></code></pre></div>
 </div>
 <div id="example" class="section level2">
 <h2 class="hasAnchor">
@@ -123,26 +118,21 @@
 <a class="sourceLine" id="cb4-3" data-line-number="3">    <span class="dt">sma =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">n=</span><span class="dv">50</span>), <span class="dt">macd=</span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>()</a>
 <a class="sourceLine" id="cb4-4" data-line-number="4">))</a></code></pre></div>
 <p><img src="reference/figures/README-charts1-1.png" width="100%"></p>
-<pre><code>#&gt; $`000001.SS`
-#&gt; TableGrob (2 x 1) "arrange": 2 grobs
-#&gt;    z     cells    name           grob
-#&gt; p0 1 (1-1,1-1) arrange gtable[layout]
-#&gt; p1 2 (2-2,1-1) arrange gtable[layout]</code></pre>
+<div class="sourceCode" id="cb5"><pre class="sourceCode R"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1"><span class="co">#&gt; $`000001.SS`</span></a>
+<a class="sourceLine" id="cb5-2" data-line-number="2"><span class="co">#&gt; TableGrob (2 x 1) "arrange": 2 grobs</span></a>
+<a class="sourceLine" id="cb5-3" data-line-number="3"><span class="co">#&gt;    z     cells    name           grob</span></a>
+<a class="sourceLine" id="cb5-4" data-line-number="4"><span class="co">#&gt; p0 1 (1-1,1-1) arrange gtable[layout]</span></a>
+<a class="sourceLine" id="cb5-5" data-line-number="5"><span class="co">#&gt; p1 2 (2-2,1-1) arrange gtable[layout]</span></a></code></pre></div>
 <div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" data-line-number="1"><span class="co"># comparing prices</span></a>
-<a class="sourceLine" id="cb6-2" data-line-number="2"><span class="kw"><a href="reference/pq_plot.html">pq_plot</a></span>(FAAG, <span class="dt">multi_series =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">nrow=</span><span class="dv">2</span>, <span class="dt">scales =</span> <span class="st">'free_y'</span>))</a>
+<a class="sourceLine" id="cb6-2" data-line-number="2"><span class="kw"><a href="reference/pq_plot.html">pq_plot</a></span>(FAAG, <span class="dt">multi_series =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">nrow=</span><span class="dv">2</span>, <span class="dt">scales =</span> <span class="st">'free_y'</span>), <span class="dt">date_range =</span> <span class="st">'3y'</span>)</a>
 <a class="sourceLine" id="cb6-3" data-line-number="3"><span class="co">#&gt; $multi_series</span></a></code></pre></div>
 <p><img src="reference/figures/README-charts2-1.png" width="100%"></p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" data-line-number="1"></a>
-<a class="sourceLine" id="cb7-2" data-line-number="2"><span class="co"># convert to performace trends</span></a>
-<a class="sourceLine" id="cb7-3" data-line-number="3"><span class="kw"><a href="reference/pq_plot.html">pq_plot</a></span>(FAAG, <span class="dt">multi_series =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">nrow=</span><span class="dv">2</span>, <span class="dt">scales =</span> <span class="st">'free_y'</span>), <span class="dt">perf =</span> <span class="ot">TRUE</span>, <span class="dt">date_range =</span> <span class="st">'1y'</span>)</a>
-<a class="sourceLine" id="cb7-4" data-line-number="4"><span class="co">#&gt; $multi_series</span></a></code></pre></div>
-<p><img src="reference/figures/README-charts2-2.png" width="100%"></p>
 </div>
 <div id="issues-and-contributions" class="section level2">
 <h2 class="hasAnchor">
 <a href="#issues-and-contributions" class="anchor"></a>Issues and Contributions</h2>
 <p>This package still on the developing stage. If you have any issue when using this package, please update to the latest version from github. If the issue still exists, report it at <a href="https://github.com/ShichenXie/pedquant/issues">github page</a>. Contributions in any forms to this project are welcome. And if you like this package, you can buy me a coffee.</p>
-<p><img src="reference/figures/README-p-alipay.jpg" alt="alipay" width="0"><img src="reference/figures/README-p-wechat.jpg" alt="wechat" width="0"></p>
+<p><img src="reference/figures/README-p-alipay.jpg" alt="alipay"><img src="reference/figures/README-p-wechat.jpg" alt="wechat"></p>
 </div>
 </div>
   </div>
@@ -172,7 +162,7 @@
 </ul>
 </div>
 
-      <div class="dev-status">
+  <div class="dev-status">
 <h2>Dev status</h2>
 <ul class="list-unstyled">
 <li><a href="https://cran.r-project.org/package=pedquant"><img src="https://www.r-pkg.org/badges/version/pedquant" alt="CRAN status"></a></li>
@@ -181,9 +171,7 @@
 </ul>
 </div>
 </div>
-
 </div>
-
 
       <footer><div class="copyright">
   <p>Developed by Shichen Xie.</p>

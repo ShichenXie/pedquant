@@ -65,10 +65,7 @@ pq_plot(INDX$`^000001`, chart_type = 'candle', date_range = '1y', addti = list(
 
 ```{r charts2}
 # comparing prices
-pq_plot(FAAG, multi_series = list(nrow=2, scales = 'free_y'))
-
-# convert to performace trends
-pq_plot(FAAG, multi_series = list(nrow=2, scales = 'free_y'), perf = TRUE, date_range = '1y')
+pq_plot(FAAG, multi_series = list(nrow=2, scales = 'free_y'), date_range = '3y')
 ```
 
 
