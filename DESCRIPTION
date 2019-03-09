@@ -24,7 +24,6 @@ License: GPL-3 + file LICENSE
 URL: https://github.com/ShichenXie/pedquant
 BugReports: https://github.com/ShichenXie/pedquant/issues
 LazyData: true
-VignetteBuilder: knitr
 RoxygenNote: 6.1.1
 Roxygen: list(markdown = TRUE)
 Encoding: UTF-8
