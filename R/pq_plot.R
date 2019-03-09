@@ -17,7 +17,7 @@ pp_candle = function(
     addti = list(sma = list(n=50), mm = list(n=25)),
     x_scale = 0.6, subtitle_str = NULL, ...
 ) {
-    prev_close = change = change_pct = high = low = updn_1day = updn_2day = symbol = V1 = NULL
+    price_str = prev_close = change = change_pct = high = low = updn_1day = updn_2day = symbol = V1 = NULL
     
     # copy dt
     dt = copy(dt)
@@ -90,7 +90,7 @@ pp_bar = function(
     addti = list(sma = list(n=50), mm = list(n=25)),
     x_scale = 0.6, subtitle_str = NULL, ...
 ) {
-    prev_close = change = change_pct = high = low = updn_2day = symbol = V1 = NULL
+    price_str = prev_close = change = change_pct = high = low = updn_2day = symbol = V1 = NULL
     
     # copy dt
     dt = copy(dt)
@@ -165,7 +165,7 @@ pp_line = function(
     linear_trend = NULL, multi_series = list(nrow=NULL,ncol=NULL), 
     addti = list(sma = list(n=50), mm = list(n=25)), subtitle_str = NULL, ...
 ) {
-    prev_close = symbol = change = change_pct = high = low = prev_x = updn_2day = x1 = y1 = x2 = y2 = V1 = NULL
+    price_str11 = price_str = prev_close = symbol = change = change_pct = high = low = prev_x = updn_2day = x1 = y1 = x2 = y2 = V1 = NULL
     
     # copy dt
     dt = copy(dt)
@@ -252,7 +252,7 @@ pp_step = function(
     linear_trend = NULL, multi_series = list(nrow=NULL,ncol=NULL), 
     addti = list(sma = list(n=50), mm = list(n=25)), subtitle_str = NULL, ...
 ) {
-    prev_close = symbol = change = change_pct = high = low = prev_x = updn_2day = x1 = y1 = x2 = y2 = V1 = NULL
+    price_str11 = price_str = prev_close = symbol = change = change_pct = high = low = prev_x = updn_2day = x1 = y1 = x2 = y2 = V1 = NULL
     
     # copy dt
     dt = copy(dt)
@@ -521,7 +521,7 @@ pp_add_ti_overlay = function(
     p, dt, from=NULL, to=Sys.Date(), 
     addti = list(SMA = list(n=20), SMA = list(n=50)), 
     rm_weekend = NULL) {
-    # x = symbol = ti_str = NULL
+    x = symbol = ti_str = bbands_pctb = NULL
     
     # overlay technical indicators
     names(addti) <- tolower(names(addti))
@@ -587,6 +587,7 @@ pp_add_ti_oscillator = function(
     p, dt, from=NULL, to=Sys.Date(),
     addti = list(macd = list(n=50, position = "top"), roc = list(n=25, position = "bottom"), ppo = list(n=50, position = "top"), rsi = list(n=25)), 
     rm_weekend = NULL) {
+    symbol=x=formula_str=ti_str=NULL
     
     # oscillator technical indicators
     names(addti) <- tolower(names(addti))
@@ -763,7 +764,11 @@ pp_add_ti_oscillator = function(
 #' # pq_plot(ssec, chart_type = "bar",    date_range = '6m') # bar chart
 #' 
 #' # add technical indicators
-#' pq_plot(ssec, chart_type = "line", addti = list(sma = list(n = 200), sma = list(n = 50), macd = list()))
+#' pq_plot(ssec, chart_type = "line", addti = list(
+#'         sma = list(n = 200), 
+#'         sma = list(n = 50), 
+#'         macd = list()
+#' ))
 #' # linear trend with yaxis in log
 #' pq_plot(ssec, chart_type = "line", linear_trend = c(-0.8, 0, 0.8), yaxis_log = TRUE)
 #' 
@@ -771,11 +776,13 @@ pp_add_ti_oscillator = function(
 #' # multiple symbols
 #' # download datasets
 #' # dat = md_stock(c('FB', 'AMZN', 'AAPL', 'NFLX', 'GOOG'), date_range = 'max')
-#' dat = md_stock(c('^000001', '^399001', '^399006', '^000016', '^000300', '^000905'), date_range = 'max', source='163')
+#' dat = md_stock(c('^000001', '^399001', '^399006', '^000016', '^000300', '^000905'), 
+#'                date_range = 'max', source='163')
 #' 
 #' # linear trend
-#' pq_plot(dat, multi_series = list(nrow=2, scales = 'free_y'), linear_trend = c(-0.8, 0, 0.8))
-#' pq_plot(dat, multi_series = list(nrow=2, scales = 'free_y'), linear_trend = c(-0.8, 0, 0.8), yaxis_log = TRUE)
+#' pq_plot(dat, multi_series=list(nrow=2, scales='free_y'), linear_trend=c(-0.8, 0, 0.8))
+#' pq_plot(dat, multi_series=list(nrow=2, scales='free_y'), linear_trend=c(-0.8, 0, 0.8), 
+#'         yaxis_log=TRUE)
 #' 
 #' # performance
 #' pq_plot(dat, multi_series = list(nrow=2), perf=TRUE, date_range = 'ytd')
@@ -795,6 +802,7 @@ pq_plot = function(
     color_up = "#F6736D", color_down = "#18C0C4", 
     multi_series = list(nrow=NULL, ncol=NULL), 
     rm_weekend = NULL, title = NULL, ...) {
+    symbol=.=prev_close=name=title1=updn_2day=change=change_pct=price_str11=NULL
     
     ## change freq of input data
     if (!is.null(freq) || match.arg(freq, "daily")!="daily") {

@@ -2,6 +2,7 @@ r_arithmetic = function(x, x_lag) x/x_lag-1
 r_log = function(x, x_lag) log(x/x_lag)
 
 pq1_dreturn = function(dt, x='close|value', type='arithmetic') {
+    x_lag = daily_return = NULL
     xx = intersect(unlist(strsplit(x,'\\|')), names(dt))[1]
     dt2 = copy(dt)[, x_lag := shift(get(xx),n=1,type = 'lag')
                  ][, daily_return := do.call(paste0('r_',type), args = list(x=get(xx), x_lag))]
@@ -11,6 +12,8 @@ pq1_dreturn = function(dt, x='close|value', type='arithmetic') {
 }
 
 pq1_wreturn = function(dt, x='close|value', type='arithmetic') {
+    w = wi = x_lag = weekly_return = NULL
+    
     xx = intersect(unlist(strsplit(x,'\\|')), names(dt))[1]
     dt2 = copy(dt)[, w := isoweek(date)
                    ][, wi := w - shift(w, 1, type="lag")
@@ -32,6 +35,8 @@ pq1_wreturn = function(dt, x='close|value', type='arithmetic') {
 }
 
 pq1_mreturn = function(dt, x='close|value', type='arithmetic') {
+    .=y=m=x_lag=monthly_return=NULL
+    
     xx = intersect(unlist(strsplit(x,'\\|')), names(dt))[1]
     dt2 = copy(dt)[, `:=`(y=year(date), m=month(date))]
     
@@ -50,6 +55,8 @@ pq1_mreturn = function(dt, x='close|value', type='arithmetic') {
 }
 
 pq1_qreturn = function(dt, x='close|value', type='arithmetic') {
+    . = y = x_lag = quarterly_return = NULL
+    
     xx = intersect(unlist(strsplit(x,'\\|')), names(dt))[1]
     dt2 = copy(dt)[, `:=`(y=year(date), q=quarter(date))]
     
@@ -68,6 +75,8 @@ pq1_qreturn = function(dt, x='close|value', type='arithmetic') {
 }
 
 pq1_yreturn = function(dt, x='close|value', type='arithmetic') {
+    .=y=x_lag=yearly_return=NULL
+    
     xx = intersect(unlist(strsplit(x,'\\|')), names(dt))[1]
     dt2 = copy(dt)[, `:=`(y=year(date))]
     
@@ -112,7 +121,8 @@ pq1_return = function(dt, x='close|value', type='arithmetic', freq='daily', date
 #' \code{pq_return} calculates returns for daily series based on specified column, frequency and method type.
 #' 
 #' @param dt a list/dataframe of daily series dataset
-#' @param x the variable used to calculating returns.
+#' @param x the variable used to calculate returns.
+#' @param method the method to calcualte returns.
 #' @param freq the frequency of returns. It supports c('all', 'daily', 'weekly', 'monthly', 'quarterly', 'yearly').
 #' @param date_range date range. Available value includes '1m'-'11m', 'ytd', 'max' and '1y'-'ny'. Default is max.
 #' @param from the start date. Default is NULL. If it is NULL, then calculate using date_range and end date.
@@ -126,13 +136,15 @@ pq1_return = function(dt, x='close|value', type='arithmetic', freq='daily', date
 #' dts_returns1 = pq_return(dts, freq = 'all')
 #' dts_returns2 = pq_return(dts, freq = 'weekly')
 #' 
-#' # set method type
-#' dts_returns3 = pq_return(dts, freq = 'monthly', type = 'arithmetic') # default method type
-#' dts_returns4 = pq_return(dts, freq = 'monthly', type = 'log')
+#' # set method
+#' dts_returns3 = pq_return(dts, freq = 'monthly', method = 'arithmetic') # default method
+#' dts_returns4 = pq_return(dts, freq = 'monthly', method = 'log')
 #' 
 #' @export
-pq_return = function(dt, x='close|value', type='arithmetic', freq='all', date_range='max', from=NULL, to=Sys.Date(), print_step=1L) {
-    type = check_arg(type, c('arithmetic', 'log'), default='arithmetic', arg_name = 'type')
+pq_return = function(dt, x='close|value', method='arithmetic', freq='all', date_range='max', from=NULL, to=Sys.Date(), print_step=1L) {
+    symbol = type = NULL
+    
+    method = check_arg(method, c('arithmetic', 'log'), default='arithmetic', arg_name = 'method')
     # arithmetic: p_{t-1} * (r+1) = p_{t}
     # log: p_{t-1} * e^r = p_{t}
     freq = check_arg(freq, c('all', 'daily', 'weekly', 'monthly', 'quarterly', 'yearly'), default='all', arg_name = 'freq')
@@ -149,7 +161,7 @@ pq_return = function(dt, x='close|value', type='arithmetic', freq='all', date_ra
         setkeyv(dt_s, "date")
         
         if ((print_step>0) & (i %% print_step == 0)) cat(sprintf('%s/%s %s\n', i, length(sybs), s))
-        dt_list[[s]] = do.call(pq1_return, args = list(dt=dt_s, x=x, type=type, freq=freq, date_range=date_range, from=from, to=to))
+        dt_list[[s]] = do.call(pq1_return, args = list(dt=dt_s, x=x, type=method, freq=freq, date_range=date_range, from=from, to=to))
     }
     return(dt_list)
 }

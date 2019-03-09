@@ -90,6 +90,8 @@ get_fromto = function(date_range, from, to, min_date, default_date_range = 'max'
 
 # this function has been removed
 tags_symbol_stockcn = function(symbol, mkt) {
+    syb = syb3 = NULL
+    
     sm = data.table(
         syb = sub(".*?(\\d+).*","\\1", symbol), mkt = mkt
     )[nchar(syb)==6, syb3 := substr(syb,1,3)
@@ -138,6 +140,8 @@ tags_symbol_stockcn = function(symbol, mkt) {
 }
 # tags of SSE/SZSE shares symbols
 tags_dt = function() {
+    tags = exchg_code = NULL
+    
     setDT(list(
         mkt = c('stock','stock','stock','stock','stock','stock','stock','stock','stock','stock','stock','stock','index','index'),
         syb3 = c("600","601","603","900","000","001","002","003","004","300","200","201","000","399"),
@@ -148,6 +152,8 @@ tags_dt = function() {
        ][, exchg_code := toupper(substr(tags,1,2))][]
 }
 check_symbol_cn = function(symbol, mkt = NULL) {
+    exchg_code = syb3 = syb = syb_code = NULL
+     
     tags = tags_dt()[, exchg_code := tolower(exchg_code)][]
     
     cn_dt = setDT(list(symbol = tolower(symbol)))
@@ -173,6 +179,8 @@ check_symbol_cn = function(symbol, mkt = NULL) {
 }
 # check SSE/SZSE share symbols to download data from 163/tx/yahoo
 check_symbol_for_163 = function(symbol, mkt = NULL) {
+    syb_163 = city_code = syb = tags = NULL
+    
     symbol_163 = check_symbol_cn(
         symbol, mkt
     )[, syb_163 := paste0(city_code,syb)
@@ -182,6 +190,8 @@ check_symbol_for_163 = function(symbol, mkt = NULL) {
     return(symbol_163)
 }
 check_symbol_for_tx = function(symbol, mkt = NULL) {
+    syb_tx = city = syb = tags = NULL
+    
     symbol_tx = check_symbol_cn(
         symbol, mkt
     )[, syb_tx := paste0(city,syb)
@@ -191,6 +201,8 @@ check_symbol_for_tx = function(symbol, mkt = NULL) {
     return(symbol_tx)
 }
 check_symbol_for_yahoo = function(symbol, mkt = NULL) {
+    syb_yh = syb = exchg_code = tags = NULL
+    
     if (all(grepl('[0-9]{6}', symbol))) {
         symbol = check_symbol_cn(
             symbol, mkt

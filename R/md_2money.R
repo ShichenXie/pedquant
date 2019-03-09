@@ -22,7 +22,7 @@ func_ibor_symbol = function() ibor_symbol
 # shanghai interbank offered rate, shibor
 #' @import data.table xml2
 md_shibor = function(symbol, from=NULL, to=Sys.Date(), print_step=1L) {
-    V1 = NULL
+    . = name = value = V1 = NULL
     
     # arguments
     ## symbols
@@ -78,6 +78,8 @@ md_shibor = function(symbol, from=NULL, to=Sys.Date(), print_step=1L) {
 
 # london interbank offered rate, libor
 md_libor1_last5 = function(currency) {
+    symbol = value = . = name = NULL
+    
     # libor in recent 5 days
     # from # https://www.global-rates.com
     
@@ -102,6 +104,8 @@ md_libor1_last5 = function(currency) {
     return(dt_libor_5)
 }
 md_libor1_hist = function(syb, from, to) {
+    symbol = symbol_fred = . = name = value = geo = NULL
+    
     # libor in history
     dt_libor_hist = ed_fred(
         libor_symbol[symbol == syb, symbol_fred], from=from, to=to, print_step=0L
@@ -149,6 +153,8 @@ md_libor = function(symbol, from=NULL, to=Sys.Date(), print_step=1L) {
 # 
 # @export
 md_money = function(symbol=NULL, date_range = '3y', from=NULL, to=Sys.Date(), print_step=1L, ...) {
+    . = name = NULL
+    
     # arguments
     ## symbol
     if (is.null(symbol)) {

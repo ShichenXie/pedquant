@@ -56,20 +56,20 @@
 # 
 # @export
 # 
-md = function(symbol, source = "yahoo", freq = "daily", date_range = "3y", from = NULL, to = Sys.Date(), adjust = FALSE, fillzero = TRUE, print_step = 1L) {
-    cat(source,"\n")
-    
-    # from
-    date_range = check_date_range(date_range, default = "max")
-    from = get_from_daterange(date_range, to, min_date = "1000-01-01")
-    
-    # arguments
-    args = list(symbol = symbol, freq = freq, from = from, to = to, print_step = print_step, env = parent.frame(), fillzero = fillzero, adjust = adjust)
-    
-    # return data
-    rt = try(do.call(paste0("md_", source), args), silent = TRUE)
-    return(rt)
-}
+# md = function(symbol, source = "yahoo", freq = "daily", date_range = "3y", from = NULL, to = Sys.Date(), adjust = FALSE, fillzero = TRUE, print_step = 1L) {
+#     cat(source,"\n")
+#     
+#     # from
+#     date_range = check_date_range(date_range, default = "max")
+#     from = get_from_daterange(date_range, to, min_date = "1000-01-01")
+#     
+#     # arguments
+#     args = list(symbol = symbol, freq = freq, from = from, to = to, print_step = print_step, env = parent.frame(), fillzero = fillzero, adjust = adjust)
+#     
+#     # return data
+#     rt = try(do.call(paste0("md_", source), args), silent = TRUE)
+#     return(rt)
+# }
 
 # query symbols of market data
 # 
@@ -95,11 +95,11 @@ md = function(symbol, source = "yahoo", freq = "daily", date_range = "3y", from 
 # 
 # @export
 # 
-md_symbol = function(market=NULL, source=NULL) {
-    # mkt src
-    ms = check_mkt_src(market=market, source=source)
-    
-    # query symbols
-    rt = try(do.call(paste0("md_symbol_", ms$src), list(market = ms$mkt)), silent = TRUE)
-    return(rt)
-}
+# md_symbol = function(market=NULL, source=NULL) {
+#     # mkt src
+#     ms = check_mkt_src(market=market, source=source)
+#     
+#     # query symbols
+#     rt = try(do.call(paste0("md_symbol_", ms$src), list(market = ms$mkt)), silent = TRUE)
+#     return(rt)
+# }

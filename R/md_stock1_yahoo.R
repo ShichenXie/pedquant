@@ -54,7 +54,7 @@ get_symbol_name_yahoo = function(syb, encode='UTF-8', handle=new_handle()) {
 # https://query1.finance.yahoo.com/v7/finance/download/000001.SZ?period1=1511841299&period2=1543377299&interval=1d&events=split&crumb=j/T2/8/3fvH
 #' @importFrom curl curl_fetch_memory 
 md_stock1_yahoo = function(symbol, handle, crumb, freq="daily", from="1900-01-01", to=Sys.time(), type="history", na_rm=TRUE, ...) {
-    . = high = low = close_adj = volume = NULL
+    name = splits = s2 = s1 = . = high = low = close_adj = volume = NULL
     
     # symbol
     syb = check_symbol_for_yahoo(symbol)
@@ -91,7 +91,6 @@ md_stock1_yahoo = function(symbol, handle, crumb, freq="daily", from="1900-01-01
           spl = dat[, (c('s1','s2')) := tstrsplit(splits, '/')][, as.numeric(s2)/as.numeric(s1)][]
           dat = dat[, .(symbol, name, date, splits = spl)]
         }
-        setkey(dat[, date := as.Date(date)], 'date')
       } else {
         dat = data.table(
           symbol    = syb_nam_cur$symbol,
@@ -102,6 +101,8 @@ md_stock1_yahoo = function(symbol, handle, crumb, freq="daily", from="1900-01-01
         dat = dat[.0]
       }
     }
+    dat = dat[, date := as.Date(date)]
+    setkeyv(dat, 'date')
     return(dat)
 }
 
@@ -239,10 +240,10 @@ md_curcom1_yahoo = function(symbol, handle, crumb, freq="daily", from="1900-01-0
     ][, (cols_num) := lapply(.SD, as.numeric), 
       .SDcols=cols_num
       ][,.(date, symbol, open, high, low, close, close_adj, volume)]
-  setkey(dat, date)
+  setkey(dat3, date)
   
   # adjusting ohlc
-  if (adjust) dat = adjust_ohlc(dat, ...)
+  # if (adjust) dat = adjust_ohlc(dat)
   # dat[dat=="null"] = NA
   return(dat3)
 }

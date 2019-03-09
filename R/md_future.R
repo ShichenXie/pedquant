@@ -14,6 +14,8 @@
 #' 
 #' @export
 md_future_symbol = function() {
+    .=board=symbol=name=exchange=NULL
+    
     # type = check_arg(type, c('financial', 'energy', 'metal', 'grain', 'soft', 'other'), default = NULL, arg_name = 'future type')
     
     # cat('More commodity symbols go to\n', 'http://vip.stock.finance.sina.com.cn/quotes_service/view/qihuohangqing.html\n\n')

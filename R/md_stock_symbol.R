@@ -278,6 +278,8 @@ md_stock_symbol_163 = function() {
 
 # stock list of nasdaq
 md_stock_symbol_nasdaq = function(exchange) {
+  .=Symbol=Name=Sector=industry=NULL
+  
   # c("AMEX", "NASDAQ", "NYSE")
   url = sprintf('http://www.nasdaq.com/screening/companies-by-name.aspx?letter=0&exchange=%s&render=download', exchange)
   
@@ -299,6 +301,8 @@ md_stock_symbol_nasdaq = function(exchange) {
 
 # stock symbol in exchange
 md_stock_symbol_exchange = function(XCHG=NULL, print_step=1L) {
+  exchange = NULL
+  
   exchange_list = c('sse','szse', 'hkex', "amex", "nasdaq", "nyse")
   while ((is.null(XCHG) || length(XCHG)==0)) {
     XCHG = select_rows_df(dt = setDT(list(exchange = exchange_list)), column = 'exchange')[,exchange]
@@ -364,6 +368,8 @@ md_stock_symbol_exchange = function(XCHG=NULL, print_step=1L) {
 # @export
 # 
 stk_syb_idx1 = function(syb) {
+  exchange = NULL
+  
   url = sprintf("http://www.csindex.com.cn/uploads/file/autofile/cons/%scons.xls",syb)
   dat = load_read_xl(url)
   setDT(dat)
@@ -404,7 +410,7 @@ md_stock_symbol_index = function(symbol, print_step=1L) {
 #' }
 #' 
 #' @export
-md_stock_symbol = function(exchange=NULL, index=NULL, print_step=1L) {
+md_stock_symbol = function(exchange=NULL, index=NULL) {
   if (is.null(index)) {
     dt = md_stock_symbol_exchange(exchange)
   } else {

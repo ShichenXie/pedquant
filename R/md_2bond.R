@@ -59,6 +59,8 @@ urls_bond_chinabond = function() {
 }
 #' @import data.table
 md_bond_chinabond = function(symbol, from=NULL, to=Sys.Date(), print_step=1L) {
+    value = . = maturity = NULL
+    
     symbol = tolower(symbol)
     syb_len = length(symbol)
     # years between from and to
@@ -105,6 +107,8 @@ md_bond_chinabond = function(symbol, from=NULL, to=Sys.Date(), print_step=1L) {
 
 # query bond from FRED
 md_bond1_fred = function(syb, from, to) {
+    symbol = symbol_fred = . = name = value = geo = NULL
+    
     # libor in history
     dt_bond_hist = ed_fred(
         bond_symbol_fred[symbol == syb, symbol_fred], from=from, to=to, print_step=0L
@@ -133,6 +137,8 @@ md_bond_fred = function(symbol, from=NULL, to=Sys.Date(), print_step=1L) {
 # 
 # @export
 md_bond = function(symbol=NULL, date_range = '3y', from=NULL, to=Sys.Date(), print_step=1L, ...) {
+    . = name = NULL
+    
     # arguments
     syb = tolower(symbol)
     ## symbol

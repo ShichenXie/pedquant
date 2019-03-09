@@ -19,6 +19,8 @@ md_cate(cate = NULL, symbol = NULL, date_range = "3y", from = NULL,
 \item{to}{the end date. Default is the current date.}
 
 \item{print_step}{a non-negative integer, which will print symbol name by each print_step iteration. Default is 1L.}
+
+\item{...}{ignored parameters}
 }
 \description{
 \code{md_cate} provides an interface to access main market data in five categories, including forex, money, bond, index, commodity.

@@ -35,7 +35,7 @@ pq_fbi = function(dt, chain_index, num=1, base_index=1, base_date='2006-01-01') 
 fbi_cpicn = function(sybs = c('A01010101', 'A01010201','A01030101', 'A01030201')) {
     value = . = index = NULL
     
-    cpicn = geted_nbs(geo_type = 'n', freq = 'm', symbol = sybs, na_rm = TRUE, from='1900-01-01')
+    cpicn = ed_nbs(geo_type = 'n', freq = 'm', symbol = sybs, na_rm = TRUE, from='1900-01-01')
     
     cpicn2 = dcast(
         cpicn[, value := value/100], date~name, value.var = 'value'
@@ -100,7 +100,7 @@ pq_rp1 = function(dt, region='cn', columns = c('open', 'high', 'low', 'close')) 
 #' @import data.table
 #' @export
 pq_index = function(dt, x='close|value', w='cap_total', base_value=1, base_date=NULL, name = NULL) {
-    # w = ci = cw = V1 = . = index = NULL
+  chain_index=weight=chain_index=cw=.=value=index=NULL
   
     ## index name
     if (is.null(name)) {

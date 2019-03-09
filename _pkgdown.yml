@@ -18,26 +18,27 @@ navbar:
       href: https://github.com/ShichenXie/getpedr
 
 reference:
-  - title: "get market data"
+  - title: "query economic data"      
     contents:
-      - getmd
-      - getmd_symbol
-      - getmd_index_cons
-  - title: "get financial reports"
+      - '`ed_fred`'
+      - '`ed_fred_symbol`'
+      - '`ed_nbs`'
+      - '`ed_nbs_subregion`'
+      - '`ed_nbs_symbol`'
+  - title: "query market data" 
     contents:
-      - getfr
-  - title: "get economic data"
+      - '`md_cate`'
+      - '`md_future`'
+      - '`md_future_symbol`'
+      - '`md_stock`'
+      - '`md_stock_financials`'
+      - '`md_stock_symbol`'
+  - title: "quantitative analysis" 
     contents:
-      - geted_nbs
-      - geted_nbs_region
-      - geted_nbs_symbol
-  - title: "ped viz, index"
-    contents:
-      - ped_index
-      - ped_plot
-  - title: "country, currency, exchange"
-    contents:
-      - code_country
-      - code_currency
-      - exchange_commodity
-      - exchange_stock
+      - '`pd_code`'
+      - '`pq_addti`'
+      - '`pq_index`'
+      - '`pq_perf`'
+      - '`pq_plot`'
+      - '`pq_return`'
+      - '`pq_to_freq`'

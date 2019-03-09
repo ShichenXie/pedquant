@@ -18,7 +18,7 @@
 #' @import data.table
 #' @importFrom jsonlite fromJSON
 ed_fred1 = function(symbol1, from="1776-07-04", to="9999-12-31", na_rm=FALSE) {
-    . = title = value = NULL
+    group_id = name = . = title = value = NULL
     
     key = api_key("fred")
     base_url = "https://api.stlouisfed.org/fred/%sapi_key=%s&file_type=json"
@@ -99,7 +99,7 @@ ed_fred = function(symbol=NULL, date_range='10y', from=NULL, to=Sys.Date(), na_r
 #' @importFrom jsonlite fromJSON
 #' @import data.table
 ed_fred_symbol_keywords = function(keywords, ...) {
-    . = name = popularity = series_count = frequency = id = title = observation_start = observation_end = seasonal_adjustment = last_updated = NULL
+    group_id = . = name = popularity = series_count = frequency = id = title = observation_start = observation_end = seasonal_adjustment = last_updated = NULL
     
     key = api_key("fred")
     base_url = "https://api.stlouisfed.org/fred/%sapi_key=%s&file_type=json"
@@ -132,7 +132,7 @@ ed_fred_symbol_keywords = function(keywords, ...) {
 }
 
 ed_fred_symbol_category = function(category=NULL, ...) {
-    . = name = popularity = series_count = frequency = id = title = observation_start = observation_end = seasonal_adjustment = last_updated = parent_id = sybs_search = NULL
+    symbol = group_id = . = name = popularity = series_count = frequency = id = title = observation_start = observation_end = seasonal_adjustment = last_updated = parent_id = sybs_search = NULL
     
     key = api_key("fred")
     base_url = "https://api.stlouisfed.org/fred/%sapi_key=%s&file_type=json"
@@ -210,6 +210,7 @@ ed_fred_symbol_category = function(category=NULL, ...) {
 #' 
 #' @param category the category id. If it is NULL, then search symbols from the top categories step by step.
 #' @param keywords the query text. If it is NULL, the function will search symbols by category.
+#' @param ... ignored parameters
 #' 
 #' @examples 
 #' \dontrun{
@@ -226,7 +227,7 @@ ed_fred_symbol_category = function(category=NULL, ...) {
 #' 
 #' @export
 ed_fred_symbol = function(category=NULL, keywords = NULL, ...) {
-    . = symbol = name = last_updated = NULL 
+    frequency = . = symbol = name = last_updated = NULL 
     
     if (is.null(keywords)) {
         series = ed_fred_symbol_category(category = category, ...)

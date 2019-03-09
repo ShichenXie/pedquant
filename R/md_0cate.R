@@ -3,6 +3,8 @@ mkt_cate = setDT(list(
     name = c('foregin exchange rate', 'Interbank offered rate', 'government bond yield', 'stock market index', 'commodity price')
 ))
 func_md_symbol = function() {
+    .=symbol=name=main=NULL
+    
     rbindlist(list(
         forex = func_forex_symbol(), # fred, oanda
         money = func_ibor_symbol(), # fred, shibor
@@ -12,6 +14,7 @@ func_md_symbol = function() {
     ), idcol = 'category', fill = TRUE)
 }
     
+
 #' query main market data by category
 #' 
 #' \code{md_cate} provides an interface to access main market data in five categories, including forex, money, bond, index, commodity.
@@ -22,6 +25,7 @@ func_md_symbol = function() {
 #' @param from the start date. Default is NULL. If it is NULL, then calculate using date_range and end date.
 #' @param to the end date. Default is the current date.
 #' @param print_step a non-negative integer, which will print symbol name by each print_step iteration. Default is 1L. 
+#' @param ... ignored parameters
 #' 
 #' @examples 
 #' \dontrun{
@@ -30,6 +34,7 @@ func_md_symbol = function() {
 #' 
 #' @export
 md_cate = function(cate=NULL, symbol=NULL, date_range = "3y", from = NULL, to = Sys.Date(), print_step = 1L, ...) {
+    category = NULL
     # md_symbol = func_md_symbol()
     # market category
     if (!is.null(cate)) cate = check_arg(cate, mkt_cate$category)

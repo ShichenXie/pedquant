@@ -1,5 +1,6 @@
 # https://github.com/joshuaulrich/quantmod/blob/a8e9cb87825c0997a8468f5105db6c507b26ac5d/R/adjustOHLC.R
 adjust_ohlc = function(dt, source, adjust_on = 'dividend', ...) {
+    close_adj=ratio=symbol=V1=.=dividends=splits=issue_rate=issue_price=prev_close=factor_adj_spl=factor_adj_div=factor_adj=volume=NULL
     
     cols_ohlc = c('open', 'high', 'low', 'close')
     if (!all(cols_ohlc %in% names(dt))) return(dt)

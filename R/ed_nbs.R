@@ -188,7 +188,7 @@ ed1_nbs = function(nbs_geo, symbol1, subregion=NULL, from, eng=FALSE) {
 # transform json data into dataframe
 # symbol, variable, date, value, unit, desc
 nbs_jsondat_format = function(jsondat) {
-  code = . = unit = cname = strdata = NULL
+  symbol=name=value=geo_code=geo = code = . = unit = cname = strdata = NULL
   
   # data
   dat = jsondat$returndata$datanodes$data
@@ -276,7 +276,7 @@ nbs_jsondat_format = function(jsondat) {
 #' @import data.table
 #' @export
 ed_nbs = function(symbol=NULL, freq=NULL, geo_type=NULL, subregion=NULL, date_range='10y', from=NULL, to=Sys.Date(), na_rm=FALSE, eng=FALSE) {
-  # dim_region = dim_geo_type = dim_freq = dim_sta_db = value = NULL
+  code=dim_geo_type=dim_freq=dim_sta_db=geo_code=value=NULL
   
   # arguments
   ## geography type

@@ -16,7 +16,7 @@
 #' }
 #' 
 #' @export
-pd_code = function(cate=NULL, ...) {
+pd_code = function(cate=NULL) {
     code_category = c('country', 'currency', 'stock_exchange', 'commodity_exchange')
     
     # market category

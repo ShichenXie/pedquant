@@ -61,7 +61,11 @@ ssec = md_stock("^000001", source="163", date_range = 'max')
 # pq_plot(ssec, chart_type = "bar",    date_range = '6m') # bar chart
 
 # add technical indicators
-pq_plot(ssec, chart_type = "line", addti = list(sma = list(n = 200), sma = list(n = 50), macd = list()))
+pq_plot(ssec, chart_type = "line", addti = list(
+        sma = list(n = 200), 
+        sma = list(n = 50), 
+        macd = list()
+))
 # linear trend with yaxis in log
 pq_plot(ssec, chart_type = "line", linear_trend = c(-0.8, 0, 0.8), yaxis_log = TRUE)
 
@@ -69,11 +73,13 @@ pq_plot(ssec, chart_type = "line", linear_trend = c(-0.8, 0, 0.8), yaxis_log = T
 # multiple symbols
 # download datasets
 # dat = md_stock(c('FB', 'AMZN', 'AAPL', 'NFLX', 'GOOG'), date_range = 'max')
-dat = md_stock(c('^000001', '^399001', '^399006', '^000016', '^000300', '^000905'), date_range = 'max', source='163')
+dat = md_stock(c('^000001', '^399001', '^399006', '^000016', '^000300', '^000905'), 
+               date_range = 'max', source='163')
 
 # linear trend
-pq_plot(dat, multi_series = list(nrow=2, scales = 'free_y'), linear_trend = c(-0.8, 0, 0.8))
-pq_plot(dat, multi_series = list(nrow=2, scales = 'free_y'), linear_trend = c(-0.8, 0, 0.8), yaxis_log = TRUE)
+pq_plot(dat, multi_series=list(nrow=2, scales='free_y'), linear_trend=c(-0.8, 0, 0.8))
+pq_plot(dat, multi_series=list(nrow=2, scales='free_y'), linear_trend=c(-0.8, 0, 0.8), 
+        yaxis_log=TRUE)
 
 # performance
 pq_plot(dat, multi_series = list(nrow=2), perf=TRUE, date_range = 'ytd')

@@ -4,7 +4,7 @@
 \alias{md_stock_symbol}
 \title{symbol components of exchange or index}
 \usage{
-md_stock_symbol(exchange = NULL, index = NULL, print_step = 1L)
+md_stock_symbol(exchange = NULL, index = NULL)
 }
 \arguments{
 \item{exchange}{the avaiable stock exchanges are sse, szse, hkex, amex, nasdaq, nyse.}

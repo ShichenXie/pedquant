@@ -10,6 +10,8 @@ ed_fred_symbol(category = NULL, keywords = NULL, ...)
 \item{category}{the category id. If it is NULL, then search symbols from the top categories step by step.}
 
 \item{keywords}{the query text. If it is NULL, the function will search symbols by category.}
+
+\item{...}{ignored parameters}
 }
 \description{
 ed_fred_symbol provides an interface to search symbols of economic data from FRED by category or keywords.

@@ -2,7 +2,7 @@
 #' @import data.table 
 #' @importFrom jsonlite fromJSON
 md_stock_spotall_163 = function(symbol = c('a','index'), only_symbol = FALSE) {
-  tags = market = exchange = time = . = submarket = region = board = name = NULL
+  tags = market = exchange = time = . = submarket = region = board = name = mkt = NULL
     
   fun_stock_163 = function(urli, mkt) {
     code = symbol = exchange = . = name = high = low = price = yestclose = updown = percent = hs = volume = turnover = mcap = tcap = pe = mfsum = net_income = revenue = plate_ids = time = NULL
@@ -76,7 +76,8 @@ md_stock_spotall_163 = function(symbol = c('a','index'), only_symbol = FALSE) {
 # hq.sinajs.cn/list=sz150206
 # http://qt.gtimg.cn/q=sz000001
 md_stock_spot_tx = function(symbol1, ...) {
-  # dat = doc = . = name = high = low = prev_close = change = change_pct = volume = amount = turnover = cap_market = cap_total = time = symbol = NULL
+  doc=.=symbol=name=high=low=prev_close=change=change_pct=volume=amount=turnover=cap_market=cap_total=pb=pe_last=pe_trailing=pe_forward=NULL
+  
   syb = check_symbol_for_tx(symbol1)
   dt = readLines(sprintf("http://qt.gtimg.cn/q=%s", paste0(syb, collapse=",")))
   # ff_ 资金流量 # s_pk 盘口 # s_ 简要信息
@@ -134,7 +135,7 @@ md_stock_spot_tx = function(symbol1, ...) {
 #' @import data.table
 #' @importFrom readr read_csv locale col_date col_character col_double col_integer
 md_stock_hist1_163 = function(symbol1, from="1900-01-01", to=Sys.Date(), zero_rm=TRUE, ...) {
-  change_pct = symbol = NULL
+  V1 = name = change_pct = symbol = NULL
   # http://quotes.money.163.com/service/chddata.html?code=0000001&start=19901219&end=20180615&fields=TCLOSE;HIGH;LOW;TOPEN;LCLOSE;CHG;PCHG;VOTURNOVER;VATURNOVER
   # http://quotes.money.163.com/service/chddata.html?code=1399001&start=19910403&end=20180615&fields=TCLOSE;HIGH;LOW;TOPEN;LCLOSE;CHG;PCHG;VOTURNOVER;VATURNOVER
   # https://query1.finance.yahoo.com/v7/finance/download/^SSEC?period1=1526631424&period2=1529309824&interval=1d&events=history&crumb=mO08ZCtWRMI
@@ -181,7 +182,7 @@ md_stock_hist1_163 = function(symbol1, from="1900-01-01", to=Sys.Date(), zero_rm
   
   
   # if (max(dt[["date"]]) < lwd()) dt = rbindlist(list(dt, md_stock_spot1_tx(symbol1)[,names(dt), with=FALSE]), fill = FALSE)
-  dt = setDT(dt, key="date")[, symbol := check_symbol_for_yahoo(symbol1)][, (cols_name[c(2,3,1,4:15)]), with=FALSE]
+  dt = dt[, symbol := check_symbol_for_yahoo(symbol1)][, (cols_name[c(2,3,1,4:15)]), with=FALSE]
   # if (max(dt[["date"]]) < lwd()) dt = unique(dt, by="date")
   
   # fill zeros in dt
@@ -208,11 +209,13 @@ md_stock_hist1_163 = function(symbol1, from="1900-01-01", to=Sys.Date(), zero_rm
   
   # create unit/name columns
   dt = dt[, unit := 'CNY'][, name := name[.N]]
+  setkeyv(dt, 'date')
   return(dt)
 }
 
 # valuation ratios pe, pb, ps, pcf
 md_stock_pe1_163 = function(dat) {
+  symbol=V1=var_id=value=fs_month_diff=REV_Q=REV=REV_Y=NP_Q=NP=NP_Y=fs_month=NP_Dec=NP_LY=date2=cap_total=BV=NIDCash=NULL
   
   # 市盈率 = 股价/年度每股盈余(EPS)；公司市值/年度股东权益 Price to Earnings ratio # https://www.zhihu.com/question/36915260
   # 市销率 = 总市值除以主营业务收入，Price-to-sales,PS
@@ -278,6 +281,8 @@ md_stock_pe1_163 = function(dat) {
 
 # dividends
 md_stock_divsplit1_163 = function(symbol1, from=NULL, to=NULL, ret = 'div') {
+  date2 = date1 = fenhong = . = songgu = spl = zhuanzeng = new_issues = old_issues = issue_price = NULL
+  
   # symbol1 = '000001'
   stk_price = md_stock_spot_tx(symbol1)
   # return dts

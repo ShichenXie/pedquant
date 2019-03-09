@@ -57,11 +57,12 @@ pq1_to_freq = function(dat, freq) {
     setkeyv(dat, "date")
     
     # add volume column if it not exists in dat
-    if (!('volume' %in% names(dat))) dat2 = copy(dat)[, volume := 0]
+    vol_in_dat = 'volume' %in% names(dat)
+    if (!vol_in_dat) dat = copy(dat)[, volume := 0]
     # converting freq
-    dat2 = do.call(paste0("pq1_dto",substr(freq,1,1)), list(dat=dat2))
+    dat2 = do.call(paste0("pq1_dto",substr(freq,1,1)), list(dat=dat))
     # remove volume column if it not exists in dat
-    if (!('volume' %in% names(dat))) dat2[, volume := NULL]
+    if (!vol_in_dat) dat2[, volume := NULL]
       
     # add symbol and name columns to dat2
     if ('symbol' %in% names(dat)) dat2[, symbol := dat[.N,symbol]]
@@ -87,7 +88,7 @@ pq1_to_freq = function(dat, freq) {
 #' @export
 #' 
 pq_to_freq = function(dt, freq, print_step=1L) {
-    # symbol = len_names = dt_names = NULL
+    symbol = NULL
     # check freq argument
     freq = check_arg(freq, c("weekly","monthly","quarterly","yearly"))
   

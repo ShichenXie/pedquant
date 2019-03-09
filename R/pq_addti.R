@@ -201,6 +201,8 @@ ti_sec_arg = function() {
 # add one technical indicator
 #' @import TTR
 addti1 = function(dt, ti, col_formula = FALSE, ...) {
+  .=high=low=volume=adx_dx=adx_adx=adx_dip=adx_din=formula_str=NULL
+  
   dt = setDT(copy(dt))
   setnames(dt, tolower(names(dt)))
   
@@ -352,6 +354,7 @@ pq1_addti = function(dt, ...) {
 #' @export
 pq_addti = function(dt, ...) {
   # col_kp, col_formula
+  symbol = NULL
   
   # bind list of dataframes
   if (is.list(dt) & !is.data.frame(dt)) {

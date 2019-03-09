@@ -4,7 +4,7 @@
 \alias{pd_code}
 \title{code list by category}
 \usage{
-pd_code(cate = NULL, ...)
+pd_code(cate = NULL)
 }
 \arguments{
 \item{cate}{The available category values including 'country', 'currency', 'stock_exchange', 'commodity_exchange'.}

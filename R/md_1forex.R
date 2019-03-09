@@ -84,6 +84,8 @@ forex_symbol_oanda = setDT(list(
 # query forex historical data from oanda 
 # https://www.oanda.com/fx-for-business/historical-rates
 md_forex1_oanda = function(symbol, from, to) {
+    name = NULL
+    
     syb = tolower(symbol)
     # symbol
     syb1 = substr(syb,1,3)
@@ -107,6 +109,8 @@ md_forex1_oanda = function(symbol, from, to) {
 }
 # query forex from FRED
 md_forex1_fred = function(syb, from, to) {
+    symbol = symbol_fred = . = name = value = geo = NULL
+    
     syb_fred = forex_symbol_fred[symbol == tolower(syb), symbol_fred]
     if (length(syb_fred) == 0) return(NULL)
     # libor in history
@@ -125,6 +129,7 @@ md_forex1_fred = function(syb, from, to) {
 # 
 # @export
 md_forex = function(symbol=NULL, date_range = '3y', from=NULL, to=Sys.Date(), print_step=1L, ...) {
+    . = name = NULL
     
     # arguments
     syb = tolower(symbol)

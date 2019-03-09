@@ -7,7 +7,7 @@
 
 # query one type financial statement of one symbol
 fs_type1_cn = function(symbol, row_type=NULL) {
-    patterns = value = type = . = fr_id = fr_name = name = name_en = var_name = var_id = NULL
+    urls = fs_type = fs_name = patterns = value = type = . = fr_id = fr_name = name = name_en = var_name = var_id = NULL
     
     
     # types of financial statements
@@ -50,6 +50,8 @@ fs_symbol1_cn = function(symbol, type) {
 #' @import data.table
 #' @importFrom readr read_csv stop_for_problems cols
 fs_cn = function(symbol, type=NULL, print_step=1L) {
+    . = name = name_en = NULL
+  
     # type
     fs_type_163 = setDT(copy(financial_statements_163))
     type = select_rows_df(dt = fs_type_163[,.(type, name, name_en)], column = 'type', input_string=type)[,type]
@@ -62,12 +64,14 @@ fs_cn = function(symbol, type=NULL, print_step=1L) {
 
 # financial statements summary indicators
 fs_cn1_summary = function(symbol1) {
+  var_id = value = var14_2 = var14 = fs_num = var04_q = var04 = var10_q = var10 = var01 = var02 = var19 = var03 = var16 = . = EPS = revenue = revenueYOY = revenueQOQ = NP = NPYOY = NPQOQ = ROE_w = CFPS = asset_liability = asset_turnover = profit_margin = ROA = ROE = BVPS = NULL
+  
     # '1, 每股收益',                      EPS, Earning Per Share, EPS
     # '2, 每股净资产',                    BVPS, book value per share
-    # '3, 每股现金流',                    Cash Flow From Operations Per Share
+    # '3, 每股现金流',                    CFPS, Cash Flow From Operations Per Share
     # 
     # '4 , 主营业务收入',                  Income from main operation,
-    # '10, 净利润',                       Net Income,
+    # '10, 净利润',                       NP, net profit
     # '11, 净利润_扣除非经常性损益后',
     # '12, 经营活动产生的现金流量净额',
     # '13, 现金及现金等价物净增加额',
@@ -79,11 +83,15 @@ fs_cn1_summary = function(symbol1) {
     # 
     # # DuPont Analysis
     # # https://en.wikipedia.org/wiki/DuPont_analysis
-    # 净资产收益率 = 总资产收益率 * 1/(1-资产负债率)
-    # 总资产收益率 = 销售净利率 * 总资产周转率
-    # 销售净利率   = 净利润/营业收入
-    # 总资产周转率 = 营业收入/总资产
-    # 资产负债率   = 总负债/总资产
+    # 净资产收益率 = 总资产收益率 * 1/(1-资产负债率) ROE
+    # 总资产收益率 = 销售净利率 * 总资产周转率       ROA, return on total assets
+    # 销售净利率   = 净利润/营业收入                 profit_margin
+    # 总资产周转率 = 营业收入/总资产                 asset_turnover
+    # 资产负债率   = 总负债/总资产                   asset-liability_ratio
+  
+  # ROE = (Profit margin)*(Asset turnover)*(Equity multiplier) 
+  #     = (Net profit/Sales)*(Sales/Average Total Assets)*(Average Total Assets/Average Equity) 
+  
 
     
     mfi2 = dcast(
@@ -105,25 +113,25 @@ fs_cn1_summary = function(symbol1) {
       
     ][, `:=`(
         # http://data.eastmoney.com/bbsj/yjbb/000001.html
-        每股收益 = var01, # 每股收益
-        主营业务收入 = var04,
-        主营业务收入QOQ = var04_q/shift(var04_q,n=1,type='lag')*100-100,
-        净利润 = var10,
-        净利润QOQ = var10_q/shift(var10_q,n=1,type='lag')*100-100,
-        每股净资产=var02, 
-        roe = var19,
-        每股经营现金流量 = var03,
+        EPS = var01, # EPS
+        revenue = var04,
+        revenueQOQ = var04_q/shift(var04_q,n=1,type='lag')*100-100,
+        NP = var10,
+        NPQOQ = var10_q/shift(var10_q,n=1,type='lag')*100-100,
+        BVPS=var02, 
+        ROE_w = var19,
+        CFPS = var03,
         # http://quotes.money.163.com/f10/dbfx_000001.html#01c08
-        资产负债率   = var16/var14*100,
-        总资产周转率 = var04/var14_2*100,
-        销售净利率   = var10/var04*100,
-        总资产收益率 = var10/var14*100, 
-        净资产收益率 = var10/var14*1/(1-var16/var14)*100
+        asset_liability   = var16/var14*100,
+        asset_turnover = var04/var14_2*100,
+        profit_margin   = var10/var04*100,
+        ROA = var10/var14*100, 
+        ROE = var10/var14*1/(1-var16/var14)*100
     )][, `:=`(
-        主营业务收入YOY = var04/shift(var04,n=1,type='lag')*100-100,
-        净利润YOY = var10/shift(var10,n=1,type='lag')*100-100
+        revenueYOY = var04/shift(var04,n=1,type='lag')*100-100,
+        NPYOY = var10/shift(var10,n=1,type='lag')*100-100
     ), by = month(date)
-    ][,.(date, 每股收益, 主营业务收入, 主营业务收入YOY, 主营业务收入QOQ, 净利润, 净利润YOY, 净利润QOQ, 每股净资产, roe, 每股经营现金流量, 资产负债率, 总资产周转率, 销售净利率, 总资产收益率, 净资产收益率)]
+    ][,.(date, EPS, revenue, revenueYOY, revenueQOQ, NP, NPYOY, NPQOQ, BVPS, ROE_w, CFPS, asset_liability, asset_turnover, profit_margin, ROA, ROE)]
     
     return(mfi2)
 }

@@ -7,6 +7,8 @@ func_commodity_symbol = function() commodity_symbol_fred
 
 # query commodity price from FRED
 md_commodity1_fred = function(syb, from, to) {
+    symbol=symbol_fred=.=name=value=NULL
+    
     syb_fred = commodity_symbol_fred[symbol == tolower(syb), symbol_fred]
     if (length(syb_fred) == 0) return(NULL)
     # libor in history
@@ -27,6 +29,8 @@ md_commodity1_fred = function(syb, from, to) {
 # 
 # @export
 md_commodity = function(symbol=NULL, date_range = '3y', from=NULL, to=Sys.Date(), print_step=1L, ...) {
+    . = name = NULL
+    
     # arguments
     syb = tolower(symbol)
     ## symbol

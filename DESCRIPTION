@@ -1,5 +1,5 @@
 Package: pedquant
-Version: 0.0.1
+Version: 0.1.0
 Title: public economic data and quantitative analysis
 Description: 
     The `pedquant` provides an interface to access public economic data and 
@@ -21,8 +21,8 @@ Suggests:
     knitr,
     rmarkdown
 License: GPL-3 + file LICENSE
-URL: https://github.com/ShichenXie/pedar
-BugReports: https://github.com/ShichenXie/pedar/issues
+URL: https://github.com/ShichenXie/pedquant
+BugReports: https://github.com/ShichenXie/pedquant/issues
 LazyData: true
 VignetteBuilder: knitr
 RoxygenNote: 6.1.1
