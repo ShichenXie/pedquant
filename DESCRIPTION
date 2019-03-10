@@ -20,7 +20,7 @@ Imports:
 Suggests: 
     knitr,
     rmarkdown
-License: GPL-3 + file LICENSE
+License: GPL-3
 URL: https://github.com/ShichenXie/pedquant
 BugReports: https://github.com/ShichenXie/pedquant/issues
 LazyData: true
