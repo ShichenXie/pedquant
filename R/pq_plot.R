@@ -593,12 +593,15 @@ pp_add_ti_oscillator = function(
     names(addti) <- tolower(names(addti))
     ti_topbottom   = names(addti)[sapply(addti, function(x)  any(x[["position"]] %in% c("top","bottom")))]
     ti_not_overlay = names(addti)[sapply(addti, function(x) !any(x[["position"]] %in% c("overlay")))]
-    ti_oscillator  = c(intersect(ti_topbottom, tolower(ti_overlays_indicators()[['overlays']])),
-                       intersect(ti_not_overlay, tolower(ti_overlays_indicators()[['indicators']])) )
+    ti_oscillator  = c(
+        intersect(ti_topbottom, tolower(ti_overlays_indicators()[['overlays']])), 
+        intersect(ti_not_overlay, tolower(ti_overlays_indicators()[['indicators']])),
+        intersect(names(addti), names(which(sapply(dt, is.numeric))))
+        )
     if ('bbands' %in% names(addti)) ti_oscillator = c(ti_oscillator, 'bbands')
     addti = addti[names(addti) %in% ti_oscillator]
     # return p if no oscillator ti
-    if (length(addti) == 0 | is.null(addti)) return(p)
+    if (length(addti) == 0 || is.null(addti)) return(p)
     
     # colorblind palette
     cb_palette = c("#000000", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7") # c("black", "red", "blue") # 
@@ -628,9 +631,8 @@ pp_add_ti_oscillator = function(
     # plist
     top_plist = bottom_plist = NULL
     for (i in seq_along(addti)) {
-        pbpe_cols = intersect(c('pb', 'pe_last', 'pe_trailing', 'pe_forward', 'ps'), names(dt))
         # dataset with technical indicators
-        if (names(addti[i]) %in% pbpe_cols) {
+        if (names(addti[i]) %in% names(dt)) {
             dtti = copy(dt)
         } else {
             args_list = c(list(dt=dt, col_kp=TRUE, col_formula=TRUE), 
@@ -648,7 +650,13 @@ pp_add_ti_oscillator = function(
         dat = dtti[date>=from & date <= to]
 
         # names of technical indicators
-        ti_names = names(dat)[grepl(paste0("^",names(addti[i])), names(dat))]
+        if (names(addti[i]) %in% tolower(unlist(ti_overlays_indicators()))) {
+            ti_names = names(dat)[grepl(paste0("^",names(addti[i])), names(dat))]
+        } else {
+            ti_names = names(addti[i])
+        }
+        
+        # plot each column in ti_names
         pi = ggplot(data = dat, aes_string(x = "x"))
         for (t in ti_names) {
             iti_names = which(t == ti_names)
@@ -741,7 +749,7 @@ pp_add_ti_oscillator = function(
 #' @param from the start date. Default is NULL. If it is NULL, then calculate using date_range and end date.
 #' @param to the end date. Default is the current date.
 #' @param x the name of column display on chart.
-#' @param addti list of technical indicators, including overlay and oscillator indicators. It calls \code{pq_addti} to calculate technical indicators. 
+#' @param addti list of technical indicators or numerical columes in dt. For technical indicator, it is calculated via \code{pq_addti}, which including overlay and oscillator indicators.
 #' @param linear_trend a numeric vector. Default is NULL. If it is not NULL, then display linear trend lines on charts. 
 #' @param perf logical, display the performance of input series. Default is FALSE. If it is TRUE, then call \code{pq_code} to convert data into performance trends.
 #' @param yaxis_log logical. Default is FALSE.
@@ -753,7 +761,7 @@ pp_add_ti_oscillator = function(
 #' @param ... ignored
 #' 
 #' @examples 
-#' \dontrun{
+#' \donttest{
 #' # single symbol
 #' ssec = md_stock("^000001", source="163", date_range = 'max')
 #' 
@@ -797,7 +805,8 @@ pq_plot = function(
     dt, chart_type = "line", freq = NULL, 
     date_range="max", from = NULL, to = Sys.Date(), 
     x = "close|value", 
-    addti = list(), linear_trend = NULL, perf = FALSE, 
+    addti = list(volume = list()), 
+    linear_trend = NULL, perf = FALSE, 
     yaxis_log = FALSE, 
     color_up = "#F6736D", color_down = "#18C0C4", 
     multi_series = list(nrow=NULL, ncol=NULL), 

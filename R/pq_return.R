@@ -130,7 +130,7 @@ pq1_return = function(dt, x='close|value', type='arithmetic', freq='daily', date
 #' @param print_step a non-negative integer. Print symbol name by each print_step iteration. Default is 1L.
 #' 
 #' @examples 
-#' \dontrun{
+#' \donttest{
 #' #' dts = md_stock(c('000001', '^000001'), source = '163')
 #' 
 #' # set freq

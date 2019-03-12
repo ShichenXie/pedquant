@@ -28,7 +28,7 @@ func_md_symbol = function() {
 #' @param ... ignored parameters
 #' 
 #' @examples 
-#' \dontrun{
+#' \donttest{
 #' dat = md_cate()
 #' }
 #' 

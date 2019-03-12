@@ -16,7 +16,7 @@
 #' 
 #' 
 #' @examples 
-#' \dontrun{
+#' \donttest{
 #' # Example I
 #' # query history prices from yahoo
 #' dt_yahoo1 = md_stock(symbol=c("^GSPC", "000001.SS"))

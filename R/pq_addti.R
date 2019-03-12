@@ -41,8 +41,7 @@ ti_overlays_indicators = function() {
                  'runMin', 'runMax', 'runMean', 'runMedian', 
                  'BBands', 'PBands', 
                  'DonchianChannel', 'SAR', 'ZigZag'),
-    indicators = c('runSD', 'runMAD', 'aroon', 'CCI', 'VHF', 'TDI', 'ADX', 'ATR', 'EMV', 'chaikinVolatility', 'volatility', 'OBV', 'chaikinAD', 'CLV', 'CMF', 'MFI', 'williamsAD', 'ROC', 'momentum', 'KST', 'TRIX', 'MACD', 'DPO', 'DVI', 'ultimateOscillator', 'RSI', 'CMO', 'stoch', 'SMI', 'WPR', 
-                   'pb', 'pe_last', 'pe_trailing', 'pe_forward', 'ps')
+    indicators = c('runSD', 'runMAD', 'aroon', 'CCI', 'VHF', 'TDI', 'ADX', 'ATR', 'EMV', 'chaikinVolatility', 'volatility', 'OBV', 'chaikinAD', 'CLV', 'CMF', 'MFI', 'williamsAD', 'ROC', 'momentum', 'KST', 'TRIX', 'MACD', 'DPO', 'DVI', 'ultimateOscillator', 'RSI', 'CMO', 'stoch', 'SMI', 'WPR')
   )
 }
 
@@ -342,7 +341,7 @@ pq1_addti = function(dt, ...) {
 #' }
 #'
 #' @examples 
-#' \dontrun{
+#' \donttest{
 #' # load data
 #' dt = md_stock("^000001", source='163', date_range = 'max')
 #' 

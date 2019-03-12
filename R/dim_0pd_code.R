@@ -6,7 +6,7 @@
 #' @param cate The available category values including 'country', 'currency', 'stock_exchange', 'commodity_exchange'.
 #' 
 #' @examples 
-#' \dontrun{
+#' \donttest{
 #' # specify the categories
 #' code_list1 = pd_code(cate = c('country', 'currency'))
 #' 

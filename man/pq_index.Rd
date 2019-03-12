@@ -24,7 +24,7 @@ pq_index(dt, x = "close|value", w = "cap_total", base_value = 1,
 \code{pq_index} creates a sector/industry index using the method of weighted geometric mean, based on a set of data and corresponding weights.
 }
 \examples{
-\dontrun{
+\donttest{
 # Example I bank share index
 # load data
 bank_symbol = c('601988', '601288', '601398', '601939', '601328')

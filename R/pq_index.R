@@ -85,7 +85,7 @@ pq_rp1 = function(dt, region='cn', columns = c('open', 'high', 'low', 'close')) 
 #' @param name the name of index. Default is NULL, then using 'index'.
 #' 
 #' @examples 
-#' \dontrun{
+#' \donttest{
 #' # Example I bank share index
 #' # load data
 #' bank_symbol = c('601988', '601288', '601398', '601939', '601328')

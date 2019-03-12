@@ -75,7 +75,7 @@ ed_fred1 = function(symbol1, from="1776-07-04", to="9999-12-31", na_rm=FALSE) {
 #' @return a list of dataframes with columns of symbol, name, date, value, geo, unit. The geo column might be NA according to local internet connection.
 #' 
 #' @examples 
-#' \dontrun{
+#' \donttest{
 #' dat = ed_fred(c("A191RL1A225NBEA", "GDPCA"))
 #' }
 #' 
@@ -213,7 +213,7 @@ ed_fred_symbol_category = function(category=NULL, ...) {
 #' @param ... ignored parameters
 #' 
 #' @examples 
-#' \dontrun{
+#' \donttest{
 #' # search symbols by category
 #' # from top categories
 #' symbol_dt1 = ed_fred_symbol()

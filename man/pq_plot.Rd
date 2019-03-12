@@ -5,9 +5,9 @@
 \title{creating charts for time series}
 \usage{
 pq_plot(dt, chart_type = "line", freq = NULL, date_range = "max",
-  from = NULL, to = Sys.Date(), x = "close|value", addti = list(),
-  linear_trend = NULL, perf = FALSE, yaxis_log = FALSE,
-  color_up = "#F6736D", color_down = "#18C0C4",
+  from = NULL, to = Sys.Date(), x = "close|value",
+  addti = list(volume = list()), linear_trend = NULL, perf = FALSE,
+  yaxis_log = FALSE, color_up = "#F6736D", color_down = "#18C0C4",
   multi_series = list(nrow = NULL, ncol = NULL), rm_weekend = NULL,
   title = NULL, ...)
 }
@@ -26,7 +26,7 @@ pq_plot(dt, chart_type = "line", freq = NULL, date_range = "max",
 
 \item{x}{the name of column display on chart.}
 
-\item{addti}{list of technical indicators, including overlay and oscillator indicators. It calls \code{pq_addti} to calculate technical indicators.}
+\item{addti}{list of technical indicators or numerical columes in dt. For technical indicator, it is calculated via \code{pq_addti}, which including overlay and oscillator indicators.}
 
 \item{linear_trend}{a numeric vector. Default is NULL. If it is not NULL, then display linear trend lines on charts.}
 
@@ -50,7 +50,7 @@ pq_plot(dt, chart_type = "line", freq = NULL, date_range = "max",
 \code{pq_plot} provides an easy way to create charts for time series dataset based on predefined formats.
 }
 \examples{
-\dontrun{
+\donttest{
 # single symbol
 ssec = md_stock("^000001", source="163", date_range = 'max')
 
