@@ -356,7 +356,7 @@ md_stock_symbol_exchange = function(XCHG=NULL, print_step=1L) {
 # @source \url{http://www.csindex.com.cn/zh-CN}
 # 
 # @examples 
-# \dontrun{
+# \donttest{
 # dt50 = md_index_cons("000016")
 # 
 # dt300 = md_index_cons("000300")
@@ -395,7 +395,7 @@ md_stock_symbol_index = function(symbol, print_step=1L) {
 #' @param index the stock index symbol provided by China Securities Index Co.Ltd (\url{http://www.csindex.com.cn}).
 #' 
 #' @examples 
-#' \dontrun{
+#' \donttest{
 #' # get stock symbols in a stock exchange
 #' ## specify the name of exchange
 #' ex_syb1 = md_stock_symbol(exchange = c('sse', 'szse'))

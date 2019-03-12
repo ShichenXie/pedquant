@@ -753,7 +753,7 @@ pp_add_ti_oscillator = function(
 #' @param ... ignored
 #' 
 #' @examples 
-#' \dontrun{
+#' \donttest{
 #' # single symbol
 #' ssec = md_stock("^000001", source="163", date_range = 'max')
 #' 

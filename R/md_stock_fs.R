@@ -133,7 +133,7 @@ fs_cn1_summary = function(symbol1) {
 #' @param print_step A non-negative integer. Print symbol name by each print_step iteration. Default is 1L.
 #' 
 #' @examples 
-#' \dontrun{
+#' \donttest{
 #' # interactively specify type of financial table 
 #' dat1 = md_stock_financials("000001")
 #' 

@@ -18,7 +18,7 @@ ed_nbs_symbol(geo_type = NULL, freq = NULL, eng = FALSE)
 }
 \examples{
 # query symbol interactively
-\dontrun{
+\donttest{
 sym = ed_nbs_symbol()}
 
 }

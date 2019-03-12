@@ -17,7 +17,7 @@ pq_to_freq(dt, freq, print_step = 1L)
 \code{pq_to_freq} convert a daily OHLC dataframe into a specified frequency.
 }
 \examples{
-\dontrun{
+\donttest{
 dts = md_stock(c("^000001", "000001"), date_range = 'max', source = '163')
 
 dts_weekly = pq_to_freq(dts, "weekly")

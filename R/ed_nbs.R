@@ -59,7 +59,7 @@ nbs_symbol1 = function(geo_type=NULL, freq=NULL, symbol='zb', eng=FALSE) {
 #' 
 #' @examples 
 #' # query symbol interactively
-#' \dontrun{
+#' \donttest{
 #' sym = ed_nbs_symbol()}
 #' 
 #' @import data.table httr
@@ -254,7 +254,7 @@ nbs_jsondat_format = function(jsondat) {
 #' @param eng logical. The language of the query results is in English or in Chinese Default is FALSE.
 #' 
 #' @examples 
-#' \dontrun{
+#' \donttest{
 #' # query NBS data without setting any parameters
 #' dt = ed_nbs()
 #' 

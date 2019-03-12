@@ -342,7 +342,7 @@ pq1_addti = function(dt, ...) {
 #' }
 #'
 #' @examples 
-#' \dontrun{
+#' \donttest{
 #' # load data
 #' dt = md_stock("^000001", source='163', date_range = 'max')
 #' 

@@ -33,7 +33,7 @@ md_stock(symbol, source = "yahoo", freq = "daily", date_range = "3y",
 \code{md_stock} provides an interface to query EOD (end of date) stock prices.
 }
 \examples{
-\dontrun{
+\donttest{
 # Example I
 # query history prices from yahoo
 dt_yahoo1 = md_stock(symbol=c("^GSPC", "000001.SS"))

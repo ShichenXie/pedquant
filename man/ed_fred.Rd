@@ -27,7 +27,7 @@ a list of dataframes with columns of symbol, name, date, value, geo, unit. The g
 ed_fred provides an interface to access the economic data provided by FRED (\url{https://fred.stlouisfed.org})
 }
 \examples{
-\dontrun{
+\donttest{
 dat = ed_fred(c("A191RL1A225NBEA", "GDPCA"))
 }
 

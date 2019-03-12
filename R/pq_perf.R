@@ -34,7 +34,7 @@ pq1_perf = function(dt, date_range='max', from=NULL, to=Sys.Date(), x='close|val
 #' @param base_value the base value of performance index. Default is 0.
 #' 
 #' @examples  
-#' \dontrun{
+#' \donttest{
 #' # load data
 #' dat = md_stock(c('000001', '^000001'), date_range = 'max', source = '163')
 #' 
@@ -45,7 +45,7 @@ pq1_perf = function(dt, date_range='max', from=NULL, to=Sys.Date(), x='close|val
 #' }
 #' 
 #' @export
-pq_perf = function(dt, date_range='max', from=NULL, to=Sys.Date(), x='close|value', base_value = 0) {
+pq_perf = function(dt, date_range='max', from=NULL, to=Sys.Date(), x='close|value', base_value=0) {
     symbol = NULL
     
     # bind list of dataframe

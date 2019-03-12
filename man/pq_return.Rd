@@ -29,7 +29,7 @@ pq_return(dt, x = "close|value", method = "arithmetic", freq = "all",
 \code{pq_return} calculates returns for daily series based on specified column, frequency and method type.
 }
 \examples{
-\dontrun{
+\donttest{
 #' dts = md_stock(c('000001', '^000001'), source = '163')
 
 # set freq

@@ -13,7 +13,7 @@ pd_code(cate = NULL)
 \code{pd_code} get the code list of country, currency, stock exchange and commodity exchange.
 }
 \examples{
-\dontrun{
+\donttest{
 # specify the categories
 code_list1 = pd_code(cate = c('country', 'currency'))
 

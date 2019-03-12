@@ -50,7 +50,7 @@ pq_plot(dt, chart_type = "line", freq = NULL, date_range = "max",
 \code{pq_plot} provides an easy way to create charts for time series dataset based on predefined formats.
 }
 \examples{
-\dontrun{
+\donttest{
 # single symbol
 ssec = md_stock("^000001", source="163", date_range = 'max')
 
