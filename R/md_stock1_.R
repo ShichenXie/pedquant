@@ -85,5 +85,12 @@ md_stock = function(symbol, source = "yahoo", freq = "daily", date_range = "3y",
     
     # data
     dat = try(do.call(paste0("md_stock_", source), args=list(symbol = syb, freq = freq, from = from, to = to, print_step = print_step, env = env, adjust=adjust, zero_rm=zero_rm, na_rm=na_rm, type=type, ...)), silent = TRUE)
+    
+    # remove error symbols
+    error_symbols = names(dat)[which(sapply(dat, function(x) inherits(x, 'try-error')))]
+    if (length(error_symbols) > 0) {
+        warning(sprintf('The following symbols can\'t imported:\n%s', paste0(error_symbols, collapse=', ')))
+        dat = dat[setdiff(names(dat), error_symbols)]
+    }
     return(dat)
 }

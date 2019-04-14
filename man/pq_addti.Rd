@@ -28,7 +28,7 @@ pq_addti(dt, ...)
 \item volatility measures: ATR, chaikinVolatility, volatility, SNR
 \item money flowing into/out: OBV, chaikinAD, CLV, CMF, MFI, williamsAD
 \item rate of change / momentum: ROC, momentum, KST, TRIX
-\item oscillator: MACD, DPO, DVI, ultimateOscillator; RSI, CMO; stoch, WPR, SMI
+\item oscillator: MACD, DPO, DVI, ultimateOscillator; RSI, CMO; stoch, SMI, WPR
 }
 }}
 }

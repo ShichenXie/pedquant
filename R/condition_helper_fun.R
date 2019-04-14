@@ -46,6 +46,7 @@ check_fromto = function(fromto, type="date", shift = 0) {
 get_fromto = function(date_range, from, to, min_date, default_date_range = 'max') {
     date_range = check_date_range(date_range, default = default_date_range)
     to = check_fromto(to)
+    min_date = check_fromto(min_date)
     
     if (is.null(from)) {
         if (date_range == "max") {
@@ -77,6 +78,7 @@ get_fromto = function(date_range, from, to, min_date, default_date_range = 'max'
     } else {
         from = check_fromto(from)
     }
+    if (from < min_date) from = min_date
     
     # set class
     if (class(to) == "Date") {
@@ -446,6 +448,8 @@ api_key = function(src){
 # onerow, whether to return one row or multiple rows
 select_rows_df = function(dt, column=NULL, input_string=NULL, onerow=FALSE) {
     seleted_rows = NULL
+    
+    if (onerow) input_string = input_string[1]
     
     while (is.null(seleted_rows) || nrow(seleted_rows) == 0) { # stop looping, if selected rows >=1
         if (is.null(input_string)) {

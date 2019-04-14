@@ -209,71 +209,36 @@ md_stock_symbol_hk = function(source="163", return_price=FALSE) {
   return(stock_list_hk)
 }
 
-#' @import data.table
-#' @importFrom jsonlite fromJSON 
-md_stock_symbol_163 = function() {
-  fun_symbol_163 = function(link, mkt) {
-    plate_ids = . = symbol = name = sec = province = industry = sector = NULL
-    # rt = GET(link, add_headers(
-    #   'Connection' = 'keep-alive',
-    #   'User-Agent' = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36',
-    #   'Upgrade-Insecure-Requests'='1'
-    # ))
-    jsonDat = fromJSON(link)
-    jsonDF = setDT(jsonDat$list)[,date:=as.Date(jsonDat$time)]
-    setnames(jsonDF, sub("\\.", "", tolower(names(jsonDF))) )
-    
-    # industry sector for stock
-    if (mkt == "stock") {
-      jsonDF2 = jsonDF[,`:=`(
-        province = sub(".*(dy\\d+).*", "\\1", plate_ids),
-        plate_ids = sub("dy\\d+","",plate_ids)
-      )][,`:=`(
-        sector = sub(".*(hy\\d{3}0{3}).*", "\\1", plate_ids),
-        industry = sub(".*(hy\\d+).*", "\\1", sub("hy\\d{3}0{3}","",plate_ids))
-      )][,.(symbol, name, province, sector, industry)]
-    } else {
-      jsonDF2 = jsonDF[, symbol := paste0("^",symbol)][,.(symbol, name)]
-    }
-    
-    return(jsonDF2)
-  }
+symbol_163_format = function(df_symbol) {
+  type = . = id = name = symbol = tags = market = submarket = region = exchange = board = prov = indu = sec = NULL
   
+  # merge jsonDF with prov_indu_163
+  prov_indu_163 = setDT(copy(prov_indu_163))
   
-  symbol_url_163 = list(
-    A = "http://quotes.money.163.com/hs/service/diyrank.php?host=http%3A%2F%2Fquotes.money.163.com%2Fhs%2Fservice%2Fdiyrank.php&page=0&query=STYPE%3AEQA&fields=NO%2CSYMBOL%2CNAME%2CPLATE_IDS%2CSNAME%2CCODE&sort=CODE&order=desc&count=100000&type=query",
-    B = "http://quotes.money.163.com/hs/service/diyrank.php?host=http%3A%2F%2Fquotes.money.163.com%2Fhs%2Fservice%2Fdiyrank.php&page=0&query=STYPE%3AEQB&fields=NO%2CSYMBOL%2CNAME%2CPLATE_IDS%2CSNAME%2CCODE&sort=PERCENT&order=desc&count=100000&type=query",
-    ind_sse = "http://quotes.money.163.com/hs/service/hsindexrank.php?host=/hs/service/hsindexrank.php&page=0&query=IS_INDEX:true;EXCHANGE:CNSESH&fields=SYMBOL,NAME&sort=SYMBOL&order=asc&count=10000&type=query",
-    ind_szse = "http://quotes.money.163.com/hs/service/hsindexrank.php?host=/hs/service/hsindexrank.php&page=0&query=IS_INDEX:true;EXCHANGE:CNSESZ&fields=SYMBOL,NAME&sort=SYMBOL&order=asc&count=10000&type=query"
-  )
-  
-  df_symbol = try(rbindlist(mapply(fun_symbol_163, symbol_url_163, c("stock","stock","index","index"), SIMPLIFY = FALSE), fill = TRUE), silent = TRUE)
-  if ('try-error' %in% class(df_symbol)) {
-    df_symbol = setDT(copy(symbol_stock_163))
-  }
-  
-  symbol_163_format = function(df_symbol) {
-    type = . = id = name = symbol = tags = market = submarket = region = exchange = board = prov = indu = sec = NULL
-    
-    # merge jsonDF with prov_indu_163
-    prov_indu_163 = setDT(copy(prov_indu_163))
-    
+  if (all(c('province', 'industry', 'sector') %in% names(df_symbol))) {
     df_symbol = merge(df_symbol, prov_indu_163[type=="prov",.(province=id, prov=name)], by = "province", all.x = TRUE)
     df_symbol = merge(df_symbol, prov_indu_163[type=="indu",.(industry=id, indu=name)], by = "industry", all.x = TRUE)
     df_symbol = merge(df_symbol, prov_indu_163[type=="indu",.(sector=id, sec=name)], by = "sector", all.x = TRUE)
-    
-    df_symbol = copy(df_symbol)[, `:=`(
-      market = ifelse(grepl("\\^", symbol), "index", "stock")#,
-      # region = "cn"
-    )][, tags:=mapply(tags_symbol_stockcn, symbol, market)
-     ][, c("exchange","submarket","board"):=tstrsplit(tags,",")
-     ][, .(market, submarket, exchange, board, symbol, name, province=prov, sector=sec, industry=indu)
-     ][order(-market, exchange, symbol)]
-    
-    return(df_symbol)
   }
   
-  return(symbol_163_format(df_symbol))
+  
+  if (!('market' %in% names(df_symbol))) {
+    df_symbol = copy(df_symbol)[, `:=`(market = ifelse(grepl("\\^", symbol), "index", "stock") )]
+  }
+  df_symbol = df_symbol[, tags := tags_symbol_stockcn(symbol, market)[,tags]
+     ][, c("exchange","submarket","board") := tstrsplit(tags,",")
+       # ][, .(market, submarket, exchange, board, symbol, name, province=prov, sector=sec, industry=indu)
+     ][order(-market, exchange, symbol)
+     ][, symbol := check_symbol_for_yahoo(symbol)
+     ][, tags := NULL]
+  
+  return(df_symbol)
+}
+#' @import data.table
+#' @importFrom jsonlite fromJSON 
+md_stock_symbol_163 = function() {
+  df_syb = dat = md_stock_spotall_163(symbol = c('a', 'b', 'index'), only_symbol=TRUE)
+  return(df_syb)
 }
 
 # stock list of nasdaq

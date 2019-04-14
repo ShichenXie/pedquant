@@ -5,7 +5,7 @@
 \title{creating performance trends}
 \usage{
 pq_perf(dt, date_range = "max", from = NULL, to = Sys.Date(),
-  x = "close|value", base_value = 0)
+  x = "close|value", base_value = 1)
 }
 \arguments{
 \item{dt}{a list/dataframe of time series dataset}

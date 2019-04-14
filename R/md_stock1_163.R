@@ -1,31 +1,40 @@
 
 #' @import data.table 
 #' @importFrom jsonlite fromJSON
-md_stock_spotall_163 = function(symbol = c('a','index'), only_symbol = FALSE) {
-  tags = market = exchange = time = . = submarket = region = board = name = mkt = NULL
+#' @importFrom stringi stri_unescape_unicode
+md_stock_spotall_163 = function(symbol = c('a','index'), only_symbol = FALSE, show_tags = FALSE, ...) {
+  prov = tags = market = exchange = time = . = submarket = region = board = name = mkt = NULL
     
   fun_stock_163 = function(urli, mkt) {
     code = symbol = exchange = . = name = high = low = price = yestclose = updown = percent = hs = volume = turnover = mcap = tcap = pe = mfsum = net_income = revenue = plate_ids = time = NULL
     # stock
-    # c("code", "five_minute" "high", "hs", "lb", "low", "mcap", "mfratio", "mfsum", "name", "open", "pe", "percent", "plate_ids", "price", "sname", "symbol", "tcap", "turnover", "updown", "volume", "wb", "yestclose", "zf", "no", "announmt", "uvsnews")
+    # c('code', 'five_minute' 'high', 'hs', 'lb', 'low', 'mcap', 'mfratio', 'mfsum', 'name', 'open', 'pe', 'percent', 'plate_ids', 'price', 'sname', 'symbol', 'tcap', 'turnover', 'updown', 'volume', 'wb', 'yestclose', 'zf', 'no', 'announmt', 'uvsnews')
     # index
-    # c("code", "high", "low", "name", "open" "percent", "price", "symbol", "time", "turnover" "updown", "volume", "yestclose", "no", "zhenfu") 
+    # c('code', 'high', 'low', 'name', 'open' 'percent', 'price', 'symbol', 'time', 'turnover' 'updown', 'volume', 'yestclose', 'no', 'zhenfu') 
     
     jsonDat = fromJSON(urli)
     
     jsonDF = jsonDat$list
-    if (mkt == "stock") {
+    if (mkt == 'stock') {
       jsonDF$net_income = jsonDF$MFRATIO$MFRATIO2
       jsonDF$revenue = jsonDF$MFRATIO$MFRATIO10
-      jsonDF[,c("MFRATIO", "UVSNEWS","ANNOUNMT","NO")] = NULL 
+      jsonDF[,c('MFRATIO', 'UVSNEWS','ANNOUNMT','NO')] = NULL 
       names(jsonDF) = tolower(names(jsonDF))
       
       jsonDF = setDT(jsonDF)[,`:=`(
         date = as.Date(substr(jsonDat$time,1,10)), 
         time = jsonDat$time#,
-        #strptime(jsonDat$time, "%Y-%m-%d %H:%M:%S", tz = "Asia/Shanghai")
-      )][, .(symbol, name, date, open, high, low, close=price, prev_close=yestclose, change=updown, change_pct=percent*100, volume, amount=turnover, turnover=hs*100, cap_market=mcap, cap_total=tcap, pe_last=pe, eps=mfsum, net_income, revenue, plate_ids, time=as.POSIXct(time))]
-    } else if (mkt == "index") {
+        #strptime(jsonDat$time, '%Y-%m-%d %H:%M:%S', tz = 'Asia/Shanghai')
+      )][, .(symbol, name, date, open, high, low, close=price, prev_close=yestclose, change=updown, change_pct=percent*100, volume, amount=turnover, turnover=hs*100, cap_market=mcap, cap_total=tcap, pe_last=pe, eps=mfsum, net_income, revenue, plate_ids, time=as.POSIXct(time))
+      ][,`:=`(
+        province = sub('.*(dy\\d+).*', '\\1', plate_ids),
+        plate_ids = sub('dy\\d+','',plate_ids)
+      )][,`:=`(
+        sector = sub('.*((hy\\d{3}0{3})|hy012001).*', '\\1', plate_ids),
+        industry = sub('.*(hy\\d+).*', '\\1', sub('hy\\d{3}0{3}','',plate_ids))
+      )]
+      
+    } else if (mkt == 'index') {
       names(jsonDF) = tolower(names(jsonDF))
       
       jsonDF = setDT(jsonDF)[,`:=`(
@@ -33,41 +42,46 @@ md_stock_spotall_163 = function(symbol = c('a','index'), only_symbol = FALSE) {
       )][, .(symbol, name, date, open, high, low, close=price, prev_close=yestclose, change=updown, change_pct=percent*100, volume, amount=turnover, time=as.POSIXct(time))]
     }
     
-    return(jsonDF[, `:=`(market = mkt, region = "cn")])
+    return(jsonDF[, `:=`(market = mkt, region = 'cn')])
   }
   
   urls_163 = list(
-    a = "http://quotes.money.163.com/hs/service/diyrank.php?host=http%3A%2F%2Fquotes.money.163.com%2Fhs%2Fservice%2Fdiyrank.php&page=0&query=STYPE%3AEQA&fields=NO%2CSYMBOL%2CNAME%2CPLATE_IDS%2CPRICE%2CPERCENT%2CUPDOWN%2CFIVE_MINUTE%2COPEN%2CYESTCLOSE%2CHIGH%2CLOW%2CVOLUME%2CTURNOVER%2CHS%2CLB%2CWB%2CZF%2CPE%2CMCAP%2CTCAP%2CMFSUM%2CMFRATIO.MFRATIO2%2CMFRATIO.MFRATIO10%2CSNAME%2CCODE%2CANNOUNMT%2CUVSNEWS&sort=CODE&order=desc&count=100000&type=query", 
-    b = "http://quotes.money.163.com/hs/service/diyrank.php?host=http%3A%2F%2Fquotes.money.163.com%2Fhs%2Fservice%2Fdiyrank.php&page=0&query=STYPE%3AEQB&fields=NO%2CSYMBOL%2CNAME%2CPLATE_IDS%2CPRICE%2CPERCENT%2CUPDOWN%2CFIVE_MINUTE%2COPEN%2CYESTCLOSE%2CHIGH%2CLOW%2CVOLUME%2CTURNOVER%2CHS%2CLB%2CWB%2CZF%2CPE%2CMCAP%2CTCAP%2CMFSUM%2CMFRATIO.MFRATIO2%2CMFRATIO.MFRATIO10%2CSNAME%2CCODE%2CANNOUNMT%2CUVSNEWS&sort=PERCENT&order=desc&count=100000&type=query",
-    index = "http://quotes.money.163.com/hs/service/hsindexrank.php?host=/hs/service/hsindexrank.php&page=0&query=IS_INDEX:true;EXCHANGE:CNSESH&fields=no,TIME,SYMBOL,NAME,PRICE,UPDOWN,PERCENT,zhenfu,VOLUME,TURNOVER,YESTCLOSE,OPEN,HIGH,LOW&sort=SYMBOL&order=asc&count=10000&type=query",
-    index = "http://quotes.money.163.com/hs/service/hsindexrank.php?host=/hs/service/hsindexrank.php&page=0&query=IS_INDEX:true;EXCHANGE:CNSESZ&fields=no,TIME,SYMBOL,NAME,PRICE,UPDOWN,PERCENT,zhenfu,VOLUME,TURNOVER,YESTCLOSE,OPEN,HIGH,LOW&sort=SYMBOL&order=asc&count=10000&type=query"
+    a = 'http://quotes.money.163.com/hs/service/diyrank.php?host=http%3A%2F%2Fquotes.money.163.com%2Fhs%2Fservice%2Fdiyrank.php&page=0&query=STYPE%3AEQA&fields=NO%2CSYMBOL%2CNAME%2CPLATE_IDS%2CPRICE%2CPERCENT%2CUPDOWN%2CFIVE_MINUTE%2COPEN%2CYESTCLOSE%2CHIGH%2CLOW%2CVOLUME%2CTURNOVER%2CHS%2CLB%2CWB%2CZF%2CPE%2CMCAP%2CTCAP%2CMFSUM%2CMFRATIO.MFRATIO2%2CMFRATIO.MFRATIO10%2CSNAME%2CCODE%2CANNOUNMT%2CUVSNEWS&sort=CODE&order=desc&count=100000&type=query', 
+    b = 'http://quotes.money.163.com/hs/service/diyrank.php?host=http%3A%2F%2Fquotes.money.163.com%2Fhs%2Fservice%2Fdiyrank.php&page=0&query=STYPE%3AEQB&fields=NO%2CSYMBOL%2CNAME%2CPLATE_IDS%2CPRICE%2CPERCENT%2CUPDOWN%2CFIVE_MINUTE%2COPEN%2CYESTCLOSE%2CHIGH%2CLOW%2CVOLUME%2CTURNOVER%2CHS%2CLB%2CWB%2CZF%2CPE%2CMCAP%2CTCAP%2CMFSUM%2CMFRATIO.MFRATIO2%2CMFRATIO.MFRATIO10%2CSNAME%2CCODE%2CANNOUNMT%2CUVSNEWS&sort=PERCENT&order=desc&count=100000&type=query',
+    index = 'http://quotes.money.163.com/hs/service/hsindexrank.php?host=/hs/service/hsindexrank.php&page=0&query=IS_INDEX:true;EXCHANGE:CNSESH&fields=no,TIME,SYMBOL,NAME,PRICE,UPDOWN,PERCENT,zhenfu,VOLUME,TURNOVER,YESTCLOSE,OPEN,HIGH,LOW&sort=SYMBOL&order=asc&count=10000&type=query',
+    index = 'http://quotes.money.163.com/hs/service/hsindexrank.php?host=/hs/service/hsindexrank.php&page=0&query=IS_INDEX:true;EXCHANGE:CNSESZ&fields=no,TIME,SYMBOL,NAME,PRICE,UPDOWN,PERCENT,zhenfu,VOLUME,TURNOVER,YESTCLOSE,OPEN,HIGH,LOW&sort=SYMBOL&order=asc&count=10000&type=query'
   )
-  idx = which(names(urls_163) %in% unlist(strsplit(symbol,",")))
+  idx = which(names(urls_163) %in% unlist(strsplit(symbol,',')))
   
-  df_stock_cn = rbindlist(mapply(
-    fun_stock_163, urls_163[idx], c("stock","stock","index","index")[idx], SIMPLIFY = FALSE
-  ), fill = TRUE, idcol = 'mkt')[mkt %in% c('a','b'), mkt := 'stock']
+  df_stock_cn = try(rbindlist(mapply(
+    fun_stock_163, urls_163[idx], c('stock','stock','index','index')[idx], SIMPLIFY = FALSE
+  ), fill = TRUE), silent = TRUE)#, idcol = 'mkt')#[mkt %in% c('a','b'), mkt := 'stock']
   
   # date time of download
-  datetime = gsub("[^(0-9)]","",df_stock_cn[1,time])
-  # if (df_stock_cn[1,time] < as.POSIXct(paste(df_stock_cn[1,date], "15:00:00"))) 
-  #   cat("The close price is spot price at", as.character(datetime), "\n")
-  
-  
-  if (only_symbol) {
-    df_stock_cn = df_stock_cn[
-      , tags := mapply(tags_symbol_stockcn, symbol, market)
-    ][, c("exchange","submarket","board"):=tstrsplit(tags,",")
-    ][, tags := NULL
-    ][order(-market, exchange, symbol)
-    ][, .(market, submarket, region, exchange, board, symbol, name)]
+  datetime = gsub('[^(0-9)]','',df_stock_cn[1,time])
+  # if (df_stock_cn[1,time] < as.POSIXct(paste(df_stock_cn[1,date], '15:00:00'))) 
+  #   cat('The close price is spot price at', as.character(datetime), '\n')
+
+  if (only_symbol || show_tags) {
+    if (inherits(df_stock_cn, 'try-error')) df_stock_cn = setDT(copy(symbol_stock_163))
+    
+    df_stock_cn = symbol_163_format(df_stock_cn)
+    if ('prov' %in% names(df_stock_cn)) df_stock_cn = df_stock_cn[is.na(prov), prov := stri_unescape_unicode('\\u91cd\\u5e86')]
+    
+    if (only_symbol) df_stock_cn = df_stock_cn[
+      , .(market, submarket, region, exchange, board, symbol, name)
+      ][order(-market, exchange, symbol)]
   } else {
-    df_stock_cn = df_stock_cn[, c("market", "region") := NULL]
-      
-    if (!identical(symbol, 'index')) df_stock_cn = df_stock_cn[, c("plate_ids", "eps", "net_income", "revenue") := NULL]
+    if (!identical(symbol, 'index')) {
+      cols_rm = intersect(names(df_stock_cn), c('eps', 'net_income', 'revenue' ))
+      if (length(cols_rm)>0) df_stock_cn = df_stock_cn[, (cols_rm) := NULL]
+    }
   }
   
-  df = df_stock_cn[,unit := 'CNY'][, symbol := check_symbol_for_yahoo(symbol, mkt)][, mkt := NULL][]
+  df = df_stock_cn[,unit := 'CNY'][, symbol := check_symbol_for_yahoo(symbol, market)]#[, mkt := NULL][]
+  
+  cols_rm = intersect(names(df), c('sector', 'industry', 'province', 'region')) # 'plate_ids', 
+  if (length(cols_rm)>0) df = df[, (cols_rm) := NULL]
   return(df)
 }
 
@@ -75,31 +89,38 @@ md_stock_spotall_163 = function(symbol = c('a','index'), only_symbol = FALSE) {
 # query spot data from tx
 # hq.sinajs.cn/list=sz150206
 # http://qt.gtimg.cn/q=sz000001
-md_stock_spot_tx = function(symbol1, ...) {
-  doc=.=symbol=name=high=low=prev_close=change=change_pct=volume=amount=turnover=cap_market=cap_total=pb=pe_last=pe_trailing=pe_forward=NULL
+md_stock_spot_tx = function(symbol1, only_syb_nam = FALSE, ...) {
+  V1=V2=doc=.=symbol=name=high=low=prev_close=change=change_pct=volume=amount=turnover=cap_market=cap_total=pb=pe_last=pe_trailing=pe_forward=NULL
   
   syb = check_symbol_for_tx(symbol1)
-  dt = readLines(sprintf("http://qt.gtimg.cn/q=%s", paste0(syb, collapse=",")))
+  dt = readLines(sprintf('http://qt.gtimg.cn/q=%s', paste0(syb, collapse=',')))
 
   dt = data.table(
     doc = dt
-  )[, doc := iconv(doc, "GB18030", "UTF-8")
-    ][, doc := sub(".+=\"\\d+~(.+)\".+", "\\1", doc)
-      ][, tstrsplit(doc, "~")]
+  )[, doc := iconv(doc, 'GB18030', 'UTF-8')
+  ][, doc := sub('.+=\"\\d+~(.+)\".+', '\\1', doc)
+  ][, tstrsplit(doc, '~')]
   
+  if (only_syb_nam) {
+    return(dt[,.(symbol = V2, name = V1)])
+  }
   
-  colnames_en = c("name", "symbol", "close", "prev_close", "open",
-                  "volume", "buy", "sell", 
-                  "bid1", "bid1_volume", "bid2", "bid2_volume", "bid3", "bid3_volume", "bid4", "bid4_volume", "bid5", "bid5_volume",
-                  "ask1", "ask1_volume", "ask2", "ask2_volume", "ask3", "ask3_volume", "ask4", "ask4_volume", "ask5", "ask5_volume",
-                  "last_trade", "date", "change", "change_pct", "high", "low", 
-                  "", "volume", "amount", "turnover", 
-                  "pe_trailing", "", "high", "low", "", "cap_market", "cap_total", "pb", "", "", "", "", "average", "pe_forward", "pe_last" )
-  if (ncol(dt) == 52) dt$V53 = ''
+  colnames_en = c('name', 'symbol', 'close', 'prev_close', 'open',
+                  'volume', 'buy', 'sell', 
+                  'bid1', 'bid1_volume', 'bid2', 'bid2_volume', 'bid3', 'bid3_volume', 'bid4', 'bid4_volume', 'bid5', 'bid5_volume',
+                  'ask1', 'ask1_volume', 'ask2', 'ask2_volume', 'ask3', 'ask3_volume', 'ask4', 'ask4_volume', 'ask5', 'ask5_volume',
+                  'last_trade', 'date', 'change', 'change_pct', 'high', 'low', 
+                  '', 'volume', 'amount', 'turnover', 
+                  'pe_trailing', '', 'high', 'low', '', 'cap_market', 'cap_total', 'pb', '', '', '', '', 'average', 'pe_forward', 'pe_last' )
+  if (ncol(dt) <= 53) {
+    colnames_en = colnames_en[seq_len(ncol(dt))]
+  } else {
+    colnames_en = c(colnames_en, rep('', ncol(dt)-53))
+  }
   setnames(dt, colnames_en)
   
   num_cols = c(
-    "open", "high", "low", "close", "prev_close", "change", "change_pct", "volume", "amount", "turnover", "cap_market", "cap_total", "pb", "pe_last", "pe_trailing", "pe_forward"
+    'open', 'high', 'low', 'close', 'prev_close', 'change', 'change_pct', 'volume', 'amount', 'turnover', 'cap_market', 'cap_total', 'pb', 'pe_last', 'pe_trailing', 'pe_forward'
   )
   dt = dt[,.(
     symbol, name, date, open, high, low, close, prev_close, change, change_pct, volume, amount, turnover, cap_market, cap_total, pb, pe_last, pe_trailing, pe_forward#, 
@@ -113,12 +134,12 @@ md_stock_spot_tx = function(symbol1, ...) {
        amount = amount*10000,
        cap_market = cap_market*10^8, 
        cap_total = cap_total*10^8,
-       time = as.POSIXct(date, format="%Y%m%d%H%M%S", tz="Asia/Shanghai"),
-       date = as.Date(date, format="%Y%m%d%H%M%S")
+       time = as.POSIXct(date, format='%Y%m%d%H%M%S', tz='Asia/Shanghai'),
+       date = as.Date(date, format='%Y%m%d%H%M%S')
      )]
   
   # if (dt[1,time] < as.POSIXct(paste(dt[1,date], '15:00:00')))
-  #   cat("The close is the spot price at", dt[1, as.character(time)], "\n")
+  #   cat('The close is the spot price at', dt[1, as.character(time)], '\n')
   
   return(dt[,unit := 'CNY'])
 }
@@ -126,50 +147,50 @@ md_stock_spot_tx = function(symbol1, ...) {
 
 #' @import data.table
 #' @importFrom readr read_csv locale col_date col_character col_double col_integer
-md_stock_hist1_163 = function(symbol1, from="1900-01-01", to=Sys.Date(), zero_rm=TRUE, ...) {
+md_stock_hist1_163 = function(symbol1, from='1900-01-01', to=Sys.Date(), zero_rm=TRUE, ...) {
   V1 = name = change_pct = symbol = NULL
   # http://quotes.money.163.com/service/chddata.html?code=0000001&start=19901219&end=20180615&fields=TCLOSE;HIGH;LOW;TOPEN;LCLOSE;CHG;PCHG;VOTURNOVER;VATURNOVER
   # http://quotes.money.163.com/service/chddata.html?code=1399001&start=19910403&end=20180615&fields=TCLOSE;HIGH;LOW;TOPEN;LCLOSE;CHG;PCHG;VOTURNOVER;VATURNOVER
   # https://query1.finance.yahoo.com/v7/finance/download/^SSEC?period1=1526631424&period2=1529309824&interval=1d&events=history&crumb=mO08ZCtWRMI
   
-  # "http://api.finance.ifeng.com/akmonthly/?code=sh600000&type=last"
+  # 'http://api.finance.ifeng.com/akmonthly/?code=sh600000&type=last'
   # {'D': 'akdaily', 'W': 'akweekly', 'M': 'akmonthly'}
   
   # symbol
   syb = check_symbol_for_163(symbol1) 
 
   # date range
-  fromto = lapply(list(from=from,to=to), function(x) format(check_fromto(x), "%Y%m%d"))
+  fromto = lapply(list(from=from,to=to), function(x) format(check_fromto(x), '%Y%m%d'))
   
   # create link
   fields = c('TOPEN','HIGH','LOW','TCLOSE','LCLOSE','CHG','PCHG','VOTURNOVER','VATURNOVER','TURNOVER','MCAP','TCAP')
-  link = sprintf("http://quotes.money.163.com/service/chddata.html?code=%s&start=%s&end=%s&fields=%s", syb, fromto$from, fromto$to, paste0(fields, collapse = ';'))
-    # paste0("http://quotes.money.163.com/service/chddata.html?code=",syb,"&start=",fromto$from,"&end=",fromto$to,"&fields=TOPEN;HIGH;LOW;TCLOSE;LCLOSE;CHG;PCHG;VOTURNOVER;VATURNOVER;TURNOVER;MCAP;TCAP")
+  link = sprintf('http://quotes.money.163.com/service/chddata.html?code=%s&start=%s&end=%s&fields=%s', syb, fromto$from, fromto$to, paste0(fields, collapse = ';'))
+    # paste0('http://quotes.money.163.com/service/chddata.html?code=',syb,'&start=',fromto$from,'&end=',fromto$to,'&fields=TOPEN;HIGH;LOW;TCLOSE;LCLOSE;CHG;PCHG;VOTURNOVER;VATURNOVER;TURNOVER;MCAP;TCAP')
              
    
   
   # download data from 163
   dt <- read_csv(
-    file=link, locale = locale(encoding = "GBK"), na=c("", "NA", "None"),
-    col_types=list(col_date(format = ""), col_character(), col_character(), col_double(), col_double(), col_double(), col_double(), col_double(), col_double(), col_double(), col_double(), col_double(), col_double(), col_double(), col_double()))
+    file=link, locale = locale(encoding = 'GBK'), na=c('', 'NA', 'None'),
+    col_types=list(col_date(format = ''), col_character(), col_character(), col_double(), col_double(), col_double(), col_double(), col_double(), col_double(), col_double(), col_double(), col_double(), col_double(), col_double(), col_double()))
   attr(dt, 'spec') <- NULL
   setDT(dt)
-  # dt <- load_read_csv(link, "GBK")
+  # dt <- load_read_csv(link, 'GBK')
   
   # set names of datatable
-  cols_name = c("date", "symbol", "name", "open", "high", "low", "close", "prev_close", "change", "change_pct", "volume", "amount", "turnover", "cap_market", "cap_total")
+  cols_name = c('date', 'symbol', 'name', 'open', 'high', 'low', 'close', 'prev_close', 'change', 'change_pct', 'volume', 'amount', 'turnover', 'cap_market', 'cap_total')
   setnames(dt, cols_name)
   
   
-  # if (max(dt[["date"]]) < lwd()) dt = rbindlist(list(dt, md_stock_spot1_tx(symbol1)[,names(dt), with=FALSE]), fill = FALSE)
+  # if (max(dt[['date']]) < lwd()) dt = rbindlist(list(dt, md_stock_spot1_tx(symbol1)[,names(dt), with=FALSE]), fill = FALSE)
   dt = dt[, symbol := check_symbol_for_yahoo(symbol1)][, (cols_name[c(2,3,1,4:15)]), with=FALSE]
-  # if (max(dt[["date"]]) < lwd()) dt = unique(dt, by="date")
+  # if (max(dt[['date']]) < lwd()) dt = unique(dt, by='date')
   
   # fill zeros in dt
   if (zero_rm) {
     dt = dt[close != 0]
   } else {
-    cols_name = c("open", "high", "low", "close")
+    cols_name = c('open', 'high', 'low', 'close')
     dt = dt[, (cols_name) := lapply(.SD, fill0), .SDcols = cols_name]
   }
   
@@ -238,7 +259,7 @@ md_stock_pe1_163 = function(dat) {
   ][, date := date2]
   
   # merge mfi with dat
-  cols_fillna = c('fs_month',"BV","NIDCash", "REV_Y", 'NP', "NP_Y", 'NP_LY')
+  cols_fillna = c('fs_month','BV','NIDCash', 'REV_Y', 'NP', 'NP_Y', 'NP_LY')
   dat_pbpe = merge(
     dat, 
     mfi[, c('date', cols_fillna), with=FALSE], all = TRUE, by = 'date'
@@ -261,7 +282,7 @@ md_stock_divsplit1_163 = function(symbol1, from=NULL, to=NULL, ret = 'div') {
   date2 = date1 = fenhong = . = songgu = spl = zhuanzeng = new_issues = old_issues = issue_price = NULL
   
   # symbol1 = '000001'
-  stk_price = md_stock_spot_tx(symbol1)
+  stk_price = md_stock_spot_tx(symbol1, only_syb_nam=TRUE)
   # return dts
   div_spl = list()
   
@@ -358,9 +379,9 @@ md_stock_divsplit1_163 = function(symbol1, from=NULL, to=NULL, ret = 'div') {
 
 
 #' @import data.table
-md_stock_163 = function(symbol, from="1900-01-01", to=Sys.Date(), print_step=1L, freq = "daily", zero_rm=TRUE, ...) {
+md_stock_163 = function(symbol, from='1900-01-01', to=Sys.Date(), print_step=1L, freq = 'daily', zero_rm=TRUE, ...) {
   # frequency
-  freq = check_arg(freq, c("daily"))
+  freq = check_arg(freq, c('daily'))
   # type 
   type = list(...)[['type']]
   type = check_arg(type, c('spot', 'history', 'dividend', 'split'), default = 'history')
@@ -373,16 +394,16 @@ md_stock_163 = function(symbol, from="1900-01-01", to=Sys.Date(), print_step=1L,
   if (type == 'spot') {
     fuc = 'md_stock_spot_tx'
     if (length(intersect(symbol, c('a','b','index'))) > 0) fuc = 'md_stock_spotall_163'
-    dat_list <- try(do.call(fuc, args=list(symbol=symbol)), silent = TRUE)
+    dat_list <- try(do.call(fuc, args=list(symbol=symbol, ...)), silent = TRUE)
       
   }  else if (type == 'history') {
     dat_list = load_dat_loop(symbol, 'md_stock_hist1_163', args = c(list(from = from, to = to, zero_rm = zero_rm), arg_lst), print_step=print_step)
     
   } else if (type == 'dividend') (
-    dat_list = load_dat_loop(symbol, "md_stock_divsplit1_163", args = list(from = from, to = to, ret = 'div'), print_step=print_step)
+    dat_list = load_dat_loop(symbol, 'md_stock_divsplit1_163', args = list(from = from, to = to, ret = 'div'), print_step=print_step)
     
   ) else if (type == 'split') {
-    dat_list = load_dat_loop(symbol, "md_stock_divsplit1_163", args = list(from = from, to = to, ret = c('spl','rig')), print_step=print_step)
+    dat_list = load_dat_loop(symbol, 'md_stock_divsplit1_163', args = list(from = from, to = to, ret = c('spl','rig')), print_step=print_step)
     
   }
   

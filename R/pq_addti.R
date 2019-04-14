@@ -31,7 +31,15 @@
 #   return(roll_max(x, n = n, align = "right", fill = NA, ...))
 # }
 
+bias = function(x, n=10, maType='SMA') {
+  bias_orig = (x/do.call(maType, list(x=x, n=n))-1)*100
+  
+  bias_orig/runSD(bias_orig, n = 1, cumulative = TRUE)
+}
 
+maroc = function(x, n=10, m=3, maType='SMA') {
+  ROC(do.call(maType, list(x=x, n=n)), n=m)*100
+}
 
 # [1] "adjRatios" "growth" "lags" "rollSFM" "runPercentRank"  
 # Technical Overlays / Indicators
@@ -41,7 +49,7 @@ ti_overlays_indicators = function() {
                  'runMin', 'runMax', 'runMean', 'runMedian', 
                  'BBands', 'PBands', 
                  'DonchianChannel', 'SAR', 'ZigZag'),
-    indicators = c('runSD', 'runMAD', 'aroon', 'CCI', 'VHF', 'TDI', 'ADX', 'ATR', 'EMV', 'chaikinVolatility', 'volatility', 'OBV', 'chaikinAD', 'CLV', 'CMF', 'MFI', 'williamsAD', 'ROC', 'momentum', 'KST', 'TRIX', 'MACD', 'DPO', 'DVI', 'ultimateOscillator', 'RSI', 'CMO', 'stoch', 'SMI', 'WPR')
+    indicators = c('runSD', 'runMAD', 'aroon', 'CCI', 'VHF', 'TDI', 'ADX', 'ATR', 'EMV', 'chaikinVolatility', 'volatility', 'OBV', 'chaikinAD', 'CLV', 'CMF', 'MFI', 'williamsAD', 'ROC', 'momentum', 'KST', 'TRIX', 'MACD', 'DPO', 'DVI', 'ultimateOscillator', 'RSI', 'CMO', 'stoch', 'SMI', 'WPR', 'bias', 'maroc')
   )
 }
 
@@ -186,7 +194,7 @@ ti_fst_arg = function() {
     HL   = c('aroon', 'EMV', 'chaikinVolatility', 'DonchianChannel', 'SAR', 'ZigZag'), 
     price  = c('TDI', 'VHF', 'OBV', 'KST', 'TRIX', 'EVWMA', 'VWAP', 'DVI', 'RSI'),
     prices = 'PBands',
-    x = c('ROC','momentum','SMA','EMA','DEMA','WMA','ZLEMA','VMA','HMA','ALMA','GMMA','runSum','runMin','runMax','runMean','runMedian','runCov','runCor','runVar','runSD','runMAD','wilderSum','MACD','DPO','CMO')
+    x = c('ROC','momentum','SMA','EMA','DEMA','WMA','ZLEMA','VMA','HMA','ALMA','GMMA','runSum','runMin','runMax','runMean','runMedian','runCov','runCor','runVar','runSD','runMAD','wilderSum','MACD','DPO','CMO', 'bias', 'maroc')
   )
 }
 ti_sec_arg = function() {
@@ -242,7 +250,10 @@ addti1 = function(dt, ti, col_formula = FALSE, ...) {
     if (length(w)==1 & inherits(w, "character")) w = dt[,w,with=FALSE]
     arg_lst = c(arg_lst, list(w=w))
   }
-  arg_lst = c(arg_lst, list(...))
+  arg_lst = c(
+    arg_lst, 
+    list(...)[setdiff(names(list(...)), c('color', 'position', 'hline', 'height'))]
+  )
   arg_lst = arg_lst[unique(names(arg_lst))]
   dtti = data.table(do.call(ti, args = arg_lst))
   
@@ -337,7 +348,7 @@ pq1_addti = function(dt, ...) {
 #'    \item volatility measures: ATR, chaikinVolatility, volatility, SNR
 #'    \item money flowing into/out: OBV, chaikinAD, CLV, CMF, MFI, williamsAD
 #'    \item rate of change / momentum: ROC, momentum, KST, TRIX
-#'    \item oscillator: MACD, DPO, DVI, ultimateOscillator; RSI, CMO; stoch, WPR, SMI
+#'    \item oscillator: MACD, DPO, DVI, ultimateOscillator; RSI, CMO; stoch, SMI, WPR
 #' }
 #'
 #' @examples 

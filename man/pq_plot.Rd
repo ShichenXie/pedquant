@@ -52,22 +52,22 @@ pq_plot(dt, chart_type = "line", freq = NULL, date_range = "max",
 \examples{
 \donttest{
 # single symbol
-ssec = md_stock("^000001", source="163", date_range = 'max')
+ssec = md_stock('^000001', source='163', date_range = 'max')
 
 # chart type
-  pq_plot(ssec, chart_type = "line",   date_range = '6m') # line chart (default)
-# pq_plot(ssec, chart_type = "step",   date_range = '6m') # step line
-# pq_plot(ssec, chart_type = "candle", date_range = '6m') # candlestick
-# pq_plot(ssec, chart_type = "bar",    date_range = '6m') # bar chart
+  pq_plot(ssec, chart_type = 'line',   date_range = '6m') # line chart (default)
+# pq_plot(ssec, chart_type = 'step',   date_range = '6m') # step line
+# pq_plot(ssec, chart_type = 'candle', date_range = '6m') # candlestick
+# pq_plot(ssec, chart_type = 'bar',    date_range = '6m') # bar chart
 
 # add technical indicators
-pq_plot(ssec, chart_type = "line", addti = list(
+pq_plot(ssec, chart_type = 'line', addti = list(
         sma = list(n = 200), 
         sma = list(n = 50), 
         macd = list()
 ))
 # linear trend with yaxis in log
-pq_plot(ssec, chart_type = "line", linear_trend = c(-0.8, 0, 0.8), yaxis_log = TRUE)
+pq_plot(ssec, chart_type = 'line', linear_trend = c(-0.8, 0, 0.8), yaxis_log = TRUE)
 
 
 # multiple symbols
