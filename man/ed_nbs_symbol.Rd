@@ -4,7 +4,7 @@
 \alias{ed_nbs_symbol}
 \title{symbol of NBS economic data}
 \usage{
-ed_nbs_symbol(geo_type = NULL, freq = NULL, eng = FALSE)
+ed_nbs_symbol(geo_type = NULL, freq = NULL, eng = TRUE)
 }
 \arguments{
 \item{geo_type}{geography type in NBS, including 'national', 'province', 'city'. Default is NULL.}

@@ -52,31 +52,31 @@ w_summary = function(w) {
   return(w)
 }
 
-#' creating the equity trends for portfolio 
-#' 
-#' \code{pq_portfolio} creates the equity trends of a portfolio secturites. 
-#' 
-#' @param dt a list/dataframe of time series dataset
-#' @param w a dataframe of position and price of all transactions. 
-#' @param init_equity initial equity
-#' @param date_range date range. Available value includes '1m'-'11m', 'ytd', 'max' and '1y'-'ny'. Default is max.
-#' @param from the start date. Default is NULL. If it is NULL, then calculate using date_range and end date.
-#' @param to the end date. Default is the current date.
-#' @param x the name of column to calculate. Default is 'close|value'.
-#' @param summarise logical, whether to display summary of portfolio position
-#' 
-#' @examples 
-#' \donttest{
-#' dat = md_stock(c('FB', 'AMZN', 'AAPL', 'NFLX', 'GOOG'), date_range = 'max')
-#' w = data.frame(
-#'       date = c('2016-01-08'),
-#'       symbol = c('FB', 'AMZN', 'AAPL', 'NFLX', 'GOOG'), 
-#'       price = c(99.88, 618.88, 97.88, 115.88, 716.88),
-#'       position = c(100, 200, 300, 400, 500)
-#'     )
-#' pf = pq_portfolio(dat, w)
-#' }
-#' @export
+# creating the equity trends for portfolio 
+# 
+# \code{pq_portfolio} creates the equity trends of a portfolio secturites. 
+# 
+# @param dt a list/dataframe of time series dataset
+# @param w a dataframe of position and price of all transactions. 
+# @param init_equity initial equity
+# @param date_range date range. Available value includes '1m'-'11m', 'ytd', 'max' and '1y'-'ny'. Default is max.
+# @param from the start date. Default is NULL. If it is NULL, then calculate using date_range and end date.
+# @param to the end date. Default is the current date.
+# @param x the name of column to calculate. Default is 'close|value'.
+# @param summarise logical, whether to display summary of portfolio position
+# 
+# @examples 
+# \donttest{
+# dat = md_stock(c('FB', 'AMZN', 'AAPL', 'NFLX', 'GOOG'), date_range = 'max')
+# w = data.frame(
+#       date = c('2016-01-08'),
+#       symbol = c('FB', 'AMZN', 'AAPL', 'NFLX', 'GOOG'), 
+#       price = c(99.88, 618.88, 97.88, 115.88, 716.88),
+#       position = c(100, 200, 300, 400, 500)
+#     )
+# pf = pq_portfolio(dat, w)
+# }
+# @export
 pq_portfolio = function(dt, w, init_equity=NULL, date_range='max', from=NULL, to=Sys.Date(), x='close|value', summarise = FALSE) {
     . = symbol = current_equity = position = value = change = price = cum_equity = cash_value = NULL
   

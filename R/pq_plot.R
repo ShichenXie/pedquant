@@ -829,7 +829,7 @@ pq_plot = function(
     color_up = '#F6736D', color_down = '#18C0C4', 
     multi_series = list(nrow=NULL, ncol=NULL), 
     rm_weekend = NULL, title = NULL, ...) {
-    symbol=.=prev_close=name=title1=updn_2day=change=change_pct=price_str11=NULL
+    xcol=symbol=.=prev_close=name=title1=updn_2day=change=change_pct=price_str11=NULL
     
     ## change freq of input data
     if (!is.null(freq) || match.arg(freq, 'daily')!='daily') {
@@ -852,10 +852,10 @@ pq_plot = function(
         rm(dat_lst)
     }
     dt = lapply(dt, function(d) {
-        x <<- intersect(names(d), unlist(strsplit(x,'\\|')))[1]
-        if (x != 'close') d[['close']] = d[[x]]
+        xcol <<- intersect(names(d), unlist(strsplit(x,'\\|')))[1]
+        if (xcol != 'close')           d[['close']]  = d[[xcol]]
         if (!('symbol' %in% names(d))) d[['symbol']] = 'symbol'
-        if (!('name' %in% names(d))) d[['name']] = 'name'
+        if (!('name'   %in% names(d))) d[['name']]   = 'name'
         return(d)
     })
     ## bind list of dataframes
@@ -888,7 +888,7 @@ pq_plot = function(
     if (all(c('close', 'open') %in% names(dt))) dt[is.na(updn_2day), updn_2day := ifelse(close > open, 'up', 'down')]
     
     # subtitle / legend string
-    xcol = x
+    # xcol = x
     subtitle_str = dt[, .SD[.N], by = symbol]
     subtitle_str = subtitle_str[, `:=`(
         price_str = sprintf("atop(bold('%s')~'%.2f'~bold('Chg')~'%.2f(%.2f%%)')", xcol,close,change,change_pct),

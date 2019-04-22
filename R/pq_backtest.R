@@ -71,22 +71,22 @@ co  = function(a, b) setDT(list(a=a,b=b))[, a>b & shift(b>=a,type='lag')]
 # order type: limit, stoplimit, stoptrailing, market, iceberg
 
 
-#' Strategy backtesting
-#' 
-#' \code{pq_backtest} provides a simple way to backtest a trade strategy.
-#' 
-#' @param dt a list/dataframe of time series dataset
-#' @param addti list of technical indicators or numerical columes in dt. For technical indicator, it is calculated via \code{pq_addti}, which including overlay and oscillator indicators.
-#' @param init_equity initial equity
-#' @param date_range date range. Available value includes '1m'-'11m', 'ytd', 'max' and '1y'-'ny'. Default is max.
-#' @param from the start date. Default is NULL. If it is NULL, then calculate using date_range and end date.
-#' @param to the end date. Default is the current date.
-#' @param rule rules of trade strategy.
-#' @param stp_lmt_pct stop limit percent
-#' @param show_plot show plot
-#' @param ... Additional parameters
-#' 
-#' @export
+# Strategy backtesting
+# 
+# \code{pq_backtest} provides a simple way to backtest a trade strategy.
+# 
+# @param dt a list/dataframe of time series dataset
+# @param addti list of technical indicators or numerical columes in dt. For technical indicator, it is calculated via \code{pq_addti}, which including overlay and oscillator indicators.
+# @param init_equity initial equity
+# @param date_range date range. Available value includes '1m'-'11m', 'ytd', 'max' and '1y'-'ny'. Default is max.
+# @param from the start date. Default is NULL. If it is NULL, then calculate using date_range and end date.
+# @param to the end date. Default is the current date.
+# @param rule rules of trade strategy.
+# @param stp_lmt_pct stop limit percent
+# @param show_plot show plot
+# @param ... Additional parameters
+# 
+# @export
 pq_backtest = function(
     dt,
     addti = NULL, 

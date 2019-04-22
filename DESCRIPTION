@@ -11,7 +11,7 @@ Depends:
     R (>= 3.1.0)
 Imports: 
     data.table, TTR, zoo, 
-    curl, xml2, httr, rvest,
+    curl, xml2, httr, rvest, webdriver, 
     jsonlite, stringi, 
     readxl, readr, 
     ggplot2, scales, gridExtra

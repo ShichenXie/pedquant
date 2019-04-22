@@ -80,7 +80,7 @@ md_stock_spotall_163 = function(symbol = c('a','index'), only_symbol = FALSE, sh
   
   df = df_stock_cn[,unit := 'CNY'][, symbol := check_symbol_for_yahoo(symbol, market)]#[, mkt := NULL][]
   
-  cols_rm = intersect(names(df), c('sector', 'industry', 'province', 'region')) # 'plate_ids', 
+  cols_rm = intersect(names(df), c('sector', 'industry', 'province', 'plate_ids', 'region')) # , 
   if (length(cols_rm)>0) df = df[, (cols_rm) := NULL]
   return(df)
 }

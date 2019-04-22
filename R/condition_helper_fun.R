@@ -273,7 +273,7 @@ check_freq_isdaily = function(dt) {
 # download and read excel file from website
 #' @importFrom readxl read_excel
 # @importFrom utils download.file
-#' @importFrom curl curl_download new_handle
+#' @importFrom curl curl_download new_handle 
 load_read_xl = function(url, handle=new_handle()) {
     temp = tempfile()
     on.exit(unlink(temp))
@@ -283,6 +283,7 @@ load_read_xl = function(url, handle=new_handle()) {
     
     return(setDT(dat))
 }
+
 
 #download and read csv file from website
 #' @importFrom utils download.file read.csv
