@@ -31,7 +31,7 @@ dim_nbs_db = function() {
 nbs_read_json = function(url) {
   pjs <- try(run_phantomjs(), silent = TRUE)
   if (inherits(pjs, 'try-error')) {
-    cat('Installing phantomjs ...\n')
+    cat('Installing phantomjs via webdriver::install_phantomjs ...\n')
     install_phantomjs()
   }
   ses <- Session$new(port = pjs$port)
