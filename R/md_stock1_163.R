@@ -3,7 +3,7 @@
 #' @importFrom jsonlite fromJSON
 #' @importFrom stringi stri_unescape_unicode
 md_stock_spotall_163 = function(symbol = c('a','index'), only_symbol = FALSE, show_tags = FALSE, ...) {
-  prov = tags = market = exchange = time = . = submarket = region = board = name = mkt = NULL
+  prov = tags = market = exchange = time = . = submarket = region = board = name = mkt = indu = sec = NULL
     
   fun_stock_163 = function(urli, mkt) {
     code = symbol = exchange = . = name = high = low = price = yestclose = updown = percent = hs = volume = turnover = mcap = tcap = pe = mfsum = net_income = revenue = plate_ids = time = NULL
@@ -68,9 +68,15 @@ md_stock_spotall_163 = function(symbol = c('a','index'), only_symbol = FALSE, sh
     df_stock_cn = symbol_163_format(df_stock_cn)
     if ('prov' %in% names(df_stock_cn)) df_stock_cn = df_stock_cn[is.na(prov), prov := stri_unescape_unicode('\\u91cd\\u5e86')]
     
-    if (only_symbol) df_stock_cn = df_stock_cn[
-      , .(market, submarket, region, exchange, board, symbol, name)
-      ][order(-market, exchange, symbol)]
+    if (only_symbol & show_tags) {
+      df_stock_cn = df_stock_cn[
+        , .(market, submarket, region, exchange, board, symbol, name, prov, sec, indu)
+        ][order(-market, exchange, symbol)]
+    } else if (only_symbol) {
+      df_stock_cn = df_stock_cn[
+        , .(market, submarket, region, exchange, board, symbol, name)
+        ][order(-market, exchange, symbol)]
+    }
   } else {
     if (!identical(symbol, 'index')) {
       cols_rm = intersect(names(df_stock_cn), c('eps', 'net_income', 'revenue' ))

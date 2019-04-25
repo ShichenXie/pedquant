@@ -274,7 +274,7 @@ nbs_jsondat_format = function(jsondat) {
 
 #' query NBS economic data
 #' 
-#' \code{ed_nbs} provides an interface to query economic data from National Bureau of Statistics of China (NBS, \url{http://data.stats.gov.cn/}).
+#' \code{ed_nbs} provides an interface to query economic data from National Bureau of Statistics of China (NBS, http://data.stats.gov.cn/).
 #' 
 #' @param symbol symbols of NBS indicators. It is available via \code{ed_nbs_symbol}. Default is NULL.
 #' @param freq the frequency of NBS indicators, including 'monthly', 'quarterly', 'yearly'. Default is NULL.
