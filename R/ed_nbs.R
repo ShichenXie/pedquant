@@ -20,33 +20,33 @@ dim_nbs_db = function() {
   return(nbs_db)
 }
 
-# check http status
-# @import httr
-# check_http_status_nbs = function(x) {
-#   if (http_status(x)$category != "Success") stop(http_status(x)$message)
-# }
+
 
 #' @importFrom webdriver run_phantomjs Session install_phantomjs
 #' @importFrom rvest html_nodes html_text %>%
-nbs_read_json = function(url) {
+nbs_read_json = function(url, eng=FALSE) {
   pjs <- try(run_phantomjs(), silent = TRUE)
   if (inherits(pjs, 'try-error')) {
     cat('Installing phantomjs via webdriver::install_phantomjs ...\n')
     install_phantomjs()
+    pjs <- try(run_phantomjs(), silent = TRUE)
   }
   ses <- Session$new(port = pjs$port)
   ses$go(url)
+  wb = ses$getSource()
   
-  dt = read_html(ses$getSource()) %>% 
+  dt = read_html(wb) %>% 
     html_nodes('pre') %>% 
     html_text() %>% 
     fromJSON()
+  
+  if (eng == FALSE) warning('The Chinese characters cannot be encoded when using phantomjs in webdriver package.')
   return(dt)
 }
 # query a symbol from nbs
 #' @import data.table httr 
 #' @importFrom jsonlite fromJSON 
-nbs_symbol1 = function(geo_type=NULL, freq=NULL, symbol='zb', eng=TRUE) {
+nbs_symbol1 = function(geo_type=NULL, freq=NULL, symbol='zb', eng=FALSE) {
   dim_geo_type = dim_freq = dim_region = dim_sta_db = . = id = name = isParent = pid = NULL
   
   #param
@@ -58,13 +58,18 @@ nbs_symbol1 = function(geo_type=NULL, freq=NULL, symbol='zb', eng=TRUE) {
     dim_region=='cn' & dim_geo_type==geo_type & dim_freq==freq , dim_sta_db]
   
   # query symbol list from nbs
-  url_syb = sprintf('%s?id=%s&dbcode=%s&wdcode=zb&m=getTree', url_nbs, symbol, nbs_geo)
-  # zb_query = list(m="getTree", dbcode=nbs_geo, wdcode="zb", id=symbol)
-  # zb_req = POST(url_nbs, body=zb_query, encode="form")
-  # check_http_status_nbs(zb_req)
-  # zb_list = fromJSON(content(url_syb, "text", encoding="utf-8"))
+  zb_func = function(url_nbs, nbs_geo, symbol) {
+    zb_query = list(m="getTree", dbcode=nbs_geo, wdcode="zb", id=symbol)
+    zb_req = POST(url_nbs, body=zb_query, encode="form")
+    zb_list = fromJSON(content(zb_req, "text", encoding="utf-8"))
+    return(zb_list)
+  }
+  zb_list = try(zb_func(url_nbs, nbs_geo, symbol), silent = TRUE)
   
-  zb_list = try(nbs_read_json(url_syb), silent = TRUE)
+  if (inherits(zb_list, 'try-error')) {
+    url_syb = sprintf('%s?id=%s&dbcode=%s&wdcode=zb&m=getTree', url_nbs, symbol, nbs_geo)
+    zb_list = try(nbs_read_json(url_syb, eng), silent = TRUE)
+  }
   if (inherits(zb_list, 'try-error')) stop('The data from NBS is not available.')
   zb_list = setDT(zb_list)[,.(symbol=id, name, is_parent=isParent, parent_symbol=pid)]
   return(zb_list)
@@ -87,10 +92,8 @@ nbs_symbol1 = function(geo_type=NULL, freq=NULL, symbol='zb', eng=TRUE) {
 #' @importFrom jsonlite fromJSON 
 #' @importFrom utils menu data
 #' @export
-ed_nbs_symbol = function(geo_type=NULL, freq=NULL, eng=TRUE) {
+ed_nbs_symbol = function(geo_type=NULL, freq=NULL, eng=FALSE) {
   symbol = is_parent = NULL
-  
-  if (eng == FALSE) warning('The Chinese characters cannot be encoded when using phantomjs in webdriver package.')
   
   # geography type
   geo_type = check_arg(geo_type, choices = c("national", "province", "city"), arg_name = 'geo_type')
@@ -119,7 +122,7 @@ ed_nbs_symbol = function(geo_type=NULL, freq=NULL, eng=TRUE) {
 #' \code{ed_nbs_subregion} query province or city code from NBS
 #' 
 #' @param geo_type geography type in NBS, including 'province', 'city'. Default is NULL.
-#' @param eng logical. The language of the query results is in English or in Chinese. Default is TRUE.
+#' @param eng logical. The language of the query results is in English or in Chinese. Default is FALSE.
 #' 
 #' @examples 
 #' \donttest{
@@ -135,10 +138,8 @@ ed_nbs_symbol = function(geo_type=NULL, freq=NULL, eng=TRUE) {
 #' }
 #' @importFrom jsonlite fromJSON 
 #' @export
-ed_nbs_subregion = function(geo_type=NULL, eng=TRUE) {
+ed_nbs_subregion = function(geo_type=NULL, eng=FALSE) {
   dim_region = dim_geo_type = dim_sta_db = . = code = name = NULL
-  
-  if (eng == FALSE) warning('The Chinese characters cannot be encoded when using phantomjs in webdriver package.')
   
   # param
   url_nbs = sel_nbs_url(eng)
@@ -156,21 +157,26 @@ ed_nbs_subregion = function(geo_type=NULL, eng=TRUE) {
   if (geo_type == 'city') wds='[{"wdcode":"reg","valuecode":"000000"}]'
   
   # # query subregion
-  # query_list = list(
-  #   m="getOtherWds",
-  #   dbcode=nbs_geo,
-  #   rowcode='zb',
-  #   colcode='sj',
-  #   wds=wds, 
-  #   # dfwds=paste0('[{"wdcode":"sj","valuecode":"LAST10"}]'),
-  #   k1=time_sec
-  # )
-  # req = GET(url_nbs, query=query_list)
-  # check_http_status_nbs(req)
-  # jsondat = fromJSON(content(req, "text", encoding="utf-8"))
+  dat_func = function(url_nbs, nbs_geo, wds, time_sec) {
+    query_list = list(
+      m="getOtherWds",
+      dbcode=nbs_geo,
+      rowcode='zb',
+      colcode='sj',
+      wds=wds,
+      # dfwds=paste0('[{"wdcode":"sj","valuecode":"LAST10"}]'),
+      k1=time_sec
+    )
+    req = GET(url_nbs, query=query_list)
+    jsondat = fromJSON(content(req, "text", encoding="utf-8"))
+    return(jsondat)
+  }
+  jsondat = try(dat_func(url_nbs, nbs_geo, wds, time_sec), silent = TRUE)
   
-  url_reg = sprintf('%s?m=getOtherWds&dbcode=%s&rowcode=zb&colcode=sj&wds=%s&k1=%s', url_nbs, nbs_geo, wds, time_sec)
-  jsondat = try(nbs_read_json(url_reg), silent = TRUE)
+  if (inherits(jsondat, 'try-error')) {
+    url_reg = sprintf('%s?m=getOtherWds&dbcode=%s&rowcode=zb&colcode=sj&wds=%s&k1=%s', url_nbs, nbs_geo, wds, time_sec)
+    jsondat = try(nbs_read_json(url_reg, eng), silent = TRUE)
+  }
   if (inherits(jsondat, 'try-error')) stop('The data from NBS is not available.')
   regdf = setDT(jsondat$returndata$nodes[[1]])[,.(code, name)]
   return(regdf)
@@ -178,7 +184,7 @@ ed_nbs_subregion = function(geo_type=NULL, eng=TRUE) {
 
 #  query data # zb symbol, sj date, reg subregion
 #' @importFrom jsonlite fromJSON 
-ed1_nbs = function(nbs_geo, symbol1, subregion=NULL, from, eng=TRUE) {
+ed1_nbs = function(nbs_geo, symbol1, subregion=NULL, from, eng=FALSE) {
   url_nbs = sel_nbs_url(eng)
   time_sec = as.character(date_to_sec()*100)
   
@@ -199,22 +205,29 @@ ed1_nbs = function(nbs_geo, symbol1, subregion=NULL, from, eng=TRUE) {
   
   dfwds=paste0('[{"wdcode":"zb","valuecode":"',symbol1,'"},{"wdcode":"sj","valuecode":"',sj_value,'"}]')
   
-  # # query list
-  # query_list = list(
-  #   m="QueryData",
-  #   dbcode=nbs_geo,
-  #   rowcode=rowcode,
-  #   colcode='sj',
-  #   wds=wds,
-  #   dfwds=dfwds,
-  #   k1=time_sec
-  # )
-  # req = GET(url_nbs, query=query_list)
-  # check_http_status_nbs(req)
-  # jsondat = fromJSON(content(req, "text", encoding="utf-8"))
-  url_dat = sprintf('%s?m=QueryData&dbcode=%s&rowcode=%s&colcode=sj&wds=%s&dfwds=%s&k1=%s', url_nbs, nbs_geo, rowcode, wds, dfwds, time_sec)
-  jsondat = try(nbs_read_json(url_dat), silent = TRUE)
+  # query list
+  dat_func = function(url_nbs, nbs_geo, rowcode, wds, dfwds, time_sec) {
+    query_list = list(
+      m="QueryData",
+      dbcode=nbs_geo,
+      rowcode=rowcode,
+      colcode='sj',
+      wds=wds,
+      dfwds=dfwds,
+      k1=time_sec
+    )
+    req = GET(url_nbs, query=query_list)
+    jsondat = fromJSON(content(req, "text", encoding="utf-8"))
+    return(jsondat)
+  }
+  jsondat = try(dat_func(url_nbs, nbs_geo, rowcode, wds, dfwds, time_sec), silent = TRUE)
+  
+  if (inherits(jsondat, 'try-error')) {
+    url_dat = sprintf('%s?m=QueryData&dbcode=%s&rowcode=%s&colcode=sj&wds=%s&dfwds=%s&k1=%s', url_nbs, nbs_geo, rowcode, wds, dfwds, time_sec)
+    jsondat = try(nbs_read_json(url_dat, eng), silent = TRUE)
+  }
   if (inherits(jsondat, 'try-error')) stop('The data from NBS is not available.')
+  
   return(jsondat)
 }
 
@@ -284,7 +297,7 @@ nbs_jsondat_format = function(jsondat) {
 #' @param from the start date. Default is NULL. If it is NULL, then calculate using date_range and end date.
 #' @param to the end date. Default is the current date.
 #' @param na_rm logical. Whether to remove missing values from datasets. Default is FALSE.
-#' @param eng logical. The language of the query results is in English or in Chinese Default is TRUE.
+#' @param eng logical. The language of the query results is in English or in Chinese Default is FALSE.
 #' 
 #' @examples 
 #' \donttest{
@@ -308,10 +321,9 @@ nbs_jsondat_format = function(jsondat) {
 #' 
 #' @import data.table
 #' @export
-ed_nbs = function(symbol=NULL, freq=NULL, geo_type=NULL, subregion=NULL, date_range='10y', from=NULL, to=Sys.Date(), na_rm=FALSE, eng=TRUE) {
+ed_nbs = function(symbol=NULL, freq=NULL, geo_type=NULL, subregion=NULL, date_range='10y', from=NULL, to=Sys.Date(), na_rm=FALSE, eng=FALSE) {
   code=dim_geo_type=dim_freq=dim_sta_db=geo_code=value=NULL
-  
-  if (eng == FALSE) warning('The Chinese characters cannot be encoded when using phantomjs in webdriver package.')
+
   # arguments
   ## geography type
   geo_type = check_arg(geo_type, c("national", "province", "city"), arg_name = 'geo_type')

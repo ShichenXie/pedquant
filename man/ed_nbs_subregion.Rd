@@ -4,12 +4,12 @@
 \alias{ed_nbs_subregion}
 \title{subregion code of NBS economic data}
 \usage{
-ed_nbs_subregion(geo_type = NULL, eng = TRUE)
+ed_nbs_subregion(geo_type = NULL, eng = FALSE)
 }
 \arguments{
 \item{geo_type}{geography type in NBS, including 'province', 'city'. Default is NULL.}
 
-\item{eng}{logical. The language of the query results is in English or in Chinese. Default is TRUE.}
+\item{eng}{logical. The language of the query results is in English or in Chinese. Default is FALSE.}
 }
 \description{
 \code{ed_nbs_subregion} query province or city code from NBS

@@ -17,7 +17,10 @@ adjust_ohlc = function(dt, source, adjust_on = 'dividend', ...) {
     } else if (source == '163') {
         symbol1 = dt[1, tstrsplit(symbol, '\\.')][,V1]
         ds = try(md_stock_divsplit1_163(symbol1, ret = c('div', 'spl', 'rig')), silent = TRUE)
-        if (inherits(ds, 'try-error')) return(dt)
+        if (inherits(ds, 'try-error')) {
+            warning(sprintf('Returning original data for %s',symbol1))
+            return(dt)
+        }
         
         # data to calculate adjust factor
         ddtt = Reduce(function(x,y) merge(x,y,all=TRUE,by='date'), 

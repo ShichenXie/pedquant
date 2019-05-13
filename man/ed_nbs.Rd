@@ -6,7 +6,7 @@
 \usage{
 ed_nbs(symbol = NULL, freq = NULL, geo_type = NULL,
   subregion = NULL, date_range = "10y", from = NULL,
-  to = Sys.Date(), na_rm = FALSE, eng = TRUE)
+  to = Sys.Date(), na_rm = FALSE, eng = FALSE)
 }
 \arguments{
 \item{symbol}{symbols of NBS indicators. It is available via \code{ed_nbs_symbol}. Default is NULL.}
@@ -25,7 +25,7 @@ ed_nbs(symbol = NULL, freq = NULL, geo_type = NULL,
 
 \item{na_rm}{logical. Whether to remove missing values from datasets. Default is FALSE.}
 
-\item{eng}{logical. The language of the query results is in English or in Chinese Default is TRUE.}
+\item{eng}{logical. The language of the query results is in English or in Chinese Default is FALSE.}
 }
 \description{
 \code{ed_nbs} provides an interface to query economic data from National Bureau of Statistics of China (NBS, http://data.stats.gov.cn/).
