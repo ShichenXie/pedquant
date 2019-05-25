@@ -7,7 +7,7 @@
 ed_nbs_symbol(geo_type = NULL, freq = NULL, eng = FALSE)
 }
 \arguments{
-\item{geo_type}{geography type in NBS, including 'national', 'province', 'city'. Default is NULL.}
+\item{geo_type}{geography type in NBS, including 'nation', 'province', 'city'. Default is NULL.}
 
 \item{freq}{the frequency of NBS indicators, including 'monthly', 'quarterly', 'yearly'. Default is NULL.}
 

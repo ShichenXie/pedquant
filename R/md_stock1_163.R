@@ -79,14 +79,14 @@ md_stock_spotall_163 = function(symbol = c('a','index'), only_symbol = FALSE, sh
     }
   } else {
     if (!identical(symbol, 'index')) {
-      cols_rm = intersect(names(df_stock_cn), c('eps', 'net_income', 'revenue' ))
+      cols_rm = intersect(names(df_stock_cn), c('eps', 'net_income', 'revenue'))
       if (length(cols_rm)>0) df_stock_cn = df_stock_cn[, (cols_rm) := NULL]
     }
   }
   
   df = df_stock_cn[,unit := 'CNY'][, symbol := check_symbol_for_yahoo(symbol, market)]#[, mkt := NULL][]
   
-  cols_rm = intersect(names(df), c('sector', 'industry', 'province', 'plate_ids', 'region')) # , 
+  cols_rm = intersect(names(df), c('sector', 'industry', 'province', 'plate_ids', 'region', 'prev_close')) # , 
   if (length(cols_rm)>0) df = df[, (cols_rm) := NULL]
   return(df)
 }
@@ -147,7 +147,7 @@ md_stock_spot_tx = function(symbol1, only_syb_nam = FALSE, ...) {
   # if (dt[1,time] < as.POSIXct(paste(dt[1,date], '15:00:00')))
   #   cat('The close is the spot price at', dt[1, as.character(time)], '\n')
   
-  return(dt[,unit := 'CNY'])
+  return(dt[, `:=`(unit = 'CNY')])
 }
 
 
@@ -186,7 +186,7 @@ md_stock_hist1_163 = function(symbol1, from='1900-01-01', to=Sys.Date(), zero_rm
   # set names of datatable
   cols_name = c('date', 'symbol', 'name', 'open', 'high', 'low', 'close', 'prev_close', 'change', 'change_pct', 'volume', 'amount', 'turnover', 'cap_market', 'cap_total')
   setnames(dt, cols_name)
-  
+  setkeyv(dt, 'date')
   
   # if (max(dt[['date']]) < lwd()) dt = rbindlist(list(dt, md_stock_spot1_tx(symbol1)[,names(dt), with=FALSE]), fill = FALSE)
   dt = dt[, symbol := check_symbol_for_yahoo(symbol1)][, (cols_name[c(2,3,1,4:15)]), with=FALSE]
@@ -215,7 +215,7 @@ md_stock_hist1_163 = function(symbol1, from='1900-01-01', to=Sys.Date(), zero_rm
   }
   
   # create unit/name columns
-  dt = dt[, unit := 'CNY'][, name := name[.N]]
+  dt = dt[, `:=`(unit = 'CNY')]#[, name := name[.N]]
   setkeyv(dt, 'date')
   return(dt)
 }
@@ -414,6 +414,11 @@ md_stock_163 = function(symbol, from='1900-01-01', to=Sys.Date(), print_step=1L,
   }
   
   
+  dat_list = lapply(dat_list, function(x) {
+    cols_rm = intersect(names(x), c('prev_close', 'change', 'change_pct'))
+    if (length(cols_rm)>0) x = x[, (cols_rm) := NULL]
+    return(x)
+  })
   return(dat_list)
 }
 

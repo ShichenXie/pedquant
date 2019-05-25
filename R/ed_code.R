@@ -1,22 +1,22 @@
 
 #' code list by category
 #' 
-#' \code{pd_code} get the code list of country, currency, stock exchange and commodity exchange.
+#' \code{ed_code} get the code list of country, currency, stock exchange and commodity exchange.
 #' 
 #' @param cate The available category values including 'country', 'currency', 'stock_exchange', 'commodity_exchange'.
 #' 
 #' @examples 
 #' \donttest{
 #' # specify the categories
-#' code_list1 = pd_code(cate = c('country', 'currency'))
+#' code_list1 = ed_code(cate = c('country', 'currency'))
 #' 
 #' # interactivly return code list
-#' code_list2 = pd_code()
+#' code_list2 = ed_code()
 #' 
 #' }
 #' 
 #' @export
-pd_code = function(cate=NULL) {
+ed_code = function(cate=NULL) {
     code_category = c('country', 'currency', 'stock_exchange', 'commodity_exchange')
     
     # market category

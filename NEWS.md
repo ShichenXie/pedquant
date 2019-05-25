@@ -1,4 +1,8 @@
-# pedquant 0.1.0.99
+# pedquant 0.1.1.999
+
+* Modified ed_nbs functions to load data in Chinese
+
+# pedquant 0.1.1
 
 * Added functions of pq_portfolio and pq_backtest
 * Fixed multiple bugs in pq_plot.

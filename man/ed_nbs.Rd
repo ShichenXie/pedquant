@@ -13,7 +13,7 @@ ed_nbs(symbol = NULL, freq = NULL, geo_type = NULL,
 
 \item{freq}{the frequency of NBS indicators, including 'monthly', 'quarterly', 'yearly'. Default is NULL.}
 
-\item{geo_type}{geography type in NBS, including 'national', 'province', 'city'. Default is NULL.}
+\item{geo_type}{geography type in NBS, including 'nation', 'province', 'city'. Default is NULL.}
 
 \item{subregion}{codes of province or city, which is available via \code{ed_nbs_subregion}. Default is NULL.}
 
@@ -36,8 +36,8 @@ ed_nbs(symbol = NULL, freq = NULL, geo_type = NULL,
 dt = ed_nbs()
 
 # specify paratmeters
-dt1 = ed_nbs(geo_type='national', freq='quarterly', symbol='A010101')
-# or using 'n'/'q' represents 'national'/'quarterly'
+dt1 = ed_nbs(geo_type='nation', freq='quarterly', symbol='A010101')
+# or using 'n'/'q' represents 'nation'/'quarterly'
 dt2 = ed_nbs(geo_type='n', freq='q', symbol='A010101')
 
 

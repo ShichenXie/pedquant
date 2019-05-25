@@ -13,7 +13,7 @@ sel_nbs_url = function(eng) {
 dim_nbs_db = function() {
   nbs_db = setDT(list(
     dim_region   = rep('cn',8),
-    dim_geo_type = rep(c('national', 'province', 'city'), c(3,3,2)),
+    dim_geo_type = rep(c('nation', 'province', 'city'), c(3,3,2)),
     dim_freq     = c("monthly","quarterly","yearly", "monthly","quarterly","yearly", "monthly","yearly"),
     dim_sta_db   = c("hgyd","hgjd","hgnd","fsyd","fsjd","fsnd","csyd","csnd")
   ))
@@ -22,18 +22,9 @@ dim_nbs_db = function() {
 
 
 
-#' @importFrom webdriver run_phantomjs Session install_phantomjs
 #' @importFrom rvest html_nodes html_text %>%
 nbs_read_json = function(url, eng=FALSE) {
-  pjs <- try(run_phantomjs(), silent = TRUE)
-  if (inherits(pjs, 'try-error')) {
-    cat('Installing phantomjs via webdriver::install_phantomjs ...\n')
-    install_phantomjs()
-    pjs <- try(run_phantomjs(), silent = TRUE)
-  }
-  ses <- Session$new(port = pjs$port)
-  ses$go(url)
-  wb = ses$getSource()
+  wb = load_web_source(url)
   
   dt = read_html(wb) %>% 
     html_nodes('pre') %>% 
@@ -79,7 +70,7 @@ nbs_symbol1 = function(geo_type=NULL, freq=NULL, symbol='zb', eng=FALSE) {
 #' 
 #' \code{ed_nbs_symbol} provides an interface to query symbols of economic indicators from NBS.
 #' 
-#' @param geo_type geography type in NBS, including 'national', 'province', 'city'. Default is NULL.
+#' @param geo_type geography type in NBS, including 'nation', 'province', 'city'. Default is NULL.
 #' @param freq the frequency of NBS indicators, including 'monthly', 'quarterly', 'yearly'. Default is NULL.
 #' @param eng logical. The language of the query results is in English or in Chinese. Default is FALSE.
 #' 
@@ -96,7 +87,7 @@ ed_nbs_symbol = function(geo_type=NULL, freq=NULL, eng=FALSE) {
   symbol = is_parent = NULL
   
   # geography type
-  geo_type = check_arg(geo_type, choices = c("national", "province", "city"), arg_name = 'geo_type')
+  geo_type = check_arg(geo_type, choices = c("nation", "province", "city"), arg_name = 'geo_type')
   # frequency
   if (geo_type=="city") {
     freq = check_arg(freq, choices = c("monthly", "yearly"), arg_name = 'freq')
@@ -147,7 +138,7 @@ ed_nbs_subregion = function(geo_type=NULL, eng=FALSE) {
   
   # geography type
   geo_type = check_arg(geo_type, c("province", "city"), default = NULL, arg_name = 'geo_type')
-  if (geo_type == 'national') return(NULL)
+  if (geo_type == 'nation') return(NULL)
   # name of geography in NBS
   nbs_geo = dim_nbs_db()[
     dim_region=='cn' & dim_geo_type==geo_type, ][.N,dim_sta_db]
@@ -291,7 +282,7 @@ nbs_jsondat_format = function(jsondat) {
 #' 
 #' @param symbol symbols of NBS indicators. It is available via \code{ed_nbs_symbol}. Default is NULL.
 #' @param freq the frequency of NBS indicators, including 'monthly', 'quarterly', 'yearly'. Default is NULL.
-#' @param geo_type geography type in NBS, including 'national', 'province', 'city'. Default is NULL.
+#' @param geo_type geography type in NBS, including 'nation', 'province', 'city'. Default is NULL.
 #' @param subregion codes of province or city, which is available via \code{ed_nbs_subregion}. Default is NULL.
 #' @param date_range date range. Available value includes '1m'-'11m', 'ytd', 'max' and '1y'-'ny'. Default is '10y'.
 #' @param from the start date. Default is NULL. If it is NULL, then calculate using date_range and end date.
@@ -305,8 +296,8 @@ nbs_jsondat_format = function(jsondat) {
 #' dt = ed_nbs()
 #' 
 #' # specify paratmeters
-#' dt1 = ed_nbs(geo_type='national', freq='quarterly', symbol='A010101')
-#' # or using 'n'/'q' represents 'national'/'quarterly'
+#' dt1 = ed_nbs(geo_type='nation', freq='quarterly', symbol='A010101')
+#' # or using 'n'/'q' represents 'nation'/'quarterly'
 #' dt2 = ed_nbs(geo_type='n', freq='q', symbol='A010101')
 #' 
 #' 
@@ -326,7 +317,7 @@ ed_nbs = function(symbol=NULL, freq=NULL, geo_type=NULL, subregion=NULL, date_ra
 
   # arguments
   ## geography type
-  geo_type = check_arg(geo_type, c("national", "province", "city"), arg_name = 'geo_type')
+  geo_type = check_arg(geo_type, c("nation", "province", "city"), arg_name = 'geo_type')
   ## frequency
   if (geo_type=="city") {
     freq = check_arg(freq, choices = c("monthly", "yearly"), arg_name = 'freq')
@@ -364,7 +355,7 @@ ed_nbs = function(symbol=NULL, freq=NULL, geo_type=NULL, subregion=NULL, date_ra
   for (i in sybs) {
     temp = dat[symbol==i]
     setkeyv(temp, c('geo_code','date'))
-    dat_lst[[i]] = temp
+    dat_lst[[i]] = temp[,geo_code := NULL]
   }
   return(dat_lst)
 }

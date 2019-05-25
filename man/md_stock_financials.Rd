@@ -4,15 +4,12 @@
 \alias{md_stock_financials}
 \title{query financial statements}
 \usage{
-md_stock_financials(symbol, type = NULL, source = "163",
-  print_step = 1L)
+md_stock_financials(symbol, type = NULL, print_step = 1L)
 }
 \arguments{
 \item{symbol}{symbol of stock shares.}
 
 \item{type}{the type of financial statements.}
-
-\item{source}{the data source is '163' (http://money.163.com).}
 
 \item{print_step}{A non-negative integer. Print symbol name by each print_step iteration. Default is 1L.}
 }

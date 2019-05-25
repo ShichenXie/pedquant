@@ -306,6 +306,19 @@ load_read_csv = function(url, encode="UTF-8", handle=new_handle()) {
 }
 
 
+#' @importFrom webdriver run_phantomjs Session install_phantomjs
+load_web_source = function(url) {
+    pjs <- try(run_phantomjs(), silent = TRUE)
+    if (inherits(pjs, 'try-error')) {
+        cat('Installing phantomjs ...\n')
+        install_phantomjs()
+        pjs <- try(run_phantomjs(), silent = TRUE)
+    }
+    ses <- Session$new(port = pjs$port)
+    ses$go(url)
+    wb = ses$getSource()
+    return(wb)
+}
 
 # fill 0/na in a vector with last non 0/na value
 fill0 = function(x, from_last = FALSE) {

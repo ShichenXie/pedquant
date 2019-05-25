@@ -1,6 +1,6 @@
 # https://github.com/joshuaulrich/quantmod/blob/a8e9cb87825c0997a8468f5105db6c507b26ac5d/R/adjustOHLC.R
 adjust_ohlc = function(dt, source, adjust_on = 'dividend', ...) {
-    close_adj=ratio=symbol=V1=.=dividends=splits=issue_rate=issue_price=prev_close=factor_adj_spl=factor_adj_div=factor_adj=volume=NULL
+    close_adj=ratio=symbol=V1=.=dividends=splits=issue_rate=issue_price=prev_close=factor_adj_spl=factor_adj_div=factor_adj=volume=name=NULL
     
     cols_ohlc = c('open', 'high', 'low', 'close')
     if (!all(cols_ohlc %in% names(dt))) return(dt)
@@ -45,7 +45,7 @@ adjust_ohlc = function(dt, source, adjust_on = 'dividend', ...) {
             
         # adjusting ohlc price
         adj_cols = c('factor_adj_spl', 'factor_adj')
-        dt = merge(dt, fac_adj_dt, by = 'date', all.x = TRUE
+        dt_adj = merge(dt, fac_adj_dt, by = 'date', all.x = TRUE
             )[order(date)
             ][, (adj_cols) := lapply(.SD, function(x) shift(x, type = 'lead')), .SDcols=adj_cols
             ][, (adj_cols) := lapply(.SD, function(x) fillna(x, from_last = TRUE)), .SDcols=adj_cols
@@ -53,14 +53,16 @@ adjust_ohlc = function(dt, source, adjust_on = 'dividend', ...) {
             ][is.na(factor_adj), factor_adj := 1
             ][, (cols_ohlc) := lapply(.SD, function(x) x/factor_adj), .SDcols = cols_ohlc
             ][, `:=`(
+                symbol = NULL, name = NULL, 
                 volume = volume*factor_adj_spl,
-                prev_close = shift(close, type = 'lag'),
-                change = close - shift(close, type = 'lag'),
-                change_pct = close/shift(close, type = 'lag') - 1,
+                # prev_close = shift(close, type = 'lag'),
+                # change = close - shift(close, type = 'lag'),
+                # change_pct = close/shift(close, type = 'lag') - 1,
                 factor_adj = NULL, 
                 factor_adj_spl = NULL, 
                 factor_adj_div = NULL
             )]
+        dt = cbind(dt[,.(symbol, name)], dt_adj)
         
     }
     return(dt)

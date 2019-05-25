@@ -52,6 +52,7 @@ fs_symbol1_cn = function(symbol, type) {
 fs_cn = function(symbol, type=NULL, print_step=1L) {
     . = name = name_en = NULL
   
+    if (type == 'summary') return(fs_cn1_summary(symbol))
     # type
     fs_type_163 = setDT(copy(financial_statements_163))
     type = select_rows_df(dt = fs_type_163[,.(type, name, name_en)], column = 'type', input_string=type)[,type]
@@ -128,7 +129,6 @@ fs_cn1_summary = function(symbol1) {
 #' \code{md_stock_financials} provides an interface to query financial statements and indicators of listed companies in SSE and SZSE.
 #' 
 #' @param symbol symbol of stock shares.
-#' @param source the data source is '163' (http://money.163.com).
 #' @param type the type of financial statements. 
 #' @param print_step A non-negative integer. Print symbol name by each print_step iteration. Default is 1L.
 #' 
@@ -149,8 +149,9 @@ fs_cn1_summary = function(symbol1) {
 #' }
 #' 
 #' @export
-md_stock_financials = function(symbol, type=NULL, source="163", print_step=1L) {
-    if (source == "163") return(fs_cn(symbol, type, print_step))
+md_stock_financials = function(symbol, type=NULL, print_step=1L) {
+    # if (source == "163") 
+  return(fs_cn(symbol, type, print_step))
 }
 
 

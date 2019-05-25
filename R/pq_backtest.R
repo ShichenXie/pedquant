@@ -150,15 +150,16 @@ pq_backtest = function(
     
     if (show_plot) {
         w2 = w[,.(date, w_price=price, w_position=position, w_type=type)]
-        perf = pq_perf(pq_portfolio(ssec, w))[['equity']][,.(date, performance=value)]
+        perf = pq_perf(pq_portfolio(dt, w, init_equity = init_equity))[['equity']][,.(date, performance=value)]
         
         addti_lst = list(w=list(), performance=list())
         show_ti = list(...)$show_ti
+        if (is.null(show_ti)) show_ti = FALSE
         if (show_ti) addti_lst = c(addti_lst, addti)
         
         p = pq_plot(
             dt = Reduce(function(x,y) merge(x,y, all=TRUE, by='date'), list(dt, w2, perf)),
-            addti = addti_lst, ...)
+            addti = addti_lst, date_range = 'max')
         print(p)
     }
     return(w)

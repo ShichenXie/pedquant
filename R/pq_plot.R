@@ -271,10 +271,7 @@ pp_step = function(
     # add new row
     dtN_update = copy(dt_N)[, `:=`(
         date = Sys.Date(), rowid = rowid+1, prev_x = x
-    )][, x := sapply(x, function(x) {
-        x = ifelse(rm_weekend, rowid, date)
-        return(x)
-    })]
+    )][, x := date][rm_weekend, x := rowid]
     dt = rbindlist(list(dt, dtN_update), fill = TRUE)
     setkeyv(dt, c('symbol', 'date'))
     

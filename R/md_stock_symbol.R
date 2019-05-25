@@ -1,5 +1,12 @@
 # query china stock symbol list from cninfo.com.cn
 # @import RSelenium rvest data.table
+sym_stock_cninfo = function(return_url=FALSE) {
+  # 'http://www.sse.com.cn/assortment/stock/list/share/'
+  # 'http://www.szse.cn/market/companys/company/index.html'
+    
+}
+
+
 sym_stock_cn_cninfo = function(return_url=FALSE) {
   code_name = submarket = type = . = board = delist_date = exchange = name = read_html = remoteDriver = suspend_date = symbol = NULL
   html_nodes = `%>%` = html_text = html_attr = NULL
