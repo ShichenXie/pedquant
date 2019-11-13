@@ -73,6 +73,7 @@ nbs_symbol1 = function(geo_type=NULL, freq=NULL, symbol='zb', eng=FALSE) {
 #' @param geo_type geography type in NBS, including 'nation', 'province', 'city'. Default is NULL.
 #' @param freq the frequency of NBS indicators, including 'monthly', 'quarterly', 'yearly'. Default is NULL.
 #' @param eng logical. The language of the query results is in English or in Chinese. Default is FALSE.
+#' @param ... Additional parameters
 #' 
 #' @examples 
 #' # query symbol interactively
@@ -83,7 +84,7 @@ nbs_symbol1 = function(geo_type=NULL, freq=NULL, symbol='zb', eng=FALSE) {
 #' @importFrom jsonlite fromJSON 
 #' @importFrom utils menu data
 #' @export
-ed_nbs_symbol = function(geo_type=NULL, freq=NULL, eng=FALSE) {
+ed_nbs_symbol = function(geo_type=NULL, freq=NULL, eng=FALSE, ...) {
   symbol = is_parent = NULL
   
   # geography type
@@ -95,11 +96,14 @@ ed_nbs_symbol = function(geo_type=NULL, freq=NULL, eng=FALSE) {
     freq = check_arg(freq, choices = c("monthly", "quarterly", "yearly"), arg_name = 'freq')
   }
   
-  sel_symbol = NULL
+  sel_symbol = list(...)[['symbol']]
   is_parent = TRUE
-  while (is_parent) {
+  len_symbol_df = 1
+  while (is_parent & len_symbol_df>0) {
     symbol_df = nbs_symbol1(geo_type, freq, sel_symbol, eng)
-    sel_symbol = select_rows_df(symbol_df, column='symbol', onerow=TRUE)
+    len_symbol_df = nrow(symbol_df)
+    
+    if (len_symbol_df>0) sel_symbol = select_rows_df(symbol_df, column='symbol', onerow=TRUE) else break
     is_parent = sel_symbol[, is_parent]
     sel_symbol = sel_symbol[, symbol]
   }
@@ -325,7 +329,8 @@ ed_nbs = function(symbol=NULL, freq=NULL, geo_type=NULL, subregion=NULL, date_ra
     freq = check_arg(freq, choices = c("monthly", "quarterly", "yearly"), arg_name = 'freq')
   }
   ## symbol
-  if (is.null(symbol)) symbol = ed_nbs_symbol(geo_type, freq, eng)
+  symbol = ed_nbs_symbol(geo_type, freq, eng, symbol=symbol)
+  
   ## subregion
   if (geo_type %in% c('province', 'city')) {
     subregion_df = ed_nbs_subregion(geo_type, eng)
