@@ -70,10 +70,10 @@ nbs_symbol1 = function(geo_type=NULL, freq=NULL, symbol='zb', eng=FALSE) {
 #' 
 #' \code{ed_nbs_symbol} provides an interface to query symbols of economic indicators from NBS.
 #' 
+#' @param symbol symbols of NBS indicators.
 #' @param geo_type geography type in NBS, including 'nation', 'province', 'city'. Default is NULL.
 #' @param freq the frequency of NBS indicators, including 'monthly', 'quarterly', 'yearly'. Default is NULL.
 #' @param eng logical. The language of the query results is in English or in Chinese. Default is FALSE.
-#' @param ... Additional parameters
 #' 
 #' @examples 
 #' # query symbol interactively
@@ -84,8 +84,8 @@ nbs_symbol1 = function(geo_type=NULL, freq=NULL, symbol='zb', eng=FALSE) {
 #' @importFrom jsonlite fromJSON 
 #' @importFrom utils menu data
 #' @export
-ed_nbs_symbol = function(geo_type=NULL, freq=NULL, eng=FALSE, ...) {
-  symbol = is_parent = NULL
+ed_nbs_symbol = function(symbol=NULL, geo_type=NULL, freq=NULL, eng=FALSE) {
+  is_parent = NULL
   
   # geography type
   geo_type = check_arg(geo_type, choices = c("nation", "province", "city"), arg_name = 'geo_type')
@@ -96,7 +96,7 @@ ed_nbs_symbol = function(geo_type=NULL, freq=NULL, eng=FALSE, ...) {
     freq = check_arg(freq, choices = c("monthly", "quarterly", "yearly"), arg_name = 'freq')
   }
   
-  sel_symbol = list(...)[['symbol']]
+  sel_symbol = symbol
   is_parent = TRUE
   len_symbol_df = 1
   while (is_parent & len_symbol_df>0) {
@@ -329,7 +329,7 @@ ed_nbs = function(symbol=NULL, freq=NULL, geo_type=NULL, subregion=NULL, date_ra
     freq = check_arg(freq, choices = c("monthly", "quarterly", "yearly"), arg_name = 'freq')
   }
   ## symbol
-  symbol = ed_nbs_symbol(geo_type, freq, eng, symbol=symbol)
+  symbol = ed_nbs_symbol(symbol=symbol, geo_type, freq, eng)
   
   ## subregion
   if (geo_type %in% c('province', 'city')) {

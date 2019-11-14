@@ -20,6 +20,7 @@ navbar:
 reference:
   - title: "query economic data"      
     contents:
+      - '`ed_code`'
       - '`ed_fred`'
       - '`ed_fred_symbol`'
       - '`ed_nbs`'
@@ -35,7 +36,6 @@ reference:
       - '`md_stock_symbol`'
   - title: "quantitative analysis" 
     contents:
-      - '`pd_code`'
       - '`pq_addti`'
       - '`pq_index`'
       - '`pq_perf`'

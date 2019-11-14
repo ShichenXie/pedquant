@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>symbol of future market data — md_future_symbol • pedquant</title>
+<title>code list by category — ed_code • pedquant</title>
 
 
 <!-- jquery -->
@@ -35,8 +35,8 @@
 
 
 
-<meta property="og:title" content="symbol of future market data — md_future_symbol" />
-<meta property="og:description" content="md_future_symbol search the symbols in future market indicators that provided by sina finance only currently." />
+<meta property="og:title" content="code list by category — ed_code" />
+<meta property="og:description" content="ed_code get the code list of country, currency, stock exchange and commodity exchange." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -106,77 +106,38 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>symbol of future market data</h1>
-    <small class="dont-index">Source: <a href='https://github.com/ShichenXie/pedquant/blob/master/R/md_future.R'><code>R/md_future.R</code></a></small>
-    <div class="hidden name"><code>md_future_symbol.Rd</code></div>
+    <h1>code list by category</h1>
+    <small class="dont-index">Source: <a href='https://github.com/ShichenXie/pedquant/blob/master/R/ed_code.R'><code>R/ed_code.R</code></a></small>
+    <div class="hidden name"><code>ed_code.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p><code>md_future_symbol</code> search the symbols in future market indicators that provided by sina finance only currently.</p>
+    <p><code>ed_code</code> get the code list of country, currency, stock exchange and commodity exchange.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>md_future_symbol</span>()</pre>
+    <pre class="usage"><span class='fu'>ed_code</span>(<span class='kw'>cate</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
 
+    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
+    <table class="ref-arguments">
+    <colgroup><col class="name" /><col class="desc" /></colgroup>
+    <tr>
+      <th>cate</th>
+      <td><p>The available category values including 'country', 'currency', 'stock_exchange', 'commodity_exchange'.</p></td>
+    </tr>
+    </table>
 
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='co'># \donttest{</span>
-<span class='co'># interactivly search future market symbols</span>
-<span class='no'>sybs</span> <span class='kw'>=</span> <span class='fu'>md_future_symbol</span>()</div><div class='output co'>#&gt;         board symbol        name exchange
-#&gt;  1: energy       J0  焦炭           dce  
-#&gt;  2: energy       JM0 焦煤           dce  
-#&gt;  3: energy       L0  乙烯塑料       dce  
-#&gt;  4: energy       PP0 聚丙烯PP       dce  
-#&gt;  5: energy       V0  PVC            dce  
-#&gt;  6: energy       BU0 沥青           shfe 
-#&gt;  7: energy       FU0 燃油           shfe 
-#&gt;  8: energy       RU0 橡胶           shfe 
-#&gt;  9: energy       SC0 原油           shfe 
-#&gt; 10: energy       MA0 郑醇           zce  
-#&gt; 11: energy       TA0 PTA            zce  
-#&gt; 12: energy       ZC0 动力煤         zce  
-#&gt; 13: financial    IC0 中证500指数    cffex
-#&gt; 14: financial    IF0 沪深300指数    cffex
-#&gt; 15: financial    IH0 上证50指数     cffex
-#&gt; 16: financial    T   10年期国债     cffex
-#&gt; 17: financial    TF0 5年期国债      cffex
-#&gt; 18: grain        A0  豆一           dce  
-#&gt; 19: grain        B0  豆二           dce  
-#&gt; 20: grain        C0  玉米           dce  
-#&gt; 21: grain        CS0 玉米淀粉       dce  
-#&gt; 22: grain        JD0 鸡蛋           dce  
-#&gt; 23: grain        M0  豆粕           dce  
-#&gt; 24: grain        Y0  豆油           dce  
-#&gt; 25: grain        JR0 粳稻           zce  
-#&gt; 26: grain        LR0 晚籼稻         zce  
-#&gt; 27: grain        OI0 菜油           zce  
-#&gt; 28: grain        RI0 早籼稻         zce  
-#&gt; 29: grain        RM0 菜粕           zce  
-#&gt; 30: grain        RS0 菜籽           zce  
-#&gt; 31: grain        WH0 强麦           zce  
-#&gt; 32: metal        I0  铁矿石         dce  
-#&gt; 33: metal        AG0 白银           sge  
-#&gt; 34: metal        AU0 黄金           sge  
-#&gt; 35: metal        AL0 沪铝           shfe 
-#&gt; 36: metal        CU0 沪铜           shfe 
-#&gt; 37: metal        HC0 热轧卷板       shfe 
-#&gt; 38: metal        NI0 沪镍           shfe 
-#&gt; 39: metal        PB0 沪铅           shfe 
-#&gt; 40: metal        RB0 螺纹钢         shfe 
-#&gt; 41: metal        SN0 沪锡           shfe 
-#&gt; 42: metal        WR0 线材           shfe 
-#&gt; 43: metal        ZN0 沪锌           shfe 
-#&gt; 44: metal        SF0 硅铁           zce  
-#&gt; 45: metal        SM0 锰硅           zce  
-#&gt; 46: other        BB0 胶合板         dce  
-#&gt; 47: other        FB0 纤维板         dce  
-#&gt; 48: other        FG0 玻璃           zce  
-#&gt; 49: soft         P0  棕榈           dce  
-#&gt; 50: soft         CF0 棉花           zce  
-#&gt; 51: soft         CY0 棉纱           zce  
-#&gt; 52: soft         SR0 白糖           zce  
-#&gt;         board symbol        name exchange
-#&gt; select rows via ('r'+rowid) or (symbol): </div><div class='input'>
+<span class='co'># specify the categories</span>
+<span class='no'>code_list1</span> <span class='kw'>=</span> <span class='fu'>ed_code</span>(<span class='kw'>cate</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>'country'</span>, <span class='st'>'currency'</span>))</div><div class='output co'>#&gt; <span class='warning'>Warning: the condition has length &gt; 1 and only the first element will be used</span></div><div class='output co'>#&gt; <span class='warning'>Warning: argument 'pattern' has length &gt; 1 and only the first element will be used</span></div><div class='input'>
+<span class='co'># interactivly return code list</span>
+<span class='no'>code_list2</span> <span class='kw'>=</span> <span class='fu'>ed_code</span>()</div><div class='output co'>#&gt;         code_category
+#&gt; 1: country           
+#&gt; 2: currency          
+#&gt; 3: stock_exchange    
+#&gt; 4: commodity_exchange
+#&gt; select rows via ('r'+rowid) or (code_category): </div><div class='input'>
 # }
 
 </div></pre>
@@ -184,6 +145,7 @@
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
+      <li><a href="#arguments">Arguments</a></li>
       <li><a href="#examples">Examples</a></li>
     </ul>
 

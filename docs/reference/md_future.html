@@ -8,21 +8,25 @@
 
 <title>query future market data — md_future • pedquant</title>
 
+
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
 <!-- Bootstrap -->
 <link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.3.7/flatly/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous" />
 
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script>
 
 <!-- Font Awesome icons -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/all.min.css" integrity="sha256-nAmazAk6vS34Xqo0BSrTb+abbtFlgsFK7NKSi6o7Y78=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/v4-shims.min.css" integrity="sha256-6qHlizsOWFskGlwVOKuns+D1nB6ssZrHQrNj1wGplHc=" crossorigin="anonymous" />
 
 <!-- clipboard.js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script>
 
-<!-- sticky kit -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-kit/1.1.3/sticky-kit.min.js" integrity="sha256-c4Rlo1ZozqTPE2RLuvbusY3+SU1pQaJC0TjuhygMipw=" crossorigin="anonymous"></script>
+<!-- headroom.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/headroom.min.js" integrity="sha256-DJFC1kqIhelURkuza0AvYal5RxMtpzLjFhsnVIeuk+U=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script>
 
 <!-- pkgdown -->
 <link href="../pkgdown.css" rel="stylesheet">
@@ -30,10 +34,11 @@
 
 
 
-<meta property="og:title" content="query future market data — md_future" />
 
+<meta property="og:title" content="query future market data — md_future" />
 <meta property="og:description" content="md_future query future market prices data. Only Chinese future market has been considered currently." />
 <meta name="twitter:card" content="summary" />
+
 
 
 
@@ -45,6 +50,7 @@
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 <![endif]-->
+
 
 
   </head>
@@ -63,7 +69,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pedquant</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.2</span>
       </span>
     </div>
 
@@ -79,7 +85,6 @@
   <a href="../news/index.html">News</a>
 </li>
       </ul>
-      
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/ShichenXie/getpedr">
@@ -95,6 +100,7 @@
 </div><!--/.navbar -->
 
       
+
       </header>
 
 <div class="row">
@@ -106,14 +112,12 @@
     </div>
 
     <div class="ref-description">
-    
     <p><code>md_future</code> query future market prices data. Only Chinese future market has been considered currently.</p>
-    
     </div>
 
     <pre class="usage"><span class='fu'>md_future</span>(<span class='kw'>symbol</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>source</span> <span class='kw'>=</span> <span class='st'>"sina"</span>, <span class='kw'>freq</span> <span class='kw'>=</span> <span class='st'>"daily"</span>,
-  <span class='kw'>date_range</span> <span class='kw'>=</span> <span class='st'>"3y"</span>, <span class='kw'>from</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>to</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/Sys.time'>Sys.Date</a></span>(), <span class='kw'>print_step</span> <span class='kw'>=</span> <span class='fl'>1L</span>)</pre>
-    
+  <span class='kw'>date_range</span> <span class='kw'>=</span> <span class='st'>"3y"</span>, <span class='kw'>from</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>to</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/Sys.time.html'>Sys.Date</a></span>(), <span class='kw'>print_step</span> <span class='kw'>=</span> <span class='fl'>1L</span>)</pre>
+
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
@@ -146,15 +150,125 @@
       <td><p>a non-negative integer, which will print symbol name by each print_step iteration. Default is 1L.</p></td>
     </tr>
     </table>
-    
+
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><span class='co'># NOT RUN {</span>
-<span class='no'>dt1</span> <span class='kw'>=</span> <span class='fu'>md_future</span>(<span class='kw'>symbol</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>'J0'</span>, <span class='st'>'RB0'</span>, <span class='st'>'M0'</span>, <span class='st'>'CF0'</span>, <span class='st'>'IH0'</span>, <span class='st'>'IF0'</span>, <span class='st'>'IC0'</span>))
-
+    <pre class="examples"><div class='input'><span class='co'># \donttest{</span>
+<span class='no'>dt1</span> <span class='kw'>=</span> <span class='fu'>md_future</span>(<span class='kw'>symbol</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>'J0'</span>, <span class='st'>'RB0'</span>, <span class='st'>'M0'</span>, <span class='st'>'CF0'</span>, <span class='st'>'IH0'</span>, <span class='st'>'IF0'</span>, <span class='st'>'IC0'</span>))</div><div class='output co'>#&gt; 1/7 J0
+#&gt; 2/7 RB0
+#&gt; 3/7 M0
+#&gt; 4/7 CF0
+#&gt; 5/7 IH0
+#&gt; 6/7 IF0
+#&gt; 7/7 IC0</div><div class='input'>
 <span class='co'># interactivly choose symbols</span>
-<span class='no'>dt2</span> <span class='kw'>=</span> <span class='fu'>md_future</span>()
-<span class='co'># }</span><div class='input'>
+<span class='no'>dt2</span> <span class='kw'>=</span> <span class='fu'>md_future</span>()</div><div class='output co'>#&gt;         board symbol        name exchange
+#&gt;  1: energy       J0  焦炭           dce  
+#&gt;  2: energy       JM0 焦煤           dce  
+#&gt;  3: energy       L0  乙烯塑料       dce  
+#&gt;  4: energy       PP0 聚丙烯PP       dce  
+#&gt;  5: energy       V0  PVC            dce  
+#&gt;  6: energy       BU0 沥青           shfe 
+#&gt;  7: energy       FU0 燃油           shfe 
+#&gt;  8: energy       RU0 橡胶           shfe 
+#&gt;  9: energy       SC0 原油           shfe 
+#&gt; 10: energy       MA0 郑醇           zce  
+#&gt; 11: energy       TA0 PTA            zce  
+#&gt; 12: energy       ZC0 动力煤         zce  
+#&gt; 13: financial    IC0 中证500指数    cffex
+#&gt; 14: financial    IF0 沪深300指数    cffex
+#&gt; 15: financial    IH0 上证50指数     cffex
+#&gt; 16: financial    T   10年期国债     cffex
+#&gt; 17: financial    TF0 5年期国债      cffex
+#&gt; 18: grain        A0  豆一           dce  
+#&gt; 19: grain        B0  豆二           dce  
+#&gt; 20: grain        C0  玉米           dce  
+#&gt; 21: grain        CS0 玉米淀粉       dce  
+#&gt; 22: grain        JD0 鸡蛋           dce  
+#&gt; 23: grain        M0  豆粕           dce  
+#&gt; 24: grain        Y0  豆油           dce  
+#&gt; 25: grain        JR0 粳稻           zce  
+#&gt; 26: grain        LR0 晚籼稻         zce  
+#&gt; 27: grain        OI0 菜油           zce  
+#&gt; 28: grain        RI0 早籼稻         zce  
+#&gt; 29: grain        RM0 菜粕           zce  
+#&gt; 30: grain        RS0 菜籽           zce  
+#&gt; 31: grain        WH0 强麦           zce  
+#&gt; 32: metal        I0  铁矿石         dce  
+#&gt; 33: metal        AG0 白银           sge  
+#&gt; 34: metal        AU0 黄金           sge  
+#&gt; 35: metal        AL0 沪铝           shfe 
+#&gt; 36: metal        CU0 沪铜           shfe 
+#&gt; 37: metal        HC0 热轧卷板       shfe 
+#&gt; 38: metal        NI0 沪镍           shfe 
+#&gt; 39: metal        PB0 沪铅           shfe 
+#&gt; 40: metal        RB0 螺纹钢         shfe 
+#&gt; 41: metal        SN0 沪锡           shfe 
+#&gt; 42: metal        WR0 线材           shfe 
+#&gt; 43: metal        ZN0 沪锌           shfe 
+#&gt; 44: metal        SF0 硅铁           zce  
+#&gt; 45: metal        SM0 锰硅           zce  
+#&gt; 46: other        BB0 胶合板         dce  
+#&gt; 47: other        FB0 纤维板         dce  
+#&gt; 48: other        FG0 玻璃           zce  
+#&gt; 49: soft         P0  棕榈           dce  
+#&gt; 50: soft         CF0 棉花           zce  
+#&gt; 51: soft         CY0 棉纱           zce  
+#&gt; 52: soft         SR0 白糖           zce  
+#&gt;         board symbol        name exchange
+#&gt; select rows via ('r'+rowid) or (symbol): 
+#&gt;  1/52 J0
+#&gt;  2/52 JM0
+#&gt;  3/52 L0
+#&gt;  4/52 PP0
+#&gt;  5/52 V0
+#&gt;  6/52 BU0
+#&gt;  7/52 FU0
+#&gt;  8/52 RU0
+#&gt;  9/52 SC0
+#&gt; 10/52 MA0
+#&gt; 11/52 TA0
+#&gt; 12/52 ZC0
+#&gt; 13/52 IC0
+#&gt; 14/52 IF0
+#&gt; 15/52 IH0
+#&gt; 16/52 T</div><div class='output co'>#&gt; <span class='warning'>Warning: NAs introduced by coercion</span></div><div class='output co'>#&gt; <span class='warning'>Warning: NAs introduced by coercion</span></div><div class='output co'>#&gt; <span class='warning'>Warning: NAs introduced by coercion</span></div><div class='output co'>#&gt; <span class='warning'>Warning: NAs introduced by coercion</span></div><div class='output co'>#&gt; <span class='warning'>Warning: NAs introduced by coercion</span></div><div class='output co'>#&gt; 17/52 TF0
+#&gt; 18/52 A0
+#&gt; 19/52 B0
+#&gt; 20/52 C0
+#&gt; 21/52 CS0
+#&gt; 22/52 JD0
+#&gt; 23/52 M0
+#&gt; 24/52 Y0
+#&gt; 25/52 JR0
+#&gt; 26/52 LR0
+#&gt; 27/52 OI0
+#&gt; 28/52 RI0
+#&gt; 29/52 RM0
+#&gt; 30/52 RS0
+#&gt; 31/52 WH0
+#&gt; 32/52 I0
+#&gt; 33/52 AG0
+#&gt; 34/52 AU0
+#&gt; 35/52 AL0
+#&gt; 36/52 CU0
+#&gt; 37/52 HC0
+#&gt; 38/52 NI0
+#&gt; 39/52 PB0
+#&gt; 40/52 RB0
+#&gt; 41/52 SN0
+#&gt; 42/52 WR0
+#&gt; 43/52 ZN0
+#&gt; 44/52 SF0
+#&gt; 45/52 SM0
+#&gt; 46/52 BB0
+#&gt; 47/52 FB0
+#&gt; 48/52 FG0
+#&gt; 49/52 P0
+#&gt; 50/52 CF0
+#&gt; 51/52 CY0
+#&gt; 52/52 SR0</div><div class='input'># }
+
 
 </div></pre>
   </div>
@@ -162,12 +276,12 @@
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
-            
       <li><a href="#examples">Examples</a></li>
     </ul>
 
   </div>
 </div>
+
 
       <footer>
       <div class="copyright">
@@ -175,13 +289,16 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.3.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.4.1.</p>
 </div>
+
       </footer>
    </div>
 
   
 
+
   </body>
 </html>
+
 
