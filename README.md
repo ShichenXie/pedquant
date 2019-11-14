@@ -1,4 +1,6 @@
-# pedquant
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+pedquant
+========
 
 [![CRAN
 status](https://www.r-pkg.org/badges/version/pedquant)](https://cran.r-project.org/package=pedquant)
@@ -11,15 +13,15 @@ interface to access public economic and financial data for economic
 research and quantitative analysis. The functions are grouped into three
 main categories,
 
-  - ed\_\* (economic data) functions load economic data from
+-   ed\_\* (economic data) functions load economic data from
     [NBS](http://data.stats.gov.cn) and
     [FRED](http://data.stats.gov.cn);
-  - md\_\* (market data) functions load stock prices from [Yahoo
+-   md\_\* (market data) functions load stock prices from [Yahoo
     finance](http://finance.yahoo.com), stock prices and financial
     statements of SSE and SZSE shares from [163
     Finance](http://quotes.money.163.com/stock#1b01), and future prices
     from [Sina Finance](https://finance.sina.com.cn/futuremarket/) etc.
-  - pq\_\* (quantitative analysis) functions create technical
+-   pq\_\* (quantitative analysis) functions create technical
     indicators, visualization charts and industrial index etc for time
     series data.
 
@@ -42,53 +44,50 @@ data. Similar works including
 [quantmod](https://github.com/joshuaulrich/quantmod), which are much
 mature for financial analysis.
 
-## Installation
+Installation
+------------
 
-  - Install the release version of `pedquant` from CRAN with:
+-   Install the release version of `pedquant` from CRAN with:
 
-<!-- end list -->
+<!-- -->
 
-``` r
-install.packages("pedquant")
-```
+    install.packages("pedquant")
 
-  - Install the developing version of `pedquant` from
+-   Install the developing version of `pedquant` from
     [github](https://github.com/shichenXie/pedquant) with:
 
-<!-- end list -->
+<!-- -->
 
-``` r
-devtools::install_github("shichenxie/pedquant")
-```
+    devtools::install_github("shichenxie/pedquant")
 
-## Example
+Example
+-------
 
 The following examples show you how to import data and create charts.
 
-``` r
-library(pedquant)
-## import eocnomic data
-dat1 = ed_fred('GDPCA')
-#> 1/1 GDPCA
-dat2 = ed_nbs(geo_type='national', freq='quarterly', symbol='A010101')
+    library(pedquant)
+    #> Registered S3 method overwritten by 'xts':
+    #>   method     from
+    #>   as.zoo.xts zoo
+    ## import eocnomic data
+    dat1 = ed_fred('GDPCA')
+    #> 1/1 GDPCA
+    dat2 = ed_nbs(geo_type='nation', freq='quarterly', symbol='A010101')
 
-## import market data
-FAAG = md_stock(c('FB', 'AMZN', 'AAPL', 'GOOG'), date_range = 'max') # from yahoo
-#> 1/4 FB
-#> 2/4 AMZN
-#> 3/4 AAPL
-#> 4/4 GOOG
-INDX = md_stock(c('^000001','^399001'), date_range = 'max', source = '163')
-#> 1/2 ^000001
-#> 2/2 ^399001
-```
+    ## import market data
+    FAAG = md_stock(c('FB', 'AMZN', 'AAPL', 'GOOG'), date_range = 'max') # from yahoo
+    #> 1/4 FB
+    #> 2/4 AMZN
+    #> 3/4 AAPL
+    #> 4/4 GOOG
+    INDX = md_stock(c('^000001','^399001'), date_range = 'max', source = '163')
+    #> 1/2 ^000001
+    #> 2/2 ^399001
 
-``` r
-# candlestick chart with technical indicators
-pq_plot(INDX$`^000001`, chart_type = 'candle', date_range = '1y', addti = list(
-    sma = list(n=50), macd=list()
-))
-```
+    # candlestick chart with technical indicators
+    pq_plot(INDX$`^000001`, chart_type = 'candle', date_range = '1y', addti = list(
+        sma = list(n=50), macd=list()
+    ))
 
 <img src="man/figures/README-charts1-1.png" width="100%" />
 
@@ -98,18 +97,17 @@ pq_plot(INDX$`^000001`, chart_type = 'candle', date_range = '1y', addti = list(
     #> p0 1 (1-1,1-1) arrange gtable[layout]
     #> p1 2 (2-2,1-1) arrange gtable[layout]
 
-``` r
-# comparing prices
-pq_plot(FAAG, multi_series = list(nrow=2, scales = 'free_y'), date_range = '3y')
-#> $multi_series
-```
+    # comparing prices
+    pq_plot(FAAG, multi_series = list(nrow=2, scales = 'free_y'), date_range = '3y')
+    #> $multi_series
 
 <img src="man/figures/README-charts2-1.png" width="100%" />
 
-## Issues and Contributions
+Issues and Contributions
+------------------------
 
 This package still on the developing stage. If you have any issue when
 using this package, please update to the latest version from github. If
 the issue still exists, report it at [github
 page](https://github.com/ShichenXie/pedquant/issues). Contributions in
-any forms to this project are welcome. If you like this package, please make a star.
+any forms to this project are welcome.

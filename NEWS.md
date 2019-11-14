@@ -1,3 +1,7 @@
+# pedquant 0.1.2.1
+
+* fixed a bug in ed_nbs when the symbol provided is wrong.
+
 # pedquant 0.1.2
 
 * Modified ed_nbs functions to load data in Chinese

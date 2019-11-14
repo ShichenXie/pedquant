@@ -15,7 +15,7 @@ navbar:
   right:
     - icon: fa-github fa-lg
       text: "github"
-      href: https://github.com/ShichenXie/getpedr
+      href: https://github.com/ShichenXie/pedquant
 
 reference:
   - title: "query economic data"      
