@@ -13,9 +13,13 @@ navbar:
     - text: "News"
       href: news/index.html
   right:
+    - icon: fa-money fa-lg
+      text: "donate"
+      href: http://shichen.name/donate/
     - icon: fa-github fa-lg
       text: "github"
       href: https://github.com/ShichenXie/pedquant
+
 
 reference:
   - title: "query economic data"      
