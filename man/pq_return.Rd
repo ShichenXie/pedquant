@@ -5,8 +5,7 @@
 \title{calculating returns by frequency}
 \usage{
 pq_return(dt, x = "close|value", method = "arithmetic", freq = "all",
-  date_range = "max", from = NULL, to = Sys.Date(),
-  print_step = 1L)
+  date_range = "max", from = NULL, to = Sys.Date(), print_step = 1L)
 }
 \arguments{
 \item{dt}{a list/dataframe of daily series dataset}

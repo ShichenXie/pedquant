@@ -5,11 +5,10 @@
 \title{creating charts for time series}
 \usage{
 pq_plot(dt, chart_type = "line", freq = NULL, date_range = "max",
-  from = NULL, to = Sys.Date(), x = "close|value",
-  addti = list(volume = list()), linear_trend = NULL, perf = FALSE,
-  yaxis_log = FALSE, color_up = "#F6736D", color_down = "#18C0C4",
-  multi_series = list(nrow = NULL, ncol = NULL), rm_weekend = NULL,
-  title = NULL, ...)
+  from = NULL, to = Sys.Date(), x = "close|value", addti = list(volume =
+  list()), linear_trend = NULL, perf = FALSE, yaxis_log = FALSE,
+  color_up = "#F6736D", color_down = "#18C0C4", multi_series = list(nrow =
+  NULL, ncol = NULL), rm_weekend = NULL, title = NULL, ...)
 }
 \arguments{
 \item{dt}{a list/dataframe of time series dataset}

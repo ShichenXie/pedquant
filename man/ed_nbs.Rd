@@ -4,9 +4,9 @@
 \alias{ed_nbs}
 \title{query NBS economic data}
 \usage{
-ed_nbs(symbol = NULL, freq = NULL, geo_type = NULL,
-  subregion = NULL, date_range = "10y", from = NULL,
-  to = Sys.Date(), na_rm = FALSE, eng = FALSE)
+ed_nbs(symbol = NULL, freq = NULL, geo_type = NULL, subregion = NULL,
+  date_range = "10y", from = NULL, to = Sys.Date(), na_rm = FALSE,
+  eng = FALSE)
 }
 \arguments{
 \item{symbol}{symbols of NBS indicators. It is available via \code{ed_nbs_symbol}. Default is NULL.}

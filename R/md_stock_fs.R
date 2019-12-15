@@ -52,7 +52,9 @@ fs_symbol1_cn = function(symbol, type) {
 fs_cn = function(symbol, type=NULL, print_step=1L) {
     . = name = name_en = NULL
   
-    if (type == 'summary') return(fs_cn1_summary(symbol))
+    # type is summary
+    if (any(type == 'summary')) return(fs_cn1_summary(symbol))
+    
     # type
     fs_type_163 = setDT(copy(financial_statements_163))
     type = select_rows_df(dt = fs_type_163[,.(type, name, name_en)], column = 'type', input_string=type)[,type]

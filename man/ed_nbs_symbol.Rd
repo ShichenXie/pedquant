@@ -4,8 +4,7 @@
 \alias{ed_nbs_symbol}
 \title{symbol of NBS economic data}
 \usage{
-ed_nbs_symbol(symbol = NULL, geo_type = NULL, freq = NULL,
-  eng = FALSE)
+ed_nbs_symbol(symbol = NULL, geo_type = NULL, freq = NULL, eng = FALSE)
 }
 \arguments{
 \item{symbol}{symbols of NBS indicators.}
