@@ -1,6 +1,7 @@
 # pedquant 0.1.2.1
 
 * fixed a bug in ed_nbs when the symbol provided is wrong.
+* Added china district code in ed_code function.
 
 # pedquant 0.1.2
 

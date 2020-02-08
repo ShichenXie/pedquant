@@ -320,6 +320,42 @@ load_web_source = function(url) {
     return(wb)
 }
 
+# @importFrom RSelenium
+load_web_source2 = function(url, sleep_time = 0, close_remDr = TRUE) {
+    remoteDriver = NULL
+    # RSelenium ref
+    ## [Selenium](http://www.seleniumhq.org)
+    ## [Selenium with Python](https://selenium-python.readthedocs.io/installation.html)
+    ## [RSelenium: Basics](https://cran.r-project.org/web/packages/RSelenium/vignettes/RSelenium-basics.html)
+    ## [Installing ChromeDriver on macOS](https://www.kenst.com/2015/03/installing-chromedriver-on-mac-osx/)
+    
+    # docker # browser + webDriver + selenium
+    ## https://docs.docker.com/docker-for-mac/
+    ## https://hub.docker.com/u/selenium/
+    
+    # docker command
+    ## docker run hello-world
+    ## docker pull selenium/standalone-chrome
+    ## docker run -d -p 4445:4444 selenium/standalone-firefox
+    ## docker ps
+    ## sudo docker stop $(docker ps -q)
+    
+    
+    remDr <- remoteDriver(port = 4445L, browserName = "chrome")
+    remDr$open()
+    
+    # navigate
+    remDr$navigate(url)
+    # if (sleep_time>0) Sys.sleep(sleep_time)
+    
+    wb = remDr$getPageSource()[[1]]
+    # XML::htmlParse(wb)
+    # remDr$getTitle()
+    if (close_remDr) remDr$close()
+    
+    return(wb)
+}
+
 # fill 0/na in a vector with last non 0/na value
 fill0 = function(x, from_last = FALSE) {
     x[x==0] <- NA
@@ -469,9 +505,9 @@ select_rows_df = function(dt, column=NULL, input_string=NULL, onerow=FALSE) {
         if (is.null(input_string)) {
             print(setDT(copy(dt))[,lapply(.SD, format)], topn = 50)
             if (is.null(column)) {
-                txt = "select rows via ('r'+rowid): "
+                txt = "select rows via 'rX': "
             } else {
-                txt = sprintf("select rows via ('r'+rowid) or (%s): ", column)
+                txt = sprintf("select rows via 'rX' or '%s': ", column)
             }
             if (onerow) txt = sub('rows', 'one row', txt)
             sel_id = readline(txt)
@@ -529,4 +565,4 @@ isdatetime = function(x) {
 
 
 # Internal data # http://r-pkgs.had.co.nz/data.html
-# usethis::use_data(financial_statements_163, prov_indu_163, symbol_future_sina, symbol_stock_163, code_commodity_exchange, code_stock_exchange, code_country, code_currency, internal = TRUE, overwrite = TRUE)
+# usethis::use_data(financial_statements_163, prov_indu_163, symbol_future_sina, symbol_stock_163, code_commodity_exchange, code_stock_exchange, code_country, code_currency, code_china_district, internal = TRUE, overwrite = TRUE)

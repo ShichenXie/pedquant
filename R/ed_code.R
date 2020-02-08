@@ -1,9 +1,9 @@
 
 #' code list by category
 #' 
-#' \code{ed_code} get the code list of country, currency, stock exchange and commodity exchange.
+#' \code{ed_code} get the code list of country, currency, stock exchange, commodity exchange and adminisitrative district of mainland of China.
 #' 
-#' @param cate The available category values including 'country', 'currency', 'stock_exchange', 'commodity_exchange'.
+#' @param cate The available category values including 'country', 'currency', 'stock_exchange', 'commodity_exchange', 'china_district'.
 #' 
 #' @examples 
 #' \donttest{
@@ -17,7 +17,7 @@
 #' 
 #' @export
 ed_code = function(cate=NULL) {
-    code_category = c('country', 'currency', 'stock_exchange', 'commodity_exchange')
+    code_category = c('country', 'currency', 'stock_exchange', 'commodity_exchange', 'china_district')
     
     # market category
     if (!is.null(cate)) cate = intersect(cate, code_category)

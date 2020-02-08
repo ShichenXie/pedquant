@@ -10,38 +10,20 @@ sym_stock_cninfo = function(return_url=FALSE) {
 sym_stock_cn_cninfo = function(return_url=FALSE) {
   code_name = submarket = type = . = board = delist_date = exchange = name = read_html = remoteDriver = suspend_date = symbol = NULL
   html_nodes = `%>%` = html_text = html_attr = NULL
-  # RSelenium ref:
-  # [Selenium](http://www.seleniumhq.org)
-  # [Selenium with Python](https://selenium-python.readthedocs.io/installation.html)
-  # [RSelenium: Basics](https://cran.r-project.org/web/packages/RSelenium/vignettes/RSelenium-basics.html)
   
-  # docker toolbox ref: 
-  # https://docs.docker.com/docker-for-mac/docker-toolbox/
-  # open docker via <Docker Q..t Terminal> in launchpad
-  # docker run hello-world
-  # docker run -d -p 4445:4444 selenium/standalone-firefox
-  # docker ps
-  # sudo docker stop $(docker ps -q)
-  
-  # comapny list ------
-  # java -jar selenium-server-standalone-3.8.1.jar
-  # http://selenium-release.storage.googleapis.com/index.html
   ssrunning = menu(c("Yes", "No"), 
-    title="Is selenium server running? 
-      \nIf not, download it from 'http://selenium-release.storage.googleapis.com/index.html' and run 'java -jar selenium-server-standalone-3.8.1.jar' in OS command. 
-      \nDetails see 'https://cran.r-project.org/web/packages/RSelenium/vignettes/RSelenium-basics.html'")
-  
+    title="Is selenium server running?")
   if (ssrunning == 2) stop("selenium server is not running")
 
-  remDr <- remoteDriver(remoteServerAddr = "localhost", port = 4444L, browserName = "firefox")
-  
-  # via a docker container
-  # remoteDriver(remoteServerAddr = "192.168.99.100", port = 4445L)
+    # via a docker container
+  remDr <- remoteDriver(port = 4445L, browserName = "chrome")
   remDr$open(silent = TRUE)
   
   # navigate
-  remDr$navigate("http://www.cninfo.com.cn/cninfo-new/information/companylist")
+  remDr$navigate("http://www.baidu.com")#/cninfo-new/information/companylist")
   Sys.sleep(sample(5))
+  
+  remDr$getPageSource()[[1]]
   
   wb = read_html(remDr$getPageSource()[[1]])
   dt_list = lapply(

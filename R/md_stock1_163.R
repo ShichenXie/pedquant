@@ -415,7 +415,7 @@ md_stock_163 = function(symbol, from='1900-01-01', to=Sys.Date(), print_step=1L,
   
   
   dat_list = lapply(dat_list, function(x) {
-    cols_rm = intersect(names(x), c('prev_close', 'change', 'change_pct'))
+    cols_rm = intersect(names(x), c('prev_close', 'change')) # , 'change_pct'
     if (length(cols_rm)>0) x = x[, (cols_rm) := NULL]
     return(x)
   })

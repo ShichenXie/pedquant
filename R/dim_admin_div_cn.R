@@ -7,16 +7,21 @@
 
 # province, city, county, town, village
 # import RSelenium rvest httr data.table
-admin_div_cn = function(admin_level=3) {
-  read_html = . = id = ad = remoteDriver = code = name = code_parent = NULL
+admin_div_cn = function(admin_level=2) {
+  read_html = html_attr = . = id = ad = remoteDriver = code = name = code_parent = NULL
   
   # function # url0
   url_latest = function(web_url="http://www.stats.gov.cn/tjsj/tjbz/tjyqhdmhcxhfdm/") {
     url_nbs = "http://www.stats.gov.cn"
     
-    url0 = xml_attr(xml_find_all(read_html(web_url), "//ul[@class='center_list_contlist']//li//a"), "href")
-    url0 = paste0(url_nbs, sub("index.html", "", sub(url_nbs, "", url0)))
-   
+    url0 = read_html(web_url) %>% 
+      html_nodes("ul.center_list_contlist li a") %>% 
+      html_attr('href') %>% 
+      sub(url_nbs, '', .) %>% 
+      sub("index.html", "", .) %>% 
+      paste0(url_nbs, .) %>% 
+      .[1]
+    
     return(url0)
   }
   
@@ -29,7 +34,9 @@ admin_div_cn = function(admin_level=3) {
   }
   
   # remoteDriver
-  remDr <- remoteDriver(remoteServerAddr = "localhost", port = 4444L, browserName = "firefox")
+  # remDr <- remoteDriver(remoteServerAddr = "localhost", port = 4444L, browserName = "firefox")
+  # remDr$open(silent = TRUE)
+  remDr <- remoteDriver(port = 4445L, browserName = "chrome")
   remDr$open(silent = TRUE)
   
   # function to scrap dat/url
@@ -130,6 +137,11 @@ admin_div_cn = function(admin_level=3) {
       code_parent = sub("^([a-z]+)tr([0-9]*)$","\\2",admin_level),
       admin_level = sub("^([a-z]+)tr([0-9]*)$","\\1",admin_level)
     )][order(code)][,.(code, name, admin_level, code_parent)]
+  # 11 12 31 50
+  for (c in c("110100000000", "120100000000", "310100000000", "500100000000")) {
+    ret_df[code == c, name := ret_df[code == substr(c,1,2), name]]
+  }
+  
   return(ret_df)
 }
 

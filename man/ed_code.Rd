@@ -7,10 +7,10 @@
 ed_code(cate = NULL)
 }
 \arguments{
-\item{cate}{The available category values including 'country', 'currency', 'stock_exchange', 'commodity_exchange'.}
+\item{cate}{The available category values including 'country', 'currency', 'stock_exchange', 'commodity_exchange', 'china_district'.}
 }
 \description{
-\code{ed_code} get the code list of country, currency, stock exchange and commodity exchange.
+\code{ed_code} get the code list of country, currency, stock exchange, commodity exchange and adminisitrative district of mainland of China.
 }
 \examples{
 \donttest{

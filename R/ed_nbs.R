@@ -179,9 +179,17 @@ ed_nbs_subregion = function(geo_type=NULL, eng=FALSE) {
 
 #  query data # zb symbol, sj date, reg subregion
 #' @importFrom jsonlite fromJSON 
-ed1_nbs = function(nbs_geo, symbol1, subregion=NULL, from, eng=FALSE) {
+ed1_nbs = function(symbol1, geo_type, subregion=NULL, from, freq, eng=FALSE) {
+  dim_freq = dim_geo_type = dim_sta_db = NULL
+  
+  # name database
+  nbs_geo = dim_nbs_db()[dim_geo_type==geo_type & dim_freq==freq, dim_sta_db]
+  
   url_nbs = sel_nbs_url(eng)
   time_sec = as.character(date_to_sec()*100)
+  
+  ## symbol
+  symbol1 = ed_nbs_symbol(symbol=symbol1, geo_type, freq, eng)
   
   # date range
   freq_mqa = which(substr(nbs_geo, 3, 3) == c('y','j','n'))
@@ -328,8 +336,6 @@ ed_nbs = function(symbol=NULL, freq=NULL, geo_type=NULL, subregion=NULL, date_ra
   } else {
     freq = check_arg(freq, choices = c("monthly", "quarterly", "yearly"), arg_name = 'freq')
   }
-  ## symbol
-  symbol = ed_nbs_symbol(symbol=symbol, geo_type, freq, eng)
   
   ## subregion
   if (geo_type %in% c('province', 'city')) {
@@ -343,10 +349,9 @@ ed_nbs = function(symbol=NULL, freq=NULL, geo_type=NULL, subregion=NULL, date_ra
   
   # jsondat
   jsondat_list = NULL
-  # name database
-  nbs_geo = dim_nbs_db()[dim_geo_type==geo_type & dim_freq==freq, dim_sta_db]
+  
   for (s in symbol) {
-    temp = ed1_nbs(nbs_geo, symbol1=s, subregion, from, eng)
+    temp = ed1_nbs(symbol1=s, geo_type, subregion, from, freq, eng)
     temp = nbs_jsondat_format(temp)[date>=from & date<=to,]
     if (!is.null(subregion)) temp = temp[geo_code %in% subregion]
     if (na_rm) temp = temp[!is.na(value)]
