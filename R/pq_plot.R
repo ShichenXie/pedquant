@@ -830,7 +830,7 @@ pq_plot = function(
     
     ## change freq of input data
     if (!is.null(freq) || match.arg(freq, 'daily')!='daily') {
-        dt = pq_to_freq(dt, freq)
+        dt = pq_to_freq(dt, freq, print_step = 0L)
     }
     
     # change into performance

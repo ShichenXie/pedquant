@@ -1,7 +1,7 @@
 
 #' code list by category
 #' 
-#' \code{ed_code} get the code list of country, currency, stock exchange, commodity exchange and adminisitrative district of mainland of China.
+#' \code{ed_code} get the code list of country, currency, stock exchange, commodity exchange and administrative district of mainland of China.
 #' 
 #' @param cate The available category values including 'country', 'currency', 'stock_exchange', 'commodity_exchange', 'china_district'.
 #' 
@@ -17,15 +17,15 @@
 #' 
 #' @export
 ed_code = function(cate=NULL) {
-    code_category = c('country', 'currency', 'stock_exchange', 'commodity_exchange', 'china_district')
+    category = c('country', 'currency', 'stock_exchange', 'commodity_exchange', 'china_district')
     
     # market category
-    if (!is.null(cate)) cate = intersect(cate, code_category)
+    if (!is.null(cate)) cate = intersect(cate, category)
     # if (!is.null(cate)) cate = check_arg(cate, code_category)
     cate = select_rows_df(
-        dt=setDT(list(code_category=code_category)), 
-        column='code_category', input_string=cate
-    )[,code_category]
+        dt=setDT(list(category=category)), 
+        column='category', input_string=cate
+    )[,category]
     
     cod_lst = list()
     for (i in cate) {

@@ -12,7 +12,7 @@ pq_return(dt, x = "close|value", method = "arithmetic", freq = "all",
 
 \item{x}{the variable used to calculate returns.}
 
-\item{method}{the method to calcualte returns.}
+\item{method}{the method to calculate returns.}
 
 \item{freq}{the frequency of returns. It supports c('all', 'daily', 'weekly', 'monthly', 'quarterly', 'yearly').}
 

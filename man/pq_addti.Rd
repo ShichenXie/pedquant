@@ -18,7 +18,7 @@ pq_addti(dt, ...)
 \item always required, such as 'y', 'w'.
 \item numeric parameters, such as 'n', 'sd', 'v', 'nFast', 'nSlow', 'nSig', 'accel'. These parameters should be provided, otherwise using default values in corresponding function.
 }
-\item TTR functions are summarised in below. See TTR package's help document for more detailed parameters.
+\item TTR functions are summarized in below. See TTR package's help document for more detailed parameters.
 \itemize{
 \item moving averages: SMA, EMA, DEMA, WMA, EVWMA, ZLEMA, VWAP, VMA, HMA, ALMA, GMMA
 \item rolling functions: runMin, runMax, runMean, runMedian; runCov, runCor; runVar, runSD, runMAD; runSum, wilderSum

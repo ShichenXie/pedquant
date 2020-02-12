@@ -36,7 +36,7 @@
 
 
 <meta property="og:title" content="code list by category — ed_code" />
-<meta property="og:description" content="ed_code get the code list of country, currency, stock exchange and commodity exchange." />
+<meta property="og:description" content="ed_code get the code list of country, currency, stock exchange, commodity exchange and administrative district of mainland of China." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -69,7 +69,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pedquant</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.3</span>
       </span>
     </div>
 
@@ -87,7 +87,14 @@
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
-  <a href="https://github.com/ShichenXie/getpedr">
+  <a href="http://shichen.name/donate/">
+    <span class="fa fa-money fa-lg"></span>
+     
+    donate
+  </a>
+</li>
+<li>
+  <a href="https://github.com/ShichenXie/pedquant">
     <span class="fa fa-github fa-lg"></span>
      
     github
@@ -112,7 +119,7 @@
     </div>
 
     <div class="ref-description">
-    <p><code>ed_code</code> get the code list of country, currency, stock exchange and commodity exchange.</p>
+    <p><code>ed_code</code> get the code list of country, currency, stock exchange, commodity exchange and administrative district of mainland of China.</p>
     </div>
 
     <pre class="usage"><span class='fu'>ed_code</span>(<span class='kw'>cate</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
@@ -122,7 +129,7 @@
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>cate</th>
-      <td><p>The available category values including 'country', 'currency', 'stock_exchange', 'commodity_exchange'.</p></td>
+      <td><p>The available category values including 'country', 'currency', 'stock_exchange', 'commodity_exchange', 'china_district'.</p></td>
     </tr>
     </table>
 
@@ -132,12 +139,13 @@
 <span class='co'># specify the categories</span>
 <span class='no'>code_list1</span> <span class='kw'>=</span> <span class='fu'>ed_code</span>(<span class='kw'>cate</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>'country'</span>, <span class='st'>'currency'</span>))</div><div class='output co'>#&gt; <span class='warning'>Warning: the condition has length &gt; 1 and only the first element will be used</span></div><div class='output co'>#&gt; <span class='warning'>Warning: argument 'pattern' has length &gt; 1 and only the first element will be used</span></div><div class='input'>
 <span class='co'># interactivly return code list</span>
-<span class='no'>code_list2</span> <span class='kw'>=</span> <span class='fu'>ed_code</span>()</div><div class='output co'>#&gt;         code_category
+<span class='no'>code_list2</span> <span class='kw'>=</span> <span class='fu'>ed_code</span>()</div><div class='output co'>#&gt;              category
 #&gt; 1: country           
 #&gt; 2: currency          
 #&gt; 3: stock_exchange    
 #&gt; 4: commodity_exchange
-#&gt; select rows via ('r'+rowid) or (code_category): </div><div class='input'>
+#&gt; 5: china_district    
+#&gt; select rows via 'rX' or 'category': </div><div class='input'>
 # }
 
 </div></pre>

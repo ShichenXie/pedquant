@@ -69,7 +69,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pedquant</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.3</span>
       </span>
     </div>
 
@@ -87,7 +87,14 @@
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
-  <a href="https://github.com/ShichenXie/getpedr">
+  <a href="http://shichen.name/donate/">
+    <span class="fa fa-money fa-lg"></span>
+     
+    donate
+  </a>
+</li>
+<li>
+  <a href="https://github.com/ShichenXie/pedquant">
     <span class="fa fa-github fa-lg"></span>
      
     github
@@ -116,7 +123,7 @@
     </div>
 
     <pre class="usage"><span class='fu'>md_stock</span>(<span class='no'>symbol</span>, <span class='kw'>source</span> <span class='kw'>=</span> <span class='st'>"yahoo"</span>, <span class='kw'>freq</span> <span class='kw'>=</span> <span class='st'>"daily"</span>, <span class='kw'>date_range</span> <span class='kw'>=</span> <span class='st'>"3y"</span>,
-  <span class='kw'>from</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>to</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/Sys.time.html'>Sys.Date</a></span>(), <span class='kw'>type</span> <span class='kw'>=</span> <span class='st'>"history"</span>, <span class='kw'>adjust</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
+  <span class='kw'>from</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>to</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/Sys.time.html'>Sys.Date</a></span>(), <span class='kw'>type</span> <span class='kw'>=</span> <span class='st'>"history"</span>, <span class='kw'>adjust</span> <span class='kw'>=</span> <span class='st'>"split"</span>,
   <span class='kw'>print_step</span> <span class='kw'>=</span> <span class='fl'>1L</span>, <span class='no'>...</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -148,11 +155,12 @@
     </tr>
     <tr>
       <th>type</th>
-      <td><p>the data type, including history, dividend and split. Default is history.</p></td>
+      <td><p>the data type, including history, adjfactor and spot. Default is history.</p></td>
     </tr>
     <tr>
       <th>adjust</th>
-      <td><p>logical, whether to adjust the prices for dividend. The price data already adjust for splits by default.</p></td>
+      <td><p>adjust the OHLC prices for split (default), or dividend (both split and dividend). If it is NULL, download the original data.
+For the yahoo data, the original data already adjust for split, and use the 'close_adj' column to adjust; for the 163 data, the original doesnot adjust any factors, and use the splits, dividends and issues to adjust.</p></td>
     </tr>
     <tr>
       <th>print_step</th>
@@ -185,13 +193,9 @@
 #&gt; 2/2 000001.SS</div><div class='input'>
 <span class='co'># split</span>
 <span class='no'>dt_split</span> <span class='kw'>=</span> <span class='fu'>md_stock</span>(<span class='kw'>symbol</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"AAPL"</span>, <span class='st'>"000001.SZ"</span>, <span class='st'>"000001.SS"</span>),
-                    <span class='kw'>type</span><span class='kw'>=</span><span class='st'>'split'</span>, <span class='kw'>date_range</span><span class='kw'>=</span><span class='st'>'max'</span>)</div><div class='output co'>#&gt; 1/3 AAPL
-#&gt; 2/3 000001.SZ
-#&gt; 3/3 000001.SS</div><div class='input'><span class='co'># dividend</span>
+                    <span class='kw'>type</span><span class='kw'>=</span><span class='st'>'split'</span>, <span class='kw'>date_range</span><span class='kw'>=</span><span class='st'>'max'</span>)</div><div class='output co'>#&gt; <span class='warning'>Warning: </span></div><div class='output co'>#&gt; <span class='error'>Error in if (type == "spot") source = "163": argument is of length zero</span></div><div class='input'><span class='co'># dividend</span>
 <span class='no'>dt_dividend</span> <span class='kw'>=</span> <span class='fu'>md_stock</span>(<span class='kw'>symbol</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"AAPL"</span>, <span class='st'>"000001.SZ"</span>, <span class='st'>"000001.SS"</span>),
-                       <span class='kw'>type</span><span class='kw'>=</span><span class='st'>'dividend'</span>, <span class='kw'>date_range</span><span class='kw'>=</span><span class='st'>'max'</span>)</div><div class='output co'>#&gt; 1/3 AAPL
-#&gt; 2/3 000001.SZ
-#&gt; 3/3 000001.SS</div><div class='input'>
+                       <span class='kw'>type</span><span class='kw'>=</span><span class='st'>'dividend'</span>, <span class='kw'>date_range</span><span class='kw'>=</span><span class='st'>'max'</span>)</div><div class='output co'>#&gt; <span class='warning'>Warning: </span></div><div class='output co'>#&gt; <span class='error'>Error in if (type == "spot") source = "163": argument is of length zero</span></div><div class='input'>
 
 <span class='co'># Example II</span>
 <span class='co'># query history prices from 163</span>

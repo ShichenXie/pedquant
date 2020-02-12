@@ -338,7 +338,7 @@ pq1_addti = function(dt, ...) {
 #'    \item always required, such as 'y', 'w'.
 #'    \item numeric parameters, such as 'n', 'sd', 'v', 'nFast', 'nSlow', 'nSig', 'accel'. These parameters should be provided, otherwise using default values in corresponding function.
 #' }
-#' 2. TTR functions are summarised in below. See TTR package's help document for more detailed parameters. 
+#' 2. TTR functions are summarized in below. See TTR package's help document for more detailed parameters. 
 #' \itemize{
 #'    \item moving averages: SMA, EMA, DEMA, WMA, EVWMA, ZLEMA, VWAP, VMA, HMA, ALMA, GMMA
 #'    \item rolling functions: runMin, runMax, runMean, runMedian; runCov, runCor; runVar, runSD, runMAD; runSum, wilderSum
@@ -369,9 +369,7 @@ pq_addti = function(dt, ...) {
   symbol = NULL
   
   # bind list of dataframes
-  if (is.list(dt) & !is.data.frame(dt)) {
-    dt = rbindlist(dt, fill = TRUE)
-  }
+  if (inherits(dt, 'list')) dt = rbindlist(dt, fill = TRUE)
   
   ## single series
   dt_list = list()

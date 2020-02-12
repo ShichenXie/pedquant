@@ -108,7 +108,7 @@ md_stock_spot_tx = function(symbol1, only_syb_nam = FALSE, ...) {
   ][, tstrsplit(doc, '~')]
   
   if (only_syb_nam) {
-    return(dt[,.(symbol = V2, name = V1)])
+    return(dt[,.(symbol = check_symbol_for_yahoo(symbol1), name = V1)])
   }
   
   colnames_en = c('name', 'symbol', 'close', 'prev_close', 'open',
@@ -208,10 +208,10 @@ md_stock_hist1_163 = function(symbol1, from='1900-01-01', to=Sys.Date(), zero_rm
     if (is.null(valuation)) valuation = FALSE
     if (valuation) dt = md_stock_pe1_163(dt)
     
-    adjust = list(...)[['adjust']]
-    if (is.null(adjust)) adjust = FALSE
-    adjust_on = ifelse(adjust, 'dividend', 'split') 
-    dt = adjust_ohlc(dt, source = '163', adjust_on = adjust_on)
+    # adjust = list(...)[['adjust']]
+    # if (is.null(adjust)) adjust = 'split'
+    # adjust = ifelse(adjust, 'dividend', 'split') 
+    dt = md_stock_adjust1(dt, source = '163', adjust = list(...)[['adjust']])
   }
   
   # create unit/name columns
@@ -284,8 +284,8 @@ md_stock_pe1_163 = function(dat) {
 }
 
 # dividends
-md_stock_divsplit1_163 = function(symbol1, from=NULL, to=NULL, ret = 'div') {
-  date2 = date1 = fenhong = . = songgu = spl = zhuanzeng = new_issues = old_issues = issue_price = NULL
+md_stock_divsplit1_163 = function(symbol1, from=NULL, to=NULL, ret = c('div', 'spl', 'rig')) {
+  name = symbol = date2 = date1 = date0 = fenhong = . = songgu = spl = zhuanzeng = new_issues = old_issues = issue_price = issue_rate = splits = dividends = NULL
   
   # symbol1 = '000001'
   stk_price = md_stock_spot_tx(symbol1, only_syb_nam=TRUE)
@@ -293,19 +293,19 @@ md_stock_divsplit1_163 = function(symbol1, from=NULL, to=NULL, ret = 'div') {
   div_spl = list()
   
   # get dividends
-  urli = sprintf('http://quotes.money.163.com/f10/fhpg_%s.html#01d05', sub('.*?([0-9]{6}).*?','\\1', symbol1))
-  wb = read_html(urli)
-  tbls = rvest::html_table(wb, fill = TRUE, header = TRUE)
+  tbls = sprintf('http://quotes.money.163.com/f10/fhpg_%s.html#01d05', sub('.*?([0-9]{6}).*?','\\1', symbol1)) %>%
+    read_html(.) %>% 
+    rvest::html_table(., fill = TRUE, header = TRUE)
   
   
-  tbl_divspl = setDT(tbls[[4]])[-1][, lapply(.SD, function(x) replace(x, x=='--', NA))][,c(3:5,7,8)]
-  setnames(tbl_divspl, c('songgu', 'zhuanzeng', 'fenhong', 'date1', 'date2'))
+  tbl_divspl = setDT(tbls[[4]])[-1][, lapply(.SD, function(x) replace(x, x=='--', NA))][,c(3:7,8)]
+  setnames(tbl_divspl, c('songgu', 'zhuanzeng', 'fenhong', 'date0', 'date1', 'date2'))
   if (length(unique(unlist(tbl_divspl))) == 1 & nrow(tbl_divspl) == 1) {
     tbl_divspl = tbl_divspl[.0]
   } 
   tbl_divspl = tbl_divspl[
     , (c('songgu', 'zhuanzeng', 'fenhong')) := lapply(.SD, as.numeric), .SDcols = c('songgu', 'zhuanzeng', 'fenhong')
-    ][, (c('date1', 'date2')) := lapply(.SD, as.Date), .SDcols = c('date1', 'date2')
+    ][, (c('date0', 'date1', 'date2')) := lapply(.SD, as.Date), .SDcols = c('date0', 'date1', 'date2')
       ][is.na(date2), date2 := date1
         ][order(date1)]
   
@@ -313,16 +313,12 @@ md_stock_divsplit1_163 = function(symbol1, from=NULL, to=NULL, ret = 'div') {
     tbl_divident = tbl_divspl[fenhong > 0]
     if (nrow(tbl_divident) == 0) {
       div_spl[['div']] = data.table(
-          symbol    = stk_price$symbol,
-          name      = stk_price$name,
           date      = Sys.Date(),
           dividends = 1
         )[.0]
     } else {
       div_spl[['div']] = tbl_divident[,.(
-          symbol    = stk_price$symbol,
-          name      = stk_price$name,
-          date      = as.Date(date1),
+          date      = date0,
           dividends = fenhong/10
         )]
     }
@@ -330,21 +326,17 @@ md_stock_divsplit1_163 = function(symbol1, from=NULL, to=NULL, ret = 'div') {
   
   if ('spl' %in% ret) { # split
     tbl_split = rbind(
-      tbl_divspl[, .(spl = songgu, date = date2)][spl > 0],
-      tbl_divspl[, .(spl = zhuanzeng, date = date1)][spl > 0]
+      tbl_divspl[, .(spl = songgu, date = date0)][spl > 0],
+      tbl_divspl[, .(spl = zhuanzeng, date = date0)][spl > 0]
     )[, lapply(.SD, sum), keyby = date]
     
     if (nrow(tbl_split) == 0) {
       div_spl[['spl']] = data.table(
-          symbol = stk_price$symbol,
-          name   = stk_price$name,
           date   = Sys.Date(),
           splits = 1
         )[.0]
     } else {
       div_spl[['spl']] = tbl_split[,.(
-          symbol = stk_price$symbol,
-          name   = stk_price$name,
           date   = as.Date(date),
           splits = spl/10
         )]
@@ -356,8 +348,6 @@ md_stock_divsplit1_163 = function(symbol1, from=NULL, to=NULL, ret = 'div') {
     setnames(rig, c('date', 'new_issues', 'old_issues', 'issue_price'))
     if (length(unique(unlist(rig))) == 1 & nrow(rig) == 1) {
       div_spl[['rig']] = data.table(
-        symbol = stk_price$symbol, 
-        name = stk_price$name, 
         date = Sys.Date(), 
         issue_rate = 1, 
         issue_price = 1
@@ -367,8 +357,6 @@ md_stock_divsplit1_163 = function(symbol1, from=NULL, to=NULL, ret = 'div') {
         , (c('new_issues', 'old_issues')) := lapply(.SD, function(x) as.numeric(gsub('[^0-9\\.]', '', x))), .SDcols = c('new_issues', 'old_issues')
         ][new_issues > 0
           ][, .(
-            symbol = stk_price$symbol,
-            name   = stk_price$name, 
             date   = as.Date(date), 
             issue_rate = new_issues/old_issues, 
             issue_price
@@ -376,9 +364,14 @@ md_stock_divsplit1_163 = function(symbol1, from=NULL, to=NULL, ret = 'div') {
     }
   }
   
-  if (!is.null(from) & !is.null(to)) div_spl = lapply(div_spl, function(x) x[date >= from & date <= to]) 
-  div_spl = lapply(div_spl, function(x) setkeyv(x, 'date'))  
-  if (length(div_spl) == 1) div_spl = div_spl[[1]]
+  div_spl = Reduce(
+    function(x,y) merge(x,y,all=TRUE,by='date'), div_spl
+  )[,`:=`(
+    symbol = stk_price$symbol,
+    name   = stk_price$name
+  )][,.(symbol, name, date, splits, dividends, issue_rate, issue_price)]
+  
+  setkeyv(div_spl, 'date')
   return(div_spl)
 }
 
@@ -386,15 +379,15 @@ md_stock_divsplit1_163 = function(symbol1, from=NULL, to=NULL, ret = 'div') {
 
 #' @import data.table
 md_stock_163 = function(symbol, from='1900-01-01', to=Sys.Date(), print_step=1L, freq = 'daily', zero_rm=TRUE, ...) {
+  # arguments
+  arg_lst = list(...)
   # frequency
   freq = check_arg(freq, c('daily'))
   # type 
-  type = list(...)[['type']]
-  type = check_arg(type, c('spot', 'history', 'dividend', 'split'), default = 'history')
+  type = arg_lst[['type']]
   # return valuation ratios
-  arg_lst = list(...)
   if (!('valuation' %in% names(arg_lst))) arg_lst[['valuation']] = FALSE
-  if (!('adjust' %in% names(arg_lst))) arg_lst[['adjust']] = TRUE
+  # if (!('adjust' %in% names(arg_lst))) arg_lst[['adjust']] = 'split'
   
   # query data
   if (type == 'spot') {
@@ -405,13 +398,10 @@ md_stock_163 = function(symbol, from='1900-01-01', to=Sys.Date(), print_step=1L,
   }  else if (type == 'history') {
     dat_list = load_dat_loop(symbol, 'md_stock_hist1_163', args = c(list(from = from, to = to, zero_rm = zero_rm), arg_lst), print_step=print_step)
     
-  } else if (type == 'dividend') (
-    dat_list = load_dat_loop(symbol, 'md_stock_divsplit1_163', args = list(from = from, to = to, ret = 'div'), print_step=print_step)
+  } else if (type == 'adjfactor') (
+    dat_list = load_dat_loop(symbol, 'md_stock_divsplit1_163', args = list(from = from, to = to), print_step=print_step)
     
-  ) else if (type == 'split') {
-    dat_list = load_dat_loop(symbol, 'md_stock_divsplit1_163', args = list(from = from, to = to, ret = c('spl','rig')), print_step=print_step)
-    
-  }
+  )
   
   
   dat_list = lapply(dat_list, function(x) {

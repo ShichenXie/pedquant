@@ -7,7 +7,7 @@
 md_stock_symbol(exchange = NULL, index = NULL)
 }
 \arguments{
-\item{exchange}{the avaiable stock exchanges are sse, szse, hkex, amex, nasdaq, nyse.}
+\item{exchange}{the available stock exchanges are sse, szse, hkex, amex, nasdaq, nyse.}
 
 \item{index}{the stock index symbol provided by China Securities Index Co.Ltd (\url{http://www.csindex.com.cn}).}
 }

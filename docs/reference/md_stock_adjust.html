@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>symbol of NBS economic data — ed_nbs_symbol • pedquant</title>
+<title>adjust stock price for split and dividend — md_stock_adjust • pedquant</title>
 
 
 <!-- jquery -->
@@ -35,8 +35,8 @@
 
 
 
-<meta property="og:title" content="symbol of NBS economic data — ed_nbs_symbol" />
-<meta property="og:description" content="ed_nbs_symbol provides an interface to query symbols of economic indicators from NBS." />
+<meta property="og:title" content="adjust stock price for split and dividend — md_stock_adjust" />
+<meta property="og:description" content="md_stock_adjust adjusts the open, high, low and close stock prices for split and dividend." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -113,44 +113,46 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>symbol of NBS economic data</h1>
-    <small class="dont-index">Source: <a href='https://github.com/ShichenXie/pedquant/blob/master/R/ed_nbs.R'><code>R/ed_nbs.R</code></a></small>
-    <div class="hidden name"><code>ed_nbs_symbol.Rd</code></div>
+    <h1>adjust stock price for split and dividend</h1>
+    <small class="dont-index">Source: <a href='https://github.com/ShichenXie/pedquant/blob/master/R/md_stock_adj.R'><code>R/md_stock_adj.R</code></a></small>
+    <div class="hidden name"><code>md_stock_adjust.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p><code>ed_nbs_symbol</code> provides an interface to query symbols of economic indicators from NBS.</p>
+    <p><code>md_stock_adjust</code> adjusts the open, high, low and close stock prices for split and dividend.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>ed_nbs_symbol</span>(<span class='kw'>symbol</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>geo_type</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>freq</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>eng</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</pre>
+    <pre class="usage"><span class='fu'>md_stock_adjust</span>(<span class='no'>dt</span>, <span class='no'>source</span>, <span class='kw'>adjust</span> <span class='kw'>=</span> <span class='st'>"split"</span>, <span class='kw'>adjfactor</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>symbol</th>
-      <td><p>symbols of NBS indicators.</p></td>
+      <th>dt</th>
+      <td><p>a list/dataframe of time series datasets that didnt adjust for split or dividend.</p></td>
     </tr>
     <tr>
-      <th>geo_type</th>
-      <td><p>geography type in NBS, including 'nation', 'province', 'city'. Default is NULL.</p></td>
+      <th>source</th>
+      <td><p>the available data sources are 'yahoo' (<a href='http://finance.yahoo.com'>http://finance.yahoo.com</a>) and '163' (<a href='http://money.163.com'>http://money.163.com</a>).</p></td>
     </tr>
     <tr>
-      <th>freq</th>
-      <td><p>the frequency of NBS indicators, including 'monthly', 'quarterly', 'yearly'. Default is NULL.</p></td>
+      <th>adjust</th>
+      <td><p>adjust the OHLC prices for split (default), or dividend (both split and dividend). If it is NULL, return the original data.
+For the yahoo data, the original data already adjust for split, and use the 'close_adj' column to adjust; for the 163 data, the original doesnot adjust any factors, and use the splits, dividends and issues to adjust.</p></td>
     </tr>
     <tr>
-      <th>eng</th>
-      <td><p>logical. The language of the query results is in English or in Chinese. Default is FALSE.</p></td>
+      <th>adjfactor</th>
+      <td><p>adjust factors, including splits and dividends. Defaults to NULL, which will load adjust factors from source. It can also download from md_stock when type set as adjfactor.</p></td>
     </tr>
     </table>
 
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='co'># query symbol interactively</span>
-<span class='co'># \donttest{</span>
-<span class='no'>sym</span> <span class='kw'>=</span> <span class='fu'>ed_nbs_symbol</span>()<span class='co'># }</span></div><div class='output co'>#&gt; <span class='error'>Error in menu(choices, cat(sprintf("Select the value of %s", arg_name))): menu() cannot be used non-interactively</span></div><div class='input'>
-</div></pre>
+    <pre class="examples"><div class='input'><span class='no'>dt</span> <span class='kw'>=</span> <span class='fu'><a href='md_stock.html'>md_stock</a></span>(<span class='st'>'600547'</span>, <span class='kw'>source</span> <span class='kw'>=</span> <span class='st'>'163'</span>, <span class='kw'>date_range</span> <span class='kw'>=</span> <span class='st'>'max'</span>,
+              <span class='kw'>type</span> <span class='kw'>=</span> <span class='st'>'history'</span>, <span class='kw'>adjust</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</div><div class='output co'>#&gt; 1/1 600547</div><div class='input'><span class='no'>ds</span> <span class='kw'>=</span> <span class='fu'><a href='md_stock.html'>md_stock</a></span>(<span class='st'>'600547'</span>, <span class='kw'>source</span> <span class='kw'>=</span> <span class='st'>'163'</span>, <span class='kw'>date_range</span> <span class='kw'>=</span> <span class='st'>'max'</span>,
+              <span class='kw'>type</span> <span class='kw'>=</span> <span class='st'>'adjfactor'</span>)</div><div class='output co'>#&gt; 1/1 600547</div><div class='input'>
+<span class='no'>dtadj</span> <span class='kw'>=</span> <span class='fu'>md_stock_adjust</span>(<span class='no'>dt</span>, <span class='kw'>source</span> <span class='kw'>=</span> <span class='st'>'163'</span>, <span class='kw'>adjust</span> <span class='kw'>=</span> <span class='st'>'dividend'</span>,
+                        <span class='kw'>adjfactor</span> <span class='kw'>=</span> <span class='no'>ds</span>)</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>

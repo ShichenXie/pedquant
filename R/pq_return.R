@@ -122,7 +122,7 @@ pq1_return = function(dt, x='close|value', type='arithmetic', freq='daily', date
 #' 
 #' @param dt a list/dataframe of daily series dataset
 #' @param x the variable used to calculate returns.
-#' @param method the method to calcualte returns.
+#' @param method the method to calculate returns.
 #' @param freq the frequency of returns. It supports c('all', 'daily', 'weekly', 'monthly', 'quarterly', 'yearly').
 #' @param date_range date range. Available value includes '1m'-'11m', 'ytd', 'max' and '1y'-'ny'. Default is max.
 #' @param from the start date. Default is NULL. If it is NULL, then calculate using date_range and end date.

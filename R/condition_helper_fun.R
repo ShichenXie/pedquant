@@ -26,7 +26,7 @@ check_fromto = function(fromto, type="date", shift = 0) {
     type = check_arg(type, c("date", "time"), "date")
     
     # type: dates or times
-    if (class(fromto) == "character") {
+    if (inherits(fromto, "character")) {
         if (grepl("-|/",fromto)) {
             fromto = as.Date(fromto)
         } else {
@@ -81,7 +81,7 @@ get_fromto = function(date_range, from, to, min_date, default_date_range = 'max'
     if (from < min_date) from = min_date
     
     # set class
-    if (class(to) == "Date") {
+    if (inherits(to, "Date")) {
         from = as.Date(from)
     } else {
         from = as.POSIXct(from)
@@ -301,7 +301,7 @@ load_read_csv = function(url, encode="UTF-8", handle=new_handle()) {
     on.exit(unlink(temp))
     
     curl_download(url, destfile = temp, handle = handle)
-    dat = read.csv(temp, fileEncoding = encode)
+    dat = try(read.csv(temp, fileEncoding = encode), silent = TRUE)
     return(setDT(dat))
 }
 
@@ -559,7 +559,7 @@ ceiling2 = function(x) {
 
 # is date/time class
 isdatetime = function(x) {
-    any(class(x) %in% c("Date","POSIXlt","POSIXct","POSIXt"))
+    inherits(x, c("Date","POSIXlt","POSIXct","POSIXt"))
 }
 
 

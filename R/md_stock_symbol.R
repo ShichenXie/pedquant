@@ -345,7 +345,7 @@ md_stock_symbol_index = function(symbol, print_step=1L) {
 #' 
 #' \code{md_stock_symbol} returns all stock symbols of stock exchange or index.
 #' 
-#' @param exchange the avaiable stock exchanges are sse, szse, hkex, amex, nasdaq, nyse.
+#' @param exchange the available stock exchanges are sse, szse, hkex, amex, nasdaq, nyse.
 #' @param index the stock index symbol provided by China Securities Index Co.Ltd (\url{http://www.csindex.com.cn}).
 #' 
 #' @examples 

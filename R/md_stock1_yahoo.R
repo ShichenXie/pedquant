@@ -54,7 +54,7 @@ get_symbol_name_yahoo = function(syb, encode='UTF-8', handle=new_handle()) {
 # https://query1.finance.yahoo.com/v7/finance/download/000001.SZ?period1=1511841299&period2=1543377299&interval=1d&events=split&crumb=j/T2/8/3fvH
 #' @importFrom curl curl_fetch_memory 
 md_stock1_yahoo = function(symbol, handle, crumb, freq="daily", from="1900-01-01", to=Sys.time(), type="history", na_rm=TRUE, ...) {
-    name = splits = s2 = s1 = . = high = low = close_adj = volume = NULL
+    name = splits = s2 = s1 = . = high = low = close_adj = volume = dividends = NULL
     
     # symbol
     syb = check_symbol_for_yahoo(symbol)
@@ -65,9 +65,13 @@ md_stock1_yahoo = function(symbol, handle, crumb, freq="daily", from="1900-01-01
     syb_nam_cur = get_symbol_name_yahoo(syb, handle = handle)
     
     # url of eod 
-    urli <- sprintf("https://query%s.finance.yahoo.com/v7/finance/download/%s?period1=%.0f&period2=%.0f&interval=%s&events=%s&crumb=%s", ifelse(unclass(Sys.time()) %% 1L >= 0.5, 1L, 2L), syb, from, to, freq, type, crumb)
-    dat = load_read_csv(urli, handle = handle)
+    # https://query1.finance.yahoo.com/v7/finance/download/000001.SZ?period1=1423526400&period2=1581292800&interval=1d&events=history&crumb=2pDrF2QYj1H
+    
     if (type=='history') {
+      dat = load_read_csv(
+        url = sprintf("https://query%s.finance.yahoo.com/v7/finance/download/%s?period1=%.0f&period2=%.0f&interval=%s&events=%s&crumb=%s", ifelse(unclass(Sys.time()) %% 1L >= 0.5, 1L, 2L), syb, from, to, freq, type, crumb), 
+        handle = handle)
+      
       cols_num = c("open", "high", "low", "close", "close_adj", "volume")
       setnames(setDT(dat), c("date", cols_num))
       
@@ -79,28 +83,35 @@ md_stock1_yahoo = function(symbol, handle, crumb, freq="daily", from="1900-01-01
       
       if (na_rm) dat = dat[!is.na(close)]
       # adjusting ohlc
-      adjust = list(...)[['adjust']]
-      if (adjust) dat = adjust_ohlc(dat, source = 'yahoo', ...)
+      # adjust = list(...)[['adjust']]
+      # if (adjust) dat = md_stock_adjust(dat, source = 'yahoo', ...)
+      dat = do.call('md_stock_adjust1', args = c(list(dt = dat, source = 'yahoo'), list(...)))
     } else {
-      col_name = ifelse(type=='div', 'dividends', 'splits')
-      setnames(setDT(dat), c('date', col_name))
-      if (nrow(dat)>0) {
-        dat = dat[, `:=`(symbol = syb_nam_cur$symbol, name = syb_nam_cur$name)
-                  ][, c('symbol', 'name', 'date', col_name), with=FALSE]
-        if (col_name == 'splits') {
-          spl = dat[, (c('s1','s2')) := tstrsplit(splits, '/')][, as.numeric(s2)/as.numeric(s1)][]
-          dat = dat[, .(symbol, name, date, splits = spl)]
-        }
-      } else {
-        dat = data.table(
-          symbol    = syb_nam_cur$symbol,
-          name      = syb_nam_cur$name,
-          date      = Sys.Date()
-        )
-        dat[[col_name]] = 1
-        dat = dat[.0]
-      }
+      div_spl = lapply(c('split', 'div'), function(t) {
+        tbl = load_read_csv(
+          url = sprintf("https://query%s.finance.yahoo.com/v7/finance/download/%s?period1=%.0f&period2=%.0f&interval=%s&events=%s&crumb=%s", ifelse(unclass(Sys.time()) %% 1L >= 0.5, 1L, 2L), syb, date_to_sec(check_fromto('1900-01-01')), to, freq, t, crumb), 
+          handle = handle)
+        
+        col_name = ifelse(t=='div', 'dividends', 'splits')
+        setnames(setDT(tbl), c('date', col_name))
+        return(tbl)
+      })
+      
+      dat = Reduce(
+        function(x,y) merge(x,y,all=TRUE,by='date'), div_spl
+      )
+      if (nrow(dat)>0) dat = dat[, (c('s1','s2')) := tstrsplit(splits, '[^0-9]')]
+      
+      dat = dat[,`:=`(
+        symbol = syb_nam_cur$symbol, 
+        name = syb_nam_cur$name
+      )][, .(
+        symbol, name, date, 
+        splits = as.numeric(s1)/as.numeric(s2) - 1,
+        dividends
+      )]
     }
+    
     dat = dat[, date := as.Date(date)]
     setkeyv(dat, 'date')
     return(dat)
@@ -121,8 +132,6 @@ md_stock_yahoo = function(symbol, freq="daily", from="1900-01-01", to=Sys.time()
     
     # type
     arg = list(...)
-    arg[["type"]] = check_arg(arg[["type"]], c('history', 'dividend', 'split'), default = 'history')
-    if (arg[["type"]]=='dividend') arg[["type"]] = 'div'
 
     # frequency
     intervals = c(daily = "1d", weekly = "1wk", monthly = "1mo")
@@ -209,7 +218,7 @@ md_symbol_yahoo = function(market=NULL) {
 }
 
 # currencies, commodities
-md_curcom1_yahoo = function(symbol, handle, crumb, freq="daily", from="1900-01-01", to=Sys.time(), adjust = FALSE) {
+md_curcom1_yahoo = function(symbol, handle, crumb, freq="daily", from="1900-01-01", to=Sys.time(), adjust = 'split') {
   . = high = low = close_adj = volume = NULL
   
   tmp <- tempfile()

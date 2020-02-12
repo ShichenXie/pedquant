@@ -69,7 +69,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pedquant</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.3</span>
       </span>
     </div>
 
@@ -87,7 +87,14 @@
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
-  <a href="https://github.com/ShichenXie/getpedr">
+  <a href="http://shichen.name/donate/">
+    <span class="fa fa-money fa-lg"></span>
+     
+    donate
+  </a>
+</li>
+<li>
+  <a href="https://github.com/ShichenXie/pedquant">
     <span class="fa fa-github fa-lg"></span>
      
     github
@@ -160,7 +167,7 @@
 #&gt; 3: bond      government bond yield 
 #&gt; 4: index     stock market index    
 #&gt; 5: commodity commodity price       
-#&gt; select one row via ('r'+rowid) or (category): 
+#&gt; select one row via 'rX' or 'category': 
 #&gt; forex
 #&gt;     symbol                            name
 #&gt;  1: usdxtm US Dollar Index Trade Weighted 
@@ -191,9 +198,16 @@
 #&gt; 26: ethusd Ethereum/US Dollar             
 #&gt; 27: ltcusd Litecoin/US Dollar             
 #&gt;     symbol                            name
-#&gt; select rows via ('r'+rowid) or (symbol): 
+#&gt; select rows via 'rX' or 'symbol': 
 #&gt; 1/27 usdxtm
-#&gt; 2/27 usdbrl</div><div class='output co'>#&gt; <span class='error'>Error in open.connection(con, "rb"): Failed to connect to www.oanda.com port 443: Connection refused</span></div><div class='input'># }
+#&gt; 2/27 usdbrl
+#&gt; 3/27 usdcad
+#&gt; 4/27 usdcny
+#&gt; 5/27 usddkk
+#&gt; 6/27 usdhkd
+#&gt; 7/27 usdinr
+#&gt; 8/27 usdjpy
+#&gt; 9/27 usdkrw</div><div class='output co'>#&gt; <span class='error'>Error in open.connection(con, "rb"): Failed to connect to www.oanda.com port 443: Operation timed out</span></div><div class='input'># }
 
 </div></pre>
   </div>
