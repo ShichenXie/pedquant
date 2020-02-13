@@ -24,7 +24,7 @@ dim_nbs_db = function() {
 
 #' @importFrom rvest html_nodes html_text %>%
 nbs_read_json = function(url, eng=FALSE) {
-  wb = load_web_source(url)
+  wb = url# load_web_source(url)
   
   dt = read_html(wb) %>% 
     html_nodes('pre') %>% 

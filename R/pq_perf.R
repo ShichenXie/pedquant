@@ -1,6 +1,3 @@
-# 总收益/年化收益率/年化波动率/夏普率/最大回撤/交易手数/胜率/总利润/平均利润率/盈亏比/年化利润/最大回撤
-
-
 # d, w, m, q, ytd, y, 
 
 pq1_perf = function(dt, date_range='max', from=NULL, to=Sys.Date(), x='close|value', base_value=1) {

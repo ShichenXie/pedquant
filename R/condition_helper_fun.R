@@ -306,8 +306,10 @@ load_read_csv = function(url, encode="UTF-8", handle=new_handle()) {
 }
 
 
-#' @importFrom webdriver run_phantomjs Session install_phantomjs
+# @importFrom webdriver run_phantomjs Session install_phantomjs
 load_web_source = function(url) {
+    Session = install_phantomjs = run_phantomjs = NULL
+    
     pjs <- try(run_phantomjs(), silent = TRUE)
     if (inherits(pjs, 'try-error')) {
         cat('Installing phantomjs ...\n')
