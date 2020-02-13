@@ -48,12 +48,9 @@ dt_yahoo2 = md_stock(c("000001", "^000001"))
 ## the symbol with suffix
 dt_yahoo3 = md_stock(c("000001.sz", "000001.ss"))
 
-# split
-dt_split = md_stock(symbol=c("AAPL", "000001.SZ", "000001.SS"), 
-                    type='split', date_range='max')
-# dividend
-dt_dividend = md_stock(symbol=c("AAPL", "000001.SZ", "000001.SS"), 
-                       type='dividend', date_range='max')
+# adjust factors, splits and dividend
+dt_adj = md_stock(symbol=c("AAPL", "000001.SZ", "000001.SS"), 
+                    type='adjfactor', date_range='max')
 
  
 # Example II

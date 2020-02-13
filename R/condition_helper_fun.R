@@ -301,7 +301,7 @@ load_read_csv = function(url, encode="UTF-8", handle=new_handle()) {
     on.exit(unlink(temp))
     
     curl_download(url, destfile = temp, handle = handle)
-    dat = try(read.csv(temp, fileEncoding = encode), silent = TRUE)
+    dat = suppressWarnings(read.csv(temp, fileEncoding = encode))
     return(setDT(dat))
 }
 
@@ -518,7 +518,7 @@ select_rows_df = function(dt, column=NULL, input_string=NULL, onerow=FALSE) {
         
         if (identical(sel_id, 'all')) {
             seleted_rows = dt
-        } else if (grepl('^r[1-9].*$', sel_id)) { # select rows via rowid 
+        } else if (all(grepl('^r[1-9].*$', sel_id)) && length(sel_id)==1) { # select rows via rowid 
             while (any(grepl("^r", sel_id))) {
                 sel_id_string = gsub('r', '', sel_id)
                 sel_id_string = gsub("[^[0-9:-]+", ",", sel_id_string)
@@ -533,7 +533,10 @@ select_rows_df = function(dt, column=NULL, input_string=NULL, onerow=FALSE) {
                 }
             }
         } else { # select rows via pattern matching
-            seleted_rows=dt[grep(sel_id, dt[[column]], fixed = FALSE)]
+            seleted_rows = dt[sapply(sel_id, function(s) {
+                grep(s, dt[[column]])
+            })]
+            
             if (nrow(seleted_rows) == 0) seleted_rows=dt[grep(sel_id, dt[[column]], fixed = TRUE)]
             if (nrow(seleted_rows) == 0) input_string = NULL
         }

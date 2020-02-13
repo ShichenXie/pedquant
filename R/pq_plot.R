@@ -502,10 +502,12 @@ pp_set_title = function(p, dt, title = NULL) {
     
     p = p + theme(plot.title    = element_text(margin = margin(b=0)),
                   plot.subtitle = element_text(margin = margin(b=0)),
-                  text = element_text(family = switch(Sys.info()[['sysname']],
-                                                      Windows= 'SimHei',
-                                                      Darwin = 'STHeiti', 
-                                                      NA) ))
+                  text = element_text(
+                      family = switch(Sys.info()[['sysname']],
+                                      Windows= 'SimHei',
+                                      Darwin = 'STHeiti',
+                                      NA) 
+                  ))
     return(p)
 }
 
@@ -695,10 +697,12 @@ pp_add_ti_oscillator = function(
             geom_text(x = dat[1, x], y = Inf, aes(label = ti_str), data = dat_n, hjust = 0, vjust = 1, color = 'black', na.rm = TRUE, alpha = 0.6, size = rel(3)) + 
             labs(x=NULL, y=NULL) + theme_bw() + 
             theme(plot.margin = unit(rep(0, 4), 'cm'),
-                  text = element_text(family = switch(Sys.info()[['sysname']],
-                                                      Windows= 'SimHei',
-                                                      Darwin = 'STHeiti', 
-                                                      NA) ))
+                  text = element_text(
+                      family = switch(Sys.info()[['sysname']],
+                                      Windows= 'SimHei',
+                                      Darwin = 'STHeiti', 
+                                      NA) 
+                  ))
         
         # hlines
         hlines = ti_idicators_hline()
@@ -922,7 +926,7 @@ pq_plot = function(
         ## multiple series
         if (dt[,length(unique(symbol)) > 1]) ifelse(is.null(title), 'multiple series', title)  
         
-        plist[['multi_series']] = 
+        plist[['multi_series']] = suppressWarnings(
             do.call(paste0('pp_',chart_type), args = list(
                 dt = dt, 
                 date_range = date_range, 
@@ -936,6 +940,8 @@ pq_plot = function(
                 multi_series_all1=multi_series_all1,
                 subtitle_str = subtitle_str
             ))
+        )
+            
     } else {
         ## single series
         sybs = dt[, unique(symbol)]
@@ -943,7 +949,7 @@ pq_plot = function(
             dt_s = dt[symbol == s]
             setkeyv(dt_s, 'date')
             
-            plist[[s]] = 
+            plist[[s]] = suppressWarnings(
                 do.call(paste0('pp_',chart_type), args = list(
                     dt = dt_s, 
                     date_range = date_range, 
@@ -957,6 +963,8 @@ pq_plot = function(
                     multi_series_all1=multi_series_all1,
                     subtitle_str = subtitle_str[symbol == s]
                 ))
+            )
+                
         }
     }
     

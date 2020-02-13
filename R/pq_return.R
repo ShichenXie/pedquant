@@ -131,7 +131,7 @@ pq1_return = function(dt, x='close|value', type='arithmetic', freq='daily', date
 #' 
 #' @examples 
 #' \donttest{
-#' #' dts = md_stock(c('000001', '^000001'), source = '163')
+#' dts = md_stock(c('000001', '^000001'), source = '163')
 #' 
 #' # set freq
 #' dts_returns1 = pq_return(dts, freq = 'all')

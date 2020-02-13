@@ -215,7 +215,10 @@ md_stock_hist1_163 = function(symbol1, from='1900-01-01', to=Sys.Date(), zero_rm
   }
   
   # create unit/name columns
-  dt = dt[, `:=`(unit = 'CNY')]#[, name := name[.N]]
+  dt = dt[, `:=`(
+    unit = 'CNY', 
+    name = gsub('\\s', '', name)
+  )]#[, name := name[.N]]
   setkeyv(dt, 'date')
   return(dt)
 }
@@ -403,12 +406,19 @@ md_stock_163 = function(symbol, from='1900-01-01', to=Sys.Date(), print_step=1L,
     
   )
   
-  
-  dat_list = lapply(dat_list, function(x) {
-    cols_rm = intersect(names(x), c('prev_close', 'change')) # , 'change_pct'
+  rmcols_func = function(x) {
+    cols_rm = intersect(names(x), c('prev_close', 'change')) #,'change_pct'
     if (length(cols_rm)>0) x = x[, (cols_rm) := NULL]
     return(x)
-  })
+  }
+  if (type != 'adjfactor') {
+    if (inherits(dat_list, 'list')) {
+      dat_list = lapply(dat_list, rmcols_func)
+    } else if (inherits(dat_list, 'data.frame')) {
+      dat_list = rmcols_func(dat_list)
+    }
+  }
+  
   return(dat_list)
 }
 
