@@ -516,7 +516,7 @@ select_rows_df = function(dt, column=NULL, input_string=NULL, onerow=FALSE) {
             if (is.null(column)) {
                 txt = "select rows via 'rX': "
             } else {
-                txt = sprintf("select rows via 'rX' or '%s': ", column)
+                txt = sprintf("select rows via 'rX'(r1,3-5) or '%s': ", column)
             }
             if (onerow) txt = sub('rows', 'one row', txt)
             sel_id = readline(txt)
