@@ -20,6 +20,7 @@ For the yahoo data, the original data already adjust for split, and use the 'clo
 \code{md_stock_adjust} adjusts the open, high, low and close stock prices for split and dividend.
 }
 \examples{
+\donttest{
 dt = md_stock('600547', source = '163', date_range = 'max', 
               type = 'history', adjust = NULL)
 ds = md_stock('600547', source = '163', date_range = 'max', 
@@ -27,5 +28,5 @@ ds = md_stock('600547', source = '163', date_range = 'max',
 
 dtadj = md_stock_adjust(dt, source = '163', adjust = 'dividend', 
                         adjfactor = ds)
-
+}
 }

@@ -96,6 +96,7 @@ md_stock_adjust1 = function(dt, source, adjust = 'split', adjfactor = NULL, ...)
 #' @param adjfactor adjust factors, including splits and dividends. Defaults to NULL, which will load adjust factors from source. It can also download from md_stock when type set as adjfactor.
 #' 
 #' @examples 
+#' \donttest{
 #' dt = md_stock('600547', source = '163', date_range = 'max', 
 #'               type = 'history', adjust = NULL)
 #' ds = md_stock('600547', source = '163', date_range = 'max', 
@@ -103,7 +104,7 @@ md_stock_adjust1 = function(dt, source, adjust = 'split', adjfactor = NULL, ...)
 #' 
 #' dtadj = md_stock_adjust(dt, source = '163', adjust = 'dividend', 
 #'                         adjfactor = ds)
-#' 
+#' }
 #' @export
 md_stock_adjust = function(dt, source, adjust = 'split', adjfactor = NULL) {
     symbol = NULL
