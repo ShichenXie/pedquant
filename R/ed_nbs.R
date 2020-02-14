@@ -346,10 +346,11 @@ ed_nbs = function(symbol=NULL, freq=NULL, geo_type=NULL, subregion=NULL, date_ra
   ft = get_fromto(date_range, from, to, min_date = "1000-01-01", default_date_range = '10y')
   from = ft$f
   to = ft$t
+  ## symbol
+  if (is.null(symbol)) symbol = ed_nbs_symbol(geo_type = geo_type, freq = freq, eng = eng)
   
   # jsondat
   jsondat_list = NULL
-  
   for (s in symbol) {
     temp = ed1_nbs(symbol1=s, geo_type, subregion, from, freq, eng)
     temp = nbs_jsondat_format(temp)[date>=from & date<=to,]

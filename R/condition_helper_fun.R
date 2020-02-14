@@ -494,6 +494,13 @@ api_key = function(src){
 
 
 # select rows from a dataframe
+txt_to_rowid = function(txt) {
+    txt = gsub("[^[0-9:-]+", ",", txt)
+    txt = gsub('-', ':', txt)
+    txt = gsub('^[,:]+|[,:]+$', '', txt)
+    rowid = eval(parse( text = sprintf('c(%s)', txt) ))
+    return(rowid)
+}
 # dt, a dataframe to be selected
 # column, the targe column
 # input_string, the pattern to match the rows in target column
@@ -520,14 +527,11 @@ select_rows_df = function(dt, column=NULL, input_string=NULL, onerow=FALSE) {
         
         if (identical(sel_id, 'all')) {
             seleted_rows = dt
-        } else if (all(grepl('^r[1-9].*$', sel_id)) && length(sel_id)==1) { # select rows via rowid 
+        } else if (all(grepl('^r[1-9]+[0-9,-:]*$', sel_id)) && length(sel_id)==1) { # select rows via rowid 
             while (any(grepl("^r", sel_id))) {
                 sel_id_string = gsub('r', '', sel_id)
-                sel_id_string = gsub("[^[0-9:-]+", ",", sel_id_string)
-                sel_id_string = gsub('-', ':', sel_id_string)
-                sel_id_string = gsub('^[,:]+|[,:]+$', '', sel_id_string)
-                sel_id = eval(parse( text = sprintf('c(%s)', sel_id_string) ))
-                sel_id = intersect(sel_id, dt[,.I])
+
+                sel_id = intersect(txt_to_rowid(sel_id_string), dt[,.I])
                 if (length(sel_id)==0) {
                     sel_id = 'r'
                 } else {
@@ -535,11 +539,13 @@ select_rows_df = function(dt, column=NULL, input_string=NULL, onerow=FALSE) {
                 }
             }
         } else { # select rows via pattern matching
-            seleted_rows = dt[sapply(sel_id, function(s) {
-                grep(s, dt[[column]])
-            })]
+            sr = unlist(sapply(
+                unlist(strsplit(sel_id, '\\s*,\\s*')), 
+                function(s) grep(sprintf('^%s',s), dt[[column]])
+            ))
+            if (length(sr) == 0) sr = txt_to_rowid(sel_id)
             
-            if (nrow(seleted_rows) == 0) seleted_rows=dt[grep(sel_id, dt[[column]], fixed = TRUE)]
+            seleted_rows = if (length(sr) == 0) dt[.0] else dt[sr]
             if (nrow(seleted_rows) == 0) input_string = NULL
         }
         
