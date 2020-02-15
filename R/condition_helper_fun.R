@@ -341,10 +341,9 @@ load_web_source2 = function(url, sleep_time = 0, close_remDr = TRUE) {
     ## docker run -d -p 4445:4444 selenium/standalone-firefox
     ## docker ps
     ## sudo docker stop $(docker ps -q)
-    
-    
+
     remDr <- remoteDriver(port = 4445L, browserName = "chrome")
-    remDr$open()
+    remDr$open(silent = TRUE)
     
     # navigate
     remDr$navigate(url)
@@ -573,7 +572,3 @@ isdatetime = function(x) {
     inherits(x, c("Date","POSIXlt","POSIXct","POSIXt"))
 }
 
-
-
-# Internal data # http://r-pkgs.had.co.nz/data.html
-# usethis::use_data(financial_statements_163, prov_indu_163, symbol_future_sina, symbol_stock_163, code_commodity_exchange, code_stock_exchange, code_country, code_currency, code_china_district, internal = TRUE, overwrite = TRUE)

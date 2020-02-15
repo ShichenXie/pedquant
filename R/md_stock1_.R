@@ -54,8 +54,12 @@
 #' 
 #' # query spot prices of all A shares in sse and szse
 #' dt_spot2 = md_stock(symbol='a', source="163", type='spot')
-#' # query spot prices of all index in sse and szse
-#' dt_spot3 = md_stock(symbol='index', source="163", type='spot')
+#' # query spot prices of all A/B shares and index in sse and szse
+#' dt_spot3 = md_stock(symbol=c('a', 'b', 'index'), source="163", type='spot')
+#' 
+#' # show spot prices and sector/industry
+#' dt_spot4 = md_stock(symbol = c('a', 'b', 'index'), source = '163', 
+#'   type = 'spot', show_tags = TRUE)
 #' 
 #' }
 #' 

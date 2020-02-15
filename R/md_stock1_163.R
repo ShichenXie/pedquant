@@ -2,7 +2,7 @@
 #' @import data.table 
 #' @importFrom jsonlite fromJSON
 #' @importFrom stringi stri_unescape_unicode
-md_stock_spotall_163 = function(symbol = c('a','index'), only_symbol = FALSE, show_tags = FALSE, ...) {
+md_stock_spotall_163 = function(symbol = c('a','index'), only_symbol = FALSE, show_tags = FALSE, to_sysdata=FALSE, ...) {
   prov = tags = market = exchange = time = . = submarket = region = board = name = mkt = indu = sec = NULL
     
   fun_stock_163 = function(urli, mkt) {
@@ -62,6 +62,7 @@ md_stock_spotall_163 = function(symbol = c('a','index'), only_symbol = FALSE, sh
   # if (df_stock_cn[1,time] < as.POSIXct(paste(df_stock_cn[1,date], '15:00:00'))) 
   #   cat('The close price is spot price at', as.character(datetime), '\n')
 
+  if (to_sysdata) return(df_stock_cn)
   if (only_symbol || show_tags) {
     if (inherits(df_stock_cn, 'try-error')) df_stock_cn = setDT(copy(symbol_stock_163))
     
@@ -215,10 +216,7 @@ md_stock_hist1_163 = function(symbol1, from='1900-01-01', to=Sys.Date(), zero_rm
   }
   
   # create unit/name columns
-  dt = dt[, `:=`(
-    unit = 'CNY', 
-    name = gsub('\\s', '', name)
-  )]#[, name := name[.N]]
+  dt = dt[, unit := 'CNY']#[, name := name[.N]]
   setkeyv(dt, 'date')
   return(dt)
 }
@@ -409,6 +407,7 @@ md_stock_163 = function(symbol, from='1900-01-01', to=Sys.Date(), print_step=1L,
   rmcols_func = function(x) {
     cols_rm = intersect(names(x), c('prev_close', 'change')) #,'change_pct'
     if (length(cols_rm)>0) x = x[, (cols_rm) := NULL]
+    if ('name' %in% names(x)) x = x[, name := gsub('\\s', '', name)]
     return(x)
   }
   if (type != 'adjfactor') {

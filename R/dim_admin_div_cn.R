@@ -7,7 +7,7 @@
 
 # province, city, county, town, village
 # import RSelenium rvest httr data.table
-admin_div_cn = function(admin_level=2) {
+admin_div_cn = function(admin_level=3) {
   read_html = html_attr = . = id = ad = remoteDriver = code = name = code_parent = NULL
   
   # function # url0
@@ -142,13 +142,5 @@ admin_div_cn = function(admin_level=2) {
     ret_df[code == c, name := ret_df[code == substr(c,1,2), name]]
   }
   
-  return(ret_df)
+  return(setDF(ret_df))
 }
-
-
-# library(RSelenium)
-# library(rvest)
-# library(httr)
-# library(data.table)
-# code_admin_cn = admin_div_cn() # # province city county
-# save(code_admin_cn, file="./data/code_admin_cn.RData")

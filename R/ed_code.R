@@ -17,7 +17,16 @@
 #' 
 #' @export
 ed_code = function(cate=NULL) {
-    category = c('country', 'currency', 'stock_exchange', 'commodity_exchange', 'china_district')
+    category = c('country', 'currency', 'exchange_stock', 'exchange_commodity', 'china_district')
+    
+    # consistent with the version below 0.1.3.999
+    if (!is.null(cate)) cate = sapply(cate, function(c) {
+        if (c %in% c('stock_exchange', 'commodity_exchange')) {
+            c2 = unlist(strsplit(c, '_'))
+            c = paste(c2[2], c2[1], sep = '_')
+        }
+        return(c)
+    } )
     
     # market category
     if (!is.null(cate)) cate = intersect(cate, category)
@@ -27,10 +36,54 @@ ed_code = function(cate=NULL) {
         column='category', input_string=cate
     )[,category]
     
+    
     cod_lst = list()
     for (i in cate) {
-        cod_lst[[i]] = setDT(copy(eval(parse(text = gsub(' ','_',paste("code", cate)) ))))
+        cod_lst[[i]] = setDT(copy(
+            eval(parse(text =  sprintf('code_%s', cate)))
+        )) # gsub(' ','_',paste("code", cate))
     }
     return(cod_lst)
 }
+
+
+# Internal data # http://r-pkgs.had.co.nz/data.html
+update_sysdata = function() {
+    . = industry = market = name = province = sector = symbol = NULL
+    
+    # # china district
+    # library(RSelenium); library(rvest); library(httr); library(data.table)
+    # code_china_district = admin_div_cn(admin_level = 3)
+    
+    # # country currency
+    # cc = dim_country_currency()
+    # code_country = cc$country
+    # code_currency = cc$currency
+    
+    # # financial_statements_163
+    # # prov_indu_163
+    
+    # # symbol_stock_163
+    # # update on 20200215
+    # syb_stock1 = pedquant:::md_stock_spotall_163(symbol = c('a', 'b', 'index'), to_sysdata=TRUE)
+    # syb_stock2 = syb_stock1[market == 'index', symbol := paste0('^',symbol)
+    #                      ][,.(symbol, name, province, sector, industry)]
+    # symbol_stock_163 = setDF(
+    #     setDT(
+    #         rbind(syb_stock2, symbol_stock_163)
+    #     )[,.SD[1], keyby=symbol
+    #     ][grepl('^c.+', province), province := NA] )
+        
+    # # symbol_future_sina
+    
+    # # exchange
+    # code_exchange_commodity = pedquant:::dim_exchange_commodity()
+    # code_exchange_stock = pedquant:::dim_exchange_stock()
+    
+    # usethis::use_data(financial_statements_163, prov_indu_163, symbol_future_sina, symbol_stock_163, code_exchange_commodity, code_exchange_stock, code_country, code_currency, code_china_district, internal = TRUE, overwrite = TRUE)
+}
+
+
+
+
 

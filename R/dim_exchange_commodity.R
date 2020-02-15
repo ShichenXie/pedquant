@@ -17,17 +17,21 @@
 
 #' @import data.table xml2 
 dim_exchange_commodity = function() {
-    read_html = exchange = location = abbreviation = product_types = life_time = economy = city = region = . = NULL
+    read_html = html_table = exchange = location = abbreviation = product_types = life_time = economy = city = region = . = NULL
     
     # https://en.wikipedia.org/wiki/List_of_commodities_exchanges
     # https://en.wikipedia.org/wiki/List_of_futures_exchanges
     
-    wb = read_html("https://en.wikipedia.org/wiki/List_of_commodities_exchanges") 
-    tbls = lapply(xml_table(wb, 2:6, sup_rm="\\[.+?\\]"), function(x) x[-1])
+    wb = read_html("https://en.wikipedia.org/wiki/List_of_commodities_exchanges")
+    tbls = html_table(wb, fill = TRUE)[2:6]
+    # tbls = lapply(xml_table(wb, 2:6, sup_rm="\\[.+?\\]"), function(x) x[-1])
     names(tbls) = c("africa","americas","asia","europe","oceania")
     
+    tbls = lapply(tbls, function(t) {
+        names(t) = c("exchange", "abbreviation", "location", "product_types", "life_time")[1:ncol(t)]
+        return(t)
+    })
     ce_dt = rbindlist(tbls, fill = TRUE, idcol = "region")
-    setnames(ce_dt, c("region", "exchange", "abbreviation", "location", "product_types", "life_time"))
     
     ce_dt = ce_dt[,`:=`(
         exchange = gsub("\\[.+\\]","",exchange),
@@ -37,8 +41,7 @@ dim_exchange_commodity = function() {
          ][order(region, economy, city, exchange)
            ][,.(region, exchange, abbreviation, economy, city, product_types, life_time)]
     
-    ce_dt = setDF(ce_dt)
-    return(ce_dt)
+    return(setDF(ce_dt))
 }
 # exchange_commodity = dim_exchange_commodity()
 # save(exchange_commodity, file="./data/exchange_commodity.RData")

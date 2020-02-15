@@ -226,7 +226,10 @@ symbol_163_format = function(df_symbol) {
 #' @import data.table
 #' @importFrom jsonlite fromJSON 
 md_stock_symbol_163 = function() {
-  df_syb = dat = md_stock_spotall_163(symbol = c('a', 'b', 'index'), only_symbol=TRUE)
+  . = board = exchange = indu = market = name = prov = sec = submarket = symbol = NULL 
+  df_syb = md_stock_spotall_163(symbol = c('a', 'b', 'index'), only_symbol=TRUE, show_tags=TRUE)[,.(
+    market, submarket, exchange, board, symbol, name, sector = sec, industry = indu, province = prov
+  )]
   return(df_syb)
 }
 
@@ -235,7 +238,10 @@ md_stock_symbol_nasdaq = function(exchange) {
   .=Symbol=Name=Sector=industry=NULL
   
   # c("AMEX", "NASDAQ", "NYSE")
-  url = sprintf('http://www.nasdaq.com/screening/companies-by-name.aspx?letter=0&exchange=%s&render=download', exchange)
+  url = sprintf(
+    "https://old.nasdaq.com/screening/companies-by-name.aspx?letter=0&exchange=%s&render=download",
+    # 'http://www.nasdaq.com/screening/companies-by-name.aspx?letter=0&exchange=%s&render=download', 
+    exchange)
   
   dat = load_read_csv(url)[,.(market='stock', exchange=exchange, board=NA, symbol=Symbol, name=Name, sector=Sector, industry)]
   dat[dat=='n/a'] <- NA
