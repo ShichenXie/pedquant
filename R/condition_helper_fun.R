@@ -334,13 +334,15 @@ load_web_source2 = function(url, sleep_time = 0, close_remDr = TRUE) {
     # docker # browser + webDriver + selenium
     ## https://docs.docker.com/docker-for-mac/
     ## https://hub.docker.com/u/selenium/
+    ## [An Introduction to Using Selenium-Docker Containers for End-to-End Testing](https://robotninja.com/blog/introduction-using-selenium-docker-containers-end-end-testing/)
     
     # docker command
     ## docker run hello-world
     ## docker pull selenium/standalone-chrome
-    ## docker run -d -p 4445:4444 selenium/standalone-firefox
+    ## docker image ls
+    ## docker run -d -p 4445:4444 selenium/standalone-chrome
     ## docker ps
-    ## sudo docker stop $(docker ps -q)
+    ## docker stop CONTAINER
 
     remDr <- remoteDriver(port = 4445L, browserName = "chrome")
     remDr$open(silent = TRUE)
@@ -572,3 +574,12 @@ isdatetime = function(x) {
     inherits(x, c("Date","POSIXlt","POSIXct","POSIXt"))
 }
 
+# chinese font by os
+chnfont_family = function() {
+    switch(
+        Sys.info()[['sysname']],
+        Windows= 'SimHei',
+        Darwin = 'Hei Regular',
+        NA
+    )
+}

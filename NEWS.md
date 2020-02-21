@@ -1,6 +1,6 @@
 # pedquant 0.1.3.999
 
-* 
+* fixed a bug caused by chinese font in pq_plot function
 
 # pedquant 0.1.3
 

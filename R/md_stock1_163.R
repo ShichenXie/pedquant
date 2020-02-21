@@ -405,6 +405,8 @@ md_stock_163 = function(symbol, from='1900-01-01', to=Sys.Date(), print_step=1L,
   )
   
   rmcols_func = function(x) {
+    name = NULL
+    
     cols_rm = intersect(names(x), c('prev_close', 'change')) #,'change_pct'
     if (length(cols_rm)>0) x = x[, (cols_rm) := NULL]
     if ('name' %in% names(x)) x = x[, name := gsub('\\s', '', name)]

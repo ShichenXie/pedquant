@@ -495,22 +495,23 @@ pp_set_title = function(p, dt, title = NULL) {
         title1 = paste0(title, dt[1,title1]) 
         title2 = dt[1,title2]
         # adding title and annotation
+        # p = p + ggtitle(title1, subtitle = title2)
         p = p + labs(title = title1, subtitle = title2)
     } else {
         p = p + labs(title = title)
     }
     
-    p = p + theme(plot.title    = element_text(margin = margin(b=0)),
-                  plot.subtitle = element_text(margin = margin(b=0)),
-                  text = element_text(
-                      family = switch(Sys.info()[['sysname']],
-                                      Windows= 'SimHei',
-                                      Darwin = 'STHeiti',
-                                      NA) 
-                  ))
+    p = p + theme(
+        plot.title    = element_text(margin = margin(t=1, b=1)),
+        plot.subtitle = element_text(margin = margin(t=0, b=1)),
+        text = element_text( family = chnfont_family() )
+    )
     return(p)
 }
 
+font_family = function() {
+    
+}
 
 
 # add technical indicators
@@ -696,13 +697,10 @@ pp_add_ti_oscillator = function(
         pi = pi + 
             geom_text(x = dat[1, x], y = Inf, aes(label = ti_str), data = dat_n, hjust = 0, vjust = 1, color = 'black', na.rm = TRUE, alpha = 0.6, size = rel(3)) + 
             labs(x=NULL, y=NULL) + theme_bw() + 
-            theme(plot.margin = unit(rep(0, 4), 'cm'),
-                  text = element_text(
-                      family = switch(Sys.info()[['sysname']],
-                                      Windows= 'SimHei',
-                                      Darwin = 'STHeiti', 
-                                      NA) 
-                  ))
+            theme(
+                plot.margin = unit(rep(0, 4), 'cm'),
+                text = element_text( family = chnfont_family() )
+            )
         
         # hlines
         hlines = ti_idicators_hline()
