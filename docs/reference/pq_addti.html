@@ -157,15 +157,16 @@
 
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='co'># \donttest{</span>
+    <pre class="examples"><span class='co'># \donttest{</span>
 <span class='co'># load data</span>
-<span class='no'>dt</span> <span class='kw'>=</span> <span class='fu'><a href='md_stock.html'>md_stock</a></span>(<span class='st'>"^000001"</span>, <span class='kw'>source</span><span class='kw'>=</span><span class='st'>'163'</span>, <span class='kw'>date_range</span> <span class='kw'>=</span> <span class='st'>'max'</span>)</div><div class='output co'>#&gt; 1/1 ^000001</div><div class='input'>
+<span class='no'>dt</span> <span class='kw'>=</span> <span class='fu'><a href='md_stock.html'>md_stock</a></span>(<span class='st'>"^000001"</span>, <span class='kw'>source</span><span class='kw'>=</span><span class='st'>'163'</span>, <span class='kw'>date_range</span> <span class='kw'>=</span> <span class='st'>'max'</span>)
+
 <span class='co'># add technical indicators</span>
 <span class='no'>dt_ti1</span> <span class='kw'>=</span> <span class='fu'>pq_addti</span>(<span class='no'>dt</span>, <span class='kw'>sma</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>n</span><span class='kw'>=</span><span class='fl'>20</span>), <span class='kw'>sma</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>n</span><span class='kw'>=</span><span class='fl'>50</span>), <span class='kw'>macd</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>())
 
 <span class='co'># only technical indicators</span>
 <span class='no'>dt_ti2</span> <span class='kw'>=</span> <span class='fu'>pq_addti</span>(<span class='no'>dt</span>, <span class='kw'>sma</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>n</span><span class='kw'>=</span><span class='fl'>20</span>), <span class='kw'>sma</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>n</span><span class='kw'>=</span><span class='fl'>50</span>), <span class='kw'>macd</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(), <span class='kw'>col_kp</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)
-<span class='co'># }</span></div></pre>
+<span class='co'># }</span></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>

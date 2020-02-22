@@ -143,13 +143,11 @@
 
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='co'># \donttest{</span>
-<span class='no'>dts</span> <span class='kw'>=</span> <span class='fu'><a href='md_stock.html'>md_stock</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"^000001"</span>, <span class='st'>"000001"</span>), <span class='kw'>date_range</span> <span class='kw'>=</span> <span class='st'>'max'</span>, <span class='kw'>source</span> <span class='kw'>=</span> <span class='st'>'163'</span>)</div><div class='output co'>#&gt; 1/2 ^000001
-#&gt; 2/2 000001</div><div class='input'>
-<span class='no'>dts_weekly</span> <span class='kw'>=</span> <span class='fu'>pq_to_freq</span>(<span class='no'>dts</span>, <span class='st'>"weekly"</span>)</div><div class='output co'>#&gt; 1/2 000001.SS
-#&gt; 2/2 000001.SZ</div><div class='input'># }
+    <pre class="examples"><span class='co'># \donttest{</span>
+<span class='no'>dts</span> <span class='kw'>=</span> <span class='fu'><a href='md_stock.html'>md_stock</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"^000001"</span>, <span class='st'>"000001"</span>), <span class='kw'>date_range</span> <span class='kw'>=</span> <span class='st'>'max'</span>, <span class='kw'>source</span> <span class='kw'>=</span> <span class='st'>'163'</span>)
 
-</div></pre>
+<span class='no'>dts_weekly</span> <span class='kw'>=</span> <span class='fu'>pq_to_freq</span>(<span class='no'>dts</span>, <span class='st'>"weekly"</span>)
+<span class='co'># }</span></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>

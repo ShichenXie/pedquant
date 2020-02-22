@@ -169,9 +169,10 @@
 
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='co'># \donttest{</span>
+    <pre class="examples"><span class='co'># \donttest{</span>
 <span class='co'># query NBS data without setting any parameters</span>
-<span class='no'>dt</span> <span class='kw'>=</span> <span class='fu'>ed_nbs</span>()</div><div class='output co'>#&gt; <span class='error'>Error in menu(choices, cat(sprintf("Select the value of %s", arg_name))): menu() cannot be used non-interactively</span></div><div class='input'>
+<span class='no'>dt</span> <span class='kw'>=</span> <span class='fu'>ed_nbs</span>()
+
 <span class='co'># specify paratmeters</span>
 <span class='no'>dt1</span> <span class='kw'>=</span> <span class='fu'>ed_nbs</span>(<span class='kw'>geo_type</span><span class='kw'>=</span><span class='st'>'nation'</span>, <span class='kw'>freq</span><span class='kw'>=</span><span class='st'>'quarterly'</span>, <span class='kw'>symbol</span><span class='kw'>=</span><span class='st'>'A010101'</span>)
 <span class='co'># or using 'n'/'q' represents 'nation'/'quarterly'</span>
@@ -185,7 +186,7 @@
 <span class='co'># query data in all province</span>
 <span class='no'>dt4</span> <span class='kw'>=</span> <span class='fu'>ed_nbs</span>(<span class='kw'>geo_type</span><span class='kw'>=</span><span class='st'>'province'</span>, <span class='kw'>freq</span><span class='kw'>=</span><span class='st'>'quarterly'</span>,
   <span class='kw'>symbol</span><span class='kw'>=</span><span class='st'>'A010101'</span>, <span class='kw'>subregion</span><span class='kw'>=</span><span class='st'>'all'</span>)
-<span class='co'># }</span></div></pre>
+<span class='co'># }</span></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>

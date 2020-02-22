@@ -164,19 +164,17 @@
 
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='co'># \donttest{</span>
-<span class='no'>dts</span> <span class='kw'>=</span> <span class='fu'><a href='md_stock.html'>md_stock</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>'000001'</span>, <span class='st'>'^000001'</span>), <span class='kw'>source</span> <span class='kw'>=</span> <span class='st'>'163'</span>)</div><div class='output co'>#&gt; 1/2 000001
-#&gt; 2/2 ^000001</div><div class='input'>
-<span class='co'># set freq</span>
-<span class='no'>dts_returns1</span> <span class='kw'>=</span> <span class='fu'>pq_return</span>(<span class='no'>dts</span>, <span class='kw'>freq</span> <span class='kw'>=</span> <span class='st'>'all'</span>)</div><div class='output co'>#&gt; 1/2 000001.SZ
-#&gt; 2/2 000001.SS</div><div class='input'><span class='no'>dts_returns2</span> <span class='kw'>=</span> <span class='fu'>pq_return</span>(<span class='no'>dts</span>, <span class='kw'>freq</span> <span class='kw'>=</span> <span class='st'>'weekly'</span>)</div><div class='output co'>#&gt; 1/2 000001.SZ
-#&gt; 2/2 000001.SS</div><div class='input'>
-<span class='co'># set method</span>
-<span class='no'>dts_returns3</span> <span class='kw'>=</span> <span class='fu'>pq_return</span>(<span class='no'>dts</span>, <span class='kw'>freq</span> <span class='kw'>=</span> <span class='st'>'monthly'</span>, <span class='kw'>method</span> <span class='kw'>=</span> <span class='st'>'arithmetic'</span>) <span class='co'># default method</span></div><div class='output co'>#&gt; 1/2 000001.SZ
-#&gt; 2/2 000001.SS</div><div class='input'><span class='no'>dts_returns4</span> <span class='kw'>=</span> <span class='fu'>pq_return</span>(<span class='no'>dts</span>, <span class='kw'>freq</span> <span class='kw'>=</span> <span class='st'>'monthly'</span>, <span class='kw'>method</span> <span class='kw'>=</span> <span class='st'>'log'</span>)</div><div class='output co'>#&gt; 1/2 000001.SZ
-#&gt; 2/2 000001.SS</div><div class='input'># }
+    <pre class="examples"><span class='co'># \donttest{</span>
+<span class='no'>dts</span> <span class='kw'>=</span> <span class='fu'><a href='md_stock.html'>md_stock</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>'000001'</span>, <span class='st'>'^000001'</span>), <span class='kw'>source</span> <span class='kw'>=</span> <span class='st'>'163'</span>)
 
-</div></pre>
+<span class='co'># set freq</span>
+<span class='no'>dts_returns1</span> <span class='kw'>=</span> <span class='fu'>pq_return</span>(<span class='no'>dts</span>, <span class='kw'>freq</span> <span class='kw'>=</span> <span class='st'>'all'</span>)
+<span class='no'>dts_returns2</span> <span class='kw'>=</span> <span class='fu'>pq_return</span>(<span class='no'>dts</span>, <span class='kw'>freq</span> <span class='kw'>=</span> <span class='st'>'weekly'</span>)
+
+<span class='co'># set method</span>
+<span class='no'>dts_returns3</span> <span class='kw'>=</span> <span class='fu'>pq_return</span>(<span class='no'>dts</span>, <span class='kw'>freq</span> <span class='kw'>=</span> <span class='st'>'monthly'</span>, <span class='kw'>method</span> <span class='kw'>=</span> <span class='st'>'arithmetic'</span>) <span class='co'># default method</span>
+<span class='no'>dts_returns4</span> <span class='kw'>=</span> <span class='fu'>pq_return</span>(<span class='no'>dts</span>, <span class='kw'>freq</span> <span class='kw'>=</span> <span class='st'>'monthly'</span>, <span class='kw'>method</span> <span class='kw'>=</span> <span class='st'>'log'</span>)
+<span class='co'># }</span></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>

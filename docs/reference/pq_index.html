@@ -156,20 +156,17 @@
 
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='co'># \donttest{</span>
+    <pre class="examples"><span class='co'># \donttest{</span>
 <span class='co'># Example I bank share index</span>
 <span class='co'># load data</span>
 <span class='no'>bank_symbol</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>'601988'</span>, <span class='st'>'601288'</span>, <span class='st'>'601398'</span>, <span class='st'>'601939'</span>, <span class='st'>'601328'</span>)
-<span class='no'>bank_dat</span> <span class='kw'>=</span> <span class='fu'><a href='md_stock.html'>md_stock</a></span>(<span class='no'>bank_symbol</span>, <span class='kw'>source</span><span class='kw'>=</span><span class='st'>'163'</span>, <span class='kw'>date_range</span> <span class='kw'>=</span> <span class='st'>'max'</span>)</div><div class='output co'>#&gt; 1/5 601988
-#&gt; 2/5 601288
-#&gt; 3/5 601398
-#&gt; 4/5 601939
-#&gt; 5/5 601328</div><div class='input'>
+<span class='no'>bank_dat</span> <span class='kw'>=</span> <span class='fu'><a href='md_stock.html'>md_stock</a></span>(<span class='no'>bank_symbol</span>, <span class='kw'>source</span><span class='kw'>=</span><span class='st'>'163'</span>, <span class='kw'>date_range</span> <span class='kw'>=</span> <span class='st'>'max'</span>)
+
 <span class='co'># creating index</span>
 <span class='no'>bank_index</span> <span class='kw'>=</span> <span class='fu'>pq_index</span>(<span class='no'>bank_dat</span>, <span class='kw'>x</span><span class='kw'>=</span><span class='st'>'close'</span>, <span class='kw'>w</span><span class='kw'>=</span><span class='st'>'cap_total'</span>)
 <span class='co'># pq_plot(bank_index)</span>
 
-<span class='co'># }</span></div></pre>
+<span class='co'># }</span></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>

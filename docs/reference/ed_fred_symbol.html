@@ -143,87 +143,17 @@
 
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='co'># \donttest{</span>
+    <pre class="examples"><span class='co'># \donttest{</span>
 <span class='co'># search symbols by category</span>
 <span class='co'># from top categories</span>
-<span class='no'>symbol_dt1</span> <span class='kw'>=</span> <span class='fu'>ed_fred_symbol</span>()</div><div class='output co'>#&gt;       id                                    name parent_id
-#&gt; 1: 32991 Money, Banking, &amp; Finance                       0
-#&gt; 2:    10 Population, Employment, &amp; Labor Markets         0
-#&gt; 3: 32992 National Accounts                               0
-#&gt; 4:     1 Production &amp; Business Activity                  0
-#&gt; 5: 32455 Prices                                          0
-#&gt; 6: 32263 International Data                              0
-#&gt; 7:  3008 U.S. Regional Data                              0
-#&gt; 8: 33060 Academic Data                                   0
-#&gt; select one row via 'rX' or 'id': 
-#&gt;       id                          name parent_id
-#&gt; 1:    22 Interest Rates                    32991
-#&gt; 2:    15 Exchange Rates                    32991
-#&gt; 3:    24 Monetary Data                     32991
-#&gt; 4:    46 Financial Indicators              32991
-#&gt; 5:    23 Banking                           32991
-#&gt; 6: 32360 Business Lending                  32991
-#&gt; 7: 32145 Foreign Exchange Intervention     32991
-#&gt; select one row via 'rX' or 'id': 
-#&gt;        id                                            name parent_id
-#&gt;  1: 33058 Automobile Loan Rates                                  22
-#&gt;  2:    51 Bankers Acceptance Rate                                22
-#&gt;  3:   121 Certificates of Deposit                                22
-#&gt;  4:   120 Commercial Paper                                       22
-#&gt;  5: 32348 Corporate Bonds                                        22
-#&gt;  6: 33059 Credit Card Loan Rates                                 22
-#&gt;  7: 32298 Eurodollar Deposits                                    22
-#&gt;  8:   118 FRB Rates - discount, fed funds, primary credit        22
-#&gt;  9: 33056 Interest Checking Accounts                             22
-#&gt; 10: 33446 Interest Rate Spreads                                  22
-#&gt; 11: 32299 Interest Rate Swaps                                    22
-#&gt; 12: 33003 LIBOR Rates                                            22
-#&gt; 13: 32995 Long-Term Securities                                   22
-#&gt; 14: 33055 Money Market Accounts                                  22
-#&gt; 15:   114 Mortgage Rates                                         22
-#&gt; 16: 33057 Personal Loan Rates                                    22
-#&gt; 17:   117 Prime Bank Loan Rate                                   22
-#&gt; 18: 33491 Saving Accounts                                        22
-#&gt; 19:   116 Treasury Bills                                         22
-#&gt; 20:   115 Treasury Constant Maturity                             22
-#&gt; 21:    82 Treasury Inflation-Indexed Securities                  22
-#&gt;        id                                            name parent_id
-#&gt; select one row via 'rX' or 'id': 
-#&gt;             symbol
-#&gt; 1: TERMCBAUTO48NS 
-#&gt; 2: RIFLPBCIANM60NM
-#&gt; 3: TERMAFCNCNSA   
-#&gt;                                                                                       name
-#&gt; 1: Finance Rate on Consumer Installment Loans at Commercial Banks, New Autos 48 Month Loan
-#&gt; 2: Finance Rate on Consumer Installment Loans at Commercial Banks, New Autos 60 Month Loan
-#&gt; 3: New Car Average Finance Rate at Auto Finance Companies (DISCONTINUED)                  
-#&gt;    frequency   units
-#&gt; 1:   Monthly Percent
-#&gt; 2:   Monthly Percent
-#&gt; 3:   Monthly Percent
-#&gt; select rows via 'rX' or 'symbol': </div><div class='input'><span class='co'># specify the initial categories</span>
-<span class='no'>symbol_dt2</span> <span class='kw'>=</span> <span class='fu'>ed_fred_symbol</span>(<span class='kw'>category</span> <span class='kw'>=</span> <span class='fl'>1</span>)</div><div class='output co'>#&gt;        id                                         name parent_id
-#&gt;  1:     1 Parent Series                                        1
-#&gt;  2: 32262 Business Cycle Expansions &amp; Contractions             1
-#&gt;  3: 33936 Business Surveys                                     1
-#&gt;  4: 32436 Construction                                         1
-#&gt;  5: 33940 Emissions                                            1
-#&gt;  6: 33490 Finance Companies                                    1
-#&gt;  7: 32216 Health Insurance                                     1
-#&gt;  8:    97 Housing                                              1
-#&gt;  9:     3 Industrial Production &amp; Capacity Utilization         1
-#&gt; 10: 32429 Manufacturing                                        1
-#&gt; 11:     6 Retail Trade                                         1
-#&gt; 12: 33441 Services                                             1
-#&gt; 13: 33492 Technology                                           1
-#&gt; 14: 33202 Transportation                                       1
-#&gt; 15: 33203 Wholesale Trade                                      1
-#&gt; select one row via 'rX' or 'id': </div><div class='output co'>#&gt; <span class='error'>Error in menu(choices, cat(sprintf("Select the value of %s", arg_name))): menu() cannot be used non-interactively</span></div><div class='input'>
-<span class='co'># search symbol by keywords</span>
-<span class='no'>symbol_dt3</span> <span class='kw'>=</span> <span class='fu'>ed_fred_symbol</span>(<span class='kw'>keywords</span> <span class='kw'>=</span> <span class='st'>"gdp china"</span>)</div><div class='output co'>#&gt; <span class='error'>Error in menu(choices, cat(sprintf("Select the value of %s", arg_name))): menu() cannot be used non-interactively</span></div><div class='input'>
-# }
+<span class='no'>symbol_dt1</span> <span class='kw'>=</span> <span class='fu'>ed_fred_symbol</span>()
+<span class='co'># specify the initial categories</span>
+<span class='no'>symbol_dt2</span> <span class='kw'>=</span> <span class='fu'>ed_fred_symbol</span>(<span class='kw'>category</span> <span class='kw'>=</span> <span class='fl'>1</span>)
 
-</div></pre>
+<span class='co'># search symbol by keywords</span>
+<span class='no'>symbol_dt3</span> <span class='kw'>=</span> <span class='fu'>ed_fred_symbol</span>(<span class='kw'>keywords</span> <span class='kw'>=</span> <span class='st'>"gdp china"</span>)
+
+<span class='co'># }</span></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
