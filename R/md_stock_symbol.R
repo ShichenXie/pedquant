@@ -214,12 +214,11 @@ symbol_163_format = function(df_symbol) {
   if (!('market' %in% names(df_symbol))) {
     df_symbol = copy(df_symbol)[, `:=`(market = ifelse(grepl("\\^", symbol), "index", "stock") )]
   }
-  df_symbol = df_symbol[, tags := tags_symbol_stockcn(symbol, market)[,tags]
-     ][, c("exchange","submarket","board") := tstrsplit(tags,",")
+  df_symbol = df_symbol[
+  ][, c("exchange","submarket","board") := tstrsplit(mapply(tags_symbol_stockcn, symbol, market),",")
        # ][, .(market, submarket, exchange, board, symbol, name, province=prov, sector=sec, industry=indu)
      ][order(-market, exchange, symbol)
-     ][, symbol := check_symbol_for_yahoo(symbol)
-     ][, tags := NULL]
+     ][, symbol := check_symbol_for_yahoo(symbol)]#[, tags := NULL]
   
   return(df_symbol)
 }

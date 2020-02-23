@@ -504,7 +504,7 @@ pp_set_title = function(p, dt, title = NULL) {
     p = p + theme(
         plot.title    = element_text(margin = margin(t=1, b=1)),
         plot.subtitle = element_text(margin = margin(t=0, b=1)),
-        text = element_text( family = chnfont_family() )
+        text = element_text( family = chn_font_family() )
     )
     return(p)
 }
@@ -699,7 +699,7 @@ pp_add_ti_oscillator = function(
             labs(x=NULL, y=NULL) + theme_bw() + 
             theme(
                 plot.margin = unit(rep(0, 4), 'cm'),
-                text = element_text( family = chnfont_family() )
+                text = element_text( family = chn_font_family() )
             )
         
         # hlines

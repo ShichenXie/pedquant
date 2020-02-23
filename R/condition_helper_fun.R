@@ -132,20 +132,26 @@ tags_symbol_stockcn = function(symbol, mkt) {
     # } else if (nchar(symbol2)==5) {
     #     tags = ifelse(substr(symbol2,1,2)=="08", "hkex,,gem", "hkex,,main")
     # }
-    return(tags)
+    return(tags[,tags])
 }
 # tags of SSE/SZSE shares symbols
 tags_dt = function() {
     tags = exchg_code = NULL
     
     setDT(list(
-        mkt = c('stock','stock','stock','stock','stock','stock','stock','stock','stock','stock','stock','stock','index','index'),
-        syb3 = c("600","601","603","900","000","001","002","003","004","300","200","201","000","399"),
-        tags = c("sse,A,main", "sse,A,main", "sse,A,main", "sse,B,-", "szse,A,main", "szse,A,main", "szse,A,sme", "szse,A,sme", "szse,A,sme", "szse,A,chinext", "szse,B,-", "szse,B,-", "sse,-,-", "szse,-,-"),
-        city = c(rep('sh',4), rep('sz',8),'sh','sz'),
-        city_code = c(rep('0',4), rep('1',8),'0','1')
+        mkt = c(rep('stock', 13), rep('index', 2) ),
+        syb3 = c(
+            "600","601","603","688","900",
+            "000","001","002","003","004","300","200","201","000","399"
+        ),
+        tags = c(
+            "sse,A,main", "sse,A,main", "sse,A,main", "sse,A,star", "sse,B,-", 
+            "szse,A,main", "szse,A,main", "szse,A,sme", "szse,A,sme", "szse,A,sme", "szse,A,chinext", "szse,B,-", "szse,B,-", "sse,-,-", "szse,-,-"
+        ),
+        city = c(rep('sh',5), rep('sz',8),'sh','sz'),
+        city_code = c(rep('0',5), rep('1',8),'0','1')
     ))[,(c('exchange','AB','board')) := tstrsplit(tags,',')
-       ][, exchg_code := toupper(substr(tags,1,2))][]
+     ][, exchg_code := toupper(substr(tags,1,2))][]
 }
 check_symbol_cn = function(symbol, mkt = NULL) {
     exchg_code = syb3 = syb = syb_code = NULL
@@ -575,7 +581,7 @@ isdatetime = function(x) {
 }
 
 # chinese font by os
-chnfont_family = function() {
+chn_font_family = function() {
     switch(
         Sys.info()[['sysname']],
         Windows= 'SimHei',
