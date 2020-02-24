@@ -91,7 +91,7 @@ get_fromto = function(date_range, from, to, min_date, default_date_range = 'max'
 }
 
 # this function has been removed
-tags_symbol_stockcn = function(symbol, mkt) {
+tags_symbol_stockcn = function(symbol, mkt, only_tags = TRUE) {
     syb = syb3 = NULL
     
     sm = data.table(
@@ -132,7 +132,8 @@ tags_symbol_stockcn = function(symbol, mkt) {
     # } else if (nchar(symbol2)==5) {
     #     tags = ifelse(substr(symbol2,1,2)=="08", "hkex,,gem", "hkex,,main")
     # }
-    return(tags[,tags])
+    if (only_tags) tags = tags[,tags]
+    return(tags)
 }
 # tags of SSE/SZSE shares symbols
 tags_dt = function() {

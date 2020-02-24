@@ -2,11 +2,12 @@
 pedquant
 ========
 
+[![Travis build
+status](https://travis-ci.org/ShichenXie/pedquant.svg?branch=master)](https://travis-ci.org/ShichenXie/pedquant)
 [![CRAN
 status](https://www.r-pkg.org/badges/version/pedquant)](https://cran.r-project.org/package=pedquant)
 [![](http://cranlogs.r-pkg.org/badges/grand-total/pedquant)](https://cran.r-project.org/package=pedquant)
-[![Travis build
-status](https://travis-ci.org/ShichenXie/pedquant.svg?branch=master)](https://travis-ci.org/ShichenXie/pedquant)
+[![](http://cranlogs.r-pkg.org/badges/pedquant)](https://cran.r-project.org/package=pedquant)
 
 `pedquant` (Public Economic Data and QUANTitative analysis) provides an
 interface to access public economic and financial data for economic
@@ -66,9 +67,6 @@ Example
 The following examples show you how to import data and create charts.
 
     library(pedquant)
-    #> Registered S3 method overwritten by 'xts':
-    #>   method     from
-    #>   as.zoo.xts zoo
     ## import eocnomic data
     dat1 = ed_fred('GDPCA')
     #> 1/1 GDPCA

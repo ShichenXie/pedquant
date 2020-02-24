@@ -1,6 +1,7 @@
 # pedquant 0.1.3.999
 
 * fixed a bug caused by chinese font in pq_plot function
+* fixed a bug in mk_stock skip index for adjfactor type
 
 # pedquant 0.1.3
 

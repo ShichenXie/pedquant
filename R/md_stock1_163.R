@@ -286,8 +286,10 @@ md_stock_pe1_163 = function(dat) {
 
 # dividends
 md_stock_divsplit1_163 = function(symbol1, from=NULL, to=NULL, ret = c('div', 'spl', 'rig')) {
-  name = symbol = date2 = date1 = date0 = fenhong = . = songgu = spl = zhuanzeng = new_issues = old_issues = issue_price = issue_rate = splits = dividends = NULL
+  name = symbol = date2 = date1 = date0 = fenhong = . = songgu = spl = zhuanzeng = new_issues = old_issues = issue_price = issue_rate = splits = dividends = mkt = NULL
   
+  # skip index
+  if (check_symbol_cn(symbol1)[, mkt == 'index' || is.na(mkt)]) return(NULL)
   # symbol1 = '000001'
   stk_price = md_stock_spot_tx(symbol1, only_syb_nam=TRUE)
   # return dts
