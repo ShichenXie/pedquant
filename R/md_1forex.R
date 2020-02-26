@@ -1,4 +1,65 @@
-# 
+# freeforexapi
+md_forex1_spot = function(fx) {
+    forex_spots = function(fs) {
+        f = paste0(toupper(fs), collapse = ',')
+        dat = fromJSON(sprintf('https://www.freeforexapi.com/api/live?pairs=%s', f))
+        
+        dt = lapply(dat$rates, function(d) d[[1]])
+        return(dt)
+    }
+    
+    fxls = c(
+        "AUDUSD", "EURGBP", "EURUSD", "GBPUSD", "NZDUSD", "USDAED", "USDAFN", "USDALL", "USDAMD",
+        "USDANG", "USDAOA", "USDARS", "USDATS", "USDAUD", "USDAWG", "USDAZM", "USDAZN", "USDBAM",
+        "USDBBD", "USDBDT", "USDBEF", "USDBGN", "USDBHD", "USDBIF", "USDBMD", "USDBND", "USDBOB",
+        "USDBRL", "USDBSD", "USDBTN", "USDBWP", "USDBYN", "USDBYR", "USDBZD", "USDCAD", "USDCDF",
+        "USDCHF", "USDCLP", "USDCNH", "USDCNY", "USDCOP", "USDCRC", "USDCUC", "USDCUP", "USDCVE",
+        "USDCYP", "USDCZK", "USDDEM", "USDDJF", "USDDKK", "USDDOP", "USDDZD", "USDEEK", "USDEGP",
+        "USDERN", "USDESP", "USDETB", "USDEUR", "USDFIM", "USDFJD", "USDFKP", "USDFRF", "USDGBP",
+        "USDGEL", "USDGGP", "USDGHC", "USDGHS", "USDGIP", "USDGMD", "USDGNF", "USDGRD", "USDGTQ",
+        "USDGYD", "USDHKD", "USDHNL", "USDHRK", "USDHTG", "USDHUF", "USDIDR", "USDIEP", "USDILS",
+        "USDIMP", "USDINR", "USDIQD", "USDIRR", "USDISK", "USDITL", "USDJEP", "USDJMD", "USDJOD",
+        "USDJPY", "USDKES", "USDKGS", "USDKHR", "USDKMF", "USDKPW", "USDKRW", "USDKWD", "USDKYD",
+        "USDKZT", "USDLAK", "USDLBP", "USDLKR", "USDLRD", "USDLSL", "USDLTL", "USDLUF", "USDLVL",
+        "USDLYD", "USDMAD", "USDMDL", "USDMGA", "USDMGF", "USDMKD", "USDMMK", "USDMNT", "USDMOP",
+        "USDMRO", "USDMRU", "USDMTL", "USDMUR", "USDMVR", "USDMWK", "USDMXN", "USDMYR", "USDMZM",
+        "USDMZN", "USDNAD", "USDNGN", "USDNIO", "USDNLG", "USDNOK", "USDNPR", "USDNZD", "USDOMR",
+        "USDPAB", "USDPEN", "USDPGK", "USDPHP", "USDPKR", "USDPLN", "USDPTE", "USDPYG", "USDQAR",
+        "USDROL", "USDRON", "USDRSD", "USDRUB", "USDRWF", "USDSAR", "USDSBD", "USDSCR", "USDSDD",
+        "USDSDG", "USDSEK", "USDSGD", "USDSHP", "USDSIT", "USDSKK", "USDSLL", "USDSOS", "USDSPL",
+        "USDSRD", "USDSRG", "USDSTD", "USDSTN", "USDSVC", "USDSYP", "USDSZL", "USDTHB", "USDTJS",
+        "USDTMM", "USDTMT", "USDTND", "USDTOP", "USDTRL", "USDTRY", "USDTTD", "USDTVD", "USDTWD",
+        "USDTZS", "USDUAH", "USDUGX", "USDUSD", "USDUYU", "USDUZS", "USDVAL", "USDVEB", "USDVEF",
+        "USDVES", "USDVND", "USDVUV", "USDWST", "USDXAF", "USDXAG", "USDXAU", "USDXBT", "USDXCD",
+        "USDXDR", "USDXOF", "USDXPD", "USDXPF", "USDXPT", "USDYER", "USDZAR", "USDZMK", "USDZMW",
+        "USDZWD"
+    )
+    fx = toupper(fx)
+    
+    rtp1 = list()
+    if (fx %in% fxls) {
+        rtp1 = forex_spots(fx)
+    } else {
+        fx1 = substr(fx,1,3)
+        fx2 = substr(fx,4,6)
+
+        if (any(sapply(c(fx1, fx2), function(x) {
+            x == 'USD'
+        }))) {
+            rtp1 = forex_spots(paste0(fx2,fx1))
+        } else {
+            fs = sapply(c(fx1, fx2), function(x) {
+                fxls[grep(sprintf('USD%s',x), fxls)]
+            })
+            p2 = forex_spots(fs)
+            rtp1[[fx]] = p2[[2]]/p2[[1]]
+        }
+    }
+    return(rtp1)
+}
+
+
+# fred forex
 forex_symbol_fred = setDT(list(
     symbol = c("usdxtm",
         "usdbrl","usdcad","usdcny","usddkk","usdhkd","usdinr","usdjpy","usdkrw","usdmyr","usdmxn",

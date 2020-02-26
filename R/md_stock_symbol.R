@@ -1,121 +1,4 @@
-# query china stock symbol list from cninfo.com.cn
-# @import RSelenium rvest data.table
-sym_stock_cninfo = function(return_url=FALSE) {
-  # 'http://www.sse.com.cn/assortment/stock/list/share/'
-  # 'http://www.szse.cn/market/companys/company/index.html'
-    
-}
-
-
-sym_stock_cn_cninfo = function(return_url=FALSE) {
-  code_name = submarket = type = . = board = delist_date = exchange = name = read_html = remoteDriver = suspend_date = symbol = NULL
-  html_nodes = `%>%` = html_text = html_attr = NULL
-  
-  ssrunning = menu(c("Yes", "No"), 
-    title="Is selenium server running?")
-  if (ssrunning == 2) stop("selenium server is not running")
-
-    # via a docker container
-  remDr <- remoteDriver(port = 4445L, browserName = "chrome")
-  remDr$open(silent = TRUE)
-  
-  # navigate
-  remDr$navigate("http://www.baidu.com")#/cninfo-new/information/companylist")
-  Sys.sleep(sample(5))
-  
-  remDr$getPageSource()[[1]]
-  
-  wb = read_html(remDr$getPageSource()[[1]])
-  dt_list = lapply(
-    lapply(paste0("div #con-a-",1:6," ul li a"), function(x) html_nodes(wb, x)),
-    function(x) {data.table(
-      code_name = x %>% html_text(),
-      url = x %>% html_attr("href")
-    )}
-  )
-  
-  dt_list = rbindlist(dt_list)[,`:=`(
-    symbol = sub("^([0-9]+) (.+)$", "\\1", code_name), 
-    name = gsub(" ","",sub("^([0-9]+) (.+)$", "\\2", code_name)),
-    code_name = NULL
-  )][, c("exchange","submarket","board") := tstrsplit(mapply(tags_symbol_stockcn, symbol, "stock"), ",")]
-  
-    
-  
-  # delisting ------
-  # navigate
-  remDr$navigate("http://www.cninfo.com.cn/cninfo-new/information/delistinglist")
-  # delist szse
-  Sys.sleep(sample(5))
-  webElem <- remDr$findElement(using = "id", value = "a1")
-  webElem$clickElement()
-  wb2 = read_html(remDr$getPageSource()[[1]])
-  # delist sse
-  Sys.sleep(sample(5))
-  webElem <- remDr$findElement(using = "id", value = "a2")
-  webElem$clickElement()
-  wb3 = read_html(remDr$getPageSource()[[1]])
-  
-  dt_delist = lapply(
-    list(wb2, wb3), 
-    function(x) {data.table(
-      symbol = x %>% html_nodes("div .t1") %>% html_text(),
-      name = x %>% html_nodes("div .t2") %>% html_text(),
-      delist_date = x %>% html_nodes("div .t3") %>% html_text()
-    )[-1]}
-  )
-  dt_delist = rbindlist(dt_delist)[
-    , c("exchange","submarket","board") := tstrsplit(mapply(tags_symbol_stockcn, symbol, "stock"), ",")
-  ][, name := gsub(" ", "", name)]
-  # close remDr
-  # remDr$close()
-  
-  # suspend list ------
-  # navigate
-  remDr$navigate("http://www.cninfo.com.cn/cninfo-new/information/suspendlist")
-  # szse
-  Sys.sleep(2)
-  webElem <- remDr$findElement(using = "id", value = "a1")
-  webElem$clickElement()
-  wb4 = read_html(remDr$getPageSource()[[1]])
-  # sse
-  Sys.sleep(1)
-  webElem <- remDr$findElement(using = "id", value = "a2")
-  webElem$clickElement()
-  wb5 = read_html(remDr$getPageSource()[[1]])
-  
-  dt_suspend = lapply(
-    list(wb4, wb5), 
-    function(x) {data.table(
-      symbol = x %>% html_nodes("div .t1") %>% html_text(),
-      name = x %>% html_nodes("div .t2") %>% html_text(),
-      suspend_date = x %>% html_nodes("div .t4") %>% html_text() )[-1]}
-  )
-  dt_suspend = rbindlist(dt_suspend)[
-    , c("exchange","submarket","board") := tstrsplit(mapply(tags_symbol_stockcn, symbol, "stock"), ",")
-    ][, name := gsub(" ", "", name)]
-  
-  # close remDr
-  remDr$close()
-  
-  # symbols of china stock
-  symbols_stock_cn = rbindlist(
-    list(list = dt_list, delist = dt_delist, suspend = dt_suspend), fill = TRUE, idcol = "type"
-  )[, .(market="stock", submarket, exchange, board, symbol, name, url, delist_date, suspend_date, type)]
-  
-  if (return_url==FALSE) 
-    symbols_stock_cn = symbols_stock_cn[, c("url", "suspend_date", "delist_date") := NULL]
-  
-  
-  return(symbols_stock_cn)
-}
-# library(RSelenium)
-# library(rvest)
-# library(data.table)
-# market_symbols = setDF(sym_stock_cn_cninfo())
-# save(market_symbols, file = "./data/market_symbols.RData")
-
-
+# hk ------
 #' @import data.table
 #' @importFrom stringi stri_unescape_unicode
 md_stock_symbol_hk = function(source="163", return_price=FALSE) {
@@ -198,8 +81,9 @@ md_stock_symbol_hk = function(source="163", return_price=FALSE) {
   return(stock_list_hk)
 }
 
+# 163 ------
 symbol_163_format = function(df_symbol) {
-  type = . = id = name = symbol = tags = market = submarket = region = exchange = board = prov = indu = sec = NULL
+  type = . = id = name = symbol = tags = market = submarket = region = exchange = board = prov = indu = sec = mkt = syb  = syb3 = NULL
   
   # merge jsonDF with prov_indu_163
   prov_indu_163 = setDT(copy(prov_indu_163))
@@ -214,11 +98,18 @@ symbol_163_format = function(df_symbol) {
   if (!('market' %in% names(df_symbol))) {
     df_symbol = copy(df_symbol)[, `:=`(market = ifelse(grepl("\\^", symbol), "index", "stock") )]
   }
-  df_symbol = df_symbol[
-  ][, c("exchange","submarket","board") := tstrsplit(mapply(tags_symbol_stockcn, symbol, market),",")
-       # ][, .(market, submarket, exchange, board, symbol, name, province=prov, sector=sec, industry=indu)
-     ][order(-market, exchange, symbol)
-     ][, symbol := check_symbol_for_yahoo(symbol)]#[, tags := NULL]
+  df_symbol = merge(
+    # symbol list dataframe
+    df_symbol[
+      , syb := sub(".*?(\\d+).*","\\1", symbol) 
+    ][nchar(syb)==6, syb3 := substr(syb,1,3)],
+    # tangs by syb3 and market
+    tags_dt()[, c("exchange","submarket","board") := tstrsplit(tags,",")
+    ][,.(market=mkt, syb3, exchange, submarket, board)],
+    # merge by 
+    all.x = TRUE, by = c('syb3', 'market')
+  )[order(-market, exchange, symbol)
+  ][, (c('syb','syb3')) := NULL]
   
   return(df_symbol)
 }
@@ -232,7 +123,7 @@ md_stock_symbol_163 = function() {
   return(df_syb)
 }
 
-# stock list of nasdaq
+# nasdaq ------
 md_stock_symbol_nasdaq = function(exchange) {
   .=Symbol=Name=Sector=industry=NULL
   
@@ -257,7 +148,7 @@ md_stock_symbol_nasdaq = function(exchange) {
 
 
 
-
+# exchange index ------
 # stock symbol in exchange
 md_stock_symbol_exchange = function(XCHG=NULL, print_step=1L) {
   exchange = NULL

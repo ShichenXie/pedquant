@@ -229,7 +229,7 @@ md_stock_pe1_163 = function(dat) {
   # symbol1 = '000001'
   symbol1 = dat[1, tstrsplit(symbol, '\\.')][,V1]
   # main financial indicators
-  mainfi = try(fs_type1_cn(symbol1, 'fi0_main'), silent = TRUE)
+  mainfi = try(fs_type1_cn('fi0_main', symbol1), silent = TRUE)
   if (inherits(mainfi, 'try-error')) return(dat)
   
   # main financial indicators
@@ -296,7 +296,7 @@ md_stock_divsplit1_163 = function(symbol1, from=NULL, to=NULL, ret = c('div', 's
   div_spl = list()
   
   # get dividends
-  tbls = sprintf('http://quotes.money.163.com/f10/fhpg_%s.html#01d05', sub('.*?([0-9]{6}).*?','\\1', symbol1)) %>%
+  tbls = sprintf('http://quotes.money.163.com/f10/fhpg_%s.html#01d05', sub("^.*?([0-9]+).*$",'\\1', symbol1)) %>%
     read_html(.) %>% 
     rvest::html_table(., fill = TRUE, header = TRUE)
   
@@ -369,11 +369,8 @@ md_stock_divsplit1_163 = function(symbol1, from=NULL, to=NULL, ret = c('div', 's
   
   div_spl = Reduce(
     function(x,y) merge(x,y,all=TRUE,by='date'), div_spl
-  )[,`:=`(
-    symbol = stk_price$symbol,
-    name   = stk_price$name
-  )][,.(symbol, name, date, splits, dividends, issue_rate, issue_price)]
-  
+  )[,.(date, splits, dividends, issue_rate, issue_price)]
+  div_spl = cbind(stk_price, div_spl)
   setkeyv(div_spl, 'date')
   return(div_spl)
 }

@@ -30,6 +30,9 @@ dat3 = md_stock_financials("000001", type="fs0_summary")
 # multiple symbols and statements
 dat4 = md_stock_financials(c("000001", "600000"), type = "fi")
 
+# dupont analysis indicators
+fs_idx = md_stock_financials(c('000001', '^000001'), type = 'dupont')
+
 }
 
 }

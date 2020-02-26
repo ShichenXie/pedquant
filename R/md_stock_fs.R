@@ -6,7 +6,7 @@
 
 
 # query one type financial statement of one symbol
-fs_type1_cn = function(symbol, row_type=NULL) {
+fs_type1_cn = function(row_type, symbol1) {
     urls = fs_type = fs_name = patterns = value = type = . = fr_id = fr_name = name = name_en = var_name = var_id = NULL
     
     
@@ -15,7 +15,7 @@ fs_type1_cn = function(symbol, row_type=NULL) {
     setkey(fr_163, 'type')
     
     # load data from 163
-    fr_url = sprintf(fr_163[row_type,urls], symbol)
+    fr_url = sprintf(fr_163[row_type,urls], symbol1)
     dat = suppressWarnings(read_csv(file=fr_url, col_types=cols(.default = "c"), locale = locale(encoding = "GBK"), na = c("", "NA", "--")))
     setnames(setDT(dat), c("var_name", names(dat)[-1]))
     
@@ -36,37 +36,32 @@ fs_type1_cn = function(symbol, row_type=NULL) {
     
     return(dat_melt)
 } 
-# query financial statements of one symbol 
-fs_symbol1_cn = function(symbol, type) {
-    dat_list = list()
-    for (t in type) {
-        dat_list[[t]] = fs_type1_cn(symbol, t)
-    }
-    
-    return(rbindlist(dat_list, fill = TRUE))
-}
-
 
 #' @import data.table
 #' @importFrom readr read_csv stop_for_problems cols
-fs_cn = function(symbol, type=NULL, print_step=1L) {
-    . = name = name_en = NULL
+md_stock1_fs_cn = function(symbol1, type=NULL, print_step=1L) {
+    . = name = name_en = mkt = NULL
   
+    # skip index
+    if (check_symbol_cn(symbol1)[, mkt == 'index' || is.na(mkt)]) return(NULL)
     # type is summary
-    if (any(type == 'summary')) return(fs_cn1_summary(symbol))
+    if (any(type == 'dupont')) return(md_stock1_fs_cn_dupont(symbol1))
+    
+    # symbol name
+    sn = md_stock_spot_tx(symbol1, only_syb_nam = TRUE)
     
     # type
     fs_type_163 = setDT(copy(financial_statements_163))
     type = select_rows_df(dt = fs_type_163[,.(type, name, name_en)], column = 'type', input_string=type)[,type]
 
     # data list
-    dat_list = load_dat_loop(symbol, "fs_symbol1_cn", args = list(type=type), print_step=print_step)
-    return(dat_list)
+    dat_list = load_dat_loop(type, "fs_type1_cn", args = list(symbol1=symbol1), print_step=print_step)
+    return(cbind(sn, rbindlist(dat_list, fill = TRUE)))
 }
 
 
 # financial statements summary indicators
-fs_cn1_summary = function(symbol1) {
+md_stock1_fs_cn_dupont = function(symbol1) {
   var_id = value = var14_2 = var14 = fs_num = var04_q = var04 = var10_q = var10 = var01 = var02 = var19 = var03 = var16 = . = EPS = revenue = revenueYOY = revenueQOQ = NP = NPYOY = NPQOQ = ROE_w = CFPS = asset_liability = asset_turnover = profit_margin = ROA = ROE = BVPS = NULL
   
   # # DuPont Analysis
@@ -80,10 +75,11 @@ fs_cn1_summary = function(symbol1) {
   # ROE = (Profit margin)*(Asset turnover)*(Equity multiplier) 
   #     = (Net profit/Sales)*(Sales/Average Total Assets)*(Average Total Assets/Average Equity) 
   
-
+  # symbol name
+  sn = md_stock_spot_tx(symbol1, only_syb_nam = TRUE)
     
     mfi2 = dcast(
-        fs_type1_cn(symbol1, 'fi0_main')[
+        fs_type1_cn('fi0_main', symbol1)[
             var_id %in% c(1:4,10,11,12,13,14,16,18,19)
         ][, var_id := sprintf('var%02i',var_id)
         ][, value := ifelse(value==0, NA, value)], 
@@ -121,7 +117,7 @@ fs_cn1_summary = function(symbol1) {
     ), by = month(date)
     ][,.(date, EPS, revenue, revenueYOY, revenueQOQ, NP, NPYOY, NPQOQ, BVPS, ROE_w, CFPS, asset_liability, asset_turnover, profit_margin, ROA, ROE)]
     
-    return(mfi2)
+    return(cbind(sn,mfi2))
 }
 
 
@@ -148,12 +144,17 @@ fs_cn1_summary = function(symbol1) {
 #' # multiple symbols and statements
 #' dat4 = md_stock_financials(c("000001", "600000"), type = "fi")
 #' 
+#' # dupont analysis indicators
+#' fs_idx = md_stock_financials(c('000001', '^000001'), type = 'dupont')
+#' 
 #' }
 #' 
 #' @export
 md_stock_financials = function(symbol, type=NULL, print_step=1L) {
-    # if (source == "163") 
-  return(fs_cn(symbol, type, print_step))
+  # if (source == "163") 
+  dat_list = load_dat_loop(symbol, 'md_stock1_fs_cn', args = list(type = type), print_step=print_step)
+  
+  return(dat_list)
 }
 
 
