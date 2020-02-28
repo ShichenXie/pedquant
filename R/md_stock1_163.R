@@ -106,7 +106,8 @@ md_stock_spot_tx = function(symbol1, only_syb_nam = FALSE, ...) {
     doc = dt
   )[, doc := iconv(doc, 'GB18030', 'UTF-8')
   ][, doc := sub('.+=\"\\d+~(.+)\".+', '\\1', doc)
-  ][, tstrsplit(doc, '~')]
+  ][, tstrsplit(doc, '~')
+  ][, V1 := gsub('\\s', '', V1)]
   
   if (only_syb_nam) {
     return(dt[,.(symbol = check_symbol_for_yahoo(symbol1), name = V1)])

@@ -39,13 +39,13 @@ fs_type1_cn = function(row_type, symbol1) {
 
 #' @import data.table
 #' @importFrom readr read_csv stop_for_problems cols
-md_stock1_fs_cn = function(symbol1, type=NULL, print_step=1L) {
+md_stock1_fs_cn = function(symbol1, type=NULL, print_step=0L, ...) {
     . = name = name_en = mkt = NULL
   
     # skip index
     if (check_symbol_cn(symbol1)[, mkt == 'index' || is.na(mkt)]) return(NULL)
     # type is summary
-    if (any(type == 'dupont')) return(md_stock1_fs_cn_dupont(symbol1))
+    if (any(type == 'dupont')) return(fs_dupont_cn(symbol1))
     
     # symbol name
     sn = md_stock_spot_tx(symbol1, only_syb_nam = TRUE)
@@ -61,8 +61,8 @@ md_stock1_fs_cn = function(symbol1, type=NULL, print_step=1L) {
 
 
 # financial statements summary indicators
-md_stock1_fs_cn_dupont = function(symbol1) {
-  var_id = value = var14_2 = var14 = fs_num = var04_q = var04 = var10_q = var10 = var01 = var02 = var19 = var03 = var16 = . = EPS = revenue = revenueYOY = revenueQOQ = NP = NPYOY = NPQOQ = ROE_w = CFPS = asset_liability = asset_turnover = profit_margin = ROA = ROE = BVPS = NULL
+fs_dupont_cn = function(symbol1=NULL, ...) {
+  var_id = value = var14_2 = var14 = fs_num = var04_q = var04 = var10_q = var10 = var01 = var02 = var19 = var03 = var16 = . = EPS = revenue = revenueYOY = revenueQOQ = NP = NPYOY = NPQOQ = ROE_w = CFPS = asset_liability = asset_turnover = profit_margin = ROA = ROE = BVPS = name = symbol = NULL
   
   # # DuPont Analysis
   # # https://en.wikipedia.org/wiki/DuPont_analysis
@@ -74,50 +74,54 @@ md_stock1_fs_cn_dupont = function(symbol1) {
   
   # ROE = (Profit margin)*(Asset turnover)*(Equity multiplier) 
   #     = (Net profit/Sales)*(Sales/Average Total Assets)*(Average Total Assets/Average Equity) 
+  args = list(...)
+  if ('fi_main' %in% names(args)) {
+    # main financial indicators
+    dat = setDT(args[['fi_main']])
+    # symbol name
+    sn = dat[,.(symbol, name)][.N]
+  } else {
+    # main financial indicators
+    dat = fs_type1_cn('fi0_main', symbol1)
+    # symbol name
+    sn = md_stock_spot_tx(symbol1, only_syb_nam = TRUE)
+  }
   
-  # symbol name
-  sn = md_stock_spot_tx(symbol1, only_syb_nam = TRUE)
-    
-    mfi2 = dcast(
-        fs_type1_cn('fi0_main', symbol1)[
-            var_id %in% c(1:4,10,11,12,13,14,16,18,19)
-        ][, var_id := sprintf('var%02i',var_id)
-        ][, value := ifelse(value==0, NA, value)], 
-        date ~ var_id
-    )[, `:=`(fs_num = .N, fs_month = month(date)), by = year(date)
-    
-    ][,               var14_2 := (var14+shift(var14,type='lag'))/2
-    ][is.na(var14_2), var14_2 := var14
-
-    ][fs_num > 2,                  var04_q := var04-shift(var04, type='lag'), by = year(date)
-    ][fs_num > 2 & is.na(var04_q), var04_q := var04
-      
-    ][fs_num > 2,                  var10_q := var10-shift(var10, type='lag'), by = year(date)
-    ][fs_num > 2 & is.na(var10_q), var10_q := var10
-      
-    ][, `:=`(
-        # http://data.eastmoney.com/bbsj/yjbb/000001.html
-        EPS = var01, # EPS
-        revenue = var04,
-        revenueQOQ = var04_q/shift(var04_q,n=1,type='lag')*100-100,
-        NP = var10,
-        NPQOQ = var10_q/shift(var10_q,n=1,type='lag')*100-100,
-        BVPS=var02, 
-        ROE_w = var19,
-        CFPS = var03,
-        # http://quotes.money.163.com/f10/dbfx_000001.html#01c08
-        asset_liability   = var16/var14*100,
-        asset_turnover = var04/var14_2*100,
-        profit_margin   = var10/var04*100,
-        ROA = var10/var14*100, 
-        ROE = var10/var14*1/(1-var16/var14)*100
-    )][, `:=`(
-        revenueYOY = var04/shift(var04,n=1,type='lag')*100-100,
-        NPYOY = var10/shift(var10,n=1,type='lag')*100-100
-    ), by = month(date)
-    ][,.(date, EPS, revenue, revenueYOY, revenueQOQ, NP, NPYOY, NPQOQ, BVPS, ROE_w, CFPS, asset_liability, asset_turnover, profit_margin, ROA, ROE)]
-    
-    return(cbind(sn,mfi2))
+  mfi2 = dcast(
+    dat[var_id %in% c(1:4,10,11,12,13,14,16,18,19)
+      ][, var_id := sprintf('var%02i',var_id)
+      ][, value := ifelse(value==0, NA, value)], 
+    date ~ var_id
+  )[, `:=`(fs_num = .N, fs_month = month(date)), by = year(date)
+  ][, var14_2 := (var14+shift(var14,type='lag'))/2
+  ][is.na(var14_2), var14_2 := var14
+  ][fs_num > 2, var04_q := var04-shift(var04, type='lag'), by = year(date)
+  ][fs_num > 2 & is.na(var04_q), var04_q := var04
+  ][fs_num > 2, var10_q := var10-shift(var10, type='lag'), by = year(date)
+  ][fs_num > 2 & is.na(var10_q), var10_q := var10
+  ][, `:=`(
+    # http://data.eastmoney.com/bbsj/yjbb/000001.html
+    EPS = var01, # EPS
+    revenue = var04,
+    revenueQOQ = var04_q/shift(var04_q,n=1,type='lag')*100-100,
+    NP = var10,
+    NPQOQ = var10_q/shift(var10_q,n=1,type='lag')*100-100,
+    BVPS=var02, 
+    ROE_w = var19,
+    CFPS = var03,
+    # http://quotes.money.163.com/f10/dbfx_000001.html#01c08
+    asset_liability   = var16/var14*100,
+    asset_turnover = var04/var14_2*100,
+    profit_margin   = var10/var04*100,
+    ROA = var10/var14*100, 
+    ROE = var10/var14*1/(1-var16/var14)*100
+  )][, `:=`(
+    revenueYOY = var04/shift(var04,n=1,type='lag')*100-100,
+    NPYOY = var10/shift(var10,n=1,type='lag')*100-100
+  ), by = month(date)
+   ][,.(date, EPS, revenue, revenueYOY, revenueQOQ, NP, NPYOY, NPQOQ, BVPS, ROE_w, CFPS, asset_liability, asset_turnover, profit_margin, ROA, ROE)]
+  
+  return(cbind(sn,mfi2))
 }
 
 
