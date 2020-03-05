@@ -64,7 +64,7 @@
 #' }
 #' 
 #' @export
-md_stock = function(symbol, source = "yahoo", freq = "daily", date_range = "3y", from = NULL, to = Sys.Date(), type='history', adjust = 'split', print_step = 1L, ...) {
+md_stock = function(symbol, source = "yahoo", type='history', freq = "daily", date_range = "3y", from = NULL, to = Sys.Date(), adjust = 'split', print_step = 1L, ...) {
     # cat(source,"\n")
     
     # arguments

@@ -11,7 +11,7 @@ md_stock_spotall_163 = function(symbol = c('a','index'), only_symbol = FALSE, sh
     # c('code', 'five_minute' 'high', 'hs', 'lb', 'low', 'mcap', 'mfratio', 'mfsum', 'name', 'open', 'pe', 'percent', 'plate_ids', 'price', 'sname', 'symbol', 'tcap', 'turnover', 'updown', 'volume', 'wb', 'yestclose', 'zf', 'no', 'announmt', 'uvsnews')
     # index
     # c('code', 'high', 'low', 'name', 'open' 'percent', 'price', 'symbol', 'time', 'turnover' 'updown', 'volume', 'yestclose', 'no', 'zhenfu') 
-    
+    data_date = md_stock_spot_tx('^000001')$date
     jsonDat = fromJSON(urli)
     
     jsonDF = jsonDat$list
@@ -22,7 +22,7 @@ md_stock_spotall_163 = function(symbol = c('a','index'), only_symbol = FALSE, sh
       names(jsonDF) = tolower(names(jsonDF))
       
       jsonDF = setDT(jsonDF)[,`:=`(
-        date = as.Date(substr(jsonDat$time,1,10)), 
+        date = data_date, #as.Date(substr(jsonDat$time,1,10)), 
         time = jsonDat$time#,
         #strptime(jsonDat$time, '%Y-%m-%d %H:%M:%S', tz = 'Asia/Shanghai')
       )][, .(symbol, name, date, open, high, low, close=price, prev_close=yestclose, change=updown, change_pct=percent*100, volume, amount=turnover, turnover=hs*100, cap_market=mcap, cap_total=tcap, pe_last=pe, eps=mfsum, net_income, revenue, plate_ids, time=as.POSIXct(time))
@@ -38,7 +38,7 @@ md_stock_spotall_163 = function(symbol = c('a','index'), only_symbol = FALSE, sh
       names(jsonDF) = tolower(names(jsonDF))
       
       jsonDF = setDT(jsonDF)[,`:=`(
-        date = as.Date(substr(jsonDat$time,1,10))
+        date = data_date#as.Date(substr(jsonDat$time,1,10))
       )][, .(symbol, name, date, open, high, low, close=price, prev_close=yestclose, change=updown, change_pct=percent*100, volume, amount=turnover, time=as.POSIXct(time))]
     }
     
@@ -62,7 +62,9 @@ md_stock_spotall_163 = function(symbol = c('a','index'), only_symbol = FALSE, sh
   # if (df_stock_cn[1,time] < as.POSIXct(paste(df_stock_cn[1,date], '15:00:00'))) 
   #   cat('The close price is spot price at', as.character(datetime), '\n')
 
+  # create/export sysdata.rda 
   if (to_sysdata) return(df_stock_cn)
+  # create/export symbol only or tags
   if (only_symbol || show_tags) {
     if (inherits(df_stock_cn, 'try-error')) df_stock_cn = setDT(copy(symbol_stock_163))
     
@@ -87,7 +89,7 @@ md_stock_spotall_163 = function(symbol = c('a','index'), only_symbol = FALSE, sh
   
   df = df_stock_cn[,unit := 'CNY'][, symbol := check_symbol_for_yahoo(symbol, market)]#[, mkt := NULL][]
   
-  cols_rm = intersect(names(df), c('sector', 'industry', 'province', 'plate_ids', 'region', 'prev_close')) # , 
+  cols_rm = intersect(names(df), c('sector', 'industry', 'province', 'plate_ids', 'region')) # , 'prev_close', 
   if (length(cols_rm)>0) df = df[, (cols_rm) := NULL]
   return(df)
 }
@@ -407,7 +409,7 @@ md_stock_163 = function(symbol, from='1900-01-01', to=Sys.Date(), print_step=1L,
   rmcols_func = function(x) {
     name = NULL
     
-    cols_rm = intersect(names(x), c('prev_close', 'change')) #,'change_pct'
+    cols_rm = intersect(names(x), c('change')) #,'prev_close', 'change_pct'
     if (length(cols_rm)>0) x = x[, (cols_rm) := NULL]
     if ('name' %in% names(x)) x = x[, name := gsub('\\s', '', name)]
     return(x)

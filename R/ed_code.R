@@ -54,6 +54,7 @@ update_sysdata = function() {
     # # china district
     # library(RSelenium); library(rvest); library(httr); library(data.table)
     # code_china_district = admin_div_cn(admin_level = 3)
+    # code_china_district = admin_mca()
     
     # # country currency
     # cc = dim_country_currency()

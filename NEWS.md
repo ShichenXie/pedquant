@@ -2,6 +2,8 @@
 
 * fixed a bug caused by chinese font in pq_plot function
 * fixed a bug in mk_stock skip index for adjfactor type
+* fixed the date of spot price from 163
+* update the Chinese district via admin_mca function
 
 # pedquant 0.1.3
 

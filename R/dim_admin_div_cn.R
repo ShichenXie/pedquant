@@ -144,3 +144,45 @@ admin_div_cn = function(admin_level=3) {
   
   return(setDF(ret_df))
 }
+
+#' @importFrom rvest html_attr html_table
+admin_mca = function() {
+  . = X2 = X3 = admin_level = code = code_parent = name = NULL
+  
+  url = read_html('http://www.mca.gov.cn/article/sj/xzqh/1980/') %>% 
+    html_nodes('td.arlisttd a') %>% #html_text()
+    html_attr('href') %>%
+    paste0('http://www.mca.gov.cn', .) %>%
+    .[1] %>% # url0
+    read_html() %>% 
+    html_nodes('div.content p a') %>% #html_text()
+    html_attr('href') %>%
+    .[1] # %>% # url div wb
+    
+  dat = read_html(url) %>% 
+    html_table() %>% 
+    .[[1]] %>% 
+    .[,c('X2', 'X3')]
+  
+  dat2 = setDT(copy(dat))[,.(
+    code = X2, name = X3
+  )][grepl('[0-9]{6}', code)
+   ][grepl('.{4}0{2}', code), admin_level := 'city'
+   ][grepl('.{2}0{4}', code), admin_level := 'province'
+   ][is.na(admin_level), admin_level:= 'county']
+  
+  dat3 = rbind(
+    dat2, 
+    dat2[admin_level=='province' & grepl('\u5e02$',name) # https://tool.chinaz.com/tools/unicode.aspx
+       ][,`:=`(
+         code = paste0(substr(code,1,2),'0100'), 
+         admin_level = 'city'
+       )]
+  )[order(code)
+  ][admin_level != 'county', code_parent := code
+  ][, code_parent := fillna(code_parent)
+  ][admin_level == 'city', code_parent := paste0(substr(code,1,2),'0000')
+  ][admin_level == 'province', code_parent := '']
+  
+  return(setDF(dat3))
+}
