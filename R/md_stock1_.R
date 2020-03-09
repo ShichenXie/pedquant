@@ -92,6 +92,7 @@ md_stock = function(symbol, source = "yahoo", type='history', freq = "daily", da
     # data
     dat = try(do.call(paste0("md_stock_", source), args=list(symbol = syb, freq = freq, from = from, to = to, print_step = print_step, env = env, adjust=adjust, zero_rm=zero_rm, na_rm=na_rm, type=type, ...)), silent = TRUE)
     
+    if (is.null(dat)) return(dat)
     # remove error symbols
     error_symbols = names(dat)[which(sapply(dat, function(x) inherits(x, 'try-error')))]
     if (length(error_symbols) > 0) {

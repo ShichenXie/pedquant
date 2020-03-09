@@ -207,7 +207,7 @@ md_stock_hist1_163 = function(symbol1, from='1900-01-01', to=Sys.Date(), zero_rm
   
   # adding valuation ratios and adjust for dividend
   chk_syb = try(check_symbol_for_yahoo(dt[1, tstrsplit(symbol, '\\.')][,V1]), silent = TRUE)
-  if (chk_syb == dt[1,symbol]) {
+  if (chk_syb == dt[1,symbol] && nrow(dt)>0) {
     valuation = list(...)[['valuation']]
     if (is.null(valuation)) valuation = FALSE
     if (valuation) dt = md_stock_pe1_163(dt)
@@ -288,6 +288,7 @@ md_stock_pe1_163 = function(dat) {
 }
 
 # dividends
+#' @importFrom stringi stri_isempty
 md_stock_divsplit1_163 = function(symbol1, from=NULL, to=NULL, ret = c('div', 'spl', 'rig')) {
   name = symbol = date2 = date1 = date0 = fenhong = . = songgu = spl = zhuanzeng = new_issues = old_issues = issue_price = issue_rate = splits = dividends = mkt = NULL
   
@@ -361,7 +362,7 @@ md_stock_divsplit1_163 = function(symbol1, from=NULL, to=NULL, ret = c('div', 's
     } else {
       div_spl[['rig']] = rig[
         , (c('new_issues', 'old_issues')) := lapply(.SD, function(x) as.numeric(gsub('[^0-9\\.]', '', x))), .SDcols = c('new_issues', 'old_issues')
-        ][new_issues > 0
+        ][new_issues > 0 & !stri_isempty(date)
           ][, .(
             date   = as.Date(date), 
             issue_rate = new_issues/old_issues, 
@@ -372,7 +373,8 @@ md_stock_divsplit1_163 = function(symbol1, from=NULL, to=NULL, ret = c('div', 's
   
   div_spl = Reduce(
     function(x,y) merge(x,y,all=TRUE,by='date'), div_spl
-  )[,.(date, splits, dividends, issue_rate, issue_price)]
+  )[,.(date, splits, dividends, issue_rate, issue_price)][!is.na(date)]
+  if (nrow(div_spl) == 0) stk_price = stk_price[.0]
   div_spl = cbind(stk_price, div_spl)
   setkeyv(div_spl, 'date')
   return(div_spl)
