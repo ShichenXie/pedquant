@@ -39,7 +39,7 @@ md_stock_spotall_163 = function(symbol = c('a','index'), only_symbol = FALSE, sh
       
       jsonDF = setDT(jsonDF)[,`:=`(
         date = data_date#as.Date(substr(jsonDat$time,1,10))
-      )][, .(symbol, name, date, open, high, low, close=price, prev_close=yestclose, change=updown, change_pct=percent*100, volume, amount=turnover, time=as.POSIXct(time))]
+      )][, .(symbol, name, date, open, high, low, close=price, prev_close=yestclose, change=updown, change_pct=percent*100, volume=volume/100, amount=turnover, time=as.POSIXct(time))]
     }
     
     return(jsonDF[, `:=`(market = mkt, region = 'cn')])
@@ -140,7 +140,7 @@ md_stock_spot_tx = function(symbol1, only_syb_nam = FALSE, ...) {
     )][, (num_cols) := lapply(.SD, as.numeric), .SDcols= num_cols
      ][, `:=`(
        symbol = check_symbol_for_yahoo(symbol1),
-       volume = volume*100,
+       volume = volume,
        amount = amount*10000,
        cap_market = cap_market*10^8, 
        cap_total = cap_total*10^8,

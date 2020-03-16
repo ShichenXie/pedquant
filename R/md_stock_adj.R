@@ -111,7 +111,9 @@ md_stock_adjust = function(dt, source, adjust = 'split', adjfactor = NULL) {
     
     # bind dataframe list
     if (inherits(dt, 'list')) dt = rbindlist(dt, fill = TRUE)
+    if (inherits(adjfactor, 'data.frame')) dt = setDT(dt)
     if (inherits(adjfactor, 'list')) adjfactor = rbindlist(adjfactor, fill = TRUE)
+    if (inherits(adjfactor, 'data.frame')) adjfactor = setDT(adjfactor)
     
     # arguments
     source = check_arg(as.character(source), c('yahoo','163'))
@@ -123,9 +125,10 @@ md_stock_adjust = function(dt, source, adjust = 'split', adjfactor = NULL) {
     ## single series
     dt_list = list()
     sybs = dt[, unique(symbol)]
+    adjfactor_s = NULL
     for (s in sybs) {
         dt_s = dt[symbol == s]
-        adjfactor_s = adjfactor[symbol == s]
+        if (inherits(adjfactor, 'data.frame')) adjfactor_s = adjfactor[symbol == s]
         setkeyv(dt_s, "date")
         
         dt_list[[s]] = do.call(

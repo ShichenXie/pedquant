@@ -498,6 +498,9 @@ lwd <- function(n = 0, d = Sys.Date(), tz = Sys.timezone()) {
 
 api_key = function(src){
     if (src=="fred") return("4330f2f7aab9a42ab9b950cec4428b91")
+    
+    # # data.worldbank.org
+    # if (src=="wb") return(list(App_Token = '6NXEsbrbAhTma4LEVC74QWUlF', Secret_Token = 'n3TnGpllsYFkTLpI_sjexEll07OIY6LS9ECw'))
 }
 
 
