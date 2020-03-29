@@ -42,8 +42,10 @@ fs_type1_cn = function(row_type, symbol1) {
 md_stock1_fs_cn = function(symbol1, type=NULL, print_step=0L, ...) {
     . = name = name_en = mkt = NULL
   
+    chk_syb = check_symbol_cn(symbol1)
+    symbol1 = chk_syb$syb
     # skip index
-    if (check_symbol_cn(symbol1)[, mkt == 'index' || is.na(mkt)]) return(NULL)
+    if (chk_syb[, mkt == 'index' || is.na(mkt)]) return(NULL)
     # type is summary
     if (any(type == 'dupont')) return(fs_dupont_cn(symbol1))
     

@@ -429,28 +429,28 @@ load_dat_loop = function(symbol, func, args=list(), print_step) {
 
 
 # extract table from html via xml2 package
-#' @import data.table
-xml_table = function(wb, num=NULL, sup_rm=NULL, attr=NULL, header=FALSE) {
-    doc0 = xml_find_all(wb, paste0("//table",attr)) # attr = '[@cellpadding="2"]'
-    if (!is.null(num)) doc0 = doc0[num]
-    
-    doc = lapply(
-        doc0,
-        function(x) xml_text(xml_find_all(x, ".//tr"))
-    )
-    
-    dt = lapply(doc, function(x) {
-        if (!is.null(sup_rm)) x = gsub(sup_rm, "", x)
-        
-        dat = data.table(x = x)[, tstrsplit(x, "[\n\t\r]+")]
-        if (header) {
-            dat = setnames(dat[-1], as.character(dat[1]))
-        }
-        return(dat)
-    })
-    
-    return(dt)
-}
+# @import data.table
+# xml_table = function(wb, num=NULL, sup_rm=NULL, attr=NULL, header=FALSE) {
+#     doc0 = xml_find_all(wb, paste0("//table",attr)) # attr = '[@cellpadding="2"]'
+#     if (!is.null(num)) doc0 = doc0[num]
+#     
+#     doc = lapply(
+#         doc0,
+#         function(x) xml_text(xml_find_all(x, ".//tr"))
+#     )
+#     
+#     dt = lapply(doc, function(x) {
+#         if (!is.null(sup_rm)) x = gsub(sup_rm, "", x)
+#         
+#         dat = data.table(x = x)[, tstrsplit(x, "[\n\t\r]+")]
+#         if (header) {
+#             dat = setnames(dat[-1], as.character(dat[1]))
+#         }
+#         return(dat)
+#     })
+#     
+#     return(dt)
+# }
 
 
 # #' last workday date

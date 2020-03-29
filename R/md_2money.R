@@ -20,9 +20,9 @@ func_ibor_symbol = function() ibor_symbol
 
 
 # shanghai interbank offered rate, shibor
-#' @import data.table xml2
+#' @import data.table
 md_shibor = function(symbol, from=NULL, to=Sys.Date(), print_step=1L) {
-    . = name = value = V1 = NULL
+    . = name = value = X1 = NULL
     
     # arguments
     ## symbols
@@ -33,7 +33,9 @@ md_shibor = function(symbol, from=NULL, to=Sys.Date(), print_step=1L) {
     if (as.integer(Sys.Date() - check_fromto(from)) <= 10 ) {
         # shibor in recent 10 days
         wb = read_html("http://www.shibor.org/shibor/ShiborTendaysShow_e.do")
-        dt_shibor = setDT(xml_table(wb, 3)[[1]])[, V1 := as.Date(V1)]
+        
+        dt_shibor = setDT(html_table(wb, fill = TRUE)[[3]])[, X1 := as.Date(X1)]
+            #setDT(xml_table(wb, 3)[[1]])[, V1 := as.Date(V1)]
         setnames(setDT(dt_shibor), c("date", shibor_symbol$symbol))
         
     } else {
@@ -94,7 +96,9 @@ md_libor1_last5 = function(currency) {
     
     # scrap
     wb = read_html(url)
-    dt_libor_5 = xml_table(wb, attr = '[@cellpadding="2"]', header = TRUE)[[1]]
+    
+    dt_libor_5 = setDT(html_table(wb, fill = TRUE, header = TRUE)[[14]])
+        # xml_table(wb, attr = '[@cellpadding="2"]', header = TRUE)[[1]]
     dt_libor_5 = dt_libor_5[,-1][,symbol := paste0('uko',currency,c('on','1w','2w',paste0(1:11,'m'),'1y'))]
     dt_libor_5[dt_libor_5=='-'] <- NA
     dt_libor_5 = melt(dt_libor_5, id.vars = 'symbol', na.rm = TRUE, variable.name = 'date')[, `:=`(
