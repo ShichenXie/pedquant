@@ -51,11 +51,16 @@ md_stock_spotall_163 = function(symbol = c('a','index'), only_symbol = FALSE, sh
     index = 'http://quotes.money.163.com/hs/service/hsindexrank.php?host=/hs/service/hsindexrank.php&page=0&query=IS_INDEX:true;EXCHANGE:CNSESH&fields=no,TIME,SYMBOL,NAME,PRICE,UPDOWN,PERCENT,zhenfu,VOLUME,TURNOVER,YESTCLOSE,OPEN,HIGH,LOW&sort=SYMBOL&order=asc&count=10000&type=query',
     index = 'http://quotes.money.163.com/hs/service/hsindexrank.php?host=/hs/service/hsindexrank.php&page=0&query=IS_INDEX:true;EXCHANGE:CNSESZ&fields=no,TIME,SYMBOL,NAME,PRICE,UPDOWN,PERCENT,zhenfu,VOLUME,TURNOVER,YESTCLOSE,OPEN,HIGH,LOW&sort=SYMBOL&order=asc&count=10000&type=query'
   )
-  idx = which(names(urls_163) %in% unlist(strsplit(symbol,',')))
+  idx = which(names(urls_163) %in% symbol) #unlist(strsplit(symbol,','))
   
-  df_stock_cn = try(rbindlist(mapply(
-    fun_stock_163, urls_163[idx], c('stock','stock','index','index')[idx], SIMPLIFY = FALSE
-  ), fill = TRUE), silent = TRUE)#, idcol = 'mkt')#[mkt %in% c('a','b'), mkt := 'stock']
+  df_stock_cn = try(
+    rbindlist(
+      mapply(fun_stock_163, urls_163[idx], c('stock','stock','index','index')[idx], SIMPLIFY = FALSE), 
+      fill = TRUE
+    ), 
+    silent = TRUE
+  )#, idcol = 'mkt')#[mkt %in% c('a','b'), mkt := 'stock']
+  if (!inherits(df_stock_cn, 'try-error') & 'fund' %in% symbol) df_stock_cn = rbind(df_stock_cn, md_fund_spotall_163(), fill=TRUE)
   
   # date time of download
   datetime = gsub('[^(0-9)]','',df_stock_cn[1,time])
@@ -96,14 +101,16 @@ md_stock_spotall_163 = function(symbol = c('a','index'), only_symbol = FALSE, sh
 
 
 # query spot data from tx
+# http://api.money.126.net/data/feed/1000001,money.api
 # hq.sinajs.cn/list=sz150206
 # http://qt.gtimg.cn/q=sz000001
 md_stock_spot_tx = function(symbol1, only_syb_nam = FALSE, ...) {
   V1=V2=doc=.=symbol=name=high=low=prev_close=change=change_pct=volume=amount=turnover=cap_market=cap_total=pb=pe_last=pe_trailing=pe_forward=NULL
   
-  syb = check_symbol_for_tx(symbol1)
-  dt = readLines(sprintf('http://qt.gtimg.cn/q=%s', paste0(syb, collapse=',')))
-
+  syb = paste0(check_symbol_for_tx(symbol1), collapse=',')
+  dt = try(readLines(sprintf('http://qt.gtimg.cn/q=%s', syb)), silent = TRUE)
+  if (inherits(dt, 'try-error')) readLines(sprintf('http://web.sqt.gtimg.cn/q=%s', syb))
+  
   dt = data.table(
     doc = dt
   )[, doc := iconv(doc, 'GB18030', 'UTF-8')
@@ -165,6 +172,8 @@ md_stock_hist1_163 = function(symbol1, from='1900-01-01', to=Sys.Date(), zero_rm
   
   # 'http://api.finance.ifeng.com/akmonthly/?code=sh600000&type=last'
   # {'D': 'akdaily', 'W': 'akweekly', 'M': 'akmonthly'}
+  
+  if (check_symbol_cn(symbol1)$mkt == 'fund') return(md_fund_hist1_163(symbol1, from, to))
   
   # symbol
   syb = check_symbol_for_163(symbol1) 
@@ -397,7 +406,7 @@ md_stock_163 = function(symbol, from='1900-01-01', to=Sys.Date(), print_step=1L,
   # query data
   if (type == 'spot') {
     fuc = 'md_stock_spot_tx'
-    if (length(intersect(symbol, c('a','b','index'))) > 0) fuc = 'md_stock_spotall_163'
+    if (length(intersect(symbol, c('a','b','index', 'fund'))) > 0) fuc = 'md_stock_spotall_163'
     dat_list <- try(do.call(fuc, args=list(symbol=symbol, ...)), silent = TRUE)
       
   }  else if (type == 'history') {
@@ -426,4 +435,105 @@ md_stock_163 = function(symbol, from='1900-01-01', to=Sys.Date(), print_step=1L,
   
   return(dat_list)
 }
+
+
+# fund data from 163
+md_fund_spotall_163 = function() {
+  . = fund = high = low = name = price = symbol = time = turnover = volume = yestclose = NULL
+  
+  dat_lst = lapply(list(
+    fund_close = 'http://quotes.money.163.com/fn/service/fundtrade.php?host=/fn/service/fundtrade.php&page=0&query=STYPE:FDC;UPDOWN:_exists_true&fields=no,SYMBOL,NAME,SNAME,PRICE,UPDOWN,PERCENT,VOLUME,TURNOVER,OPEN,HIGH,LOW,YESTCLOSE,CODE&sort=PERCENT&order=desc&count=%s&type=query&callback=callback_11861237&req=0%s',
+    fund_etf = 'http://quotes.money.163.com/fn/service/fundtrade.php?host=/fn/service/fundtrade.php&page=0&query=find:/ETF/;UPDOWN:_exists_true&fields=no,SYMBOL,NAME,SNAME,PRICE,UPDOWN,PERCENT,VOLUME,TURNOVER,OPEN,HIGH,LOW,YESTCLOSE,CODE&sort=PERCENT&order=desc&count=%s&type=query&callback=callback_1696032826&req=0%s',
+    fund_lof = 'http://quotes.money.163.com/fn/service/fundtrade.php?host=/fn/service/fundtrade.php&page=0&query=find:/LOF/;UPDOWN:_exists_true&fields=no,SYMBOL,NAME,SNAME,PRICE,UPDOWN,PERCENT,VOLUME,TURNOVER,OPEN,HIGH,LOW,YESTCLOSE,CODE&sort=PERCENT&order=desc&count=%s&type=query&callback=callback_814011473&req=0%s',
+    fund_leveraged = 'http://quotes.money.163.com/fn/service/fundtrade.php?host=/fn/service/fundtrade.php&page=0&query=FUND_TYPE4:_int_190701;UPDOWN:_exists_true&fields=no,SYMBOL,NAME,SNAME,PRICE,UPDOWN,PERCENT,VOLUME,TURNOVER,OPEN,HIGH,LOW,YESTCLOSE,CODE&sort=PERCENT&order=desc&count=%s&type=query&callback=callback_2112195916&req=0%s'
+  ), function(u) {
+    # fromJSON(sub('.+\((\\1)\)', readline(u)))
+    url = sprintf(
+      u, 20000,
+      paste0(hour(Sys.time()), minute(Sys.time()))
+    )
+    
+    # print(url)
+    dt = read_lines(url)
+    dt = fromJSON(sub('.+?\\((.+)\\)', '\\1', dt))
+    dat = setDT(dt$list)[, time := dt$time]
+    return(dat)
+  })
+
+  dat_df = rbindlist(dat_lst, idcol = 'fund')
+  setnames(dat_df, tolower(names(dat_df)))
+  
+  dat_df = dat_df[, .(symbol = check_symbol_for_yahoo(symbol), date = md_stock_spot_tx('^000001')$date, name, open, high, low, close = price, prev_close = yestclose, change_pct = percent*100, volume, amount = turnover, market = fund, unit = 'CNY')] # change=updown, sname, 
+  
+  return(dat_df)
+}
+md_fund_hist1_163 = function(symbol1, from='1900-01-01', to=Sys.Date()) {
+  . = amount = change_pct = discount_pct = high = low = mkt = turnover = volume = NULL
+  
+  # url = sprintf('http://api.finance.ifeng.com/akdaily/?code=%s&type=last', syb1)
+  # {'D': 'akdaily', 'W': 'akweekly', 'M': 'akmonthly'}
+  
+  # from tx ------
+  syb1 = check_symbol_for_tx(symbol1)
+  dat1 = 'init'
+  i=1
+  datlst = list()
+  yrng = year(seq(as.Date(to), as.Date(from), by = '-1 years'))
+  while (!inherits(dat1, 'try-error')) {
+    # print(yr1)
+    yr1 = yrng[i]
+    url = sprintf('http://data.gtimg.cn/flashdata/hushen/daily/%s/%s.js?visitDstTime=1', substr(yr1,3,4), syb1)
+    dat1 = try(suppressWarnings(fread(url, showProgress=F)), silent = T)
+    
+    if(!inherits(dat1, 'try-error')) {
+      setnames(dat1, c('date', 'open', 'high', 'low', 'close', 'volume'))
+      datlst[[as.character(yr1)]] <- dat1
+      i = i+1
+    }
+  }
+  
+  dat_tx = rbindlist(
+    datlst
+  )[, volume := gsub('[^0-9.]', '', volume)
+  ][, lapply(.SD, as.numeric)
+  ][, date := as.Date(paste0(substr(yrng[i],1,2), date), format = '%Y%m%d')
+  ][order(date)]
+  
+  # from 163 ------
+  url0 = sprintf('http://quotes.money.163.com/fund/zyjl_%s_0.html?start=%s&end=%s', check_symbol_cn('512510.sh')$syb, from, to)
+  pagnum = read_html(url0) %>% 
+    html_nodes('div.mod_pages a') %>% 
+    html_text() %>% .[-length(.)] %>% 
+    as.integer() %>% max(., na.rm = T)
+  
+  dat_lst2 = lapply(
+    sprintf('http://quotes.money.163.com/fund/zyjl_%s_%s.html?start=%s&end=%s', check_symbol_cn('512510.sh')$syb, seq(0,pagnum-1), from, to), 
+    function(u) {
+      read_html(u) %>% html_table(fill = TRUE) %>% .[[1]]
+    }
+  )
+  dat_163 = rbindlist(dat_lst2)
+  setnames(dat_163, c('date', 'close', 'change_pct', 'volume', 'amount', 'turnover', 'discount_pct'))
+  dat_1632 = copy(dat_163)[, `:=`(
+    date = as.Date(date), 
+    change_pct = as.numeric(sub('%', '', change_pct)),
+    volume = gsub(',', '', volume), 
+    amount = gsub(',', '', amount),
+    turnover = as.numeric(sub('%', '', turnover))/100,
+    discount_pct = as.numeric(sub('%', '', discount_pct))
+  )][grepl('\u4e07', volume), volume := as.numeric(sub('\u4e07', '', volume)) * 10^4
+   ][grepl('\u4ebf', volume), volume := as.numeric(sub('\u4ebf', '', volume)) * 10^8
+   ][grepl('\u4e07', amount), amount := as.numeric(sub('\u4e07', '', amount)) * 10^4
+   ][grepl('\u4ebf', amount), amount := as.numeric(sub('\u4ebf', '', amount)) * 10^8]
+  
+  dat = merge(dat_tx[,.(date, open, high, low)], dat_1632, by = 'date', all.y=TRUE)
+  dat = cbind(data.table(
+    symbol = check_symbol_for_yahoo(symbol1), 
+    name = md_stock_spot_tx(symbol1, only_syb_nam = T)$name
+  ), dat)[, unit := 'CNY']
+  
+  return(dat)
+}
+# szse fund: 15, 16, 18
+# sse fund: 50, 51, 52
 

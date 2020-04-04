@@ -65,13 +65,15 @@ update_sysdata = function() {
     # # prov_indu_163
     
     # # symbol_stock_163
-    # # update on 20200215
-    # syb_stock1 = pedquant:::md_stock_spotall_163(symbol = c('a', 'b', 'index'), to_sysdata=TRUE)
-    # syb_stock2 = syb_stock1[market == 'index', symbol := paste0('^',symbol)
-    #                      ][,.(symbol, name, province, sector, industry)]
+    # # update on 20200403
+    # syb_stock1 = pedquant:::md_stock_spotall_163(symbol = c('a', 'b', 'index', 'fund'), to_sysdata=TRUE)
+    # syb_stock2 = syb_stock1[
+    #     ,.(market, symbol = gsub('[^0-9]', '', symbol), name, province, sector, industry)
+    # ][market == 'index', symbol := paste0('^',symbol)][, market := NULL]
+    # # syb_stock3 = pedquant:::md_fund_spotall_163()[market == 'index', symbol := paste0('^',symbol)][,.(symbol, name)]
     # symbol_stock_163 = setDF(
     #     setDT(
-    #         rbind(syb_stock2, symbol_stock_163)
+    #         rbind(syb_stock2, symbol_stock_163, fill=TRUE)
     #     )[,.SD[1], keyby=symbol
     #     ][grepl('^c.+', province), province := NA] )
         

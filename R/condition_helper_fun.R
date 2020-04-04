@@ -141,43 +141,61 @@ tags_dt = function() {
     tags = exchg_code = NULL
     
     setDT(list(
-        mkt = c(rep('stock', 13), rep('index', 2) ),
+        mkt = c(rep('stock', 13), rep('index', 2), rep('fund', 6) ),
         syb3 = c(
             "600","601","603","688","900",
-            "000","001","002","003","004","300","200","201","000","399"
+            "000","001","002","003","004","300","200","201",
+            "000","399",
+            "15", "16", "18", "50", "51", "52"
         ),
         tags = c(
             "sse,A,main", "sse,A,main", "sse,A,main", "sse,A,star", "sse,B,-", 
-            "szse,A,main", "szse,A,main", "szse,A,sme", "szse,A,sme", "szse,A,sme", "szse,A,chinext", "szse,B,-", "szse,B,-", "sse,-,-", "szse,-,-"
-        ),
-        city = c(rep('sh',5), rep('sz',8),'sh','sz'),
-        city_code = c(rep('0',5), rep('1',8),'0','1')
+            "szse,A,main", "szse,A,main", "szse,A,sme", "szse,A,sme", "szse,A,sme", "szse,A,chinext", "szse,B,-", "szse,B,-", 
+            "sse,-,-", "szse,-,-",
+            "szse,-,-", "szse,-,-", "szse,-,-", "sse,-,-", "sse,-,-", "sse,-,-"
+        )
     ))[,(c('exchange','AB','board')) := tstrsplit(tags,',')
-     ][, exchg_code := toupper(substr(tags,1,2))][]
+     ][, exchg_code := toupper(substr(tags,1,2))
+     ][exchg_code == 'SS', `:=`(city='sh', city_code='0')
+     ][exchg_code == 'SZ', `:=`(city='sz', city_code='1')][]
+    
 }
 check_symbol_cn = function(symbol, mkt = NULL) {
-    exchg_code = syb3 = syb = syb_code = NULL
+    exchg_code = syb3 = syb = syb_code = syb_num = city = . = NULL
      
     tags = tags_dt()[, exchg_code := tolower(exchg_code)][]
     
-    cn_dt = setDT(list(symbol = tolower(symbol)))
-    if (length(mkt) == 1) mkt = rep(mkt, length(symbol))
-    if (is.null(mkt) & !all(grepl('[a-zA-Z]', symbol))) mkt = ifelse(grepl("\\^",symbol),"index","stock")
-    if (!is.null(mkt) & length(symbol) == length(mkt)) cn_dt[, mkt := mkt]
+    cn_dt = setDT(list(symbol = tolower(symbol)))[, syb_num := 3]
+    if (!is.null(mkt) & length(mkt) == 1) {
+        mkt = rep(mkt, length(symbol))
+        cn_dt[, mkt := mkt]
+    } else if (!is.null(mkt) & length(mkt) == length(symbol)) {
+        cn_dt[, mkt := mkt]
+    } else if (is.null(mkt) & !all(grepl('[a-zA-Z]', symbol))) {
+        fund_syb3 = tags[mkt == 'fund', paste0('^',syb3, collapse = '|')]
+        
+        cn_dt[grepl("^\\^",symbol), mkt := 'index'
+          ][grepl(fund_syb3, symbol), `:=`(mkt = "fund", syb_num = 2)
+          ][is.na(mkt), mkt := 'stock']
+    }
     
     cn_dt = cn_dt[, `:=`(
         syb = sub("^.*?([0-9]+).*$","\\1",symbol),
         syb_code = gsub("[^a-zA-Z]+",'',symbol)
-    )][,syb3 := substr(syb,1,3)][]
+    )][,syb3 := substr(syb, 1, syb_num)
+     ][syb_code %in% c('ss','sz'), exchg_code := syb_code
+     ][syb_code %in% c('sh','sz'), city := syb_code][]
     
-    if (all(cn_dt[,unique(syb_code)] %in% c('ss','sz'))) {
-        cn_dt[['exchg_code']] = cn_dt[['syb_code']]
-    } else if (all(cn_dt[,unique(syb_code)] %in% c('sh','sz'))) {
-        cn_dt[['city']] = cn_dt[['syb_code']]
-    }
-    
-    by_cols = intersect(names(cn_dt), names(tags))
-    cn_tag = merge(cn_dt, tags, by = by_cols, all.x = TRUE, sort = FALSE)
+    cn_tag_lst = lapply(list(
+        cn_dt[!is.na(exchg_code)][,.(syb3, exchg_code, symbol, syb)],
+        cn_dt[is.na(exchg_code) & !is.na(city)][,.(syb3, city, symbol, syb)],
+        cn_dt[is.na(exchg_code) & is.na(city)][,.(mkt, syb3, symbol, syb)]
+    ), function(c) {
+        by_cols = intersect(names(c), names(tags))
+        sub_cn_tags = merge(c, tags, by = by_cols, all.x = TRUE, sort = FALSE)
+        return(sub_cn_tags)
+    })
+    cn_tag = rbindlist(cn_tag_lst, fill = TRUE)
     
     return(cn_tag)
 }

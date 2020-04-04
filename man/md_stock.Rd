@@ -42,9 +42,9 @@ dt_yahoo1 = md_stock(symbol=c("^GSPC", "000001.SS"))
 # FAANG
 FAANG = md_stock(c('FB', 'AMZN', 'AAPL', 'NFLX', 'GOOG'), date_range = 'max')
 
-# for Chinese shares
+# for Chinese shares/fund
 ## the symbol without suffix
-dt_yahoo2 = md_stock(c("000001", "^000001"))
+dt_yahoo2 = md_stock(c("000001", "^000001", "512510"))
 ## the symbol with suffix
 dt_yahoo3 = md_stock(c("000001.sz", "000001.ss"))
 
@@ -75,7 +75,7 @@ dt_spot2 = md_stock(symbol='a', source="163", type='spot')
 dt_spot3 = md_stock(symbol=c('a', 'b', 'index'), source="163", type='spot')
 
 # show spot prices and sector/industry
-dt_spot4 = md_stock(symbol = c('a', 'b', 'index'), source = '163', 
+dt_spot4 = md_stock(symbol = c('a', 'b', 'index', 'fund'), source = '163', 
   type = 'spot', show_tags = TRUE)
 
 }
