@@ -524,7 +524,7 @@ md_fund_hist1_163 = function(symbol1, from='1900-01-01', to=Sys.Date()) {
   )][grepl('\u4e07', volume), volume := as.numeric(sub('\u4e07', '', volume)) * 10^4
    ][grepl('\u4ebf', volume), volume := as.numeric(sub('\u4ebf', '', volume)) * 10^8
    ][grepl('\u4e07', amount), amount := as.numeric(sub('\u4e07', '', amount)) * 10^4
-   ][grepl('\u4ebf', amount), amount := as.numeric(sub('\u4ebf', '', amount)) * 10^8]
+   ][grepl('\u4ebf', amount), amount := as.numeric(sub('\u4ebf', '', amount)) * 10^8] # unicode
   
   dat = merge(dat_tx[,.(date, open, high, low)], dat_1632, by = 'date', all.y=TRUE)
   dat = cbind(data.table(

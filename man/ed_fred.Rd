@@ -4,8 +4,8 @@
 \alias{ed_fred}
 \title{query FRED economic data}
 \usage{
-ed_fred(symbol = NULL, date_range = "10y", from = NULL, to = Sys.Date(),
-  na_rm = FALSE, print_step = 1L)
+ed_fred(symbol = NULL, date_range = "10y", from = NULL,
+  to = Sys.Date(), na_rm = FALSE, print_step = 1L)
 }
 \arguments{
 \item{symbol}{symbols of FRED economic indicators. It is available via function \code{ed_fred_symbol} or its website. Default is NULL, which calls \code{ed_fred_symbol} in the back.}

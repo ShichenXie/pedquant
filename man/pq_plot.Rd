@@ -5,10 +5,10 @@
 \title{creating charts for time series}
 \usage{
 pq_plot(dt, chart_type = "line", freq = NULL, date_range = "max",
-  from = NULL, to = Sys.Date(), x = "close|value", addti = list(volume =
-  list()), linear_trend = NULL, perf = FALSE, yaxis_log = FALSE,
-  color_up = "#F6736D", color_down = "#18C0C4", multi_series = list(nrow =
-  NULL, ncol = NULL), rm_weekend = NULL, title = NULL, ...)
+  from = NULL, to = Sys.Date(), x = "close|value", addti = list(volume
+  = list()), linear_trend = NULL, perf = FALSE, yaxis_log = FALSE,
+  color_up = "#F6736D", color_down = "#18C0C4", multi_series = list(nrow
+  = NULL, ncol = NULL), rm_weekend = NULL, title = NULL, ...)
 }
 \arguments{
 \item{dt}{a list/dataframe of time series dataset}
@@ -25,7 +25,7 @@ pq_plot(dt, chart_type = "line", freq = NULL, date_range = "max",
 
 \item{x}{the name of column display on chart.}
 
-\item{addti}{list of technical indicators or numerical columes in dt. For technical indicator, it is calculated via \code{pq_addti}, which including overlay and oscillator indicators.}
+\item{addti}{list of technical indicators or numerical columns in dt. For technical indicator, it is calculated via \code{pq_addti}, which including overlay and oscillator indicators.}
 
 \item{linear_trend}{a numeric vector. Default is NULL. If it is not NULL, then display linear trend lines on charts.}
 

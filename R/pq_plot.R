@@ -501,16 +501,15 @@ pp_set_title = function(p, dt, title = NULL) {
         p = p + labs(title = title)
     }
     
+    # showtext_begin();
     p = p + theme(
         plot.title    = element_text(margin = margin(t=1, b=1)),
         plot.subtitle = element_text(margin = margin(t=0, b=1))#,
-        # text = element_text( family = chn_font_family() )
+        # text = element_text( family = 'wqy-microhei')
     )
-    return(p)
-}
-
-font_family = function() {
+    # showtext_end();
     
+    return(p)
 }
 
 
@@ -694,13 +693,15 @@ pp_add_ti_oscillator = function(
         dat_n[, ti_str := paste0(dat_n, collapse = ' ')]
         
         # set text/labs format
+        # showtext_begin();
         pi = pi + 
             geom_text(x = dat[1, x], y = Inf, aes(label = ti_str), data = dat_n, hjust = 0, vjust = 1, color = 'black', na.rm = TRUE, alpha = 0.6, size = rel(3)) + 
             labs(x=NULL, y=NULL) + theme_bw() + 
             theme(
                 plot.margin = unit(rep(0, 4), 'cm')#,
-                # text = element_text( family = chn_font_family() )
+                # text = element_text( family = 'wqy-microhei')
             )
+        # showtext_end();
         
         # hlines
         hlines = ti_idicators_hline()
@@ -766,7 +767,7 @@ pp_add_ti_oscillator = function(
 #' @param from the start date. Default is NULL. If it is NULL, then calculate using date_range and end date.
 #' @param to the end date. Default is the current date.
 #' @param x the name of column display on chart.
-#' @param addti list of technical indicators or numerical columes in dt. For technical indicator, it is calculated via \code{pq_addti}, which including overlay and oscillator indicators.
+#' @param addti list of technical indicators or numerical columns in dt. For technical indicator, it is calculated via \code{pq_addti}, which including overlay and oscillator indicators.
 #' @param linear_trend a numeric vector. Default is NULL. If it is not NULL, then display linear trend lines on charts. 
 #' @param perf logical, display the performance of input series. Default is FALSE. If it is TRUE, then call \code{pq_code} to convert data into performance trends.
 #' @param yaxis_log logical. Default is FALSE.
