@@ -6,7 +6,7 @@
 #' @param cate The available category values including 'country', 'currency', 'stock_exchange', 'commodity_exchange', 'china_district'.
 #' 
 #' @examples 
-#' \donttest{
+#' \dontrun{
 #' # specify the categories
 #' code_list1 = ed_code(cate = c('country', 'currency'))
 #' 

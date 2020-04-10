@@ -26,7 +26,7 @@ md_future(symbol = NULL, source = "sina", freq = "daily",
 \code{md_future} query future market prices data. Only Chinese future market has been considered currently.
 }
 \examples{
-\donttest{
+\dontrun{
 dt1 = md_future(symbol = c('J0', 'RB0', 'M0', 'CF0', 'IH0', 'IF0', 'IC0'))
 
 # interactivly choose symbols

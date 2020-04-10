@@ -6,7 +6,7 @@
 #' \code{md_future_symbol} search the symbols in future market indicators that provided by sina finance only currently.
 #' 
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' # interactivly search future market symbols
 #' sybs = md_future_symbol()
 #' 
@@ -77,7 +77,7 @@ md_future1_sina = function(symbol, freq, from, to, handle, ...) {
 #' @param print_step a non-negative integer, which will print symbol name by each print_step iteration. Default is 1L. 
 #' 
 #' @examples 
-#' \donttest{
+#' \dontrun{
 #' dt1 = md_future(symbol = c('J0', 'RB0', 'M0', 'CF0', 'IH0', 'IF0', 'IC0'))
 #' 
 #' # interactivly choose symbols

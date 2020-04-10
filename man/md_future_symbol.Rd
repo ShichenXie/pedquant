@@ -10,7 +10,7 @@ md_future_symbol()
 \code{md_future_symbol} search the symbols in future market indicators that provided by sina finance only currently.
 }
 \examples{
-\donttest{
+\dontrun{
 # interactivly search future market symbols
 sybs = md_future_symbol()
 

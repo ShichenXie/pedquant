@@ -26,7 +26,7 @@ md_cate(cate = NULL, symbol = NULL, date_range = "3y", from = NULL,
 \code{md_cate} provides an interface to access main market data in five categories, including forex, money, bond, index, commodity.
 }
 \examples{
-\donttest{
+\dontrun{
 dat = md_cate()
 }
 

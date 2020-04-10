@@ -245,7 +245,7 @@ md_stock_symbol_index = function(symbol, print_step=1L) {
 #' @param index the stock index symbol provided by China Securities Index Co.Ltd (\url{http://www.csindex.com.cn}).
 #' 
 #' @examples 
-#' \donttest{
+#' \dontrun{
 #' # get stock symbols in a stock exchange
 #' ## specify the name of exchange
 #' ex_syb1 = md_stock_symbol(exchange = c('sse', 'szse'))

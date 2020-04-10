@@ -13,7 +13,7 @@ ed_code(cate = NULL)
 \code{ed_code} get the code list of country, currency, stock exchange, commodity exchange and administrative district of mainland of China.
 }
 \examples{
-\donttest{
+\dontrun{
 # specify the categories
 code_list1 = ed_code(cate = c('country', 'currency'))
 

@@ -17,7 +17,7 @@ md_stock_financials(symbol, type = NULL, print_step = 1L)
 \code{md_stock_financials} provides an interface to query financial statements and indicators of listed companies in SSE and SZSE.
 }
 \examples{
-\donttest{
+\dontrun{
 # interactively specify type of financial table 
 dat1 = md_stock_financials("000001")
 

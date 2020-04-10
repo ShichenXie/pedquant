@@ -137,7 +137,7 @@ fs_dupont_cn = function(symbol1=NULL, ...) {
 #' @param print_step A non-negative integer. Print symbol name by each print_step iteration. Default is 1L.
 #' 
 #' @examples 
-#' \donttest{
+#' \dontrun{
 #' # interactively specify type of financial table 
 #' dat1 = md_stock_financials("000001")
 #' 

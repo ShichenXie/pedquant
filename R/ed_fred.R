@@ -213,7 +213,7 @@ ed_fred_symbol_category = function(category=NULL, ...) {
 #' @param ... ignored parameters
 #' 
 #' @examples 
-#' \donttest{
+#' \dontrun{
 #' # search symbols by category
 #' # from top categories
 #' symbol_dt1 = ed_fred_symbol()

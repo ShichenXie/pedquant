@@ -15,7 +15,7 @@ md_stock_symbol(exchange = NULL, index = NULL)
 \code{md_stock_symbol} returns all stock symbols of stock exchange or index.
 }
 \examples{
-\donttest{
+\dontrun{
 # get stock symbols in a stock exchange
 ## specify the name of exchange
 ex_syb1 = md_stock_symbol(exchange = c('sse', 'szse'))

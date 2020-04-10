@@ -34,7 +34,7 @@ For the yahoo data, the original data already adjust for split, and use the 'clo
 \code{md_stock} provides an interface to query EOD (end of date) stock prices.
 }
 \examples{
-\donttest{
+\dontrun{
 # Example I
 # query history prices from yahoo
 dt_yahoo1 = md_stock(symbol=c("^GSPC", "000001.SS"))

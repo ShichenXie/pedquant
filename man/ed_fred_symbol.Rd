@@ -17,7 +17,7 @@ ed_fred_symbol(category = NULL, keywords = NULL, ...)
 ed_fred_symbol provides an interface to search symbols of economic data from FRED by category or keywords.
 }
 \examples{
-\donttest{
+\dontrun{
 # search symbols by category
 # from top categories
 symbol_dt1 = ed_fred_symbol()
