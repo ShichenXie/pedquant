@@ -31,7 +31,7 @@ ed_nbs(symbol = NULL, freq = NULL, geo_type = NULL, subregion = NULL,
 \code{ed_nbs} provides an interface to query economic data from National Bureau of Statistics of China (NBS, http://data.stats.gov.cn/).
 }
 \examples{
-\donttest{
+\dontrun{
 # query NBS data without setting any parameters
 dt = ed_nbs()
 

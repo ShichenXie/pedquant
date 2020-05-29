@@ -20,7 +20,7 @@ ed_nbs_symbol(symbol = NULL, geo_type = NULL, freq = NULL, eng = FALSE)
 }
 \examples{
 # query symbol interactively
-\donttest{
+\dontrun{
 sym = ed_nbs_symbol()}
 
 }
