@@ -48,7 +48,10 @@ get_fromto = function(date_range, from, to, min_date = '1000-01-01', default_dat
     to = check_fromto(to)
     min_date = check_fromto(min_date)
     
-    if (any(from == '')) from = NULL
+    if (inherits(from, 'character')) {
+        if (any(from == '')) from = NULL
+    }
+    
     if (is.null(from)) {
         if (date_range == "max") {
             from = min_date
