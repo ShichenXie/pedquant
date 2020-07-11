@@ -1,5 +1,5 @@
 Package: pedquant
-Version: 0.1.5
+Version: 0.1.5.999
 Title: Public Economic Data and Quantitative Analysis
 Description: 
     Provides an interface to access public economic and financial data for 
@@ -10,11 +10,21 @@ Authors@R:
 Depends: 
     R (>= 3.1.0)
 Imports: 
-    data.table, TTR, zoo, 
-    curl, xml2, httr, rvest, 
-    jsonlite, stringi, 
-    readxl, readr, 
-    ggplot2, scales, gridExtra
+    data.table,
+    TTR,
+    zoo,
+    curl,
+    xml2,
+    httr,
+    rvest,
+    jsonlite,
+    stringi,
+    readxl,
+    readr,
+    ggplot2,
+    scales,
+    gridExtra,
+    plotly
 Suggests: 
     knitr,
     rmarkdown

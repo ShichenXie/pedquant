@@ -120,7 +120,7 @@ ed_nbs_symbol = function(symbol=NULL, geo_type=NULL, freq=NULL, eng=FALSE) {
 #' @param eng logical. The language of the query results is in English or in Chinese. Default is FALSE.
 #' 
 #' @examples 
-#' \donttest{
+#' \dontrun{
 #' # province code 
 #' prov1 = ed_nbs_subregion(geo_type = 'province') 
 #' # or using 'p' represents 'province'

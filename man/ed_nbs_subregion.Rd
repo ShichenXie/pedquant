@@ -15,7 +15,7 @@ ed_nbs_subregion(geo_type = NULL, eng = FALSE)
 \code{ed_nbs_subregion} query province or city code from NBS
 }
 \examples{
-\donttest{
+\dontrun{
 # province code 
 prov1 = ed_nbs_subregion(geo_type = 'province') 
 # or using 'p' represents 'province'

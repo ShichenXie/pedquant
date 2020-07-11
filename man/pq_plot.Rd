@@ -7,8 +7,9 @@
 pq_plot(dt, chart_type = "line", freq = NULL, date_range = "max",
   from = NULL, to = Sys.Date(), x = "close|value", addti = list(volume
   = list()), linear_trend = NULL, perf = FALSE, yaxis_log = FALSE,
-  color_up = "#F6736D", color_down = "#18C0C4", multi_series = list(nrow
-  = NULL, ncol = NULL), rm_weekend = NULL, title = NULL, ...)
+  color_up = "#CF002F", color_down = "#000000", multi_series = list(nrow
+  = NULL, ncol = NULL), rm_weekend = NULL, title = NULL,
+  interact = FALSE, ...)
 }
 \arguments{
 \item{dt}{a list/dataframe of time series dataset}
@@ -42,6 +43,8 @@ pq_plot(dt, chart_type = "line", freq = NULL, date_range = "max",
 \item{rm_weekend}{whether to remove weekends in xaxis. The default is TRUE for candle and bar chart, and is FALSE for line and step chart.}
 
 \item{title}{chart title. It will added to the front of chart title if it is specified.}
+
+\item{interact}{whether to create a interactive graphics, defaults to FALSE.}
 
 \item{...}{ignored}
 }

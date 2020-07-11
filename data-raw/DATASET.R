@@ -2,7 +2,7 @@
 # usethis::use_data(DATASET, overwrite = TRUE)
 
 ## Internal data # http://r-pkgs.had.co.nz/data.html
-if (F) {
+if (FALSE) {
     
     # # china district
     # library(RSelenium); library(rvest); library(httr); library(data.table)
@@ -42,7 +42,7 @@ if (F) {
 
 
 # database urls 
-if (F) {
+if (FALSE) {
     library(rvest)
     'http://www.cciee.org.cn/zkdh.aspx?clmId=69' %>% 
         read_html() %>% 

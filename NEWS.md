@@ -1,3 +1,8 @@
+# pedquant 0.1.5.999
+
+* pq_plot function supports to create interactive graphics based on plotly package
+
+
 # pedquant 0.1.5
 
 * fixed a bug caused by Chinese characters in pq_plot function

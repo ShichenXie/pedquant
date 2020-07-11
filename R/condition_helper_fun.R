@@ -43,11 +43,12 @@ check_fromto = function(fromto, type="date", shift = 0) {
     return(fromto)
 }
 
-get_fromto = function(date_range, from, to, min_date, default_date_range = 'max') {
+get_fromto = function(date_range, from, to, min_date = '1000-01-01', default_date_range = 'max') {
     date_range = check_date_range(date_range, default = default_date_range)
     to = check_fromto(to)
     min_date = check_fromto(min_date)
     
+    if (any(from == '')) from = NULL
     if (is.null(from)) {
         if (date_range == "max") {
             from = min_date
@@ -57,7 +58,7 @@ get_fromto = function(date_range, from, to, min_date, default_date_range = 'max'
         } else if (grepl("[1-9][0-9]*d", date_range)) {
             from = as.Date(to) - as.integer(sub("d","",date_range))
         } else if (grepl("[1-9][0-9]*w", date_range)) {
-            from = as.Date(to) - as.integer(sub("d","",date_range))*7
+            from = as.Date(to) - as.integer(sub("w","",date_range))*7
         } else if (grepl("[1-9][0-9]*m", date_range)) {
             month_range = as.integer(sub("m","",date_range))
             month_to = as.integer(sub("^[0-9]{4}-([0-9]{1,2})-.+$", "\\1", to))
@@ -76,6 +77,7 @@ get_fromto = function(date_range, from, to, min_date, default_date_range = 'max'
         } else {
             from = min_date
         }
+        from = check_fromto(from)
     } else {
         from = check_fromto(from)
     }
