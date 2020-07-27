@@ -157,6 +157,11 @@ fs_dupont_cn = function(symbol1=NULL, ...) {
 #' 
 #' @export
 md_stock_financials = function(symbol, type=NULL, print_step=1L) {
+  # type
+  if (!any(type == 'dupont')) {
+    fs_type_163 = setDT(copy(financial_statements_163))
+    type = select_rows_df(dt = fs_type_163[,.(type, name, name_en)], column = 'type', input_string=type)[,type]
+  }
   # if (source == "163") 
   dat_list = load_dat_loop(symbol, 'md_stock1_fs_cn', args = list(type = type), print_step=print_step)
   

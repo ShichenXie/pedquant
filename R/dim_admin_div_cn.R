@@ -146,27 +146,92 @@ admin_div_cn = function(admin_level=3) {
 }
 
 #' @importFrom rvest html_attr html_table
-admin_mca = function() {
+admin_mac = function(y=2020, print_info = FALSE) {
+  
+  urlst = fread(
+'
+year\turl
+2020\thttp://www.mca.gov.cn/article/sj/xzqh/2020/2020/202003061536.html
+2019\thttp://www.mca.gov.cn/article/sj/xzqh/1980/2019/202002281436.html
+2018\thttp://www.mca.gov.cn/article/sj/xzqh/1980/201903/201903011447.html
+2017\thttp://www.mca.gov.cn/article/sj/xzqh/1980/201803/201803131454.html
+2016\thttp://www.mca.gov.cn/article/sj/xzqh/1980/201705/201705311652.html
+2015\thttp://www.mca.gov.cn/article/sj/tjbz/a/2015/201706011127.html
+2014\thttp://files2.mca.gov.cn/cws/201502/20150225163817214.html
+2013\thttp://files2.mca.gov.cn/cws/201404/20140404125552372.htm
+2012\thttp://www.mca.gov.cn/article/sj/tjbz/a/201713/201707271556.html
+2011\thttp://www.mca.gov.cn/article/sj/tjbz/a/201713/201707271552.html
+2010\thttp://www.mca.gov.cn/article/sj/xzqh/1980/201507/20150715854918.shtml
+2009\thttp://www.mca.gov.cn/article/sj/xzqh/1980/201507/20150715854917.shtml
+2008\thttp://www.mca.gov.cn/article/sj/xzqh/1980/201507/20150715854916.shtml
+2007\thttp://www.mca.gov.cn/article/sj/xzqh/1980/201507/20150715854913.shtml
+2006\thttp://www.mca.gov.cn/article/sj/xzqh/1980/201507/20150715854908.shtml
+2005\thttp://www.mca.gov.cn/article/sj/xzqh/1980/201507/20150715854907.shtml
+2004\thttp://www.mca.gov.cn/article/sj/xzqh/1980/201507/20150715854906.shtml
+2003\thttp://www.mca.gov.cn/article/sj/xzqh/1980/201507/20150715854904.shtml
+2002\thttp://www.mca.gov.cn/article/sj/xzqh/1980/201507/20150715854903.shtml
+2001\thttp://www.mca.gov.cn/article/sj/xzqh/1980/201507/20150715854902.shtml
+2000\thttp://www.mca.gov.cn/article/sj/xzqh/1980/201507/20150715854900.shtml
+1999\thttp://www.mca.gov.cn/article/sj/xzqh/1980/201507/20150715854899.shtml
+1998\thttp://www.mca.gov.cn/article/sj/xzqh/1980/201507/20150715854896.shtml
+1997\thttp://www.mca.gov.cn/article/sj/xzqh/1980/201507/20150715854894.shtml
+1996\thttp://www.mca.gov.cn/article/sj/xzqh/1980/201507/20150715854893.shtml
+1995\thttp://www.mca.gov.cn/article/sj/xzqh/1980/201507/20150715854892.shtml
+1994\thttp://www.mca.gov.cn/article/sj/xzqh/1980/201507/20150715854890.shtml
+1993\thttp://www.mca.gov.cn/article/sj/xzqh/1980/201507/20150715854887.shtml
+1992\thttp://www.mca.gov.cn/article/sj/xzqh/1980/201507/20150715854885.shtml
+1991\thttp://www.mca.gov.cn/article/sj/xzqh/1980/201507/20150715854882.shtml
+1990\thttp://www.mca.gov.cn/article/sj/xzqh/1980/201507/20150715854869.shtml
+1989\thttp://www.mca.gov.cn/article/sj/xzqh/1980/201507/20150715854867.shtml
+1988\thttp://www.mca.gov.cn/article/sj/xzqh/1980/201507/20150715854866.shtml
+1987\thttp://www.mca.gov.cn/article/sj/xzqh/1980/201507/20150715854865.shtml
+1986\thttp://www.mca.gov.cn/article/sj/xzqh/1980/201507/20150715854863.shtml
+1985\thttp://www.mca.gov.cn/article/sj/xzqh/1980/201507/20150715854860.shtml
+1984\thttp://www.mca.gov.cn/article/sj/xzqh/1980/201507/20150715854858.shtml
+1983\thttp://www.mca.gov.cn/article/sj/xzqh/1980/201507/20150715854857.shtml
+1982\thttp://www.mca.gov.cn/article/sj/xzqh/1980/201507/20150715854854.shtml
+1981\thttp://www.mca.gov.cn/article/sj/xzqh/1980/201507/20150715854853.shtml
+1980\thttp://www.mca.gov.cn/article/sj/xzqh/1980/201507/20150715854852.shtml
+')
+  urlst = urlst[, lapply(.SD, as.character)]
+  # web = read_html('http://www.mca.gov.cn/article/sj/xzqh/') %>% 
+  #   html_nodes('a.artitlelist') %>% 
+  #   html_attr('href') %>%
+  #   paste0('http://www.mca.gov.cn', .) %>%
+  #   .[1] %>% # url0
+  #   read_html() %>% 
+  #   html_nodes('a.artitlelist') %>% #html_text()
+  #   html_attr('href') %>%
+  #   .[1] # %>% # url div wb
+  urls <- as.list(urlst[year %in% as.character(y), url])
+  names(urls) <- urlst[year %in% as.character(y), paste0('v',year)]
+  
+  lapply(
+    urls,
+    function(u) admin_mca1(u, print_info)
+  )
+}
+#' 
+#' @importFrom stats median setNames
+admin_mca1 = function(url, print_info = FALSE) {
+  if (print_info) print(url)
   . = X2 = X3 = admin_level = code = code_parent = name = NULL
-  
-  url = read_html('http://www.mca.gov.cn/article/sj/xzqh/1980/') %>% 
-    html_nodes('td.arlisttd a') %>% #html_text()
-    html_attr('href') %>%
-    paste0('http://www.mca.gov.cn', .) %>%
-    .[1] %>% # url0
+
+  dat = load_web_source2(url) %>% # url %>% #
     read_html() %>% 
-    html_nodes('div.content p a') %>% #html_text()
-    html_attr('href') %>%
-    .[1] # %>% # url div wb
-    
-  dat = read_html(url) %>% 
     html_table() %>% 
-    .[[1]] %>% 
-    .[,c('X2', 'X3')]
+    .[[1]]
   
-  dat2 = setDT(copy(dat))[,.(
-    code = X2, name = X3
-  )][grepl('[0-9]{6}', code)
+  colsel = sapply(dat, function(x) {
+    median(nchar(x))
+  })
+  colsel = names(colsel)[which(colsel > 1)]
+  
+  dat = dat[, colsel]
+  dat = setNames(dat, c('code', 'name'))
+  
+  dat2 = setDT(copy(dat))[
+    grepl('[0-9]{6}', code)
    ][grepl('.{4}0{2}', code), admin_level := 'city'
    ][grepl('.{2}0{4}', code), admin_level := 'province'
    ][is.na(admin_level), admin_level:= 'county']

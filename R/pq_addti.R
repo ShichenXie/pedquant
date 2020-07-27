@@ -187,6 +187,9 @@ ti_idicators_hline = function() {list(
 
 
 ######
+# formals(TTR::CCI) # args(TTR::CCI)
+# getNamespaceExports("TTR")
+# ls(getNamespace("TTR"))
 ti_fst_arg = function() {
   list(
     OHLC = 'volatility',

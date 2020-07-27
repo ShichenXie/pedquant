@@ -81,7 +81,7 @@ pp_candle = function(
     return(p)
 }
 
-pp_candle_i = function(
+pp_candlei = function(
     dt, from=NULL, to=Sys.Date(), 
     color_up = '#F6736D', color_down = '#18C0C4', title = title, 
     rm_weekend = FALSE, rm_xaxis = FALSE, yaxis_log = FALSE, x = 'close|value', 
@@ -106,51 +106,51 @@ pp_candle_i = function(
     d <- list(line = list(color = color_down))
     
     # plot
-    ## change dt date range to from/to
-    dat = dt[date>=from & date <= to]
-    
     if (multi_series_all1) {
         
     } else {
-        p = dat %>% 
-            plot_ly(x = ~ x) %>% 
-            add_trace(
-                open = ~ open, close = ~ close,
-                high = ~ high, low = ~ low,
-                increasing = i, decreasing = d, 
-                name = ~ title1, 
-                text = ~ sprintf('change: %s%s', round(change_pct,2), '%'),
-                showlegend = FALSE, 
-                type = "candlestick"
-            ) %>% 
-            layout( 
-                margin = list( pad = 0, b = 0, l = 10, r = 10 ), 
-                xaxis = list(
-                    rangeslider = list(visible = F)
-                ),
-                legend = list(x = 0.02, y = 0.98)
-                # showlegend = FALSE
-            )
+        oneplot_candlei = function(dt, from, to, addti, linear_trend, yaxis_log, rm_weekend, color_up, color_down) {
+            p = dt[date>=from & date <= to] %>% 
+                plot_ly(x = ~ x) %>% 
+                add_trace(
+                    open = ~ open, close = ~ close,
+                    high = ~ high, low = ~ low,
+                    increasing = i, decreasing = d, 
+                    name = ~ title1, 
+                    text = ~ sprintf('change: %s%s\n%s', round(change_pct,2), '%', x),
+                    showlegend = FALSE, 
+                    type = "candlestick"
+                ) %>% 
+                layout( 
+                    margin = list( pad = 0, b = 0, l = 10, r = 10 ), 
+                    xaxis = list(
+                        rangeslider = list(visible = F)
+                    ),
+                    legend = list(x = 0.02, y = 0.98)
+                    # showlegend = FALSE
+                )
+            
+            ###### overlay techinal indicators ######
+            if (!is.null(addti) & length(addti)>0) {
+                p = do.call(pp_add_ti_overlay, args = list(p = p, dt = dt[date>=from-365 & date <= to], from = from, to = to, rm_weekend = rm_weekend, addti = addti, interact = TRUE))
+            }
+            
+            # add linear trend line
+            if (!is.null(linear_trend)) 
+                p = do.call(pp_add_linear_trend, args = list(p=p, dt = dt, rm_weekend = rm_weekend, linear_trend = linear_trend, interact = TRUE, yaxis_log = yaxis_log))
+            
+            return(p)
+        }
         
         
         # facet 
         if (num_syb>1) {
-            
-        }
-        
-        ###### overlay techinal indicators ######
-        if (!is.null(addti) & length(addti)>0) {
-            p = do.call(pp_add_ti_overlay, args = list(p = p, dt = dt[date>=from-365 & date <= to], from = from, to = to, rm_weekend = rm_weekend, addti = addti, interact = TRUE))
-        }
-        
-        # add linear trend line
-        if (!is.null(linear_trend)) 
-            p = do.call(pp_add_linear_trend, args = list(p=p, dt = dt, rm_weekend = rm_weekend, linear_trend = linear_trend, interact = TRUE, yaxis_log = yaxis_log))
-        
+            p = multiplot(oneplot_candlei, dt, from, to, addti, linear_trend, yaxis_log, rm_weekend, rm_xaxis, color_up, color_down, title, multi_series)
+        } else {
+            p = oneplot_candlei(dt, from, to, addti, linear_trend, yaxis_log, rm_weekend, color_up, color_down)
+        }   
     }
     
-    # set yaxis
-    p = pp_set_yaxis(p, yaxis_log = yaxis_log, interact = TRUE)
     
     ###### oscillator techinal indicators ######
     if (!is.null(addti) & length(addti)>0 & num_syb==1) {
@@ -158,9 +158,11 @@ pp_candle_i = function(
     }
     
     # set title 
-    p = pp_set_title(p, dat, title = title, interact = TRUE)
+    p = pp_set_title(p, dt[date>=from & date <= to], title = title, interact = TRUE)
+    # set yaxis
+    p = pp_set_yaxis(p, yaxis_log = yaxis_log, interact = TRUE)
     # set xaxis
-    p = pp_set_xaxis(p, dat, rm_weekend = rm_weekend, rm_xaxis = rm_xaxis, interact = TRUE)
+    p = pp_set_xaxis(p, dt[date>=from & date <= to], rm_weekend = rm_weekend, rm_xaxis = rm_xaxis, interact = TRUE)
     
     return(p)
 }
@@ -241,7 +243,7 @@ pp_bar = function(
     return(p)
 }
 
-pp_bar_i = function(
+pp_bari = function(
     dt, from=NULL, to=Sys.Date(), 
     color_up = '#F6736D', color_down = '#18C0C4', title = title, 
     rm_weekend = FALSE, rm_xaxis = FALSE, yaxis_log = FALSE, x = 'close|value', 
@@ -265,50 +267,49 @@ pp_bar_i = function(
     d <- list(line = list(color = color_down))
     
     # plot
-    ## change dt date range to from/to
-    dat = dt[date>=from & date <= to]
-    
     if (multi_series_all1) {
         
     } else {
-        p = dat %>% 
-            plot_ly(x = ~ x) %>% 
-            add_trace(
-                open = ~ open, close = ~ close,
-                high = ~ high, low = ~ low,
-                increasing = i, decreasing = d, 
-                name = ~ title1, 
-                text = ~ sprintf('change: %s%s', round(change_pct,2), '%'),
-                showlegend = FALSE, 
-                type = "ohlc"
-            ) %>% 
-            layout(
-                margin = list( pad = 0, b = 0, l = 10, r = 10 ), 
-                xaxis = list(
-                    rangeslider = list(visible = F)
-                ),
-                legend = list(x = 0.02, y = 0.98)
-            )
-        
+        oneplot_bari = function(dt, from, to, addti, linear_trend, yaxis_log, rm_weekend, color_up, color_down) {
+            p = dt[date>=from & date <= to] %>% 
+                plot_ly(x = ~ x) %>% 
+                add_trace(
+                    open = ~ open, close = ~ close,
+                    high = ~ high, low = ~ low,
+                    increasing = i, decreasing = d, 
+                    name = ~ title1, 
+                    text = ~ sprintf('change: %s%s\n%s', round(change_pct,2), '%', x),
+                    showlegend = FALSE, 
+                    type = "ohlc"
+                ) %>% 
+                layout(
+                    margin = list( pad = 0, b = 0, l = 10, r = 10 ), 
+                    xaxis = list(
+                        rangeslider = list(visible = F)
+                    ),
+                    legend = list(x = 0.02, y = 0.98)
+                )
+            
+            ###### overlay techinal indicators ######
+            if (!is.null(addti) & length(addti)>0) {
+                p = do.call(pp_add_ti_overlay, args = list(p = p, dt = dt[date>=from-365 & date <= to], from = from, to = to, rm_weekend = rm_weekend, addti = addti, interact = TRUE))
+            }
+            
+            # add linear trend line
+            if (!is.null(linear_trend)) 
+                p = do.call(pp_add_linear_trend, args = list(p=p, dt = dt, rm_weekend = rm_weekend, linear_trend = linear_trend, interact = TRUE, yaxis_log = yaxis_log))
+            
+            return(p)
+        }
         
         # facet 
         if (num_syb>1) {
-            
-        }
-        
-        ###### overlay techinal indicators ######
-        if (!is.null(addti) & length(addti)>0) {
-            p = do.call(pp_add_ti_overlay, args = list(p = p, dt = dt[date>=from-365 & date <= to], from = from, to = to, rm_weekend = rm_weekend, addti = addti, interact = TRUE))
-        }
-        
-        # add linear trend line
-        if (!is.null(linear_trend)) 
-            p = do.call(pp_add_linear_trend, args = list(p=p, dt = dt, rm_weekend = rm_weekend, linear_trend = linear_trend, interact = TRUE, yaxis_log = yaxis_log))
-        
+            p = multiplot(oneplot_bari, dt, from, to, addti, linear_trend, yaxis_log, rm_weekend, rm_xaxis, color_up, color_down, title, multi_series)
+        } else {
+            p = oneplot_bari(dt, from, to, addti, linear_trend, yaxis_log, rm_weekend, color_up, color_down)
+        }   
     }
     
-    # set yaxis
-    p = pp_set_yaxis(p, yaxis_log = yaxis_log, interact = TRUE)
     
     ###### oscillator techinal indicators ######
     if (!is.null(addti) & length(addti)>0 & num_syb==1) {
@@ -316,9 +317,11 @@ pp_bar_i = function(
     }
     
     # set title 
-    p = pp_set_title(p, dat, title = title, interact = TRUE)
+    p = pp_set_title(p, dt[date>=from & date <= to], title = title, interact = TRUE)
+    # set yaxis
+    p = pp_set_yaxis(p, yaxis_log = yaxis_log, interact = TRUE)
     # set xaxis
-    p = pp_set_xaxis(p, dat, rm_weekend = rm_weekend, rm_xaxis = rm_xaxis, interact = TRUE)
+    p = pp_set_xaxis(p, dt[date>=from & date <= to], rm_weekend = rm_weekend, rm_xaxis = rm_xaxis, interact = TRUE)
     
     return(p)
 }
@@ -410,7 +413,7 @@ pp_line = function(
     return(p)
 }
 
-pp_line_i = function(
+pp_linei = function(
     dt, from=NULL, to=Sys.Date(), 
     color_up = '#F6736D', color_down = '#18C0C4', title = title, 
     rm_weekend = FALSE, rm_xaxis = FALSE, yaxis_log = FALSE, x = 'close|value', 
@@ -431,11 +434,8 @@ pp_line_i = function(
     
     
     # plot
-    ## change dt date range to from/to
-    dat = dt[date>=from & date <= to]
-    
     if (multi_series_all1) {
-        p = dat %>% 
+        p = dt[date>=from & date <= to] %>% 
             plot_ly(x = ~ x) %>% 
             add_lines(
                 y = ~ close, 
@@ -449,50 +449,52 @@ pp_line_i = function(
                 legend = list(x = 0.02, y = 0.98)
             )
     } else {
-        p = dat %>% 
-            plot_ly(x = ~ x) %>% 
-            add_lines(
-                y = ~ close, 
-                name = ~ title1, 
-                line = list(color = color_up), 
-                showlegend = FALSE, 
-                hoverinfo = 'text+name', 
-                text = ~ sprintf('%s\n%s (%s%s)', date, round(close,2), round(change_pct,2), '%')
-            ) %>% 
-            add_segments(
-                x = ~ x1, 
-                xend = ~ x2, 
-                y = ~ y1, 
-                yend = ~ y2, 
-                name = ~ title1, 
-                line = list(color = color_down), 
-                showlegend = FALSE, 
-                hoverinfo = 'none' 
-            ) %>%
-            layout( 
-                margin = list( pad = 0, b = 0, l = 10, r = 10 ), 
-                legend = list(x = 0.02, y = 0.98)
-            )
-        
+        oneplot_linei = function(dt, from, to, addti, linear_trend, yaxis_log, rm_weekend, color_up, color_down, ...) {
+            p = dt[date>=from & date <= to] %>% 
+                plot_ly(x = ~ x) %>% 
+                add_lines(
+                    y = ~ close, 
+                    name = ~ title1, 
+                    line = list(color = color_up), 
+                    showlegend = FALSE, 
+                    hoverinfo = 'text+name', 
+                    text = ~ sprintf('%s\n%s (%s%s)', date, round(close,2), round(change_pct,2), '%')
+                ) %>% 
+                add_segments(
+                    x = ~ x1, 
+                    xend = ~ x2, 
+                    y = ~ y1, 
+                    yend = ~ y2, 
+                    name = ~ title1, 
+                    line = list(color = color_down), 
+                    showlegend = FALSE, 
+                    hoverinfo = 'none' 
+                ) %>%
+                layout( 
+                    margin = list( pad = 0, b = 0, l = 10, r = 10 ), 
+                    legend = list(x = 0.02, y = 0.98)
+                )
+            
+            ###### overlay techinal indicators ######
+            if (!is.null(addti) & length(addti)>0) {
+                p = do.call(pp_add_ti_overlay, args = list(p = p, dt = dt[date>=from-365 & date <= to], from = from, to = to, rm_weekend = rm_weekend, addti = addti, interact = TRUE))
+            }
+            
+            # add linear trend line
+            if (!is.null(linear_trend)) 
+                p = do.call(pp_add_linear_trend, args = list(p=p, dt = dt, rm_weekend = rm_weekend, linear_trend = linear_trend, interact = TRUE, yaxis_log = yaxis_log))
+            
+            return(p)
+        }
         
         # facet 
         if (num_syb>1) {
-            
+            p = multiplot(oneplot_linei, dt, from, to, addti, linear_trend, yaxis_log, rm_weekend, rm_xaxis, color_up, color_down, title, multi_series)
+        } else {
+            p = oneplot_linei(dt, from, to, addti, linear_trend, yaxis_log, rm_weekend, color_up, color_down)
         }
-        
-        ###### overlay techinal indicators ######
-        if (!is.null(addti) & length(addti)>0) {
-            p = do.call(pp_add_ti_overlay, args = list(p = p, dt = dt[date>=from-365 & date <= to], from = from, to = to, rm_weekend = rm_weekend, addti = addti, interact = TRUE))
-        }
-        
-        # add linear trend line
-        if (!is.null(linear_trend)) 
-            p = do.call(pp_add_linear_trend, args = list(p=p, dt = dt, rm_weekend = rm_weekend, linear_trend = linear_trend, interact = TRUE, yaxis_log = yaxis_log))
-        
     }
     
-    # set yaxis
-    p = pp_set_yaxis(p, yaxis_log = yaxis_log, interact = TRUE)
     
     ###### oscillator techinal indicators ######
     if (!is.null(addti) & length(addti)>0 & num_syb==1) {
@@ -500,9 +502,11 @@ pp_line_i = function(
     }
     
     # set title 
-    p = pp_set_title(p, dat, title = title, interact = TRUE)
+    p = pp_set_title(p, dt[date>=from & date <= to], title = title, interact = TRUE)
+    # set yaxis
+    p = pp_set_yaxis(p, yaxis_log = yaxis_log, interact = TRUE)
     # set xaxis
-    p = pp_set_xaxis(p, dat, rm_weekend = rm_weekend, rm_xaxis = rm_xaxis, interact = TRUE)
+    p = pp_set_xaxis(p, dt[date>=from & date <= to], rm_weekend = rm_weekend, rm_xaxis = rm_xaxis, interact = TRUE)
     
     return(p)
 }
@@ -604,7 +608,7 @@ pp_step = function(
     return(p)
 }
 
-pp_step_i = function(
+pp_stepi = function(
     dt, from=NULL, to=Sys.Date(), 
     color_up = '#F6736D', color_down = '#18C0C4', title = title, 
     rm_weekend = FALSE, rm_xaxis = FALSE, yaxis_log = FALSE, x = 'close|value', 
@@ -625,11 +629,8 @@ pp_step_i = function(
     
     
     # plot
-    ## change dt date range to from/to
-    dat = dt[date>=from & date <= to]
-    
     if (multi_series_all1) {
-        p = dat %>% 
+        p = dt[date>=from & date <= to] %>% 
             plot_ly(x = ~ x) %>% 
             add_lines(
                 y = ~ close, 
@@ -644,60 +645,65 @@ pp_step_i = function(
                 legend = list(x = 0.02, y = 0.98)
             )
     } else {
-        p = dat %>% 
-            plot_ly(x = ~ x) %>% 
-            add_lines(
-                y = ~ close, 
-                name = ~ title1, 
-                line = list(shape = "hv", color = color_up), 
-                showlegend = FALSE, 
-                hoverinfo = 'text+name', 
-                text = ~ sprintf('%s\n%s (%s%s)', date, round(close,2), round(change_pct,2), '%')
-            ) %>% 
-            add_segments(
-                x = ~ x1, xend = ~ x2, 
-                y = ~ y1, yend = ~ y2, 
-                name = ~ title1, 
-                line = list(shape = "hv", color = color_down), 
-                showlegend = FALSE, 
-                hoverinfo = 'none'
-            ) %>%
-            layout( 
-                margin = list( pad = 0, b = 0, l = 10, r = 10 ), 
-                legend = list(x = 0.02, y = 0.98)
-                # showlegend = FALSE
-            )
+        oneplot_stepi = function(dt, from, to, addti, linear_trend, yaxis_log, rm_weekend, color_up, color_down) {
+            p = dt[date>=from & date <= to] %>% 
+                plot_ly() %>% 
+                add_lines(
+                    x = ~ x, 
+                    y = ~ close, 
+                    name = ~ title1, 
+                    line = list(shape = "hv", color = color_up), 
+                    showlegend = FALSE, 
+                    hoverinfo = 'text+name', 
+                    text = ~ sprintf('%s\n%s (%s%s)', date, round(close,2), round(change_pct,2), '%')
+                ) %>% 
+                add_segments(
+                    x = ~ x1, xend = ~ x2, 
+                    y = ~ y1, yend = ~ y2, 
+                    name = ~ title1, 
+                    line = list(shape = "hv", color = color_down), 
+                    showlegend = FALSE, 
+                    hoverinfo = 'none'
+                ) %>%
+                layout( 
+                    margin = list( pad = 0, b = 0, l = 10, r = 10 ), 
+                    legend = list(x = 0.02, y = 0.98)
+                    # showlegend = FALSE
+                )
+            
+            ###### overlay techinal indicators ######
+            if (!is.null(addti) & length(addti)>0) {
+                p = do.call(pp_add_ti_overlay, args = list(p = p, dt = dt[date>=from-365 & date <= to], from = from, to = to, rm_weekend = rm_weekend, addti = addti, interact = TRUE))
+            }
+            
+            # add linear trend line
+            if (!is.null(linear_trend)) 
+                p = do.call(pp_add_linear_trend, args = list(p=p, dt = dt, rm_weekend = rm_weekend, linear_trend = linear_trend, interact = TRUE, yaxis_log = yaxis_log))
+            
+            return(p)
+        }
         
         
         # facet 
         if (num_syb>1) {
-            
+            p = multiplot(oneplot_stepi, dt, from, to, addti, linear_trend, yaxis_log, rm_weekend, rm_xaxis, color_up, color_down, title, multi_series)
+        } else {
+            p = oneplot_stepi(dt, from, to, addti, linear_trend, yaxis_log, rm_weekend, color_up, color_down)
         }
-        
-        ###### overlay techinal indicators ######
-        if (!is.null(addti) & length(addti)>0) {
-            p = do.call(pp_add_ti_overlay, args = list(p = p, dt = dt[date>=from-365 & date <= to], from = from, to = to, rm_weekend = rm_weekend, addti = addti, interact = TRUE))
-        }
-        
-        # add linear trend line
-        if (!is.null(linear_trend)) 
-            p = do.call(pp_add_linear_trend, args = list(p=p, dt = dt, rm_weekend = rm_weekend, linear_trend = linear_trend, interact = TRUE, yaxis_log = yaxis_log))
-        
     }
     
-    # set yaxis
-    p = pp_set_yaxis(p, yaxis_log = yaxis_log, interact = TRUE)
     
-    ###### oscillator techinal indicators ######
     ###### oscillator techinal indicators ######
     if (!is.null(addti) & length(addti)>0 & num_syb==1) {
         p = do.call(pp_add_ti_oscillator, args = list(p = p, dt = dt[date>=from-365 & date <= to], from = from, to = to, rm_weekend = rm_weekend, addti = addti, interact = TRUE))
     } 
     
     # set title 
-    p = pp_set_title(p, dat, title = title, interact = TRUE)
+    p = pp_set_title(p, dt[date>=from & date <= to], title = title, interact = TRUE)
+    # set yaxis
+    p = pp_set_yaxis(p, yaxis_log = yaxis_log, interact = TRUE)
     # set xaxis
-    p = pp_set_xaxis(p, dat, rm_weekend = rm_weekend, rm_xaxis = rm_xaxis, interact = TRUE)
+    p = pp_set_xaxis(p, dt[date>=from & date <= to], rm_weekend = rm_weekend, rm_xaxis = rm_xaxis, interact = TRUE)
     
     return(p)
 }
@@ -707,6 +713,34 @@ pp_step_i = function(
 #     theme_size = (14/5) * geom_text_size
 #     return(list(geom_text_size=geom_text_size, theme_size=theme_size))
 # }
+
+# multiple plot
+multiplot = function(func, dt, from, to, addti, linear_trend, yaxis_log, rm_weekend, rm_xaxis = FALSE, color_up, color_down, title, multi_series, ...) {
+    . = change_pct = name = symbol = NULL
+    
+    p = dt %>% 
+        split(., dt$symbol) %>% 
+        lapply(., function(x) {
+            do.call(func, list(
+                dt=x, from=from, to=to, addti=addti, linear_trend=linear_trend, yaxis_log=yaxis_log, rm_weekend=rm_weekend, color_up=color_up, color_down=color_down
+            )) %>% 
+                pp_set_yaxis(yaxis_log = yaxis_log, interact = TRUE) %>% 
+                pp_set_xaxis(x[date>=from & date <= to], rm_weekend = rm_weekend, rm_xaxis = rm_xaxis, interact = TRUE) %>% 
+                pp_set_title(x[date>=from & date <= to], title = title, interact = TRUE) %>% 
+                layout(
+                    annotations = list(
+                        yref = 'paper', xref = 'paper', 
+                        x = 0.02, y = 0.95, 
+                        align="left", showarrow = FALSE, 
+                        text = x[.N, paste0(symbol,' ',name,'\n',date,'\n',round(close,2),' (',round(change_pct,2),'%)')]
+                    )
+                )
+        }) %>% 
+        subplot(nrows = multi_series$nrow, shareX = TRUE, margin = .02) %>% 
+        layout(title = '', showlegend = FALSE)
+    
+    return(p)
+}
 
 # set xaxis 
 pp_set_xaxis = function(p, dt, rm_weekend = TRUE, rm_xaxis = FALSE, interact = FALSE, ...) {
@@ -1068,14 +1102,14 @@ pp_add_ti_overlay = function(
                     geom_text(x = dat[1, x], y = Inf, aes(label = ti_str), data = dat_n, hjust = 0, vjust = i*1.25+1, color = color, na.rm = TRUE, alpha = 0.6, size = rel(3))
             } else {
                 for (t in ti_names) {
-                    # print(str(dat[, c('date', t), with = FALSE]))
+                    line_fmt = list(width=0.8, color=color)
                     if (geom_type == 'line') {
                         p = p %>% 
                             add_lines(
                                 data = dat,
                                 x = ~ x, y = dat[[t]], 
                                 name = t, 
-                                line = list(width=0.8),
+                                line = line_fmt,
                                 hoverinfo = 'y+name'
                             ) 
                     } else if (geom_type == 'step') {
@@ -1084,7 +1118,7 @@ pp_add_ti_overlay = function(
                                 data = dat,
                                 x = ~ x, y = dat[[t]], 
                                 name = t, 
-                                line = list(width=0.8),
+                                line = line_fmt,
                                 interactline = list(shape = "hv"),
                                 hoverinfo = 'y+name'
                             ) 
@@ -1094,7 +1128,7 @@ pp_add_ti_overlay = function(
                                 data = dat,
                                 x = ~ x, y = dat[[t]], 
                                 name = t, 
-                                line = list(width=0.8),
+                                line = line_fmt,
                                 interactline = list(dash = 'dot'),
                                 hoverinfo = 'y+name'
                             ) 
@@ -1234,7 +1268,7 @@ pp_add_ti_oscillator = function(
                     add_lines(
                         y = dtti[[t]], color = color, 
                         name = t, 
-                        line = list(width=0.8), 
+                        line = list(width=0.8, color=color), 
                         showlegend = FALSE, 
                         hoverinfo = 'text+name',
                         text = ~ sprintf('%s\n%s', date, round(dtti[[t]],2)) 
@@ -1410,7 +1444,7 @@ pp_add_ti_oscillator = function(
 #' 
 #' @import ggplot2 gridExtra 
 #' @importFrom stats lm sd predict
-#' @importFrom plotly plot_ly add_trace add_lines add_segments layout subplot
+#' @importFrom plotly plot_ly add_trace add_lines add_segments layout subplot `%>%`
 #' @export
 pq_plot = function(
     dt, chart_type = 'line', freq = NULL, 
@@ -1515,7 +1549,7 @@ pq_plot = function(
     if (rm_weekend) dt[, x := rowid]
     
     # chart type
-    if (isTRUE(interact)) chart_type = paste0(chart_type, '_i')
+    if (isTRUE(interact)) chart_type = paste0(chart_type, 'i')
     
     # plot list
     plist = list()
