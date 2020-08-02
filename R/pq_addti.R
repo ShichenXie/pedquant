@@ -31,25 +31,31 @@
 #   return(roll_max(x, n = n, align = "right", fill = NA, ...))
 # }
 
-bias = function(x, n=10, maType='SMA') {
-  bias_orig = (x/do.call(maType, list(x=x, n=n))-1)*100
-  
-  bias_orig/runSD(bias_orig, n = 1, cumulative = TRUE)
-}
+# bias = function(x, n=10, maType='SMA') {
+#   # bias_orig = 
+#     (x/do.call(maType, list(x=x, n=n))-1)*100
+#   
+#   # bias_orig/runSD(bias_orig, n = 1, cumulative = TRUE)
+# }
+# 
+# maroc = function(x, n=10, m=3, maType='SMA') {
+#   ROC(do.call(maType, list(x=x, n=n)), n=m)*100
+# }
 
-maroc = function(x, n=10, m=3, maType='SMA') {
-  ROC(do.call(maType, list(x=x, n=n)), n=m)*100
-}
 
-# [1] "adjRatios" "growth" "lags" "rollSFM" "runPercentRank"  
+# "getYahooData"  "stockSymbols" "adjRatios" 
+# multiple input arguments
+# rollSFM runCov runCor runVar GMMA SNR
+# "growth" "lags" "naCheck" 
+
 # Technical Overlays / Indicators
 ti_overlays_indicators = function() {
   list(
-    overlays = c('SMA', 'EMA', 'DEMA', 'WMA', 'EVWMA', 'ZLEMA', 'VWAP', 'VMA', 'HMA', 'ALMA', 
+    overlays = c('SMA', 'EMA', 'DEMA', 'WMA', 'EVWMA', 'ZLEMA', 'VWAP', 'VWMA', 'VMA', 'HMA', 'ALMA', 
                  'runMin', 'runMax', 'runMean', 'runMedian', 
                  'BBands', 'PBands', 
                  'DonchianChannel', 'SAR', 'ZigZag'),
-    indicators = c('runSD', 'runMAD', 'aroon', 'CCI', 'VHF', 'TDI', 'ADX', 'ATR', 'EMV', 'chaikinVolatility', 'volatility', 'OBV', 'chaikinAD', 'CLV', 'CMF', 'MFI', 'williamsAD', 'ROC', 'momentum', 'KST', 'TRIX', 'MACD', 'DPO', 'DVI', 'ultimateOscillator', 'RSI', 'CMO', 'stoch', 'SMI', 'WPR', 'bias', 'maroc')
+    indicators = c('runSD', 'runMAD', 'runSum', 'wilderSum', 'runPercentRank', 'aroon', 'CCI', 'VHF', 'TDI', 'ADX', 'ATR', 'EMV', 'chaikinVolatility', 'volatility', 'OBV', 'chaikinAD', 'CLV', 'CMF', 'MFI', 'williamsAD', 'ROC', 'momentum', 'KST', 'TRIX', 'MACD', 'DPO', 'DVI', 'ultimateOscillator', 'RSI', 'CMO', 'stoch', 'SMI', 'WPR')
   )
 }
 
@@ -190,23 +196,27 @@ ti_idicators_hline = function() {list(
 # formals(TTR::CCI) # args(TTR::CCI)
 # getNamespaceExports("TTR")
 # ls(getNamespace("TTR"))
-ti_fst_arg = function() {
-  list(
-    OHLC = 'volatility',
-    HLC  = c('CCI', 'ADX', 'ATR', 'chaikinAD', 'CLV', 'CMF', 'MFI', 'williamsAD', 'BBands', 'ultimateOscillator', 'stoch', 'WPR', 'SMI', 'SNR'),
-    HL   = c('aroon', 'EMV', 'chaikinVolatility', 'DonchianChannel', 'SAR', 'ZigZag'), 
-    price  = c('TDI', 'VHF', 'OBV', 'KST', 'TRIX', 'EVWMA', 'VWAP', 'DVI', 'RSI'),
-    prices = 'PBands',
-    x = c('ROC','momentum','SMA','EMA','DEMA','WMA','ZLEMA','VMA','HMA','ALMA','GMMA','runSum','runMin','runMax','runMean','runMedian','runCov','runCor','runVar','runSD','runMAD','wilderSum','MACD','DPO','CMO', 'bias', 'maroc')
-  )
-}
-ti_sec_arg = function() {
-  list(
-    volume = c('EMV','OBV','chaikinAD','CMF','MFI','EVWMA','VWAP'),
-    y = c('runCov', 'runCor', 'runVar'), 
-    w = 'VMA'
-  )
-}
+# options(addti = c('bias', 'maroc'))
+# getOption('addti')
+
+# ti_fst_arg = function() {
+#   list(
+#     OHLC = 'volatility',
+#     HLC  = c('CCI', 'ADX', 'ATR', 'chaikinAD', 'CLV', 'CMF', 'MFI', 'williamsAD', 'BBands', 'ultimateOscillator', 'stoch', 'WPR', 'SMI', 'SNR'),
+#     HL   = c('aroon', 'EMV', 'chaikinVolatility', 'DonchianChannel', 'SAR', 'ZigZag'), 
+#     price  = c('TDI', 'VHF', 'OBV', 'KST', 'TRIX', 'EVWMA', 'VWAP', 'DVI', 'RSI'),
+#     prices = c('PBands', 'VWMA'),
+#     x = c('ROC','momentum','SMA','EMA','DEMA','WMA','ZLEMA','VMA','HMA','ALMA','GMMA','runSum','runMin','runMax','runMean','runMedian','runCov','runCor','runVar','runSD','runMAD','wilderSum','MACD','DPO','CMO', 'bias', 'maroc')
+#   )
+# }
+# ti_sec_arg = function() {
+#   list(
+#     volume = c('EMV','OBV','chaikinAD','CMF','MFI','EVWMA','VWAP', 'VWMA'),
+#     y = c('runCov', 'runCor', 'runVar'), 
+#     w = 'VMA'
+#   )
+# }
+
 
 # add one technical indicator
 #' @import TTR
@@ -217,70 +227,83 @@ addti1 = function(dt, ti, col_formula = FALSE, ...) {
   setnames(dt, tolower(names(dt)))
   
   # arguments
-  arg_lst = list()
+  arg_lst_default = formals(ti)
+  arg_lst_input = list(...)
+  arg_lst_output = list()
   ## first argument ## OHLC, HLC, HL, price, prices, x
-  if        (ti %in% ti_fst_arg()$OHLC) { # OHLC
-    arg_lst = c(arg_lst, list(OHLC=dt[,.(open,high,low,close)]))
-  } else if (ti %in% ti_fst_arg()$HLC ) { # HLC
-    arg_lst = c(arg_lst, list(HLC =dt[,.(high,low,close)]))
-  } else if (ti %in% ti_fst_arg()$HL  ) { # HL
-    arg_lst = c(arg_lst, list(HL  =dt[,.(high,low)]))
-  } else {
-    price_x_arg = intersect(c('price', 'prices', 'x'), names(list(...)))
-    if (length(price_x_arg) > 0) {
-      cols_price_x = list(...)[[price_x_arg[1]]]
-    } else {
-      cols_price_x = intersect(c('close', 'value'), names(dt))  
-    }
+  arg1st = names(arg_lst_default)[1]
+  if (arg1st %in% c('OHLC', 'HLC', 'HL')) {
+    sel_cols = c(O='open', H='high', L='low', C='close')[unlist(strsplit(arg1st, ''))]
+    newlst = list()
+    newlst[[arg1st]] = dt[, sel_cols, with = FALSE]
+  } else if (arg1st %in% c('price', 'prices', 'x', 'Ra')) {
+    arg1st_input = arg_lst_input[intersect(c('price', 'prices', 'x', 'Ra'), names(arg_lst_input))]
     
-    if (ti %in% ti_fst_arg()$price) {
-      arg_lst = c(arg_lst, list(price = dt[,cols_price_x[1],with=FALSE]))
-    } else if (ti %in% ti_fst_arg()$prices) {
-      arg_lst = c(arg_lst, list(prices= dt[,cols_price_x,   with=FALSE]))
-    } else if (ti %in% ti_fst_arg()$x) {
-      arg_lst = c(arg_lst, list(x     = dt[,cols_price_x[1],with=FALSE]))
+    if (length(arg1st_input) == 0) {
+      sel_cols = intersect(c('close', 'value'), names(dt))[1]
+    } else if (length(arg1st_input) == 1) {
+      sel_cols = arg1st_input[[1]]
+    } else stop(sprintf('%s is missing', arg1st))
+    
+    newlst = list()
+    if (all(inherits(sel_cols, 'character'))) {
+      newlst[[arg1st]] = dt[, sel_cols, with = FALSE]
+    } else {
+      newlst[[arg1st]] = sel_cols
     }
   }
+  arg_lst_output = c(arg_lst_output, newlst)
+  
   ## second argument ## volume, y, w
-  if (ti %in% ti_sec_arg()$volume) {
-    arg_lst = c(arg_lst, list(volume=dt[,.(volume)]))
-  } else if (ti %in% ti_sec_arg()$y) {
-    y = list(...)[['y']]
-    if (!is.null(y)) y = dt[,y,with=FALSE]
-    arg_lst = c(arg_lst, list(y=y))
-  } else if (ti %in% ti_sec_arg()$w) {
-    w = list(...)[['w']]
-    if (length(w)==1 & inherits(w, "character")) w = dt[,w,with=FALSE]
-    arg_lst = c(arg_lst, list(w=w))
+  arg2nd = names(arg_lst_default)[2]
+  if (arg2nd %in% c('volume')) {
+    newlst = list(volume=dt[,.(volume)])
+  } else if (arg2nd %in% c('y', 'w', 'Rb')) {
+    arg2nd_input = arg_lst_input[intersect(c('y', 'w', 'Rb'), names(arg_lst_input))]
+    
+    if (length(arg2nd_input)==1) sel_cols = arg2nd_input[[2]]
+    
+    newlst = list()
+    if (all(inherits(sel_cols, 'character'))) {
+      newlst[[arg2nd]] = dt[, sel_cols, with = FALSE]
+    } else {
+      newlst[[arg2nd]] = sel_cols
+    }
   }
-  arg_lst = c(
-    arg_lst, 
-    list(...)[setdiff(names(list(...)), c('color', 'position', 'hline', 'height'))]
+  arg_lst_output = c(arg_lst_output, newlst)
+  
+  
+  arg_lst_output = c(
+    arg_lst_output, 
+    arg_lst_input[setdiff(names(arg_lst_input), c('color', 'position', 'hline', 'height'))]
   )
-  arg_lst = arg_lst[unique(names(arg_lst))]
-  dtti = data.table(do.call(ti, args = arg_lst))
+  arg_lst_output = arg_lst_output[unique(names(arg_lst_output))]
+  dtti = data.table(do.call(ti, args = arg_lst_output))
   
   
   # parameters
   param = c('n', 'sd', 'v', 'nFast', 'nSlow', 'nSig', 'accel')
-  param_list = list(...)[intersect(param, names(list(...)))]
+  param_list = c(
+    arg_lst_input[intersect(param, names(arg_lst_input))],
+    arg_lst_default[intersect(param, names(arg_lst_default))]
+  )
+  param_list = param_list[intersect(param, names(param_list))]
   if (ti == 'KST') param_list = NULL
   
   # setnames for dtti
-  ncol_dtti = ncol(dtti) 
-  if (ncol_dtti == 1) {
-    par_str = paste(unlist(param_list), collapse='_') 
+  par_str = paste(unlist(param_list), collapse='_') 
+  if (ncol(dtti)  == 1) {
     setnames(dtti, tolower(paste(ti, par_str, sep = '_')))
-  } else {
+  } else if (ncol(dtti)  >  1) {
     setnames(dtti, tolower(paste(ti, names(dtti), sep = '_')))
   }
   if (tolower(ti) == 'adx') dtti = dtti[,.(adx_dx, adx_adx, adx_dip, adx_din)]
   
   # formula
   if (col_formula) {
-    par_str = paste(unlist(param_list), collapse=',') 
-    formula_string = sprintf('%s(%s)', ti, par_str)
-    dtti = dtti[, formula_str := formula_string]
+    dtti = dtti[, formula_str := sprintf(
+      '%s(%s)', ti, paste(unlist(param_list), collapse=',') 
+    )]
   }
   
   return(dtti)
@@ -288,28 +311,34 @@ addti1 = function(dt, ti, col_formula = FALSE, ...) {
 
 # add technical indcators for one dataset
 pq1_addti = function(dt, ...) {
+  ti_lst_input = list(...)
+  ti_names = names(ti_lst_input)
+  ti_ttr_func = getNamespaceExports("TTR")
+  
   col_formula = FALSE
-  if ("col_formula" %in% names(list(...)))  col_formula = list(...)[["col_formula"]]
+  if ("col_formula" %in% ti_names)  col_formula = ti_lst_input[["col_formula"]]
   col_kp = TRUE
-  if ("col_kp" %in% names(list(...)))  col_kp = list(...)[["col_kp"]]
+  if ("col_kp"      %in% ti_names)  col_kp      = ti_lst_input[["col_kp"]]
   
-  
-  ti_lst =list(...) #setdiff(names(), c('col_kp','col_formula'))
+  #setdiff(names(), c('col_kp','col_formula'))
   dtti_list = list()
-  for (i in seq_len(length(ti_lst))) {
-    ti_name = names(ti_lst)[i]
-    if (ti_name %in% c('col_kp','col_formula')) next
+  for (i in seq_along(ti_lst_input)) {
+    ti1_nam = ti_names[i]
+    if (ti1_nam %in% c('col_kp','col_formula')) next
     # check ti 
-    if (!(ti_name %in% unlist(ti_fst_arg()))) 
-      ti_name = unlist(ti_fst_arg())[which(tolower(ti_name) == tolower(unlist(ti_fst_arg())))]
-    if (length(ti_name) == 0) {
-      warning(sprintf('The technical indicator %s is not available in TTR package.', names(ti_lst)[i]))
-      next
+    if (!(ti1_nam %in% ti_ttr_func)) {
+      ti1_nam2 = ti_ttr_func[which(tolower(ti1_nam) == tolower(ti_ttr_func))]
+      if (length(ti1_nam2) == 1) ti1_nam = ti1_nam2
     }
     
-    arg_lst = list(dt=dt, ti=ti_name, col_formula = col_formula)
-    dtti_list[[i]] = do.call(addti1, args = c(arg_lst, ti_lst[[i]]))
-    # print(ti_name)
+    # if (length(ti1_nam) == 0) {
+    #   warning(sprintf('The technical indicator %s is not available in TTR package.', ti_names[i]))
+    #   next
+    # }
+    
+    arg_lst = list(dt=dt, ti=ti1_nam, col_formula = col_formula)
+    dtti_list[[i]] = do.call(addti1, args = c(arg_lst, ti_lst_input[[i]]))
+    # print(ti1_nam)
   }
   ti_df = setDT(unlist(dtti_list, recursive = FALSE))[] # do.call(cbind, dtti_list) # 
   

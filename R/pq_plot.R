@@ -1185,10 +1185,13 @@ pp_add_ti_oscillator = function(
     # oscillator technical indicators
     names(addti) <- tolower(names(addti))
     ti_topbottom   = names(addti)[sapply(addti, function(x)  any(x[['position']] %in% c('top','bottom')))]
-    ti_not_overlay = names(addti)[sapply(addti, function(x) !any(x[['position']] %in% c('overlay')))]
+    # ti_not_overlay = names(addti)[sapply(addti, function(x) !any(x[['position']] %in% c('overlay')))]
+    ti_not_topbottom = names(addti)[sapply(addti, function(x) !any(x[['position']] %in% c('top','bottom')))]
     ti_oscillator  = c(
-        intersect(ti_topbottom, tolower(ti_overlays_indicators()[['overlays']])), 
-        intersect(ti_not_overlay, tolower(ti_overlays_indicators()[['indicators']])),
+        ti_topbottom,
+        # intersect(ti_topbottom, tolower(ti_overlays_indicators()[['overlays']])), 
+        setdiff(ti_not_topbottom, tolower(ti_overlays_indicators()[['overlays']])),
+        # intersect(ti_not_overlay, tolower(ti_overlays_indicators()[['indicators']])),
         intersect(names(addti), names(which(sapply(dt, is.numeric))))
         )
     if ('bbands' %in% names(addti)) ti_oscillator = c(ti_oscillator, 'bbands')
@@ -1243,11 +1246,7 @@ pp_add_ti_oscillator = function(
         dat = dtti[date>=from & date <= to]
 
         # names of technical indicators
-        if (names(addti[i]) %in% tolower(unlist(ti_overlays_indicators()))) {
-            ti_names = names(dat)[grepl(paste0('^',names(addti[i])), names(dat))]
-        } else {
-            ti_names = names(addti[i])
-        }
+        ti_names = names(dat)[grepl(paste0('^',names(addti[i])), names(dat))]
         
         # plot each column in ti_names
         if (!interact) {
