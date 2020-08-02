@@ -154,6 +154,7 @@ pq_return = function(dt, x='close|value', method='arithmetic', freq='all', date_
     
     
     if (inherits(dt, 'list')) dt = rbindlist(dt, fill = TRUE)
+    dt = setDT(dt)
     
     dt_list = list()
     sybs = dt[, unique(symbol)]

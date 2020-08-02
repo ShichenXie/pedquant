@@ -32,6 +32,7 @@ reference:
       - '`ed_nbs_symbol`'
   - title: "query market data" 
     contents:
+      - '`ssec`'
       - '`md_cate`'
       - '`md_future`'
       - '`md_future_symbol`'

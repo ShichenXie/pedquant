@@ -1,4 +1,5 @@
 <!-- README.md is generated from README.Rmd. Please edit that file -->
+
 pedquant
 ========
 
@@ -39,11 +40,9 @@ manipulated in [data.table](http://r-datatable.com/) or
 [tidyverse](http://tidyverse.org) packages; high performance on speed by
 use [data.table](http://r-datatable.com/) and
 [TTR](https://github.com/joshuaulrich/TTR); and modern graphics by using
-ggplot2. At this moment, `pedquant` can only handle EOD (end of date)
-data. Similar works including
-[tidyquant](https://github.com/business-science/tidyquant) or
-[quantmod](https://github.com/joshuaulrich/quantmod), which are much
-mature for financial analysis.
+ggplot2 and interactive graphics by using plotly. Similar works
+including [tidyquant](https://github.com/business-science/tidyquant) or
+[quantmod](https://github.com/joshuaulrich/quantmod).
 
 Installation
 ------------

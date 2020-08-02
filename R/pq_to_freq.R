@@ -95,6 +95,7 @@ pq_to_freq = function(dt, freq, print_step=1L) {
     freq = check_arg(freq, c("weekly","monthly","quarterly","yearly"))
   
     if (inherits(dt, 'list')) dt = rbindlist(dt, fill = TRUE)
+    dt = setDT(dt)
     
     dt_list = list()
     sybs = dt[, unique(symbol)]

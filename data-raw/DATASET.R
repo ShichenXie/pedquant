@@ -1,5 +1,9 @@
 ## code to prepare `DATASET` dataset goes here
-# usethis::use_data(DATASET, overwrite = TRUE)
+library(pedquant)
+library(data.table)
+ssec = md_stock('^000001', date_range = 'max', source = '163')
+ssec = setDF(ssec$`^000001`)
+usethis::use_data(ssec, overwrite = TRUE)
 
 ## Internal data # http://r-pkgs.had.co.nz/data.html
 if (FALSE) {

@@ -56,7 +56,8 @@ fbi_cpicn = function(sybs = c('A01010101', 'A01010201','A01030101', 'A01030201')
 pq_rp1 = function(dt, region='cn', columns = c('open', 'high', 'low', 'close')) {
     date2 = . = index = NULL
     
-    if (is.list(dt) & !is.data.frame(dt)) dt = rbindlist(dt, fill = TRUE)
+    if (inherits(dt, 'list')) dt = rbindlist(dt, fill = TRUE)
+    dt = setDT(dt)
     
    dt_rp = merge(
         dt[, date2 := as.Date(sub('\\d{2}$', '01', date))],
@@ -110,6 +111,7 @@ pq_index = function(dt, x='close|value', w='cap_total', base_value=1, base_date=
 
     ## check columns of x, chain index, weight
     if (!inherits(dt, 'list') & inherits(dt, 'data.frame')) {
+      dt = setDT(dt)
       dat_lst = list()
       for (s in dt[,unique(symbol)]) dat_lst[[s]] = dt[symbol == s]
       dt = dat_lst
@@ -130,6 +132,8 @@ pq_index = function(dt, x='close|value', w='cap_total', base_value=1, base_date=
     
     ## bind list of dataframes
     dt = rbindlist(dt, fill = TRUE)
+    dt = setDT(dt)
+    
     dt = dt[, symbol := factor(symbol, levels = dt[,unique(symbol)])]
     setkeyv(dt, c('symbol','date'))
     

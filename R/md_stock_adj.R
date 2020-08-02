@@ -111,9 +111,9 @@ md_stock_adjust = function(dt, source, adjust = 'split', adjfactor = NULL) {
     
     # bind dataframe list
     if (inherits(dt, 'list')) dt = rbindlist(dt, fill = TRUE)
-    if (inherits(adjfactor, 'data.frame')) dt = setDT(dt)
+    dt = setDT(dt)
     if (inherits(adjfactor, 'list')) adjfactor = rbindlist(adjfactor, fill = TRUE)
-    if (inherits(adjfactor, 'data.frame')) adjfactor = setDT(adjfactor)
+    adjfactor = setDT(adjfactor)
     
     # arguments
     source = check_arg(as.character(source), c('yahoo','163'))

@@ -82,6 +82,7 @@ pq_portfolio = function(dt, w, init_equity=NULL, date_range='max', from=NULL, to
   
     ## rbind list of dataframes 
     if (inherits(dt, 'list')) dt = rbindlist(dt)
+    dt = setDT(dt)
     # x
     x1 = intersect(names(dt), unlist(strsplit(x,'\\|')))[1]
     if (x1 != 'close') dt[['close']] = dt[[x1]]
@@ -169,6 +170,7 @@ pq_perf = function(dt, date_range='max', from=NULL, to=Sys.Date(), x='close|valu
     
     # bind list of dataframe
     if (inherits(dt, 'list')) dt = rbindlist(dt, fill = TRUE)
+    dt = setDT(dt)
     # x
     x1 = intersect(names(dt), unlist(strsplit(x,'\\|')))[1]
     

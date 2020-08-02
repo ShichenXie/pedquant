@@ -38,13 +38,21 @@ pq_addti(dt, ...)
 \examples{
 \donttest{
 # load data
-dt = md_stock("^000001", source='163', date_range = 'max')
+data('ssec')
 
 # add technical indicators
-dt_ti1 = pq_addti(dt, sma=list(n=20), sma=list(n=50), macd = list())
+dt_ti1 = pq_addti(ssec, sma=list(n=20), sma=list(n=50), macd = list())
 
 # only technical indicators
-dt_ti2 = pq_addti(dt, sma=list(n=20), sma=list(n=50), macd = list(), col_kp = FALSE)
+dt_ti2 = pq_addti(ssec, sma=list(n=20), sma=list(n=50), macd = list(), col_kp = FALSE)
+
+# self-defined technical indicators
+bias = function(x, n=50, maType='SMA') {
+    library(TTR)
+    (x/do.call(maType, list(x=x, n=n))-1)*100
 }
 
+dt_ti3 = pq_addti(ssec, bias = list(n = 200))
+
+}
 }

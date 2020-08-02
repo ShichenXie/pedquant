@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pedquant</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.5</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.5.999</span>
       </span>
     </div>
 
@@ -128,8 +128,9 @@
     <pre class="usage"><span class='fu'>pq_plot</span>(<span class='no'>dt</span>, <span class='kw'>chart_type</span> <span class='kw'>=</span> <span class='st'>"line"</span>, <span class='kw'>freq</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>date_range</span> <span class='kw'>=</span> <span class='st'>"max"</span>,
   <span class='kw'>from</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>to</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/Sys.time.html'>Sys.Date</a></span>(), <span class='kw'>x</span> <span class='kw'>=</span> <span class='st'>"close|value"</span>, <span class='kw'>addti</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>volume</span>
   <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>()), <span class='kw'>linear_trend</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>perf</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>yaxis_log</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>color_up</span> <span class='kw'>=</span> <span class='st'>"#F6736D"</span>, <span class='kw'>color_down</span> <span class='kw'>=</span> <span class='st'>"#18C0C4"</span>, <span class='kw'>multi_series</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>nrow</span>
-  <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>ncol</span> <span class='kw'>=</span> <span class='kw'>NULL</span>), <span class='kw'>rm_weekend</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>title</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='no'>...</span>)</pre>
+  <span class='kw'>color_up</span> <span class='kw'>=</span> <span class='st'>"#CF002F"</span>, <span class='kw'>color_down</span> <span class='kw'>=</span> <span class='st'>"#000000"</span>, <span class='kw'>multi_series</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>nrow</span>
+  <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>ncol</span> <span class='kw'>=</span> <span class='kw'>NULL</span>), <span class='kw'>rm_weekend</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>title</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>interact</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='no'>...</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -197,6 +198,10 @@
     <tr>
       <th>title</th>
       <td><p>chart title. It will added to the front of chart title if it is specified.</p></td>
+    </tr>
+    <tr>
+      <th>interact</th>
+      <td><p>whether to create a interactive graphics, defaults to FALSE.</p></td>
     </tr>
     <tr>
       <th>...</th>

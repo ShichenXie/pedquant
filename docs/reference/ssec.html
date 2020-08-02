@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Authors • pedquant</title>
+<title>dataset of shanghai composite index — ssec • pedquant</title>
 
 
 <!-- jquery -->
@@ -18,8 +18,8 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script>
 
 <!-- bootstrap-toc -->
-<link rel="stylesheet" href="bootstrap-toc.css">
-<script src="bootstrap-toc.js"></script>
+<link rel="stylesheet" href="../bootstrap-toc.css">
+<script src="../bootstrap-toc.js"></script>
 
 <!-- Font Awesome icons -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous" />
@@ -33,13 +33,14 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script>
 
 <!-- pkgdown -->
-<link href="pkgdown.css" rel="stylesheet">
-<script src="pkgdown.js"></script>
+<link href="../pkgdown.css" rel="stylesheet">
+<script src="../pkgdown.js"></script>
 
 
 
 
-<meta property="og:title" content="Authors" />
+<meta property="og:title" content="dataset of shanghai composite index — ssec" />
+<meta property="og:description" content="The daily historical Shanghai Composite Index from the beginning of the Index to the end of July 2020" />
 
 
 
@@ -58,7 +59,7 @@
   </head>
 
   <body data-spy="scroll" data-target="#toc">
-    <div class="container template-authors">
+    <div class="container template-reference-topic">
       <header>
       <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
   <div class="container">
@@ -70,7 +71,7 @@
         <span class="icon-bar"></span>
       </button>
       <span class="navbar-brand">
-        <a class="navbar-link" href="index.html">pedquant</a>
+        <a class="navbar-link" href="../index.html">pedquant</a>
         <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.5.999</span>
       </span>
     </div>
@@ -78,13 +79,13 @@
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li>
-  <a href="index.html">Home</a>
+  <a href="../index.html">Home</a>
 </li>
 <li>
-  <a href="reference/index.html">Reference</a>
+  <a href="../reference/index.html">Reference</a>
 </li>
 <li>
-  <a href="news/index.html">News</a>
+  <a href="../news/index.html">News</a>
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
@@ -113,22 +114,49 @@
       </header>
 
 <div class="row">
-  <div class="contents col-md-9">
+  <div class="col-md-9 contents">
     <div class="page-header">
-      <h1>Authors</h1>
+    <h1>dataset of shanghai composite index</h1>
+    <small class="dont-index">Source: <a href='https://github.com/ShichenXie/pedquant/blob/master/R/md_stock1_.R'><code>R/md_stock1_.R</code></a></small>
+    <div class="hidden name"><code>ssec.Rd</code></div>
     </div>
 
-    <ul class="list-unstyled">
-      <li>
-        <p><strong>Shichen Xie</strong>. Author, maintainer. 
-        </p>
-      </li>
-    </ul>
+    <div class="ref-description">
+    <p>The daily historical Shanghai Composite Index from the beginning of the Index to the end of July 2020</p>
+    </div>
+
+    <pre class="usage"><span class='no'>ssec</span></pre>
+
+
+    <h2 class="hasAnchor" id="format"><a class="anchor" href="#format"></a>Format</h2>
+
+    <p>A data frame with 7240 rows and 15 variables:</p><dl'>
+<dt>symbol</dt><dd><p>stock ticker symbol</p></dd>
+<dt>name</dt><dd><p>stock ticker name</p></dd>
+<dt>date</dt><dd><p>trade date</p></dd>
+<dt>open</dt><dd><p>stock price at the open of trading</p></dd>
+<dt>high</dt><dd><p>stock price at the highest point during trading</p></dd>
+<dt>low</dt><dd><p>stock price at the lowest point during trading</p></dd>
+<dt>close</dt><dd><p>stock price at the close of trading</p></dd>
+<dt>prev_close</dt><dd><p>stock price at the close of previous trading day</p></dd>
+<dt>change_pct</dt><dd><p>change percentage of stock close price</p></dd>
+<dt>volume</dt><dd><p>number of shares traded</p></dd>
+<dt>amount</dt><dd><p>monetary value of shares traded</p></dd>
+<dt>turnover</dt><dd><p>rate of shares traded over total</p></dd>
+<dt>cap_market</dt><dd><p>tradable market capitalisation</p></dd>
+<dt>cap_total</dt><dd><p>total market capitalisation</p></dd>
+<dt>unit</dt><dd><p>price unit, such as in CNY/USD</p></dd>
+
+</dl>
+
 
   </div>
-
+  <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
+    <nav id="toc" data-toggle="toc" class="sticky-top">
+      <h2 data-toc-skip>Contents</h2>
+    </nav>
+  </div>
 </div>
-
 
 
       <footer>

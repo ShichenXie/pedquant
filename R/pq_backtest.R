@@ -109,6 +109,9 @@ pq_backtest = function(
     . = symbol = price = type = ssec = value = NULL
     
     if (inherits(dt, 'list')) dt = rbindlist(dt)
+    dt = setDT(dt)
+    
+    
     dat = dt
     if (!is.null(addti) & inherits(addti, 'list')) dat = do.call(pq_addti, args = c(list(dt=dat), addti))
     if (inherits(dat, 'list')) dat = rbindlist(dat)
