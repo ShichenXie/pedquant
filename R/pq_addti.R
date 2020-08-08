@@ -337,7 +337,15 @@ pq1_addti = function(dt, ...) {
     # }
     
     arg_lst = list(dt=dt, ti=ti1_nam, col_formula = col_formula)
-    dtti_list[[i]] = do.call(addti1, args = c(arg_lst, ti_lst_input[[i]]))
+    dtti_listi = try(
+      do.call(addti1, args = c(arg_lst, ti_lst_input[[i]])),
+      silent = TRUE
+    )
+    if (inherits(dtti_listi, 'try-error')) {
+      warning(sprintf("object '%s' was not found", ti1_nam))
+      next
+    }
+    dtti_list[[i]] = dtti_listi
     # print(ti1_nam)
   }
   ti_df = setDT(unlist(dtti_list, recursive = FALSE))[] # do.call(cbind, dtti_list) # 
