@@ -33,7 +33,10 @@ yahoo_crumb = function(handle) {
 }
 
 
+# @importFrom rvest html_nodes
 get_symbol_name_yahoo = function(syb, encode='UTF-8', handle=new_handle()) {
+  . = NULL
+  
   url = sprintf('https://finance.yahoo.com/quote/%s', syb)
   
   temp = tempfile()
@@ -42,12 +45,22 @@ get_symbol_name_yahoo = function(syb, encode='UTF-8', handle=new_handle()) {
   curl_download(url, destfile = temp, handle = handle)
   dat = read_html(temp)
   # object.size(dat)
-  syb_nam = xml_text(xml_find_all(dat, '//h1'))
-  syb_nam = unlist(strsplit(syb_nam, ' - '))
+  # syb_nam = xml_text(xml_find_all(dat, '//h1'))
+  # syb_nam = unlist(strsplit(syb_nam, ' - '))
+  syb_nam = html_nodes(dat, 'h1') %>% 
+    html_text() %>% 
+    sub('\\)', '', .) %>% 
+    strsplit(., ' \\(') %>% 
+    .[[1]]
   # Location, Currency
-  syb_nam2 = xml_text(xml_find_all(dat, '//div[@id="quote-header-info"]//span'))
-  syb_nam2 = unlist(strsplit(syb_nam2[1], ' - |\\. Currency in '))[c(1,3)]
-  return(list(symbol=syb_nam[1], name=syb_nam[2], currency=syb_nam2[2]))#list(sn=syb_nam, lc=syb_nam2))
+  # syb_nam2 = xml_text(xml_find_all(dat, '//div[@id="quote-header-info"]//span'))
+  # syb_nam2 = unlist(strsplit(syb_nam2[1], ' - |\\. Currency in '))[c(1,3)]
+  syb_nam2 = html_nodes(dat, xpath = '//div[@class="Mt(15px)"]//span') %>% 
+    html_text() %>% 
+    .[1] %>% 
+    sub('.+ Currency in ', '', .)
+  
+  return(list(symbol=syb_nam[2], name=syb_nam[1], currency=syb_nam2))#list(sn=syb_nam, lc=syb_nam2))
 }
 # stock, world index
 # type = c("history", "div", "split")

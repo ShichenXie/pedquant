@@ -1,4 +1,4 @@
-# pedquant 0.1.5.999
+# pedquant 0.1.6
 
 * pq_plot function supports to create interactive graphics based on plotly package
 * modified the selection of type argument in md_stock_financials function
