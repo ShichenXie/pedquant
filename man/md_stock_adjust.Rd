@@ -9,7 +9,7 @@ md_stock_adjust(dt, source, adjust = "split", adjfactor = NULL)
 \arguments{
 \item{dt}{a list/dataframe of time series datasets that didnt adjust for split or dividend.}
 
-\item{source}{the available data sources are 'yahoo' (\url{http://finance.yahoo.com}) and '163' (\url{http://money.163.com}).}
+\item{source}{the available data sources are 'yahoo' (\url{https://finance.yahoo.com}) and '163' (\url{https://money.163.com}).}
 
 \item{adjust}{adjust the OHLC prices for split (default), or dividend (both split and dividend). If it is NULL, return the original data.
 For the yahoo data, the original data already adjust for split, and use the 'close_adj' column to adjust; for the 163 data, the original doesnot adjust any factors, and use the splits, dividends and issues to adjust.}

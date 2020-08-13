@@ -28,7 +28,7 @@
 #' \code{md_stock} provides an interface to query EOD (end of date) stock prices.
 #' 
 #' @param symbol symbols of stock shares.
-#' @param source the available data sources are 'yahoo' (\url{http://finance.yahoo.com}) and '163' (\url{http://money.163.com}).
+#' @param source the available data sources are 'yahoo' (\url{https://finance.yahoo.com}) and '163' (\url{https://money.163.com}).
 #' @param type the data type, including history, adjfactor and spot. Default is history.
 #' @param freq default is daily. It supports daily, weekly and monthly for yahoo data; daily for 163 data.
 #' @param date_range date range. Available value including '1m'-'11m', 'ytd', 'max' and '1y'-. Default is '3y'.

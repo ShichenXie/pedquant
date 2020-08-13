@@ -36,9 +36,9 @@ developing.
 
 `pedquant` package has advantages on multiple aspects, such as the
 format of loaded data is a list of data frames, which can be easily
-manipulated in [data.table](http://r-datatable.com/) or
-[tidyverse](http://tidyverse.org) packages; high performance on speed by
-use [data.table](http://r-datatable.com/) and
+manipulated in [data.table](https://rdatatable.gitlab.io/data.table) or
+[tidyverse](https://www.tidyverse.org) packages; high performance on
+speed by use [data.table](https://rdatatable.gitlab.io/data.table) and
 [TTR](https://github.com/joshuaulrich/TTR); and modern graphics by using
 ggplot2 and interactive graphics by using plotly. Similar works
 including [tidyquant](https://github.com/business-science/tidyquant) or

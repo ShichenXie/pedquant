@@ -90,7 +90,7 @@ md_stock_adjust1 = function(dt, source, adjust = 'split', adjfactor = NULL, ...)
 #' \code{md_stock_adjust} adjusts the open, high, low and close stock prices for split and dividend. 
 #' 
 #' @param dt a list/dataframe of time series datasets that didnt adjust for split or dividend.
-#' @param source the available data sources are 'yahoo' (\url{http://finance.yahoo.com}) and '163' (\url{http://money.163.com}).
+#' @param source the available data sources are 'yahoo' (\url{https://finance.yahoo.com}) and '163' (\url{https://money.163.com}).
 #' @param adjust adjust the OHLC prices for split (default), or dividend (both split and dividend). If it is NULL, return the original data.
 #' For the yahoo data, the original data already adjust for split, and use the 'close_adj' column to adjust; for the 163 data, the original doesnot adjust any factors, and use the splits, dividends and issues to adjust.
 #' @param adjfactor adjust factors, including splits and dividends. Defaults to NULL, which will load adjust factors from source. It can also download from md_stock when type set as adjfactor.

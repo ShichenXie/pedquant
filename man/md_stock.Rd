@@ -11,7 +11,7 @@ md_stock(symbol, source = "yahoo", type = "history", freq = "daily",
 \arguments{
 \item{symbol}{symbols of stock shares.}
 
-\item{source}{the available data sources are 'yahoo' (\url{http://finance.yahoo.com}) and '163' (\url{http://money.163.com}).}
+\item{source}{the available data sources are 'yahoo' (\url{https://finance.yahoo.com}) and '163' (\url{https://money.163.com}).}
 
 \item{type}{the data type, including history, adjfactor and spot. Default is history.}
 
