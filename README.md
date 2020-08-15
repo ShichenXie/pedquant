@@ -19,7 +19,7 @@ main categories,
     [NBS](http://data.stats.gov.cn) and
     [FRED](http://data.stats.gov.cn);
 -   md\_\* (market data) functions load stock prices from [Yahoo
-    finance](http://finance.yahoo.com), stock prices and financial
+    finance](https://finance.yahoo.com), stock prices and financial
     statements of SSE and SZSE shares from [163
     Finance](http://quotes.money.163.com/stock#1b01), and future prices
     from [Sina Finance](https://finance.sina.com.cn/futuremarket/) etc.

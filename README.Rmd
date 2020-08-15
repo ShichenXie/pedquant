@@ -22,7 +22,7 @@ knitr::opts_chunk$set(
 `pedquant` (Public Economic Data and QUANTitative analysis) provides an interface to access public economic and financial data for economic research and quantitative analysis. The functions are grouped into three main categories, 
 
 - ed_* (economic data) functions load economic data from [NBS](http://data.stats.gov.cn) and [FRED](http://data.stats.gov.cn);
-- md_* (market data) functions load stock prices from [Yahoo finance](http://finance.yahoo.com), stock prices and financial statements of SSE and SZSE shares from [163 Finance](http://quotes.money.163.com/stock#1b01), and future prices from [Sina Finance](https://finance.sina.com.cn/futuremarket/) etc.
+- md_* (market data) functions load stock prices from [Yahoo finance](https://finance.yahoo.com), stock prices and financial statements of SSE and SZSE shares from [163 Finance](http://quotes.money.163.com/stock#1b01), and future prices from [Sina Finance](https://finance.sina.com.cn/futuremarket/) etc.
 - pq_* (quantitative analysis) functions create technical indicators, visualization charts and industrial index etc for time series data.
 
 The functions in this package are designed to write minimum codes for some common tasks in quantitative analysis process. Since the parameters to get data can be interactively specify, it's very easy to start. The loaded data have been carefully cleansed and provided in a unified format. More public data sources are still under cleansing and developing. 
