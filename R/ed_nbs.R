@@ -3,8 +3,8 @@
 
 # selecting nbs_url in Chinese or English
 sel_nbs_url = function(eng) {
-  url = 'http://data.stats.gov.cn/easyquery.htm'
-  if (eng) url = 'http://data.stats.gov.cn/english/easyquery.htm'
+  url = 'https://data.stats.gov.cn/easyquery.htm'
+  if (eng) url = 'https://data.stats.gov.cn/english/easyquery.htm'
   return(url)
 }
 
@@ -41,24 +41,33 @@ nbs_symbol1 = function(geo_type=NULL, freq=NULL, symbol='zb', eng=FALSE) {
   dim_geo_type = dim_freq = dim_region = dim_sta_db = . = id = name = isParent = pid = NULL
   
   #param
-  url_nbs = sel_nbs_url(eng)
+  nbs_url = sel_nbs_url(eng)
   # time_sec = as.character(date_to_sec()*100)
   if (is.null(symbol)) symbol = 'zb'
   # name of geography in NBS
-  nbs_geo = dim_nbs_db()[
+  nbs_dbcode = dim_nbs_db()[
     dim_region=='cn' & dim_geo_type==geo_type & dim_freq==freq , dim_sta_db]
   
   # query symbol list from nbs
-  zb_func = function(url_nbs, nbs_geo, symbol) {
-    zb_query = list(m="getTree", dbcode=nbs_geo, wdcode="zb", id=symbol)
-    zb_req = POST(url_nbs, body=zb_query, encode="form")
+  zb_func = function(nbs_url, nbs_dbcode, symbol) {
+    zb_query = list(
+      id=symbol, 
+      dbcode=nbs_dbcode, 
+      wdcode="zb", 
+      m="getTree"
+    )
+    zb_req = POST(nbs_url, body=zb_query, encode="form")
     zb_list = fromJSON(content(zb_req, "text", encoding="utf-8"))
     return(zb_list)
   }
-  zb_list = try(zb_func(url_nbs, nbs_geo, symbol), silent = TRUE)
+  zb_list = try(zb_func(nbs_url, nbs_dbcode, symbol), silent = TRUE)
+  if (inherits(zb_list, 'try-error')) {
+    httr::set_config(config(ssl_verifypeer = FALSE))
+    zb_list = try(zb_func(nbs_url, nbs_dbcode, symbol), silent = TRUE)
+  }
   
   if (inherits(zb_list, 'try-error')) {
-    url_syb = sprintf('%s?id=%s&dbcode=%s&wdcode=zb&m=getTree', url_nbs, symbol, nbs_geo)
+    url_syb = sprintf('%s?id=%s&dbcode=%s&wdcode=zb&m=getTree', nbs_url, symbol, nbs_dbcode)
     zb_list = try(nbs_read_json(url_syb, eng), silent = TRUE)
   }
   if (inherits(zb_list, 'try-error')) stop('The data from NBS is not available.')
@@ -90,11 +99,9 @@ ed_nbs_symbol = function(symbol=NULL, geo_type=NULL, freq=NULL, eng=FALSE) {
   # geography type
   geo_type = check_arg(geo_type, choices = c("nation", "province", "city"), arg_name = 'geo_type')
   # frequency
-  if (geo_type=="city") {
-    freq = check_arg(freq, choices = c("monthly", "yearly"), arg_name = 'freq')
-  } else {
-    freq = check_arg(freq, choices = c("monthly", "quarterly", "yearly"), arg_name = 'freq')
-  }
+  freq_choices = c("monthly", "quarterly", "yearly")
+  if (geo_type=="city") freq_choices = c("monthly", "yearly")
+  freq = check_arg(freq, choices = freq_choices, arg_name = 'freq')
   
   sel_symbol = symbol
   is_parent = TRUE
@@ -137,14 +144,14 @@ ed_nbs_subregion = function(geo_type=NULL, eng=FALSE) {
   dim_region = dim_geo_type = dim_sta_db = . = code = name = NULL
   
   # param
-  url_nbs = sel_nbs_url(eng)
+  nbs_url = sel_nbs_url(eng)
   time_sec = as.character(date_to_sec()*100)
   
   # geography type
   geo_type = check_arg(geo_type, c("province", "city"), default = NULL, arg_name = 'geo_type')
   if (geo_type == 'nation') return(NULL)
   # name of geography in NBS
-  nbs_geo = dim_nbs_db()[
+  nbs_dbcode = dim_nbs_db()[
     dim_region=='cn' & dim_geo_type==geo_type, ][.N,dim_sta_db]
   
   # wds
@@ -152,24 +159,24 @@ ed_nbs_subregion = function(geo_type=NULL, eng=FALSE) {
   if (geo_type == 'city') wds='[{"wdcode":"reg","valuecode":"000000"}]'
   
   # # query subregion
-  dat_func = function(url_nbs, nbs_geo, wds, time_sec) {
+  dat_func = function(nbs_url, nbs_dbcode, wds, time_sec) {
     query_list = list(
       m="getOtherWds",
-      dbcode=nbs_geo,
+      dbcode=nbs_dbcode,
       rowcode='zb',
       colcode='sj',
       wds=wds,
       # dfwds=paste0('[{"wdcode":"sj","valuecode":"LAST10"}]'),
       k1=time_sec
     )
-    req = GET(url_nbs, query=query_list)
+    req = GET(nbs_url, query=query_list)
     jsondat = fromJSON(content(req, "text", encoding="utf-8"))
     return(jsondat)
   }
-  jsondat = try(dat_func(url_nbs, nbs_geo, wds, time_sec), silent = TRUE)
+  jsondat = try(dat_func(nbs_url, nbs_dbcode, wds, time_sec), silent = TRUE)
   
   if (inherits(jsondat, 'try-error')) {
-    url_reg = sprintf('%s?m=getOtherWds&dbcode=%s&rowcode=zb&colcode=sj&wds=%s&k1=%s', url_nbs, nbs_geo, wds, time_sec)
+    url_reg = sprintf('%s?m=getOtherWds&dbcode=%s&rowcode=zb&colcode=sj&wds=%s&k1=%s', nbs_url, nbs_dbcode, wds, time_sec)
     jsondat = try(nbs_read_json(url_reg, eng), silent = TRUE)
   }
   if (inherits(jsondat, 'try-error')) stop('The data from NBS is not available.')
@@ -183,16 +190,16 @@ ed1_nbs = function(symbol1, geo_type, subregion=NULL, from, freq, eng=FALSE) {
   dim_freq = dim_geo_type = dim_sta_db = NULL
   
   # name database
-  nbs_geo = dim_nbs_db()[dim_geo_type==geo_type & dim_freq==freq, dim_sta_db]
+  nbs_dbcode = dim_nbs_db()[dim_geo_type==geo_type & dim_freq==freq, dim_sta_db]
   
-  url_nbs = sel_nbs_url(eng)
+  nbs_url = sel_nbs_url(eng)
   time_sec = as.character(date_to_sec()*100)
   
   ## symbol
   symbol1 = ed_nbs_symbol(symbol=symbol1, geo_type, freq, eng)
   
   # date range
-  freq_mqa = which(substr(nbs_geo, 3, 3) == c('y','j','n'))
+  freq_mqa = which(substr(nbs_dbcode, 3, 3) == c('y','j','n'))
   date_rng = Sys.Date() - as.Date(from)
   date_rng = floor( date_rng/(c(30, 90, 365)[freq_mqa]) )
   sj_value = paste0("LAST",date_rng)
@@ -203,30 +210,30 @@ ed1_nbs = function(symbol1, geo_type, subregion=NULL, from, freq, eng=FALSE) {
   
   rowcode = 'zb'
   if (!is.null(subregion)) {
-    if (grepl('^fs|^cs', nbs_geo) & ('all' %in% subregion || length(subregion)>1)) rowcode = 'reg'
+    if (grepl('^fs|^cs', nbs_dbcode) & ('all' %in% subregion || length(subregion)>1)) rowcode = 'reg'
   }
   
   dfwds=paste0('[{"wdcode":"zb","valuecode":"',symbol1,'"},{"wdcode":"sj","valuecode":"',sj_value,'"}]')
   
   # query list
-  dat_func = function(url_nbs, nbs_geo, rowcode, wds, dfwds, time_sec) {
+  dat_func = function(nbs_url, nbs_dbcode, rowcode, wds, dfwds, time_sec) {
     query_list = list(
       m="QueryData",
-      dbcode=nbs_geo,
+      dbcode=nbs_dbcode,
       rowcode=rowcode,
       colcode='sj',
       wds=wds,
       dfwds=dfwds,
       k1=time_sec
     )
-    req = GET(url_nbs, query=query_list)
+    req = GET(nbs_url, query=query_list)
     jsondat = fromJSON(content(req, "text", encoding="utf-8"))
     return(jsondat)
   }
-  jsondat = try(dat_func(url_nbs, nbs_geo, rowcode, wds, dfwds, time_sec), silent = TRUE)
+  jsondat = try(dat_func(nbs_url, nbs_dbcode, rowcode, wds, dfwds, time_sec), silent = TRUE)
   
   if (inherits(jsondat, 'try-error')) {
-    url_dat = sprintf('%s?m=QueryData&dbcode=%s&rowcode=%s&colcode=sj&wds=%s&dfwds=%s&k1=%s', url_nbs, nbs_geo, rowcode, wds, dfwds, time_sec)
+    url_dat = sprintf('%s?m=QueryData&dbcode=%s&rowcode=%s&colcode=sj&wds=%s&dfwds=%s&k1=%s', nbs_url, nbs_dbcode, rowcode, wds, dfwds, time_sec)
     jsondat = try(nbs_read_json(url_dat, eng), silent = TRUE)
   }
   if (inherits(jsondat, 'try-error')) stop('The data from NBS is not available.')
