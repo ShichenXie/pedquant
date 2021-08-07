@@ -314,7 +314,7 @@ md_stock_divsplit1_163 = function(symbol1, from=NULL, to=NULL, ret = c('div', 's
     rvest::html_table(., fill = TRUE, header = TRUE)
   
   
-  tbl_divspl = setDT(tbls[[4]])[-1][, lapply(.SD, function(x) replace(x, x=='--', NA))][,c(3:7,8)]
+  tbl_divspl = setDT(tbls[[4]])[-1][, lapply(.SD, function(x) replace(x, x=='--', NA))][,c(3:8)]
   setnames(tbl_divspl, c('songgu', 'zhuanzeng', 'fenhong', 'date0', 'date1', 'date2'))
   if (length(unique(unlist(tbl_divspl))) == 1 & nrow(tbl_divspl) == 1) {
     tbl_divspl = tbl_divspl[.0]
@@ -334,7 +334,7 @@ md_stock_divsplit1_163 = function(symbol1, from=NULL, to=NULL, ret = c('div', 's
         )[.0]
     } else {
       div_spl[['div']] = tbl_divident[,.(
-          date      = date0,
+          date      = date1,
           dividends = fenhong/10
         )]
     }
@@ -342,8 +342,8 @@ md_stock_divsplit1_163 = function(symbol1, from=NULL, to=NULL, ret = c('div', 's
   
   if ('spl' %in% ret) { # split
     tbl_split = rbind(
-      tbl_divspl[, .(spl = songgu, date = date0)][spl > 0],
-      tbl_divspl[, .(spl = zhuanzeng, date = date0)][spl > 0]
+      tbl_divspl[, .(spl = songgu, date = date1)][spl > 0],
+      tbl_divspl[, .(spl = zhuanzeng, date = date1)][spl > 0]
     )[, lapply(.SD, sum), keyby = date]
     
     if (nrow(tbl_split) == 0) {

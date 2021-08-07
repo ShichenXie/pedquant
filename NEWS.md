@@ -1,3 +1,8 @@
+# pedquant 0.1.6.999
+
+* fixed mutual bugs in the functions such as get_fromto, md_stock_divsplit1_163 etc.
+
+
 # pedquant 0.1.6
 
 * pq_plot function supports to create interactive graphics based on plotly package

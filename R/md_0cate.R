@@ -1,7 +1,4 @@
-mkt_cate = setDT(list(
-    category = c('forex', 'money', 'bond', 'index', 'commodity'),
-    name = c('foregin exchange rate', 'Interbank offered rate', 'government bond yield', 'stock market index', 'commodity price')
-))
+
 func_md_symbol = function() {
     .=symbol=name=main=NULL
     
@@ -34,6 +31,15 @@ func_md_symbol = function() {
 #' 
 #' @export
 md_cate = function(cate=NULL, symbol=NULL, date_range = "3y", from = NULL, to = Sys.Date(), print_step = 1L, ...) {
+    mkt_cate = fread(
+        'category, name
+        forex, foregin exchange rate
+        money, interbank offered rate
+        bond, government bond yield
+        index, stock market index
+        commodity, commodity price'
+    )
+    
     category = NULL
     # md_symbol = func_md_symbol()
     # market category

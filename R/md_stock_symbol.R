@@ -129,8 +129,9 @@ md_stock_symbol_nasdaq = function(exchange) {
   
   # c("AMEX", "NASDAQ", "NYSE")
   url = sprintf(
-    "https://old.nasdaq.com/screening/companies-by-name.aspx?letter=0&exchange=%s&render=download",
+    # "https://old.nasdaq.com/screening/companies-by-name.aspx?letter=0&exchange=%s&render=download",
     # 'http://www.nasdaq.com/screening/companies-by-name.aspx?letter=0&exchange=%s&render=download', 
+    "https://api.nasdaq.com/api/screener/stocks?tableonly=true&exchange=%s&download=true",
     exchange)
   
   dat = load_read_csv(url)[,.(market='stock', exchange=exchange, board=NA, symbol=Symbol, name=Name, sector=Sector, industry)]
@@ -138,13 +139,6 @@ md_stock_symbol_nasdaq = function(exchange) {
   
   return(dat)
 }
-
-
-
-
-
-
-
 
 
 

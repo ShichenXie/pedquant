@@ -145,3 +145,15 @@ md_stock_adjust = function(dt, source, adjust = 'split', adjfactor = NULL) {
 
 # dddttt = copy(dat$`000001`)
 # dddttt[, close_adj := cap_market/(cap_market[.N]/close[.N])]
+
+
+
+# https://zhuanlan.zhihu.com/p/266430753
+if (F) {
+    library(data.table)
+    library(pedquant)
+    
+    datorig = md_stock('600036', source = '163', date_range = 'max', adjust = NULL)
+    datadj = md_stock('600036', source = '163', date_range = 'max', type = 'adjfactor')
+    
+}

@@ -14,7 +14,7 @@ check_arg = function(arg, choices, default=NULL, arg_name = 'argument') {
 
 # check date range
 check_date_range = function(date_range, default = "max") {
-    if (!grepl("max|ytd|[1-9][0-9]*d|[1-9][0-9]*w|[1-9,10,11]m|[1-9][0-9]*y", tolower(date_range))) {
+    if (!grepl("max|ytd|qtd|mtd|[1-9][0-9]*d|[1-9][0-9]*w|[1-9,10,11]m|[1-9][0-9]*y", tolower(date_range))) {
         date_range = default
         warning(sprintf('The \'date_range\' is set to %s.', date_range))
     }
@@ -43,47 +43,67 @@ check_fromto = function(fromto, type="date", shift = 0) {
     return(fromto)
 }
 
+getfrom_xm = function(date_range, to) {
+    if (inherits(to, 'character')) to = as.Date(to)
+    to_year = year(to)
+    to_month = month(to)
+    to_day = mday(to)
+    
+    xmonth_range = as.integer(sub("m","",date_range))
+    
+    if (to_month > xmonth_range) {
+        from = paste(to_year, to_month-xmonth_range, to_day, sep="/")
+    } else {
+        from = paste(to_year - (floor(xmonth_range/12)+1), to_month + 12 - xmonth_range %% 12, to_day, sep="/")
+    }
+    
+    return(as.Date(from))
+}
+getfrom_xtd = function(date_range, to) {
+    if (inherits(to, 'character')) to = as.Date(to)
+    to_year = year(to)
+    to_quarter = quarter(to)
+    to_month = month(to)
+    
+    if (date_range == 'ytd') {
+        from = paste(to_year, "01", "01", sep="/")
+    } else if (date_range == 'qtd') {
+        from = paste(to_year, to_quarter*3-2, "01", sep="/") 
+    } else if (date_range == 'mtd') {
+        from = paste(to_year, to_month, "01", sep="/")
+    }
+    
+    return(as.Date(from))
+}
 get_fromto = function(date_range, from, to, min_date = '1000-01-01', default_date_range = 'max') {
     date_range = check_date_range(date_range, default = default_date_range)
     to = check_fromto(to)
     min_date = check_fromto(min_date)
     
-    if (inherits(from, 'character')) {
-        if (any(from == '')) from = NULL
-    }
-    
+    if (inherits(from, 'character') & any(from == '')) from = NULL
     if (is.null(from)) {
-        if (date_range == "max") {
-            from = min_date
-        } else if (date_range == "ytd") {
-            from = sub("-[0-9]{2}-[0-9]{2}", "-01-01", as.character(to))
-            
+        if (grepl("[yqm]td", date_range)) {
+            from = getfrom_xtd(date_range, to)
         } else if (grepl("[1-9][0-9]*d", date_range)) {
-            from = as.Date(to) - as.integer(sub("d","",date_range))
+            from = to - as.integer(sub("d","",date_range))
         } else if (grepl("[1-9][0-9]*w", date_range)) {
-            from = as.Date(to) - as.integer(sub("w","",date_range))*7
+            from = to - as.integer(sub("w","",date_range))*7
         } else if (grepl("[1-9][0-9]*m", date_range)) {
-            month_range = as.integer(sub("m","",date_range))
-            month_to = as.integer(sub("^[0-9]{4}-([0-9]{1,2})-.+$", "\\1", to))
-            year_to = as.integer(format(as.Date(to), "%Y")) - floor(month_range/12)
-            month_range = month_range %% 12
-            if (month_to <= month_range) {
-                from = paste(year_to-1, 12+month_to-month_range, sub("[0-9]{4}-[0-9]{1,2}-","",to), sep="-")
-            } else {
-                from = paste(year_to, month_to-month_range, sub("[0-9]{4}-[0-9]{1,2}-","",to), sep="-")
+            for (i in c(0, 1, -1, 2, -2)) {
+                from = try(getfrom_xm(date_range, to+i), silent = TRUE)
+                if (!inherits(from, 'try-error')) {
+                    if (i != 0) from = from - i/abs(i)
+                    break
+                }
             }
-            
         } else if (grepl("[1-9][0-9]*y", date_range)) {
-            year_range = as.integer(sub("y","",date_range))
-            year_from = as.integer(format(as.Date(to), "%Y")) - year_range
+            year_from = year(to) - as.integer(sub("y","",date_range))
             from = sub("^[0-9]{4}", year_from, to)
         } else {
             from = min_date
         }
-        from = check_fromto(from)
-    } else {
-        from = check_fromto(from)
     }
+    from = check_fromto(from)
     if (from < min_date) from = min_date
     
     # set class
@@ -145,21 +165,35 @@ tags_symbol_stockcn = function(symbol, mkt, only_tags = TRUE) {
 tags_dt = function() {
     tags = exchg_code = NULL
     
-    setDT(list(
-        mkt = c(rep('stock', 13), rep('index', 2), rep('fund', 6) ),
-        syb3 = c(
-            "600","601","603","688","900",
-            "000","001","002","003","004","300","200","201",
-            "000","399",
-            "15", "16", "18", "50", "51", "52"
-        ),
-        tags = c(
-            "sse,A,main", "sse,A,main", "sse,A,main", "sse,A,star", "sse,B,-", 
-            "szse,A,main", "szse,A,main", "szse,A,sme", "szse,A,sme", "szse,A,sme", "szse,A,chinext", "szse,B,-", "szse,B,-", 
-            "sse,-,-", "szse,-,-",
-            "szse,-,-", "szse,-,-", "szse,-,-", "sse,-,-", "sse,-,-", "sse,-,-"
-        )
-    ))[,(c('exchange','AB','board')) := tstrsplit(tags,',')
+    fread(
+        "
+        mkt syb3 tags
+        stock 600 sse,A,main
+        stock 601 sse,A,main
+        stock 603 sse,A,main
+        stock 605 sse,A,main
+        stock 688 sse,A,star
+        stock 900 sse,B,main
+        stock 000 szse,A,main
+        stock 001 szse,A,main
+        stock 002 szse,A,sme
+        stock 003 szse,A,sme
+        stock 004 szse,A,sme
+        stock 300 szse,A,chinext
+        stock 301 szse,A,chinext
+        stock 200 szse,B,main
+        stock 201 szse,B,main
+        index 000 sse,-,-
+        index 399 szse,-,-
+        fund 15 szse,-,-
+        fund 16 szse,-,-
+        fund 18 szse,-,-
+        fund 50 sse,-,-
+        fund 51 sse,-,-
+        fund 52 sse,-,-
+        ",
+        colClasses=list(character=1:3)
+    )[,(c('exchange','AB','board')) := tstrsplit(tags,',')
      ][, exchg_code := toupper(substr(tags,1,2))
      ][exchg_code == 'SS', `:=`(city='sh', city_code='0')
      ][exchg_code == 'SZ', `:=`(city='sz', city_code='1')][]
