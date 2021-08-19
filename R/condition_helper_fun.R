@@ -329,6 +329,15 @@ check_freq_isdaily = function(dt) {
     isdaily = ifelse(diff_date > 2, FALSE, TRUE)
     return(isdaily)
 }
+
+#' @importFrom curl has_internet nslookup
+check_internet = function(host=NULL) {
+    if (isFALSE(has_internet())) stop('No internet connection.')
+    if (!is.null(host)) {
+        nslookup(host)
+    }
+}
+
 ########################### helper functions ###########################
 # # select rows in a dataframe
 # sel_row_df = function(df, col_name = NULL, stop_condi = NULL) {

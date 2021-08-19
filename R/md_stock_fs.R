@@ -158,6 +158,7 @@ fs_dupont_cn = function(symbol1=NULL, ...) {
 #' @export
 md_stock_financials = function(symbol, type=NULL, print_step=1L) {
   . = name = name_en = NULL
+  check_internet('www.163.com')
   
   # type
   if (!any(type == 'dupont')) {

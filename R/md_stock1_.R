@@ -90,7 +90,11 @@
 #' @export
 md_stock = function(symbol, source = "yahoo", type='history', freq = "daily", date_range = "3y", from = NULL, to = Sys.Date(), adjust = 'split', print_step = 1L, ...) {
     # cat(source,"\n")
-    
+    if (source == '163') {
+        check_internet('www.163.com')
+    } else if (source == 'yahoo') {
+        check_internet('www.yahoo.com')
+    }
     # arguments
     type = check_arg(type, c('history', 'spot', 'adjfactor'))
     

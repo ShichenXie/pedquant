@@ -88,6 +88,7 @@ md_future1_sina = function(symbol, freq, from, to, handle, ...) {
 #' @import data.table 
 #' @export
 md_future = function(symbol=NULL, source='sina', freq='daily', date_range='3y', from=NULL, to=Sys.Date(), print_step=1L) {
+    check_internet('www.sina.com.cn')
     # arguments
     ## symbol
     syb = c()
