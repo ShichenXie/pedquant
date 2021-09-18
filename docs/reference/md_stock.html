@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pedquant</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.6.999</span>
       </span>
     </div>
 
@@ -125,9 +125,9 @@
     <p><code>md_stock</code> provides an interface to query EOD (end of date) stock prices.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>md_stock</span>(<span class='no'>symbol</span>, <span class='kw'>source</span> <span class='kw'>=</span> <span class='st'>"yahoo"</span>, <span class='kw'>type</span> <span class='kw'>=</span> <span class='st'>"history"</span>, <span class='kw'>freq</span> <span class='kw'>=</span> <span class='st'>"daily"</span>,
-  <span class='kw'>date_range</span> <span class='kw'>=</span> <span class='st'>"3y"</span>, <span class='kw'>from</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>to</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/Sys.time.html'>Sys.Date</a></span>(), <span class='kw'>adjust</span> <span class='kw'>=</span> <span class='st'>"split"</span>,
-  <span class='kw'>print_step</span> <span class='kw'>=</span> <span class='fl'>1L</span>, <span class='no'>...</span>)</pre>
+    <pre class="usage"><span class='fu'>md_stock</span><span class='op'>(</span><span class='va'>symbol</span>, source <span class='op'>=</span> <span class='st'>"yahoo"</span>, type <span class='op'>=</span> <span class='st'>"history"</span>, freq <span class='op'>=</span> <span class='st'>"daily"</span>,
+  date_range <span class='op'>=</span> <span class='st'>"3y"</span>, from <span class='op'>=</span> <span class='cn'>NULL</span>, to <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/Sys.time.html'>Sys.Date</a></span><span class='op'>(</span><span class='op'>)</span>, adjust <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  print_step <span class='op'>=</span> <span class='fl'>1L</span>, <span class='va'>...</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -162,8 +162,8 @@
     </tr>
     <tr>
       <th>adjust</th>
-      <td><p>adjust the OHLC prices for split (default), or dividend (both split and dividend). If it is NULL, download the original data.
-For the yahoo data, the original data already adjust for split, and use the 'close_adj' column to adjust; for the 163 data, the original doesnot adjust any factors, and use the splits, dividends and issues to adjust.</p></td>
+      <td><p>whether to adjust the OHLC prices. If it is NULL or FALSE, return the original data. Default is FALSE.
+For the yahoo data, the adjustment is based on 'close_adj' column; for the 163 data, the adjustment is based on 'close' and 'close_prev' columns.</p></td>
     </tr>
     <tr>
       <th>print_step</th>
@@ -177,51 +177,53 @@ For the yahoo data, the original data already adjust for split, and use the 'clo
 
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
+    <pre class="examples"><div class='input'><span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
 <span class='co'># Example I</span>
 <span class='co'># query history prices from yahoo</span>
-<span class='no'>dt_yahoo1</span> <span class='kw'>=</span> <span class='fu'>md_stock</span>(<span class='kw'>symbol</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"^GSPC"</span>, <span class='st'>"000001.SS"</span>))
+<span class='va'>dt_yahoo1</span> <span class='op'>=</span> <span class='fu'>md_stock</span><span class='op'>(</span>symbol<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"^GSPC"</span>, <span class='st'>"000001.SS"</span><span class='op'>)</span><span class='op'>)</span>
 
 <span class='co'># FAANG</span>
-<span class='no'>FAANG</span> <span class='kw'>=</span> <span class='fu'>md_stock</span>(<span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>'FB'</span>, <span class='st'>'AMZN'</span>, <span class='st'>'AAPL'</span>, <span class='st'>'NFLX'</span>, <span class='st'>'GOOG'</span>), <span class='kw'>date_range</span> <span class='kw'>=</span> <span class='st'>'max'</span>)
+<span class='va'>FAANG</span> <span class='op'>=</span> <span class='fu'>md_stock</span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>'FB'</span>, <span class='st'>'AMZN'</span>, <span class='st'>'AAPL'</span>, <span class='st'>'NFLX'</span>, <span class='st'>'GOOG'</span><span class='op'>)</span>, date_range <span class='op'>=</span> <span class='st'>'max'</span><span class='op'>)</span>
 
 <span class='co'># for Chinese shares/fund</span>
 <span class='co'>## the symbol without suffix</span>
-<span class='no'>dt_yahoo2</span> <span class='kw'>=</span> <span class='fu'>md_stock</span>(<span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"000001"</span>, <span class='st'>"^000001"</span>, <span class='st'>"512510"</span>))
+<span class='va'>dt_yahoo2</span> <span class='op'>=</span> <span class='fu'>md_stock</span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"000001"</span>, <span class='st'>"^000001"</span>, <span class='st'>"512510"</span><span class='op'>)</span><span class='op'>)</span>
 <span class='co'>## the symbol with suffix</span>
-<span class='no'>dt_yahoo3</span> <span class='kw'>=</span> <span class='fu'>md_stock</span>(<span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"000001.sz"</span>, <span class='st'>"000001.ss"</span>))
+<span class='va'>dt_yahoo3</span> <span class='op'>=</span> <span class='fu'>md_stock</span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"000001.sz"</span>, <span class='st'>"000001.ss"</span><span class='op'>)</span><span class='op'>)</span>
 
 <span class='co'># adjust factors, splits and dividend</span>
-<span class='no'>dt_adj</span> <span class='kw'>=</span> <span class='fu'>md_stock</span>(<span class='kw'>symbol</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"AAPL"</span>, <span class='st'>"000001.SZ"</span>, <span class='st'>"000001.SS"</span>),
-                    <span class='kw'>type</span><span class='kw'>=</span><span class='st'>'adjfactor'</span>, <span class='kw'>date_range</span><span class='kw'>=</span><span class='st'>'max'</span>)
+<span class='va'>dt_adj</span> <span class='op'>=</span> <span class='fu'>md_stock</span><span class='op'>(</span>symbol<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"AAPL"</span>, <span class='st'>"000001.SZ"</span>, <span class='st'>"000001.SS"</span><span class='op'>)</span>, 
+                    type<span class='op'>=</span><span class='st'>'adjfactor'</span>, date_range<span class='op'>=</span><span class='st'>'max'</span><span class='op'>)</span>
 
-
+ 
 <span class='co'># Example II</span>
 <span class='co'># query history prices from 163</span>
-<span class='no'>dt1</span> <span class='kw'>=</span> <span class='fu'>md_stock</span>(<span class='kw'>symbol</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>'600000'</span>, <span class='st'>'000001'</span>, <span class='st'>'^000001'</span>, <span class='st'>'^399001'</span>),
-               <span class='kw'>source</span><span class='kw'>=</span><span class='st'>"163"</span>)
+<span class='va'>dt1</span> <span class='op'>=</span> <span class='fu'>md_stock</span><span class='op'>(</span>symbol<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>'600000'</span>, <span class='st'>'000001'</span>, <span class='st'>'^000001'</span>, <span class='st'>'^399001'</span><span class='op'>)</span>, 
+               source<span class='op'>=</span><span class='st'>"163"</span><span class='op'>)</span>
 
 <span class='co'># valuation ratios (pe, pb, ps)</span>
 <span class='co'># only available for stock shares in sse and szse</span>
-<span class='no'>dt2</span> <span class='kw'>=</span> <span class='fu'>md_stock</span>(<span class='kw'>symbol</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>'600000'</span>, <span class='st'>'000001'</span>, <span class='st'>'^000001'</span>, <span class='st'>'^399001'</span>),
-               <span class='kw'>source</span><span class='kw'>=</span><span class='st'>"163"</span>, <span class='kw'>valuation</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)
-
-
+<span class='va'>dt2</span> <span class='op'>=</span> <span class='fu'>md_stock</span><span class='op'>(</span>symbol<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>'600000'</span>, <span class='st'>'000001'</span>, <span class='st'>'^000001'</span>, <span class='st'>'^399001'</span><span class='op'>)</span>, 
+               source<span class='op'>=</span><span class='st'>"163"</span>, valuation <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
+             
+             
 <span class='co'># Example III</span>
 <span class='co'># query spot prices</span>
-<span class='no'>dt_spot1</span> <span class='kw'>=</span> <span class='fu'>md_stock</span>(<span class='kw'>symbol</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>'600000.SS'</span>, <span class='st'>'000001.SZ'</span>, <span class='st'>'000001.SS'</span>, <span class='st'>'399001.SZ'</span>),
-                    <span class='kw'>type</span><span class='kw'>=</span><span class='st'>'spot'</span>, <span class='kw'>source</span><span class='kw'>=</span><span class='st'>"163"</span>)
+<span class='va'>dt_spot1</span> <span class='op'>=</span> <span class='fu'>md_stock</span><span class='op'>(</span>symbol<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>'600000.SS'</span>, <span class='st'>'000001.SZ'</span>, <span class='st'>'000001.SS'</span>, <span class='st'>'399001.SZ'</span><span class='op'>)</span>, 
+                    type<span class='op'>=</span><span class='st'>'spot'</span>, source<span class='op'>=</span><span class='st'>"163"</span><span class='op'>)</span>
 
 <span class='co'># query spot prices of all A shares in sse and szse</span>
-<span class='no'>dt_spot2</span> <span class='kw'>=</span> <span class='fu'>md_stock</span>(<span class='kw'>symbol</span><span class='kw'>=</span><span class='st'>'a'</span>, <span class='kw'>source</span><span class='kw'>=</span><span class='st'>"163"</span>, <span class='kw'>type</span><span class='kw'>=</span><span class='st'>'spot'</span>)
+<span class='va'>dt_spot2</span> <span class='op'>=</span> <span class='fu'>md_stock</span><span class='op'>(</span>symbol<span class='op'>=</span><span class='st'>'a'</span>, source<span class='op'>=</span><span class='st'>"163"</span>, type<span class='op'>=</span><span class='st'>'spot'</span><span class='op'>)</span>
 <span class='co'># query spot prices of all A/B shares and index in sse and szse</span>
-<span class='no'>dt_spot3</span> <span class='kw'>=</span> <span class='fu'>md_stock</span>(<span class='kw'>symbol</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>'a'</span>, <span class='st'>'b'</span>, <span class='st'>'index'</span>), <span class='kw'>source</span><span class='kw'>=</span><span class='st'>"163"</span>, <span class='kw'>type</span><span class='kw'>=</span><span class='st'>'spot'</span>)
+<span class='va'>dt_spot3</span> <span class='op'>=</span> <span class='fu'>md_stock</span><span class='op'>(</span>symbol<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>'a'</span>, <span class='st'>'b'</span>, <span class='st'>'index'</span><span class='op'>)</span>, source<span class='op'>=</span><span class='st'>"163"</span>, type<span class='op'>=</span><span class='st'>'spot'</span><span class='op'>)</span>
 
 <span class='co'># show spot prices and sector/industry</span>
-<span class='no'>dt_spot4</span> <span class='kw'>=</span> <span class='fu'>md_stock</span>(<span class='kw'>symbol</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>'a'</span>, <span class='st'>'b'</span>, <span class='st'>'index'</span>, <span class='st'>'fund'</span>), <span class='kw'>source</span> <span class='kw'>=</span> <span class='st'>'163'</span>,
-  <span class='kw'>type</span> <span class='kw'>=</span> <span class='st'>'spot'</span>, <span class='kw'>show_tags</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)
+<span class='va'>dt_spot4</span> <span class='op'>=</span> <span class='fu'>md_stock</span><span class='op'>(</span>symbol <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>'a'</span>, <span class='st'>'b'</span>, <span class='st'>'index'</span>, <span class='st'>'fund'</span><span class='op'>)</span>, source <span class='op'>=</span> <span class='st'>'163'</span>, 
+  type <span class='op'>=</span> <span class='st'>'spot'</span>, show_tags <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
 
-}</div></pre>
+<span class='op'>}</span>
+
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -237,7 +239,7 @@ For the yahoo data, the original data already adjust for split, and use the 'clo
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

@@ -34,7 +34,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">pedquant</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.6.999</span>
       </span>
     </div>
 
@@ -95,46 +95,46 @@
 <ul>
 <li>Install the release version of <code>pedquant</code> from CRAN with:</li>
 </ul>
-<!-- --><div class="sourceCode" id="cb1"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="kw">install.packages</span>(<span class="st">"pedquant"</span>)</span></code></pre></div>
+<!-- --><div class="sourceCode" id="cb1"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">"pedquant"</span>)</span></code></pre></div>
 <ul>
 <li>Install the developing version of <code>pedquant</code> from <a href="https://github.com/shichenXie/pedquant">github</a> with:</li>
 </ul>
-<!-- --><div class="sourceCode" id="cb2"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a>devtools<span class="op">::</span><span class="kw">install_github</span>(<span class="st">"shichenxie/pedquant"</span>)</span></code></pre></div>
+<!-- --><div class="sourceCode" id="cb2"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>devtools<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">"shichenxie/pedquant"</span>)</span></code></pre></div>
 </div>
 <div id="example" class="section level2">
 <h2 class="hasAnchor">
 <a href="#example" class="anchor"></a>Example</h2>
 <p>The following examples show you how to import data and create charts.</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a><span class="kw">library</span>(pedquant)</span>
-<span id="cb3-2"><a href="#cb3-2"></a><span class="co">## import eocnomic data</span></span>
-<span id="cb3-3"><a href="#cb3-3"></a>dat1 =<span class="st"> </span><span class="kw">ed_fred</span>(<span class="st">'GDPCA'</span>)</span>
-<span id="cb3-4"><a href="#cb3-4"></a><span class="co">#&gt; 1/1 GDPCA</span></span>
-<span id="cb3-5"><a href="#cb3-5"></a>dat2 =<span class="st"> </span><span class="kw">ed_nbs</span>(<span class="dt">geo_type=</span><span class="st">'nation'</span>, <span class="dt">freq=</span><span class="st">'quarterly'</span>, <span class="dt">symbol=</span><span class="st">'A010101'</span>)</span>
-<span id="cb3-6"><a href="#cb3-6"></a></span>
-<span id="cb3-7"><a href="#cb3-7"></a><span class="co">## import market data</span></span>
-<span id="cb3-8"><a href="#cb3-8"></a>FAAG =<span class="st"> </span><span class="kw">md_stock</span>(<span class="kw">c</span>(<span class="st">'FB'</span>, <span class="st">'AMZN'</span>, <span class="st">'AAPL'</span>, <span class="st">'GOOG'</span>), <span class="dt">date_range =</span> <span class="st">'max'</span>) <span class="co"># from yahoo</span></span>
-<span id="cb3-9"><a href="#cb3-9"></a><span class="co">#&gt; 1/4 FB</span></span>
-<span id="cb3-10"><a href="#cb3-10"></a><span class="co">#&gt; 2/4 AMZN</span></span>
-<span id="cb3-11"><a href="#cb3-11"></a><span class="co">#&gt; 3/4 AAPL</span></span>
-<span id="cb3-12"><a href="#cb3-12"></a><span class="co">#&gt; 4/4 GOOG</span></span>
-<span id="cb3-13"><a href="#cb3-13"></a>INDX =<span class="st"> </span><span class="kw">md_stock</span>(<span class="kw">c</span>(<span class="st">'^000001'</span>,<span class="st">'^399001'</span>), <span class="dt">date_range =</span> <span class="st">'max'</span>, <span class="dt">source =</span> <span class="st">'163'</span>)</span>
-<span id="cb3-14"><a href="#cb3-14"></a><span class="co">#&gt; 1/2 ^000001</span></span>
-<span id="cb3-15"><a href="#cb3-15"></a><span class="co">#&gt; 2/2 ^399001</span></span>
-<span id="cb3-16"><a href="#cb3-16"></a></span>
-<span id="cb3-17"><a href="#cb3-17"></a><span class="co"># candlestick chart with technical indicators</span></span>
-<span id="cb3-18"><a href="#cb3-18"></a><span class="kw">pq_plot</span>(INDX<span class="op">$</span><span class="st">`</span><span class="dt">^000001</span><span class="st">`</span>, <span class="dt">chart_type =</span> <span class="st">'candle'</span>, <span class="dt">date_range =</span> <span class="st">'1y'</span>, <span class="dt">addti =</span> <span class="kw">list</span>(</span>
-<span id="cb3-19"><a href="#cb3-19"></a>    <span class="dt">sma =</span> <span class="kw">list</span>(<span class="dt">n=</span><span class="dv">50</span>), <span class="dt">macd=</span><span class="kw">list</span>()</span>
-<span id="cb3-20"><a href="#cb3-20"></a>))</span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(pedquant)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="do">## import eocnomic data</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>dat1 <span class="ot">=</span> <span class="fu">ed_fred</span>(<span class="st">'GDPCA'</span>)</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1/1 GDPCA</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>dat2 <span class="ot">=</span> <span class="fu">ed_nbs</span>(<span class="at">geo_type=</span><span class="st">'nation'</span>, <span class="at">freq=</span><span class="st">'quarterly'</span>, <span class="at">symbol=</span><span class="st">'A010101'</span>)</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="do">## import market data</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>FAAG <span class="ot">=</span> <span class="fu">md_stock</span>(<span class="fu">c</span>(<span class="st">'FB'</span>, <span class="st">'AMZN'</span>, <span class="st">'AAPL'</span>, <span class="st">'GOOG'</span>), <span class="at">date_range =</span> <span class="st">'max'</span>) <span class="co"># from yahoo</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1/4 FB</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2/4 AMZN</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3/4 AAPL</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4/4 GOOG</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>INDX <span class="ot">=</span> <span class="fu">md_stock</span>(<span class="fu">c</span>(<span class="st">'^000001'</span>,<span class="st">'^399001'</span>), <span class="at">date_range =</span> <span class="st">'max'</span>, <span class="at">source =</span> <span class="st">'163'</span>)</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1/2 ^000001</span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2/2 ^399001</span></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a><span class="co"># candlestick chart with technical indicators</span></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a><span class="fu">pq_plot</span>(INDX<span class="sc">$</span><span class="st">`</span><span class="at">^000001</span><span class="st">`</span>, <span class="at">chart_type =</span> <span class="st">'candle'</span>, <span class="at">date_range =</span> <span class="st">'1y'</span>, <span class="at">addti =</span> <span class="fu">list</span>(</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">sma =</span> <span class="fu">list</span>(<span class="at">n=</span><span class="dv">50</span>), <span class="at">macd=</span><span class="fu">list</span>()</span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>))</span></code></pre></div>
 <p><img src="reference/figures/README-charts1-1.png" width="100%"></p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a><span class="co">#&gt; $`000001.SS`</span></span>
-<span id="cb4-2"><a href="#cb4-2"></a><span class="co">#&gt; TableGrob (2 x 1) "arrange": 2 grobs</span></span>
-<span id="cb4-3"><a href="#cb4-3"></a><span class="co">#&gt;    z     cells    name           grob</span></span>
-<span id="cb4-4"><a href="#cb4-4"></a><span class="co">#&gt; p0 1 (1-1,1-1) arrange gtable[layout]</span></span>
-<span id="cb4-5"><a href="#cb4-5"></a><span class="co">#&gt; p1 2 (2-2,1-1) arrange gtable[layout]</span></span>
-<span id="cb4-6"><a href="#cb4-6"></a></span>
-<span id="cb4-7"><a href="#cb4-7"></a><span class="co"># comparing prices</span></span>
-<span id="cb4-8"><a href="#cb4-8"></a><span class="kw">pq_plot</span>(FAAG, <span class="dt">multi_series =</span> <span class="kw">list</span>(<span class="dt">nrow=</span><span class="dv">2</span>, <span class="dt">scales =</span> <span class="st">'free_y'</span>), <span class="dt">date_range =</span> <span class="st">'3y'</span>)</span>
-<span id="cb4-9"><a href="#cb4-9"></a><span class="co">#&gt; $multi_series</span></span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $`000001.SS`</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; TableGrob (2 x 1) "arrange": 2 grobs</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    z     cells    name           grob</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; p0 1 (1-1,1-1) arrange gtable[layout]</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; p1 2 (2-2,1-1) arrange gtable[layout]</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="co"># comparing prices</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="fu">pq_plot</span>(FAAG, <span class="at">multi_series =</span> <span class="fu">list</span>(<span class="at">nrow=</span><span class="dv">2</span>, <span class="at">scales =</span> <span class="st">'free_y'</span>), <span class="at">date_range =</span> <span class="st">'3y'</span>)</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $multi_series</span></span></code></pre></div>
 <p><img src="reference/figures/README-charts2-1.png" width="100%"></p>
 </div>
 <div id="issues-and-contributions" class="section level2">
@@ -189,7 +189,7 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

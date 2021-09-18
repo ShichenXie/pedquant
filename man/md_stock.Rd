@@ -5,7 +5,7 @@
 \title{query stock market data}
 \usage{
 md_stock(symbol, source = "yahoo", type = "history", freq = "daily",
-  date_range = "3y", from = NULL, to = Sys.Date(), adjust = "split",
+  date_range = "3y", from = NULL, to = Sys.Date(), adjust = FALSE,
   print_step = 1L, ...)
 }
 \arguments{
@@ -23,8 +23,8 @@ md_stock(symbol, source = "yahoo", type = "history", freq = "daily",
 
 \item{to}{the end date. Default is current system date.}
 
-\item{adjust}{adjust the OHLC prices for split (default), or dividend (both split and dividend). If it is NULL, download the original data.
-For the yahoo data, the original data already adjust for split, and use the 'close_adj' column to adjust; for the 163 data, the original doesnot adjust any factors, and use the splits, dividends and issues to adjust.}
+\item{adjust}{whether to adjust the OHLC prices. If it is NULL or FALSE, return the original data. Default is FALSE.
+For the yahoo data, the adjustment is based on 'close_adj' column; for the 163 data, the adjustment is based on 'close' and 'close_prev' columns.}
 
 \item{print_step}{A non-negative integer. Print symbol name by each print_step iteration. Default is 1L.}
 

@@ -1,7 +1,7 @@
 # pedquant 0.1.6.999
 
 * fixed mutual bugs in the functions such as get_fromto, md_stock_divsplit1_163 etc.
-
+* modified stock adjust method for 163 data
 
 # pedquant 0.1.6
 

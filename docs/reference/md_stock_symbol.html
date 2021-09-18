@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pedquant</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.6.999</span>
       </span>
     </div>
 
@@ -125,7 +125,7 @@
     <p><code>md_stock_symbol</code> returns all stock symbols of stock exchange or index.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>md_stock_symbol</span>(<span class='kw'>exchange</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>index</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
+    <pre class="usage"><span class='fu'>md_stock_symbol</span><span class='op'>(</span>exchange <span class='op'>=</span> <span class='cn'>NULL</span>, index <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -142,19 +142,21 @@
 
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
+    <pre class="examples"><div class='input'><span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
 <span class='co'># get stock symbols in a stock exchange</span>
 <span class='co'>## specify the name of exchange</span>
-<span class='no'>ex_syb1</span> <span class='kw'>=</span> <span class='fu'>md_stock_symbol</span>(<span class='kw'>exchange</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>'sse'</span>, <span class='st'>'szse'</span>))
+<span class='va'>ex_syb1</span> <span class='op'>=</span> <span class='fu'>md_stock_symbol</span><span class='op'>(</span>exchange <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>'sse'</span>, <span class='st'>'szse'</span><span class='op'>)</span><span class='op'>)</span>
 
 <span class='co'>## choose stock exchanges interactivly</span>
-<span class='no'>ex_syb2</span> <span class='kw'>=</span> <span class='fu'>md_stock_symbol</span>()
+<span class='va'>ex_syb2</span> <span class='op'>=</span> <span class='fu'>md_stock_symbol</span><span class='op'>(</span><span class='op'>)</span>
 
 
 <span class='co'># get stock components of a stock index (only in sse and szse)</span>
-<span class='no'>index_syb</span> <span class='kw'>=</span> <span class='fu'>md_stock_symbol</span>(<span class='kw'>index</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>'000001'</span>, <span class='st'>'000016'</span>, <span class='st'>'000300'</span>, <span class='st'>'000905'</span>))
+<span class='va'>index_syb</span> <span class='op'>=</span> <span class='fu'>md_stock_symbol</span><span class='op'>(</span>index <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>'000001'</span>, <span class='st'>'000016'</span>, <span class='st'>'000300'</span>, <span class='st'>'000905'</span><span class='op'>)</span><span class='op'>)</span>
 
-}</div></pre>
+<span class='op'>}</span>
+
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -170,7 +172,7 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

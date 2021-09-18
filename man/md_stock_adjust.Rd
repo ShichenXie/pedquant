@@ -4,17 +4,17 @@
 \alias{md_stock_adjust}
 \title{adjust stock price for split and dividend}
 \usage{
-md_stock_adjust(dt, source, adjust = "split", adjfactor = NULL)
+md_stock_adjust(dt, source, adjust = TRUE, ...)
 }
 \arguments{
 \item{dt}{a list/dataframe of time series datasets that didnt adjust for split or dividend.}
 
 \item{source}{the available data sources are 'yahoo' (\url{https://finance.yahoo.com}) and '163' (\url{https://money.163.com}).}
 
-\item{adjust}{adjust the OHLC prices for split (default), or dividend (both split and dividend). If it is NULL, return the original data.
-For the yahoo data, the original data already adjust for split, and use the 'close_adj' column to adjust; for the 163 data, the original doesnot adjust any factors, and use the splits, dividends and issues to adjust.}
+\item{adjust}{whether to adjust the OHLC prices. If it is NULL or FALSE, return the original data. Default is TRUE.
+For the yahoo data, the adjustment is based on 'close_adj' column; for the 163 data, the adjustment is based on 'close' and 'close_prev' columns.}
 
-\item{adjfactor}{adjust factors, including splits and dividends. Defaults to NULL, which will load adjust factors from source. It can also download from md_stock when type set as adjfactor.}
+\item{...}{Additional parameters.}
 }
 \description{
 \code{md_stock_adjust} adjusts the open, high, low and close stock prices for split and dividend.
@@ -23,10 +23,7 @@ For the yahoo data, the original data already adjust for split, and use the 'clo
 \donttest{
 dt = md_stock('600547', source = '163', date_range = 'max', 
               type = 'history', adjust = NULL)
-ds = md_stock('600547', source = '163', date_range = 'max', 
-              type = 'adjfactor')
 
-dtadj = md_stock_adjust(dt, source = '163', adjust = 'dividend', 
-                        adjfactor = ds)
+dtadj = md_stock_adjust(dt, source = '163', adjust = TRUE)
 }
 }

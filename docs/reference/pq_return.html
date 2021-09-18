@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pedquant</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.6.999</span>
       </span>
     </div>
 
@@ -125,8 +125,8 @@
     <p><code>pq_return</code> calculates returns for daily series based on specified column, frequency and method type.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>pq_return</span>(<span class='no'>dt</span>, <span class='kw'>x</span> <span class='kw'>=</span> <span class='st'>"close|value"</span>, <span class='kw'>method</span> <span class='kw'>=</span> <span class='st'>"arithmetic"</span>, <span class='kw'>freq</span> <span class='kw'>=</span> <span class='st'>"all"</span>,
-  <span class='kw'>date_range</span> <span class='kw'>=</span> <span class='st'>"max"</span>, <span class='kw'>from</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>to</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/Sys.time.html'>Sys.Date</a></span>(), <span class='kw'>print_step</span> <span class='kw'>=</span> <span class='fl'>1L</span>)</pre>
+    <pre class="usage"><span class='fu'>pq_return</span><span class='op'>(</span><span class='va'>dt</span>, x <span class='op'>=</span> <span class='st'>"close|value"</span>, method <span class='op'>=</span> <span class='st'>"arithmetic"</span>, freq <span class='op'>=</span> <span class='st'>"all"</span>,
+  date_range <span class='op'>=</span> <span class='st'>"max"</span>, from <span class='op'>=</span> <span class='cn'>NULL</span>, to <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/Sys.time.html'>Sys.Date</a></span><span class='op'>(</span><span class='op'>)</span>, print_step <span class='op'>=</span> <span class='fl'>1L</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -168,16 +168,21 @@
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='co'># \donttest{</span>
-<span class='no'>dts</span> <span class='kw'>=</span> <span class='fu'><a href='md_stock.html'>md_stock</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>'000001'</span>, <span class='st'>'^000001'</span>), <span class='kw'>source</span> <span class='kw'>=</span> <span class='st'>'163'</span>)</div><div class='output co'>#&gt; 1/2 000001
+<span class='va'>dts</span> <span class='op'>=</span> <span class='fu'><a href='md_stock.html'>md_stock</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>'000001'</span>, <span class='st'>'^000001'</span><span class='op'>)</span>, source <span class='op'>=</span> <span class='st'>'163'</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; 1/2 000001
 #&gt; 2/2 ^000001</div><div class='input'>
 <span class='co'># set freq</span>
-<span class='no'>dts_returns1</span> <span class='kw'>=</span> <span class='fu'>pq_return</span>(<span class='no'>dts</span>, <span class='kw'>freq</span> <span class='kw'>=</span> <span class='st'>'all'</span>)</div><div class='output co'>#&gt; 1/2 000001.SZ
-#&gt; 2/2 000001.SS</div><div class='input'><span class='no'>dts_returns2</span> <span class='kw'>=</span> <span class='fu'>pq_return</span>(<span class='no'>dts</span>, <span class='kw'>freq</span> <span class='kw'>=</span> <span class='st'>'weekly'</span>)</div><div class='output co'>#&gt; 1/2 000001.SZ
+<span class='va'>dts_returns1</span> <span class='op'>=</span> <span class='fu'>pq_return</span><span class='op'>(</span><span class='va'>dts</span>, freq <span class='op'>=</span> <span class='st'>'all'</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; 1/2 000001.SZ
+#&gt; 2/2 000001.SS</div><div class='input'><span class='va'>dts_returns2</span> <span class='op'>=</span> <span class='fu'>pq_return</span><span class='op'>(</span><span class='va'>dts</span>, freq <span class='op'>=</span> <span class='st'>'weekly'</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; 1/2 000001.SZ
 #&gt; 2/2 000001.SS</div><div class='input'>
 <span class='co'># set method</span>
-<span class='no'>dts_returns3</span> <span class='kw'>=</span> <span class='fu'>pq_return</span>(<span class='no'>dts</span>, <span class='kw'>freq</span> <span class='kw'>=</span> <span class='st'>'monthly'</span>, <span class='kw'>method</span> <span class='kw'>=</span> <span class='st'>'arithmetic'</span>) <span class='co'># default method</span></div><div class='output co'>#&gt; 1/2 000001.SZ
-#&gt; 2/2 000001.SS</div><div class='input'><span class='no'>dts_returns4</span> <span class='kw'>=</span> <span class='fu'>pq_return</span>(<span class='no'>dts</span>, <span class='kw'>freq</span> <span class='kw'>=</span> <span class='st'>'monthly'</span>, <span class='kw'>method</span> <span class='kw'>=</span> <span class='st'>'log'</span>)</div><div class='output co'>#&gt; 1/2 000001.SZ
-#&gt; 2/2 000001.SS</div><div class='input'># }
+<span class='va'>dts_returns3</span> <span class='op'>=</span> <span class='fu'>pq_return</span><span class='op'>(</span><span class='va'>dts</span>, freq <span class='op'>=</span> <span class='st'>'monthly'</span>, method <span class='op'>=</span> <span class='st'>'arithmetic'</span><span class='op'>)</span> <span class='co'># default method</span>
+</div><div class='output co'>#&gt; 1/2 000001.SZ
+#&gt; 2/2 000001.SS</div><div class='input'><span class='va'>dts_returns4</span> <span class='op'>=</span> <span class='fu'>pq_return</span><span class='op'>(</span><span class='va'>dts</span>, freq <span class='op'>=</span> <span class='st'>'monthly'</span>, method <span class='op'>=</span> <span class='st'>'log'</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; 1/2 000001.SZ
+#&gt; 2/2 000001.SS</div><div class='input'><span class='co'># }</span>
 
 </div></pre>
   </div>
@@ -195,7 +200,7 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pedquant</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.6.999</span>
       </span>
     </div>
 
@@ -125,7 +125,7 @@
     <p><code>ed_nbs_symbol</code> provides an interface to query symbols of economic indicators from NBS.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>ed_nbs_symbol</span>(<span class='kw'>symbol</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>geo_type</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>freq</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>eng</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</pre>
+    <pre class="usage"><span class='fu'>ed_nbs_symbol</span><span class='op'>(</span>symbol <span class='op'>=</span> <span class='cn'>NULL</span>, geo_type <span class='op'>=</span> <span class='cn'>NULL</span>, freq <span class='op'>=</span> <span class='cn'>NULL</span>, eng <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -151,8 +151,10 @@
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='co'># query symbol interactively</span>
-<span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
-<span class='no'>sym</span> <span class='kw'>=</span> <span class='fu'>ed_nbs_symbol</span>()}</div></pre>
+<span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
+<span class='va'>sym</span> <span class='op'>=</span> <span class='fu'>ed_nbs_symbol</span><span class='op'>(</span><span class='op'>)</span><span class='op'>}</span>
+
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -168,7 +170,7 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

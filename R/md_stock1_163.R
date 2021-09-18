@@ -25,7 +25,7 @@ md_stock_spotall_163 = function(symbol = c('a','index'), only_symbol = FALSE, sh
         date = data_date, #as.Date(substr(jsonDat$time,1,10)), 
         time = jsonDat$time#,
         #strptime(jsonDat$time, '%Y-%m-%d %H:%M:%S', tz = 'Asia/Shanghai')
-      )][, .(symbol, name, date, open, high, low, close=price, prev_close=yestclose, change=updown, change_pct=percent*100, volume, amount=turnover, turnover=hs*100, cap_market=mcap, cap_total=tcap, pe_last=pe, eps=mfsum, net_income, revenue, plate_ids, time=as.POSIXct(time))
+      )][, .(symbol, name, date, open, high, low, close=price, close_prev=yestclose, change=updown, change_pct=percent*100, volume, amount=turnover, turnover=hs*100, cap_market=mcap, cap_total=tcap, pe_last=pe, eps=mfsum, net_income, revenue, plate_ids, time=as.POSIXct(time))
       ][,`:=`(
         province = sub('.*(dy\\d+).*', '\\1', plate_ids),
         plate_ids = sub('dy\\d+','',plate_ids)
@@ -39,7 +39,7 @@ md_stock_spotall_163 = function(symbol = c('a','index'), only_symbol = FALSE, sh
       
       jsonDF = setDT(jsonDF)[,`:=`(
         date = data_date#as.Date(substr(jsonDat$time,1,10))
-      )][, .(symbol, name, date, open, high, low, close=price, prev_close=yestclose, change=updown, change_pct=percent*100, volume=volume/100, amount=turnover, time=as.POSIXct(time))]
+      )][, .(symbol, name, date, open, high, low, close=price, close_prev=yestclose, change=updown, change_pct=percent*100, volume=volume/100, amount=turnover, time=as.POSIXct(time))]
     }
     
     return(jsonDF[, `:=`(market = mkt, region = 'cn')])
@@ -94,7 +94,7 @@ md_stock_spotall_163 = function(symbol = c('a','index'), only_symbol = FALSE, sh
   
   df = df_stock_cn[,unit := 'CNY'][, symbol := check_symbol_for_yahoo(symbol, market)]#[, mkt := NULL][]
   
-  cols_rm = intersect(names(df), c('sector', 'industry', 'province', 'plate_ids', 'region')) # , 'prev_close', 
+  cols_rm = intersect(names(df), c('sector', 'industry', 'province', 'plate_ids', 'region')) # , 'close_prev', 
   if (length(cols_rm)>0) df = df[, (cols_rm) := NULL]
   return(df)
 }
@@ -105,7 +105,7 @@ md_stock_spotall_163 = function(symbol = c('a','index'), only_symbol = FALSE, sh
 # hq.sinajs.cn/list=sz150206
 # http://qt.gtimg.cn/q=sz000001
 md_stock_spot_tx = function(symbol1, only_syb_nam = FALSE, ...) {
-  V1=V2=doc=.=symbol=name=high=low=prev_close=change=change_pct=volume=amount=turnover=cap_market=cap_total=pb=pe_last=pe_trailing=pe_forward=NULL
+  V1=V2=doc=.=symbol=name=high=low=close_prev=change=change_pct=volume=amount=turnover=cap_market=cap_total=pb=pe_last=pe_trailing=pe_forward=NULL
   
   syb = paste0(check_symbol_for_tx(symbol1), collapse=',')
   dt = try(readLines(sprintf('http://qt.gtimg.cn/q=%s', syb)), silent = TRUE)
@@ -122,7 +122,7 @@ md_stock_spot_tx = function(symbol1, only_syb_nam = FALSE, ...) {
     return(dt[,.(symbol = check_symbol_for_yahoo(symbol1), name = V1)])
   }
   
-  colnames_en = c('name', 'symbol', 'close', 'prev_close', 'open',
+  colnames_en = c('name', 'symbol', 'close', 'close_prev', 'open',
                   'volume', 'buy', 'sell', 
                   'bid1', 'bid1_volume', 'bid2', 'bid2_volume', 'bid3', 'bid3_volume', 'bid4', 'bid4_volume', 'bid5', 'bid5_volume',
                   'ask1', 'ask1_volume', 'ask2', 'ask2_volume', 'ask3', 'ask3_volume', 'ask4', 'ask4_volume', 'ask5', 'ask5_volume',
@@ -137,10 +137,10 @@ md_stock_spot_tx = function(symbol1, only_syb_nam = FALSE, ...) {
   setnames(dt, colnames_en)
   
   num_cols = c(
-    'open', 'high', 'low', 'close', 'prev_close', 'change', 'change_pct', 'volume', 'amount', 'turnover', 'cap_market', 'cap_total', 'pb', 'pe_last', 'pe_trailing', 'pe_forward'
+    'open', 'high', 'low', 'close', 'close_prev', 'change', 'change_pct', 'volume', 'amount', 'turnover', 'cap_market', 'cap_total', 'pb', 'pe_last', 'pe_trailing', 'pe_forward'
   )
   dt = dt[,.(
-    symbol, name, date, open, high, low, close, prev_close, change, change_pct, volume, amount, turnover, cap_market, cap_total, pb, pe_last, pe_trailing, pe_forward#, 
+    symbol, name, date, open, high, low, close, close_prev, change, change_pct, volume, amount, turnover, cap_market, cap_total, pb, pe_last, pe_trailing, pe_forward#, 
     #buy, sell, 
     #bid1, bid1_volume, bid2, bid2_volume, bid3, bid3_volume, bid4, bid4_volume, bid5, bid5_volume, 
     #ask1, ask1_volume, ask2, ask2_volume, ask3, ask3_volume, ask4, ask4_volume, ask5, ask5_volume
@@ -161,6 +161,17 @@ md_stock_spot_tx = function(symbol1, only_syb_nam = FALSE, ...) {
   return(dt[, `:=`(unit = 'CNY')])
 }
 
+
+
+md_stock_info1 = function(symbol1) {
+  # symbol1 = '600036'
+  # http://quotes.money.163.com/f10/gszl_600036.html#01f01
+  # http://quotes.money.163.com/service/gszl_600036.html?type=cp
+  # http://quotes.money.163.com/service/gszl_600036.html?type=hy
+  # http://quotes.money.163.com/service/gszl_600036.html?type=dy
+  
+  company_info_url = sprintf('http://quotes.money.163.com/f10/gszl_%s.html#01f01', symbol1)
+}
 
 #' @import data.table
 #' @importFrom readr read_csv locale col_date col_character col_double col_integer
@@ -197,7 +208,7 @@ md_stock_hist1_163 = function(symbol1, from='1900-01-01', to=Sys.Date(), zero_rm
   # dt <- load_read_csv(link, 'GBK')
   
   # set names of datatable
-  cols_name = c('date', 'symbol', 'name', 'open', 'high', 'low', 'close', 'prev_close', 'change', 'change_pct', 'volume', 'amount', 'turnover', 'cap_market', 'cap_total')
+  cols_name = c('date', 'symbol', 'name', 'open', 'high', 'low', 'close', 'close_prev', 'change', 'change_pct', 'volume', 'amount', 'turnover', 'cap_market', 'cap_total')
   setnames(dt, cols_name)
   setkeyv(dt, 'date')
   
@@ -420,7 +431,7 @@ md_stock_163 = function(symbol, from='1900-01-01', to=Sys.Date(), print_step=1L,
   rmcols_func = function(x) {
     name = NULL
     
-    cols_rm = intersect(names(x), c('change')) #,'prev_close', 'change_pct'
+    cols_rm = intersect(names(x), c('change')) #,'close_prev', 'change_pct'
     if (length(cols_rm)>0) x = x[, (cols_rm) := NULL]
     if ('name' %in% names(x)) x = x[, name := gsub('\\s', '', name)]
     return(x)
@@ -463,7 +474,7 @@ md_fund_spotall_163 = function() {
   dat_df = rbindlist(dat_lst, idcol = 'fund')
   setnames(dat_df, tolower(names(dat_df)))
   
-  dat_df = dat_df[, .(symbol = check_symbol_for_yahoo(symbol), date = md_stock_spot_tx('^000001')$date, name, open, high, low, close = price, prev_close = yestclose, change_pct = percent*100, volume, amount = turnover, market = fund, unit = 'CNY')] # change=updown, sname, 
+  dat_df = dat_df[, .(symbol = check_symbol_for_yahoo(symbol), date = md_stock_spot_tx('^000001')$date, name, open, high, low, close = price, close_prev = yestclose, change_pct = percent*100, volume, amount = turnover, market = fund, unit = 'CNY')] # change=updown, sname, 
   
   return(dat_df)
 }

@@ -5,7 +5,7 @@
 \alias{ssec}
 \title{dataset of shanghai composite index}
 \format{
-A data frame with 7240 rows and 15 variables:
+A data frame with 7518 rows and 15 variables:
 \describe{
 \item{symbol}{stock ticker symbol}
 \item{name}{stock ticker name}
@@ -14,7 +14,7 @@ A data frame with 7240 rows and 15 variables:
 \item{high}{stock price at the highest point during trading}
 \item{low}{stock price at the lowest point during trading}
 \item{close}{stock price at the close of trading}
-\item{prev_close}{stock price at the close of previous trading day}
+\item{close_prev}{stock price at the close of previous trading day}
 \item{change_pct}{change percentage of stock close price}
 \item{volume}{number of shares traded}
 \item{amount}{monetary value of shares traded}
@@ -28,6 +28,6 @@ A data frame with 7240 rows and 15 variables:
 ssec
 }
 \description{
-The daily historical Shanghai Composite Index from the beginning of the Index to the end of July 2020
+The daily historical Shanghai Composite Index from the beginning of the Index to 17th Sept 2020
 }
 \keyword{datasets}

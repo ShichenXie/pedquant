@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pedquant</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.6.999</span>
       </span>
     </div>
 
@@ -125,7 +125,7 @@
     <p><code>ed_nbs_subregion</code> query province or city code from NBS</p>
     </div>
 
-    <pre class="usage"><span class='fu'>ed_nbs_subregion</span>(<span class='kw'>geo_type</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>eng</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</pre>
+    <pre class="usage"><span class='fu'>ed_nbs_subregion</span><span class='op'>(</span>geo_type <span class='op'>=</span> <span class='cn'>NULL</span>, eng <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -142,17 +142,18 @@
 
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
+    <pre class="examples"><div class='input'><span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
 <span class='co'># province code </span>
-<span class='no'>prov1</span> <span class='kw'>=</span> <span class='fu'>ed_nbs_subregion</span>(<span class='kw'>geo_type</span> <span class='kw'>=</span> <span class='st'>'province'</span>)
+<span class='va'>prov1</span> <span class='op'>=</span> <span class='fu'>ed_nbs_subregion</span><span class='op'>(</span>geo_type <span class='op'>=</span> <span class='st'>'province'</span><span class='op'>)</span> 
 <span class='co'># or using 'p' represents 'province'</span>
-<span class='no'>prov2</span> <span class='kw'>=</span> <span class='fu'>ed_nbs_subregion</span>(<span class='kw'>geo_type</span> <span class='kw'>=</span> <span class='st'>'p'</span>)
+<span class='va'>prov2</span> <span class='op'>=</span> <span class='fu'>ed_nbs_subregion</span><span class='op'>(</span>geo_type <span class='op'>=</span> <span class='st'>'p'</span><span class='op'>)</span> 
 
 <span class='co'># city code in Chinese</span>
 <span class='co'># city = ed_nbs_subregion(geo_type = 'c', eng = FALSE) </span>
 <span class='co'># city code in English</span>
-<span class='no'>city</span> <span class='kw'>=</span> <span class='fu'>ed_nbs_subregion</span>(<span class='kw'>geo_type</span> <span class='kw'>=</span> <span class='st'>'c'</span>, <span class='kw'>eng</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)
-}</div></pre>
+<span class='va'>city</span> <span class='op'>=</span> <span class='fu'>ed_nbs_subregion</span><span class='op'>(</span>geo_type <span class='op'>=</span> <span class='st'>'c'</span>, eng <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span> 
+<span class='op'>}</span>
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -168,7 +169,7 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

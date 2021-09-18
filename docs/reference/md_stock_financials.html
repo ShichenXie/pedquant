@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pedquant</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.6.999</span>
       </span>
     </div>
 
@@ -125,7 +125,7 @@
     <p><code>md_stock_financials</code> provides an interface to query financial statements and indicators of listed companies in SSE and SZSE.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>md_stock_financials</span>(<span class='no'>symbol</span>, <span class='kw'>type</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>print_step</span> <span class='kw'>=</span> <span class='fl'>1L</span>)</pre>
+    <pre class="usage"><span class='fu'>md_stock_financials</span><span class='op'>(</span><span class='va'>symbol</span>, type <span class='op'>=</span> <span class='cn'>NULL</span>, print_step <span class='op'>=</span> <span class='fl'>1L</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -146,23 +146,25 @@
 
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
+    <pre class="examples"><div class='input'><span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
 <span class='co'># interactively specify type of financial table </span>
-<span class='no'>dat1</span> <span class='kw'>=</span> <span class='fu'>md_stock_financials</span>(<span class='st'>"000001"</span>)
+<span class='va'>dat1</span> <span class='op'>=</span> <span class='fu'>md_stock_financials</span><span class='op'>(</span><span class='st'>"000001"</span><span class='op'>)</span>
 
 <span class='co'># manually specify type of financial table</span>
 <span class='co'># type = "fr0"</span>
-<span class='no'>dat2</span> <span class='kw'>=</span> <span class='fu'>md_stock_financials</span>(<span class='st'>"000001"</span>, <span class='kw'>type</span><span class='kw'>=</span><span class='st'>"fs0"</span>)
+<span class='va'>dat2</span> <span class='op'>=</span> <span class='fu'>md_stock_financials</span><span class='op'>(</span><span class='st'>"000001"</span>, type<span class='op'>=</span><span class='st'>"fs0"</span><span class='op'>)</span>
 <span class='co'># or type = "fr0_summary"</span>
-<span class='no'>dat3</span> <span class='kw'>=</span> <span class='fu'>md_stock_financials</span>(<span class='st'>"000001"</span>, <span class='kw'>type</span><span class='kw'>=</span><span class='st'>"fs0_summary"</span>)
+<span class='va'>dat3</span> <span class='op'>=</span> <span class='fu'>md_stock_financials</span><span class='op'>(</span><span class='st'>"000001"</span>, type<span class='op'>=</span><span class='st'>"fs0_summary"</span><span class='op'>)</span>
 
 <span class='co'># multiple symbols and statements</span>
-<span class='no'>dat4</span> <span class='kw'>=</span> <span class='fu'>md_stock_financials</span>(<span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"000001"</span>, <span class='st'>"600000"</span>), <span class='kw'>type</span> <span class='kw'>=</span> <span class='st'>"fi"</span>)
+<span class='va'>dat4</span> <span class='op'>=</span> <span class='fu'>md_stock_financials</span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"000001"</span>, <span class='st'>"600000"</span><span class='op'>)</span>, type <span class='op'>=</span> <span class='st'>"fi"</span><span class='op'>)</span>
 
 <span class='co'># dupont analysis indicators</span>
-<span class='no'>fs_idx</span> <span class='kw'>=</span> <span class='fu'>md_stock_financials</span>(<span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>'000001'</span>, <span class='st'>'^000001'</span>), <span class='kw'>type</span> <span class='kw'>=</span> <span class='st'>'dupont'</span>)
+<span class='va'>fs_idx</span> <span class='op'>=</span> <span class='fu'>md_stock_financials</span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>'000001'</span>, <span class='st'>'^000001'</span><span class='op'>)</span>, type <span class='op'>=</span> <span class='st'>'dupont'</span><span class='op'>)</span>
 
-}</div></pre>
+<span class='op'>}</span>
+
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -178,7 +180,7 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>
