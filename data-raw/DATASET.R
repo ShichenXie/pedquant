@@ -1,7 +1,7 @@
 ## code to prepare `DATASET` dataset goes here
 library(pedquant)
 library(data.table)
-ssec = md_stock('^000001', date_range = 'max', source = '163')
+ssec = md_stock('^000001', date_range = 'max', to = '2021-09-01', source = '163')
 ssec = setDF(ssec$`^000001`)
 usethis::use_data(ssec, overwrite = TRUE)
 

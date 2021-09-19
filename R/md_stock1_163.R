@@ -163,14 +163,124 @@ md_stock_spot_tx = function(symbol1, only_syb_nam = FALSE, ...) {
 
 
 
-md_stock_info1 = function(symbol1) {
+md_stock_info1_163 = function(symbol1, str_income_hist = FALSE, ...) {
+  . = N = V1 = X1 = X2 = X3 = X4 = income_by = mkt = rd = rid = NULL
+  
   # symbol1 = '600036'
   # http://quotes.money.163.com/f10/gszl_600036.html#01f01
   # http://quotes.money.163.com/service/gszl_600036.html?type=cp
   # http://quotes.money.163.com/service/gszl_600036.html?type=hy
   # http://quotes.money.163.com/service/gszl_600036.html?type=dy
   
-  company_info_url = sprintf('http://quotes.money.163.com/f10/gszl_%s.html#01f01', symbol1)
+  # skip index
+  if (check_symbol_cn(symbol1)[, mkt == 'index' || is.na(mkt)]) return(NULL)
+  # symbol1 = '000001'
+  stk_price = md_stock_spot_tx(symbol1, only_syb_nam=TRUE)
+  # columns
+  income_strcols = c('income', 'cost', 'profit', 'gross_margin', 'profit_proportion')
+  employee_strcols = c('number', 'proportion')
+  
+  if (str_income_hist) {
+    income_hist_preprocess = function(dat, type) {
+      income_strcols = c('income', 'cost', 'profit', 'gross_margin', 'profit_proportion')
+      
+      rbindlist(lapply(
+        split(income_product[
+          , rid := 0
+        ][V1 == income_product[1,1], rid := 1
+        ][, rid := cumsum(rid)][], by = 'rid'), 
+        function(x) {
+          setnames(
+            x[-c(1:2),
+            ][, report_date := x[1,5]
+            ][, income_by := type
+            ][, c(8,9,1:6)], 
+            c('report_date', 'income_by', 'variable', income_strcols)
+          )
+        }
+      ))[, (income_strcols) := lapply(.SD, function(x) {
+        as.numeric(gsub(',|\\s|-|%', '', x))
+      }), .SDcols = income_strcols][]
+    }
+    
+    income_product = load_read_csv(
+      sprintf('http://quotes.money.163.com/service/gszl_%s.html?type=cp', symbol1), 
+      encode = 'GBK', csv_header = FALSE
+    )
+    income_product2 = income_hist_preprocess(income_product, type = 'product')
+    
+    
+    income_industry = load_read_csv(
+      sprintf('http://quotes.money.163.com/service/gszl_%s.html?type=hy', symbol1), 
+      encode = 'GBK', csv_header = FALSE
+    )
+    income_industry2 = income_hist_preprocess(income_industry, type = 'industry')
+    
+    
+    income_location = load_read_csv(
+      sprintf('http://quotes.money.163.com/service/gszl_%s.html?type=dy', symbol1), 
+      encode = 'GBK', csv_header = FALSE
+    )
+    income_location2 = income_hist_preprocess(income_location, type = 'location')
+    
+    
+    retdat = list(str_income = cbind(
+      stk_price,
+      rbind(income_product2, income_industry2, income_location2)
+    ))
+  } else {
+    # load all tables
+    datweb = read_html(sprintf(
+      'http://quotes.money.163.com/f10/gszl_%s.html#01f01', 
+      sub("^.*?([0-9]+).*$",'\\1', symbol1)
+    ))
+    report_date = 
+      data.table(
+        rd = html_text(html_nodes(datweb, 'div.report_date span'))
+      )[, report_date := sub('.*([0-9]{4}-[0-9]{2}-[0-9]{2}).*', '\\1', rd) 
+      ][,.N, by = report_date][order(-N)][1, .(report_date)] 
+    
+    tbls = rvest::html_table(datweb, fill = TRUE, header = FALSE)
+    
+    profile = 
+      rbind(
+        setDT(tbls[[4]])[1:9,   .(variable = X1, value = X2)], 
+        setDT(tbls[[4]])[1:9,   .(variable = X3, value = X4)], 
+        setDT(tbls[[4]])[10:12, .(variable = X1, value = X2)]
+      )
+    
+    ipo = setDT(tbls[[5]])[, .(variable = X1, value = X2)][]
+    info = cbind(stk_price, rbindlist(list(profile=profile, ipo=ipo), idcol = 'info_type'))
+    
+    
+    str_income = tbls[7:9]
+    names(str_income) = c('prodcut', 'industry', 'location')
+    str_income = rbindlist(
+      lapply( str_income, function(x) setnames(x[-1,], c('variable', income_strcols)) ), 
+      idcol = 'income_by'
+    )[, (income_strcols) := lapply(.SD, function(x) {
+      as.numeric(gsub(',|\\s|-|%', '', x))
+    }), .SDcols = income_strcols][]
+    str_income = cbind(stk_price, report_date, str_income)
+    
+    str_employee = tbls[10:11]
+    names(str_employee) = c('education', 'work_type')
+    str_employee = rbindlist(
+      lapply(str_employee, function(x) setnames(x[-1,], c('variable', employee_strcols))), 
+      idcol = 'employee_by'
+    )[, (employee_strcols) := lapply(.SD, function(x) {
+      as.numeric(gsub('\\s|%', '', x))
+    }), .SDcols = employee_strcols]
+    str_employee = cbind(stk_price, report_date, str_employee)
+    
+    retdat = list(
+      info = info, 
+      str_income = str_income, 
+      str_employee = str_employee
+    )
+  }
+  
+  return(retdat)
 }
 
 #' @import data.table
@@ -426,7 +536,9 @@ md_stock_163 = function(symbol, from='1900-01-01', to=Sys.Date(), print_step=1L,
   } else if (type == 'adjfactor') (
     dat_list = load_dat_loop(symbol, 'md_stock_divsplit1_163', args = list(from = from, to = to), print_step=print_step)
     
-  )
+  ) else if (type == 'info') {
+    dat_list = load_dat_loop(symbol, 'md_stock_info1_163', args = list(...), print_step=print_step)
+  }
   
   rmcols_func = function(x) {
     name = NULL
@@ -436,7 +548,7 @@ md_stock_163 = function(symbol, from='1900-01-01', to=Sys.Date(), print_step=1L,
     if ('name' %in% names(x)) x = x[, name := gsub('\\s', '', name)]
     return(x)
   }
-  if (type != 'adjfactor') {
+  if (type %in% c('history', 'spot')) {
     if (inherits(dat_list, 'list')) {
       dat_list = lapply(dat_list, rmcols_func)
     } else if (inherits(dat_list, 'data.frame')) {

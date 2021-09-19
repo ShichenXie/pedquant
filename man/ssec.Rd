@@ -5,7 +5,7 @@
 \alias{ssec}
 \title{dataset of shanghai composite index}
 \format{
-A data frame with 7518 rows and 15 variables:
+A data frame with 7506 rows and 15 variables:
 \describe{
 \item{symbol}{stock ticker symbol}
 \item{name}{stock ticker name}
@@ -28,6 +28,6 @@ A data frame with 7518 rows and 15 variables:
 ssec
 }
 \description{
-The daily historical Shanghai Composite Index from the beginning of the Index to 17th Sept 2020
+The daily historical Shanghai Composite Index from the beginning of the Index to Sept 1, 2020
 }
 \keyword{datasets}

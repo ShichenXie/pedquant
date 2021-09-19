@@ -12,7 +12,7 @@ md_stock_adjust(dt, source, adjust = TRUE, ...)
 \item{source}{the available data sources are 'yahoo' (\url{https://finance.yahoo.com}) and '163' (\url{https://money.163.com}).}
 
 \item{adjust}{whether to adjust the OHLC prices. If it is NULL or FALSE, return the original data. Default is TRUE.
-For the yahoo data, the adjustment is based on 'close_adj' column; for the 163 data, the adjustment is based on 'close' and 'close_prev' columns.}
+For the yahoo data, the adjustment is based on the close_adj; for the 163 data, the adjustment is based on the cumulative products of close/close_prev.}
 
 \item{...}{Additional parameters.}
 }

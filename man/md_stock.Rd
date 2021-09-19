@@ -24,7 +24,7 @@ md_stock(symbol, source = "yahoo", type = "history", freq = "daily",
 \item{to}{the end date. Default is current system date.}
 
 \item{adjust}{whether to adjust the OHLC prices. If it is NULL or FALSE, return the original data. Default is FALSE.
-For the yahoo data, the adjustment is based on 'close_adj' column; for the 163 data, the adjustment is based on 'close' and 'close_prev' columns.}
+For the yahoo data, the adjustment is based on the close_adj; for the 163 data, the adjustment is based on the cumulative products of close/close_prev.}
 
 \item{print_step}{A non-negative integer. Print symbol name by each print_step iteration. Default is 1L.}
 
@@ -77,6 +77,13 @@ dt_spot3 = md_stock(symbol=c('a', 'b', 'index'), source="163", type='spot')
 # show spot prices and sector/industry
 dt_spot4 = md_stock(symbol = c('a', 'b', 'index', 'fund'), source = '163', 
   type = 'spot', show_tags = TRUE)
+
+# Example IV
+# query company information, including profile, IPO, structure of income, structure of employee
+dt_info = md_stock('600036', type = 'info')
+
+# query structure of income in history only
+dt_info2 = md_stock('600036', type = 'info', str_income_hist = TRUE)
 
 }
 

@@ -56,7 +56,7 @@ pp_candle = function(
         
         ###### overlay techinal indicators ######
         if (!is.null(addti) & length(addti)>0) {
-            p = do.call(pp_add_ti_overlay, args = list(p = p, dt = dt[date>=from-365 & date <= to], from = from, to = to, rm_weekend = rm_weekend, addti = addti))
+            p = do.call(pp_add_ti_overlay, args = list(p = p, dt = dt[date>=from & date <= to], from = from, to = to, rm_weekend = rm_weekend, addti = addti))
         }
         
         # add linear trend line
@@ -75,7 +75,7 @@ pp_candle = function(
     
     ###### oscillator techinal indicators ######
     if (!is.null(addti) & length(addti)>0 & num_syb==1) {
-        p = do.call(pp_add_ti_oscillator, args = list(p = p, dt = dt[date>=from-365 & date <= to], from = from, to = to, rm_weekend = rm_weekend, addti = addti))
+        p = do.call(pp_add_ti_oscillator, args = list(p = p, dt = dt[date>=from & date <= to], from = from, to = to, rm_weekend = rm_weekend, addti = addti))
     } 
     
     return(p)
@@ -132,7 +132,7 @@ pp_candlei = function(
             
             ###### overlay techinal indicators ######
             if (!is.null(addti) & length(addti)>0) {
-                p = do.call(pp_add_ti_overlay, args = list(p = p, dt = dt[date>=from-365 & date <= to], from = from, to = to, rm_weekend = rm_weekend, addti = addti, interact = TRUE))
+                p = do.call(pp_add_ti_overlay, args = list(p = p, dt = dt[date>=from & date <= to], from = from, to = to, rm_weekend = rm_weekend, addti = addti, interact = TRUE))
             }
             
             # add linear trend line
@@ -154,7 +154,7 @@ pp_candlei = function(
     
     ###### oscillator techinal indicators ######
     if (!is.null(addti) & length(addti)>0 & num_syb==1) {
-        p = do.call(pp_add_ti_oscillator, args = list(p = p, dt = dt[date>=from-365 & date <= to], from = from, to = to, rm_weekend = rm_weekend, addti = addti, interact = TRUE))
+        p = do.call(pp_add_ti_oscillator, args = list(p = p, dt = dt[date>=from & date <= to], from = from, to = to, rm_weekend = rm_weekend, addti = addti, interact = TRUE))
     }
     
     # set title 
@@ -218,7 +218,7 @@ pp_bar = function(
         
         ##### overlay techinal indicators #####
         if (!is.null(addti) & length(addti)>0) {
-            p = do.call(pp_add_ti_overlay, args = list(p = p, dt = dt[date>=from-365 & date <= to], from = from, to = to, rm_weekend = rm_weekend, addti = addti))
+            p = do.call(pp_add_ti_overlay, args = list(p = p, dt = dt[date>=from & date <= to], from = from, to = to, rm_weekend = rm_weekend, addti = addti))
         }
         
         # add linear trend line
@@ -237,7 +237,7 @@ pp_bar = function(
     
     ###### oscillator techinal indicators ######
     if (!is.null(addti) & length(addti)>0 & num_syb==1) {
-        p = do.call(pp_add_ti_oscillator, args = list(p = p, dt = dt[date>=from-365 & date <= to], from = from, to = to, rm_weekend = rm_weekend, addti = addti))
+        p = do.call(pp_add_ti_oscillator, args = list(p = p, dt = dt[date>=from & date <= to], from = from, to = to, rm_weekend = rm_weekend, addti = addti))
     }
     
     return(p)
@@ -292,7 +292,7 @@ pp_bari = function(
             
             ###### overlay techinal indicators ######
             if (!is.null(addti) & length(addti)>0) {
-                p = do.call(pp_add_ti_overlay, args = list(p = p, dt = dt[date>=from-365 & date <= to], from = from, to = to, rm_weekend = rm_weekend, addti = addti, interact = TRUE))
+                p = do.call(pp_add_ti_overlay, args = list(p = p, dt = dt[date>=from & date <= to], from = from, to = to, rm_weekend = rm_weekend, addti = addti, interact = TRUE))
             }
             
             # add linear trend line
@@ -313,7 +313,7 @@ pp_bari = function(
     
     ###### oscillator techinal indicators ######
     if (!is.null(addti) & length(addti)>0 & num_syb==1) {
-        p = do.call(pp_add_ti_oscillator, args = list(p = p, dt = dt[date>=from-365 & date <= to], from = from, to = to, rm_weekend = rm_weekend, addti = addti, interact = TRUE))
+        p = do.call(pp_add_ti_oscillator, args = list(p = p, dt = dt[date>=from & date <= to], from = from, to = to, rm_weekend = rm_weekend, addti = addti, interact = TRUE))
     }
     
     # set title 
@@ -389,7 +389,7 @@ pp_line = function(
         
         ###### overlay techinal indicators ######
         if (!is.null(addti) & length(addti)>0) {
-            p = do.call(pp_add_ti_overlay, args = list(p = p, dt = dt[date>=from-365 & date <= to], from = from, to = to, rm_weekend = rm_weekend, addti = addti))
+            p = do.call(pp_add_ti_overlay, args = list(p = p, dt = dt[date>=from & date <= to], from = from, to = to, rm_weekend = rm_weekend, addti = addti))
         }
         # add linear trend line
         if (!is.null(linear_trend)) 
@@ -407,7 +407,7 @@ pp_line = function(
     
     ###### oscillator techinal indicators ######
     if (!is.null(addti) & length(addti)>0 & num_syb==1) {
-        p = do.call(pp_add_ti_oscillator, args = list(p = p, dt = dt[date>=from-365 & date <= to], from = from, to = to, rm_weekend = rm_weekend, addti = addti))
+        p = do.call(pp_add_ti_oscillator, args = list(p = p, dt = dt[date>=from & date <= to], from = from, to = to, rm_weekend = rm_weekend, addti = addti))
     }
     
     return(p)
@@ -477,7 +477,7 @@ pp_linei = function(
             
             ###### overlay techinal indicators ######
             if (!is.null(addti) & length(addti)>0) {
-                p = do.call(pp_add_ti_overlay, args = list(p = p, dt = dt[date>=from-365 & date <= to], from = from, to = to, rm_weekend = rm_weekend, addti = addti, interact = TRUE))
+                p = do.call(pp_add_ti_overlay, args = list(p = p, dt = dt[date>=from & date <= to], from = from, to = to, rm_weekend = rm_weekend, addti = addti, interact = TRUE))
             }
             
             # add linear trend line
@@ -498,7 +498,7 @@ pp_linei = function(
     
     ###### oscillator techinal indicators ######
     if (!is.null(addti) & length(addti)>0 & num_syb==1) {
-        p = do.call(pp_add_ti_oscillator, args = list(p = p, dt = dt[date>=from-365 & date <= to], from = from, to = to, rm_weekend = rm_weekend, addti = addti, interact = TRUE))
+        p = do.call(pp_add_ti_oscillator, args = list(p = p, dt = dt[date>=from & date <= to], from = from, to = to, rm_weekend = rm_weekend, addti = addti, interact = TRUE))
     }
     
     # set title 
@@ -584,7 +584,7 @@ pp_step = function(
         
         ###### overlay techinal indicators ######
         if (!is.null(addti) & length(addti)>0) {
-            p = do.call(pp_add_ti_overlay, args = list(p = p, dt = dt[date>=from-365 & date <= to], from = from, to = to, rm_weekend = rm_weekend, addti = addti))
+            p = do.call(pp_add_ti_overlay, args = list(p = p, dt = dt[date>=from & date <= to], from = from, to = to, rm_weekend = rm_weekend, addti = addti))
         }
         # add linear trend line
         if (!is.null(linear_trend)) 
@@ -602,7 +602,7 @@ pp_step = function(
     
     ###### oscillator techinal indicators ######
     if (!is.null(addti) & length(addti)>0 & num_syb==1) {
-        p = do.call(pp_add_ti_oscillator, args = list(p = p, dt = dt[date>=from-365 & date <= to], from = from, to = to, rm_weekend = rm_weekend, addti = addti))
+        p = do.call(pp_add_ti_oscillator, args = list(p = p, dt = dt[date>=from & date <= to], from = from, to = to, rm_weekend = rm_weekend, addti = addti))
     } 
     
     return(p)
@@ -673,7 +673,7 @@ pp_stepi = function(
             
             ###### overlay techinal indicators ######
             if (!is.null(addti) & length(addti)>0) {
-                p = do.call(pp_add_ti_overlay, args = list(p = p, dt = dt[date>=from-365 & date <= to], from = from, to = to, rm_weekend = rm_weekend, addti = addti, interact = TRUE))
+                p = do.call(pp_add_ti_overlay, args = list(p = p, dt = dt[date>=from & date <= to], from = from, to = to, rm_weekend = rm_weekend, addti = addti, interact = TRUE))
             }
             
             # add linear trend line
@@ -695,7 +695,7 @@ pp_stepi = function(
     
     ###### oscillator techinal indicators ######
     if (!is.null(addti) & length(addti)>0 & num_syb==1) {
-        p = do.call(pp_add_ti_oscillator, args = list(p = p, dt = dt[date>=from-365 & date <= to], from = from, to = to, rm_weekend = rm_weekend, addti = addti, interact = TRUE))
+        p = do.call(pp_add_ti_oscillator, args = list(p = p, dt = dt[date>=from & date <= to], from = from, to = to, rm_weekend = rm_weekend, addti = addti, interact = TRUE))
     } 
     
     # set title 
@@ -1567,7 +1567,7 @@ pq_plot = function(
                 rm_weekend = rm_weekend, title = title, 
                 multi_series = multi_series,
                 linear_trend = linear_trend, 
-                multi_series_all1=multi_series_all1,
+                multi_series_all1 = multi_series_all1,
                 subtitle_str = subtitle_str
             ))
         )
@@ -1590,7 +1590,7 @@ pq_plot = function(
                     rm_weekend = rm_weekend, title = title, 
                     multi_series = multi_series,
                     linear_trend = linear_trend,
-                    multi_series_all1=multi_series_all1,
+                    multi_series_all1 = multi_series_all1,
                     subtitle_str = subtitle_str[symbol == s]
                 ))
             )

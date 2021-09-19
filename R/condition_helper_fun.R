@@ -362,20 +362,20 @@ load_read_xl = function(url, handle=new_handle()) {
 #download and read csv file from website
 #' @importFrom utils download.file read.csv
 #' @importFrom curl curl_download new_handle
-# load_read_csv = function(url, encode) {
+# load_read_csv2 = function(url, encode="UTF-8") {
 #     temp = tempfile()
 #     download.file(url=url, destfile=temp, quiet=TRUE)
 #     dat = read.csv(temp, fileEncoding = encode)
 #     unlink(temp)
-#     
+# 
 #     return(dat)
 # }
-load_read_csv = function(url, encode="UTF-8", handle=new_handle()) {
+load_read_csv = function(url, encode="UTF-8", handle=new_handle(), csv_header=TRUE) {
     temp = tempfile()
     on.exit(unlink(temp))
     
     curl_download(url, destfile = temp, handle = handle)
-    dat = suppressWarnings(read.csv(temp, fileEncoding = encode))
+    dat = suppressWarnings(read.csv(temp, fileEncoding = encode, header = csv_header))
     return(setDT(dat))
 }
 
