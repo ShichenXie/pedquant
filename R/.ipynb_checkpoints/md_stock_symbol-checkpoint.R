@@ -132,13 +132,14 @@ md_stock_symbol_nasdaq = function(exchange) {
     # "https://old.nasdaq.com/screening/companies-by-name.aspx?letter=0&exchange=%s&render=download",
     # 'http://www.nasdaq.com/screening/companies-by-name.aspx?letter=0&exchange=%s&render=download', 
     "https://api.nasdaq.com/api/screener/stocks?tableonly=true&exchange=%s&download=true",
-    toupper(exchange))
+    exchange)
   
-  dat = fromJSON(url)
-  dat2 = setDT(dat$data$rows)[,.(market='stock', exchange=exchange, board=NA, symbol, name, sector, industry, cap_market=marketCap, ipoyear, country)] 
+  dat = load_read_csv(url)[,.(market='stock', exchange=exchange, board=NA, symbol=Symbol, name=Name, sector=Sector, industry)]
+  dat[dat=='n/a'] <- NA
   
-  return(dat2)
+  return(dat)
 }
+
 
 
 # exchange index ------

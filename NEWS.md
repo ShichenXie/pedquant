@@ -1,6 +1,6 @@
 # pedquant 0.1.6.999
 
-* fixed mutual bugs in the functions such as get_fromto, md_stock_divsplit1_163 etc.
+* fixed mutual bugs in the functions such as get_fromto, md_stock_divsplit1_163, md_stock_symbol etc.
 * modified stock adjust method for 163 data
 * md_stock function supports to query listed company information, such as profile, IPO, structure of income, structure of employee
 

@@ -40,7 +40,10 @@ if (FALSE) {
     # code_exchange_commodity = pedquant:::dim_exchange_commodity()
     # code_exchange_stock = pedquant:::dim_exchange_stock()
     
-    # usethis::use_data(financial_statements_163, prov_indu_163, symbol_future_sina, symbol_stock_163, code_exchange_commodity, code_exchange_stock, code_country, code_currency, code_china_district, urls_pbc, internal = TRUE, overwrite = TRUE)
+    # # holiday of china
+    # holiday = setDF(ed_holiday(date_range = 'max'))
+    
+    # usethis::use_data(financial_statements_163, prov_indu_163, symbol_future_sina, symbol_stock_163, code_exchange_commodity, code_exchange_stock, code_country, code_currency, code_china_district, urls_pbc, holiday, internal = TRUE, overwrite = TRUE)
     
 }
 
