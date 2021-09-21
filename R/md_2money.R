@@ -99,12 +99,12 @@ md_libor1_last5 = function(currency) {
     
     dt_libor_5 = setDT(html_table(wb, fill = TRUE, header = TRUE)[[14]])
         # xml_table(wb, attr = '[@cellpadding="2"]', header = TRUE)[[1]]
-    dt_libor_5 = dt_libor_5[,-1][,symbol := paste0('uko',currency,c('on','1w','2w',paste0(1:11,'m'),'1y'))]
+    dt_libor_5 = dt_libor_5[,-1][,symbol := paste0('uko',currency,c('on','1w','2w',paste0(1:11,'m'),'1y'))][]
     dt_libor_5[dt_libor_5=='-'] <- NA
     dt_libor_5 = melt(dt_libor_5, id.vars = 'symbol', na.rm = TRUE, variable.name = 'date')[, `:=`(
-        value = as.numeric(sub('\\%', '', value)), 
+        value = as.numeric(gsub('[^0-9\\.]+', '', value)), 
         date = as.Date(date, format='%m-%d-%Y')
-    )][libor_symbol[,.(symbol, name)], on='symbol', nomatch=0]
+    )][][libor_symbol[,.(symbol, name)], on='symbol', nomatch=0]
     return(dt_libor_5)
 }
 md_libor1_hist = function(syb, from, to) {
@@ -121,11 +121,15 @@ md_libor1_hist = function(syb, from, to) {
     return(dt_libor_hist)
 }
 
-md_libor = function(symbol, from=NULL, to=Sys.Date(), print_step=1L) {
+md_libor = function(symbol, date_range = '3y', from=NULL, to=Sys.Date(), print_step=1L) {
     # arguments
     ## symbols
     syb_len = length(symbol)
     if (syb_len == 0) return(NULL)
+    ## from/to
+    ft = get_fromto(date_range, from, to, min_date = "1000-01-01", default_date_range = '3y')
+    from = ft$f
+    to = ft$t
     
     # libor in last 5days
     currency = unique(substr(symbol, 4, 6))

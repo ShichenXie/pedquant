@@ -4,12 +4,12 @@
 \alias{md_stock_adjust}
 \title{adjust stock price for split and dividend}
 \usage{
-md_stock_adjust(dt, source, adjust = TRUE, ...)
+md_stock_adjust(dt, source = NULL, adjust = TRUE, ...)
 }
 \arguments{
 \item{dt}{a list/dataframe of time series datasets that didnt adjust for split or dividend.}
 
-\item{source}{the available data sources are 'yahoo' (\url{https://finance.yahoo.com}) and '163' (\url{https://money.163.com}).}
+\item{source}{the available data sources are 'yahoo' and '163'. The source will set to yahoo, if the dt has close_adj column; and will set to 163, if the dt has close_prev column.}
 
 \item{adjust}{whether to adjust the OHLC prices. If it is NULL or FALSE, return the original data. Default is TRUE.
 For the yahoo data, the adjustment is based on the close_adj; for the 163 data, the adjustment is based on the cumulative products of close/close_prev.}
@@ -21,9 +21,8 @@ For the yahoo data, the adjustment is based on the close_adj; for the 163 data, 
 }
 \examples{
 \donttest{
-dt = md_stock('600547', source = '163', date_range = 'max', 
-              type = 'history', adjust = NULL)
+dt = md_stock('600547', source = '163', date_range = 'max')
 
-dtadj = md_stock_adjust(dt, source = '163', adjust = TRUE)
+dtadj = md_stock_adjust(dt, source = '163')
 }
 }

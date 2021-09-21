@@ -1,5 +1,5 @@
 Package: pedquant
-Version: 0.1.6.999
+Version: 0.1.7
 Title: Public Economic Data and Quantitative Analysis
 Description: 
     Provides an interface to access public economic and financial data for 

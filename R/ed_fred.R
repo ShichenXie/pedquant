@@ -50,6 +50,8 @@ ed_fred1 = function(symbol1, from="1776-07-04", to="9999-12-31", na_rm=FALSE) {
     }
     
     # observation data of symbol1
+    if (nrow(series) == 0) series[, title := NA][, units := NA]
+    
     observ = setDT(
         fromJSON(sprintf(base_url, sprintf("series/observations?series_id=%s&observation_start=%s&observation_end=%s&", symbol1, from, to), key))[["observations"]]
     )[,`:=`(name=series[1,title], geo=geo, unit=series[1,units]

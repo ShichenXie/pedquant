@@ -39,9 +39,7 @@ ed_code = function(cate=NULL) {
     
     cod_lst = list()
     for (i in cate) {
-        cod_lst[[i]] = setDT(copy(
-            eval(parse(text =  sprintf('code_%s', cate)))
-        )) # gsub(' ','_',paste("code", cate))
+        cod_lst[[i]] = setDT(copy( get(sprintf('code_%s', i)) ))
     }
     return(cod_lst)
 }

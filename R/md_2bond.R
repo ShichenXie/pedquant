@@ -47,12 +47,12 @@ urls_bond_chinabond = function() {
     # "http://www.chinabond.com.cn/cb/cn/zzsj/cywj/syqx/sjxz/zzgzqx/list.shtml"
     wb = read_html(path_cur_his[1])
     b_his = lapply(
-        paste0(path0, xml_attr(xml_find_all(wb, "//li//span//a"), "href")),
+        paste0(path0, html_attr(html_nodes(wb, 'div.rightListContent span a'), 'href')),
         function(x) {
-            paste0(path0, xml_attr(xml_find_all(read_html(x), "//li//span//a"), "href"))
+            html_attr(html_nodes(read_html(x), 'div.rightListContent span.rightFileImport a'), 'href')
         }
     )
-    b_his = unlist(b_his)
+    b_his = paste0(path0, unlist(b_his))
     
     
     return(list(b_cur, b_his))
@@ -63,6 +63,8 @@ md_bond_chinabond = function(symbol, from=NULL, to=Sys.Date(), print_step=1L) {
     
     symbol = tolower(symbol)
     syb_len = length(symbol)
+    if (syb_len == 0) return(NULL)
+    
     # years between from and to
     fromto_y = lapply(list(from=from, to=to), function(x) {
         # year of from/to

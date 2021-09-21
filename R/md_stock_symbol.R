@@ -125,7 +125,8 @@ md_stock_symbol_163 = function() {
 
 # nasdaq ------
 md_stock_symbol_nasdaq = function(exchange) {
-  .=Symbol=Name=Sector=industry=NULL
+  . = symbol = name = sector = industry = country = ipoyear = marketCap = NULL
+  
   
   # c("AMEX", "NASDAQ", "NYSE")
   url = sprintf(

@@ -1,6 +1,6 @@
 # https://github.com/joshuaulrich/quantmod/blob/a8e9cb87825c0997a8468f5105db6c507b26ac5d/R/adjustOHLC.R
 
-md_stock_adjust1 = function(dt, source, adjust = TRUE, adjfactor = NULL, ...) {
+md_stock_adjust1 = function(dt, source=NULL, adjust = TRUE, adjfactor = NULL, ...) {
     close_adj=ratio=symbol=V1=.=dividends=splits=issue_rate=issue_price=close_prev=factor_adj_spl=factor_adj_div=factor_adj=volume=name=splits_cum=adjratio=adjratio_cumchg=NULL
     
     # return original dt 
@@ -9,6 +9,14 @@ md_stock_adjust1 = function(dt, source, adjust = TRUE, adjfactor = NULL, ...) {
     ## if dt has OHLC columns
     cols_ohlc = c('open', 'high', 'low', 'close')
     if (!all(cols_ohlc %in% names(dt))) return(dt)
+    
+    if (is.null(source)) {
+        if (dt[!is.na(close_adj), .N>0]) {
+            source = 'yahoo'
+        } else if (dt[!is.na(close_prev), .N>0]) {
+            source = '163'
+        }
+    }
     
     # adjusting price
     ## for data from yahoo
@@ -96,20 +104,19 @@ md_stock_adjust1 = function(dt, source, adjust = TRUE, adjfactor = NULL, ...) {
 #' \code{md_stock_adjust} adjusts the open, high, low and close stock prices for split and dividend. 
 #' 
 #' @param dt a list/dataframe of time series datasets that didnt adjust for split or dividend.
-#' @param source the available data sources are 'yahoo' (\url{https://finance.yahoo.com}) and '163' (\url{https://money.163.com}).
+#' @param source the available data sources are 'yahoo' and '163'. The source will set to yahoo, if the dt has close_adj column; and will set to 163, if the dt has close_prev column. 
 #' @param adjust whether to adjust the OHLC prices. If it is NULL or FALSE, return the original data. Default is TRUE. 
 #' For the yahoo data, the adjustment is based on the close_adj; for the 163 data, the adjustment is based on the cumulative products of close/close_prev.
 #' @param ... Additional parameters.
 #' 
 #' @examples 
 #' \donttest{
-#' dt = md_stock('600547', source = '163', date_range = 'max', 
-#'               type = 'history', adjust = NULL)
+#' dt = md_stock('600547', source = '163', date_range = 'max')
 #' 
-#' dtadj = md_stock_adjust(dt, source = '163', adjust = TRUE)
+#' dtadj = md_stock_adjust(dt, source = '163')
 #' }
 #' @export
-md_stock_adjust = function(dt, source, adjust = TRUE, ...) {
+md_stock_adjust = function(dt, source = NULL, adjust = TRUE, ...) {
     symbol = NULL
     
     # dt
@@ -119,8 +126,6 @@ md_stock_adjust = function(dt, source, adjust = TRUE, ...) {
     adjfactor = list(...)[['adjfactor']]
     if (inherits(adjfactor, 'list')) adjfactor = rbindlist(adjfactor, fill = TRUE)
     if (inherits(adjfactor, 'data.frame')) adjfactor = setDT(adjfactor)
-    # arguments
-    source = check_arg(as.character(source), c('yahoo','163'))
 
     ## single series
     dt_list = list()
