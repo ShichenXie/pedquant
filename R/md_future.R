@@ -24,18 +24,29 @@ md_future_symbol = function() {
     return(syb)
 }
 
-#' @importFrom readr read_lines
-#' @importFrom curl curl
-md_future1_sina = function(symbol, freq, from, to, handle, ...) {
-    doc = V1 = name = . = high = low = volume = NULL
-    
+md_future_sybnam = function(symbol) {
     # symbol and name
     syb = toupper(symbol)
-    nam = setDT(copy(symbol_future_sina))[symbol == syb, name]
+    nam = setDT(copy(symbol_future_sina))[symbol == sub('[0-9]+', '0', syb), name]
+    nam = sub('[A-Za-z]+', nam, syb)
+    
+    return(list(symbol = syb, name = nam))
+}
+
+#' @importFrom readr read_lines
+#' @importFrom curl curl
+md_future1_sina = function(symbol, name, freq, from, to, handle, ...) {
+    doc = V1 = name = . = high = low = volume = NULL
+
+    
+    syb = symbol
+    nam = md_future_sybnam(symbol)$name 
+    
         # setDT(copy(symbol_sina))[
         # grepl(sub('^([A-Z]+)\\d*','\\1',syb), symbol), name]
         # 
     # url
+    # http://stock2.finance.sina.com.cn/futures/api/json.php/IndexService.getInnerFuturesDailyKLine?symbol=M0
     url0 = 'http://stock2.finance.sina.com.cn/futures/api/json.php/IndexService.getInnerFutures%s?symbol=%s'
     if (grepl('IF\\d+|TF\\d+|T\\d+|IH\\d+|IC\\d+', syb))
         url0 = 'http://stock2.finance.sina.com.cn/futures/api/json.php/CffexFuturesService.getCffexFutures%s?symbol=%s'
@@ -44,11 +55,16 @@ md_future1_sina = function(symbol, freq, from, to, handle, ...) {
     
     cols_names = c('date', 'open', 'high', 'low', 'close', 'volume')
     # data 
-    dt = data.table(doc = read_lines(curl(urli, handle=handle)))[
-        , strsplit(gsub('\'|\\]\\]|\\[\\[','',doc), '\\]\\,\\[')
-    ][, (cols_names) := tstrsplit(V1, ',', fixed=TRUE)
-    ][, lapply(.SD, function(x) gsub('\\"', '', x))
-    ][, (cols_names[-1]) := lapply(.SD, as.numeric), .SDcols = cols_names[-1]]
+    dt = setDT(as.data.frame(fromJSON(urli)))
+    dt = setnames(
+        dt, cols_names
+    )[, (cols_names[-1]) := lapply(.SD, as.numeric), .SDcols = cols_names[-1]]
+        
+    #     data.table(doc = read_lines(curl(urli, handle=handle)))[
+    #     , strsplit(gsub('\'|\\]\\]|\\[\\[','',doc), '\\]\\,\\[')
+    # ][, (cols_names) := tstrsplit(V1, ',', fixed=TRUE)
+    # ][, lapply(.SD, function(x) gsub('\\"', '', x))
+    # ][, (cols_names[-1]) := lapply(.SD, as.numeric), .SDcols = cols_names[-1]]
     if (freq == 'DailyKLine') {
         dt = dt[, date := as.Date(date)]
     } else {
@@ -56,12 +72,12 @@ md_future1_sina = function(symbol, freq, from, to, handle, ...) {
     }
     
     dt = dt[, `:=`(
-        V1 = NULL, symbol=syb, name=nam
+        symbol=syb, name=nam
     )][date >= from & date <= to,
      ][,.(symbol, name, date, open, high, low, close, volume)]
     
     setkeyv(dt, 'date')
-    return(dt[,unit := 'CNY'])
+    return(dt[,unit := 'CNY'][])
 }
 
 #' query future market data
@@ -91,11 +107,9 @@ md_future = function(symbol=NULL, source='sina', freq='daily', date_range='3y', 
     check_internet('www.sina.com.cn')
     # arguments
     ## symbol
-    syb = c()
-    while (length(syb) == 0) {
-        if (is.null(symbol)) symbol = md_future_symbol()[, symbol]
-        syb = intersect(toupper(symbol), setDT(copy(symbol_future_sina))$symbol)
-    }
+    if (is.null(symbol)) symbol = md_future_symbol()[, symbol]
+    syb = unlist(lapply(symbol, function(x) md_future_sybnam(x)$symbol))
+    
     
     ## from/to
     ft = get_fromto(date_range, from, to, min_date = '1000-01-01', default_date_range = '3y')
@@ -115,6 +129,8 @@ md_future = function(symbol=NULL, source='sina', freq='daily', date_range='3y', 
     
     # data
     dat_list = load_dat_loop(syb, 'md_future1_sina', args = list(handle = hd, freq = freq, from = from, to = to), print_step=print_step)
+    
+    dat_list = rm_error_dat(dat_list)
     return(dat_list)
 }
 

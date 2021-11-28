@@ -163,8 +163,8 @@ md_stock_spot_tx = function(symbol1, only_syb_nam = FALSE, ...) {
 
 
 
-md_stock_info1_163 = function(symbol1, str_income_hist = FALSE, ...) {
-  . = N = V1 = X1 = X2 = X3 = X4 = income_by = mkt = rd = rid = NULL
+md_stock_info1_163 = function(symbol1, rev_hist = FALSE, ...) {
+  . = N = V1 = V2 = V3 = V4 = V5 = V6 = X1 = X2 = X3 = X4 = revenue_by = mkt = report_date = rid = NULL
   
   # symbol1 = '600036'
   # http://quotes.money.163.com/f10/gszl_600036.html#01f01
@@ -173,72 +173,80 @@ md_stock_info1_163 = function(symbol1, str_income_hist = FALSE, ...) {
   # http://quotes.money.163.com/service/gszl_600036.html?type=dy
   
   # skip index
-  if (check_symbol_cn(symbol1)[, mkt == 'index' || is.na(mkt)]) return(NULL)
+  chk_syb = check_symbol_cn(symbol1)
+  symbol1 = chk_syb$syb
+  if (chk_syb[, mkt == 'index' || is.na(mkt)]) return(NULL)
   # symbol1 = '000001'
   stk_price = md_stock_spot_tx(symbol1, only_syb_nam=TRUE)
   # columns
-  income_strcols = c('income', 'cost', 'profit', 'gross_margin', 'profit_proportion')
-  employee_strcols = c('number', 'proportion')
+  rev_str_cols = c('revenue', 'cost', 'profit', 'gross_margin', 'profit_proportion')
+  staff_str_cols = c('number', 'proportion')
   
-  if (str_income_hist) {
-    income_hist_preprocess = function(dat, type) {
-      income_strcols = c('income', 'cost', 'profit', 'gross_margin', 'profit_proportion')
+  if (rev_hist) {
+    revhist_preprocess = function(dat) {
+      if (is.null(dat)) return(invisible())
+      
+      rev_str_cols = c('revenue', 'cost', 'profit', 'gross_margin', 'profit_proportion')
       
       rbindlist(lapply(
-        split(income_product[
-          , rid := 0
-        ][V1 == income_product[1,1], rid := 1
-        ][, rid := cumsum(rid)][], by = 'rid'), 
+        split(
+          dat[
+            , rid := 0
+          ][V1 == dat[1,1] & V2 == dat[1,2], rid := 1
+          ][, rid := cumsum(rid)][], 
+          by = 'rid'
+        ), 
         function(x) {
-          setnames(
-            x[-c(1:2),
-            ][, report_date := x[1,5]
-            ][, income_by := type
-            ][, c(8,9,1:6)], 
-            c('report_date', 'income_by', 'variable', income_strcols)
+          cbind(
+            stk_price, 
+            setnames(
+              x[, report_date := x[1,5]][-c(1:2)][, .(report_date, V1, V2, V3, V4, V5, V6)], 
+              c('report_date', 'variable', rev_str_cols)
+            )
           )
         }
-      ))[, (income_strcols) := lapply(.SD, function(x) {
-        as.numeric(gsub(',|\\s|-|%', '', x))
-      }), .SDcols = income_strcols][]
+      ))[, (rev_str_cols) := lapply(.SD, function(x) {
+        as.numeric(gsub(',|\\s|(--)|%', '', x))
+      }), .SDcols = rev_str_cols][]
     }
     
-    income_product = load_read_csv(
+    rev_product = load_read_csv(
       sprintf('http://quotes.money.163.com/service/gszl_%s.html?type=cp', symbol1), 
       encode = 'GBK', csv_header = FALSE
     )
-    income_product2 = income_hist_preprocess(income_product, type = 'product')
     
-    
-    income_industry = load_read_csv(
+    rev_industry = load_read_csv(
       sprintf('http://quotes.money.163.com/service/gszl_%s.html?type=hy', symbol1), 
       encode = 'GBK', csv_header = FALSE
     )
-    income_industry2 = income_hist_preprocess(income_industry, type = 'industry')
     
-    
-    income_location = load_read_csv(
+    rev_location = load_read_csv(
       sprintf('http://quotes.money.163.com/service/gszl_%s.html?type=dy', symbol1), 
       encode = 'GBK', csv_header = FALSE
     )
-    income_location2 = income_hist_preprocess(income_location, type = 'location')
     
     
-    retdat = list(str_income = cbind(
-      stk_price,
-      rbind(income_product2, income_industry2, income_location2)
-    ))
+    retdat = list(
+      revenue = rbindlist(list(
+        product = revhist_preprocess(rev_product), 
+        industry = revhist_preprocess(rev_industry),
+        location = revhist_preprocess(rev_location)
+      ), idcol = 'revenue_by')[, report_date := as.Date(report_date)][]
+    )
   } else {
     # load all tables
     datweb = read_html(sprintf(
       'http://quotes.money.163.com/f10/gszl_%s.html#01f01', 
       sub("^.*?([0-9]+).*$",'\\1', symbol1)
     ))
-    report_date = 
+    
+    rdlist = 
       data.table(
-        rd = html_text(html_nodes(datweb, 'div.report_date span'))
-      )[, report_date := sub('.*([0-9]{4}-[0-9]{2}-[0-9]{2}).*', '\\1', rd) 
-      ][,.N, by = report_date][order(-N)][1, .(report_date)] 
+        revstaff = c('product', 'industry', 'location', 'education', 'work_type'), 
+        report_date = html_text(html_nodes(datweb, 'div.report_date span'))
+      )[, report_date := substr(gsub(' *', '', report_date), 6, nchar(report_date)) ][]
+    # sub('.*([0-9]{4}-[0-9]{2}-[0-9]{2}).*', '\\1', rd) 
+    
     
     tbls = rvest::html_table(datweb, fill = TRUE, header = FALSE)
     
@@ -253,30 +261,40 @@ md_stock_info1_163 = function(symbol1, str_income_hist = FALSE, ...) {
     info = cbind(stk_price, rbindlist(list(profile=profile, ipo=ipo), idcol = 'info_type'))
     
     
-    str_income = tbls[7:9]
-    names(str_income) = c('prodcut', 'industry', 'location')
-    str_income = rbindlist(
-      lapply( str_income, function(x) setnames(x[-1,], c('variable', income_strcols)) ), 
-      idcol = 'income_by'
-    )[, (income_strcols) := lapply(.SD, function(x) {
+    str_revenue = tbls[7:9]
+    names(str_revenue) = c('product', 'industry', 'location')
+    str_revenue = rbindlist(
+      lapply( str_revenue, function(x) setnames(x[-1,], c('variable', rev_str_cols)) ), 
+      idcol = 'revenue_by'
+    )[, (rev_str_cols) := lapply(.SD, function(x) {
       as.numeric(gsub(',|\\s|-|%', '', x))
-    }), .SDcols = income_strcols][]
-    str_income = cbind(stk_price, report_date, str_income)
+    }), .SDcols = rev_str_cols][]
     
-    str_employee = tbls[10:11]
-    names(str_employee) = c('education', 'work_type')
-    str_employee = rbindlist(
-      lapply(str_employee, function(x) setnames(x[-1,], c('variable', employee_strcols))), 
-      idcol = 'employee_by'
-    )[, (employee_strcols) := lapply(.SD, function(x) {
+    str_revenue = merge(
+      cbind(stk_price, setnames(rdlist[1:3], 'revstaff', 'revenue_by')), 
+      str_revenue, by = 'revenue_by', all.y = TRUE
+    )
+    
+    
+    str_staff = tbls[10:11]
+    names(str_staff) = c('education', 'work_type')
+    str_staff = rbindlist(
+      lapply(str_staff, function(x) setnames(x[-1,], c('variable', staff_str_cols))), 
+      idcol = 'staff_by'
+    )[, (staff_str_cols) := lapply(.SD, function(x) {
       as.numeric(gsub('\\s|%', '', x))
-    }), .SDcols = employee_strcols]
-    str_employee = cbind(stk_price, report_date, str_employee)
+    }), .SDcols = staff_str_cols]
+    
+    str_staff = merge(
+      cbind(stk_price, setnames(rdlist[4:5], 'revstaff', 'staff_by')), 
+      str_staff, by = 'staff_by', all.y = TRUE
+    )
+    
     
     retdat = list(
       info = info, 
-      str_income = str_income, 
-      str_employee = str_employee
+      revenue = str_revenue[report_date != '--'][, report_date := as.Date(report_date)], 
+      staff = str_staff[, report_date := as.Date(report_date)]
     )
   }
   
@@ -286,7 +304,7 @@ md_stock_info1_163 = function(symbol1, str_income_hist = FALSE, ...) {
 #' @import data.table
 #' @importFrom readr read_csv locale col_date col_character col_double col_integer
 md_stock_hist1_163 = function(symbol1, from='1900-01-01', to=Sys.Date(), zero_rm=TRUE, ...) {
-  V1 = name = change_pct = symbol = NULL
+  V1 = name = change_pct = symbol = close_prev = NULL
   # http://quotes.money.163.com/service/chddata.html?code=0000001&start=19901219&end=20180615&fields=TCLOSE;HIGH;LOW;TOPEN;LCLOSE;CHG;PCHG;VOTURNOVER;VATURNOVER
   # http://quotes.money.163.com/service/chddata.html?code=1399001&start=19910403&end=20180615&fields=TCLOSE;HIGH;LOW;TOPEN;LCLOSE;CHG;PCHG;VOTURNOVER;VATURNOVER
   # https://query1.finance.yahoo.com/v7/finance/download/^SSEC?period1=1526631424&period2=1529309824&interval=1d&events=history&crumb=mO08ZCtWRMI
@@ -327,6 +345,7 @@ md_stock_hist1_163 = function(symbol1, from='1900-01-01', to=Sys.Date(), zero_rm
   # if (max(dt[['date']]) < lwd()) dt = unique(dt, by='date')
   
   # fill zeros in dt
+  dt[close_prev == 0, close_prev := NA]
   if (zero_rm) {
     dt = dt[close != 0]
   } else {

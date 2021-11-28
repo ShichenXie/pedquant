@@ -1032,7 +1032,7 @@ pp_add_ti_overlay = function(
     # overlay technical indicators
     names(addti) <- tolower(names(addti))
     ti_not_topbottom = names(addti)[sapply(addti, function(x) !any(x[['position']] %in% c('top','bottom')))]
-    ti_overlay = intersect( ti_not_topbottom, tolower(ti_overlays_indicators()[['overlays']]) )
+    ti_overlay = intersect( ti_not_topbottom, tolower(pq_addti_funs()[['overlays']]) )
     addti = addti[names(addti) %in% c(ti_overlay,'w')]
     # return p if no overlay ti
     if (length(addti) == 0 || is.null(addti)) return(p)
@@ -1189,9 +1189,9 @@ pp_add_ti_oscillator = function(
     ti_not_topbottom = names(addti)[sapply(addti, function(x) !any(x[['position']] %in% c('top','bottom')))]
     ti_oscillator  = c(
         ti_topbottom,
-        # intersect(ti_topbottom, tolower(ti_overlays_indicators()[['overlays']])), 
-        setdiff(ti_not_topbottom, tolower(ti_overlays_indicators()[['overlays']])),
-        # intersect(ti_not_overlay, tolower(ti_overlays_indicators()[['indicators']])),
+        # intersect(ti_topbottom, tolower(pq_addti_funs()[['overlays']])), 
+        setdiff(ti_not_topbottom, tolower(pq_addti_funs()[['overlays']])),
+        # intersect(ti_not_overlay, tolower(pq_addti_funs()[['indicators']])),
         intersect(names(addti), names(which(sapply(dt, is.numeric))))
         )
     if ('bbands' %in% names(addti)) ti_oscillator = c(ti_oscillator, 'bbands')
@@ -1393,7 +1393,7 @@ pp_add_ti_oscillator = function(
 #' @param x the name of column display on chart.
 #' @param addti list of technical indicators or numerical columns in dt. For technical indicator, it is calculated via \code{pq_addti}, which including overlay and oscillator indicators.
 #' @param linear_trend a numeric vector. Default is NULL. If it is not NULL, then display linear trend lines on charts. 
-#' @param perf logical, display the performance of input series. Default is FALSE. If it is TRUE, then call \code{pq_code} to convert data into performance trends.
+#' @param cumchg_trend logical, display the cumulative change trend of price. Default is FALSE. 
 #' @param yaxis_log logical. Default is FALSE.
 #' @param color_up the color indicates price going up
 #' @param color_down the color indicates price going down
@@ -1436,8 +1436,8 @@ pp_add_ti_oscillator = function(
 #'         yaxis_log=TRUE)
 #' 
 #' # performance
-#' pq_plot(dat, multi_series = list(nrow=2), perf=TRUE, date_range = 'ytd')
-#' pq_plot(dat, multi_series = list(nrow=1, ncol=1), perf=TRUE, date_range = 'ytd')
+#' pq_plot(dat, multi_series = list(nrow=2), cumchg_trend=TRUE, date_range = 'ytd')
+#' pq_plot(dat, multi_series = list(nrow=1, ncol=1), cumchg_trend=TRUE, date_range = 'ytd')
 #' 
 #' }
 #' 
@@ -1450,7 +1450,7 @@ pq_plot = function(
     date_range = 'max', from = NULL, to = Sys.Date(), 
     x = 'close|value', 
     addti = list(volume = list()), 
-    linear_trend = NULL, perf = FALSE, 
+    linear_trend = NULL, cumchg_trend = FALSE, 
     yaxis_log = FALSE, 
     color_up = '#CF002F', color_down = '#000000', 
     multi_series = list(nrow=NULL, ncol=NULL), 
@@ -1464,8 +1464,8 @@ pq_plot = function(
     }
     
     # change into performance
-    if (perf) {
-        dt = pq_perf(dt, x=x, date_range=date_range, from=from, to=to)
+    if (cumchg_trend) {
+        dt = pq_trend(dt, x=x, date_range=date_range, from=from, to=to)
         title = ifelse(is.null(title), 'performance', paste(title, 'performance')) 
     }
     

@@ -48,8 +48,12 @@
 # rollSFM runCov runCor runVar GMMA SNR
 # "growth" "lags" "naCheck" 
 
-# Technical Overlays / Indicators
-ti_overlays_indicators = function() {
+#' technical functions
+#' 
+#' Technical functions provided in TTR package.
+#' 
+#' @export
+pq_addti_funs = function() {
   list(
     overlays = c('SMA', 'EMA', 'DEMA', 'WMA', 'EVWMA', 'ZLEMA', 'VWAP', 'VWMA', 'VMA', 'HMA', 'ALMA', 
                  'runMin', 'runMax', 'runMean', 'runMedian', 
@@ -367,7 +371,7 @@ pq1_addti = function(dt, ...) {
 
 #' adding technical indicators
 #' 
-#' `pq_addti` creates technical indicators on provided datasets use TTR package.
+#' `pq_addti` creates technical indicators using the functions provided in TTR package.
 #' 
 #' @param dt a list/dataframe of time series datasets.
 #' @param ... list of technical indicator parameters: sma = list(n=50), macd = list().

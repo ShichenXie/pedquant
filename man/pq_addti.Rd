@@ -33,7 +33,7 @@ pq_addti(dt, ...)
 }}
 }
 \description{
-\code{pq_addti} creates technical indicators on provided datasets use TTR package.
+\code{pq_addti} creates technical indicators using the functions provided in TTR package.
 }
 \examples{
 \donttest{

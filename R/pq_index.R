@@ -88,10 +88,9 @@ pq_rp1 = function(dt, region='cn', columns = c('open', 'high', 'low', 'close')) 
 #' @examples 
 #' \donttest{
 #' # Example I bank share index
-#' # load data
-#' bank_symbol = c('601988', '601288', '601398', '601939', '601328')
-#' bank_dat = md_stock(bank_symbol, source='163', date_range = 'max')
-#' 
+#' library(data.table)
+#' data(ssec)
+#' bank_dat = setDT(ssec)[symbol != '000001.SS']
 #' # creating index
 #' bank_index = pq_index(bank_dat, x='close', w='cap_total')
 #' # pq_plot(bank_index)

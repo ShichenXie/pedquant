@@ -16,7 +16,7 @@ fs_type1_cn = function(row_type, symbol1) {
     
     # load data from 163
     fr_url = sprintf(fr_163[row_type,urls], symbol1)
-    dat = suppressWarnings(read_csv(file=fr_url, col_types=cols(.default = "c"), locale = locale(encoding = "GBK"), na = c("", "NA", "--")))
+    dat = suppressWarnings(read_csv(file=fr_url, col_types=cols(.default = "c"), locale = locale(encoding = "GBK"), na = c("", "NA", "--"), name_repair = "minimal"))
     setnames(setDT(dat), c("var_name", names(dat)[-1]))
     
     # melt dataframe

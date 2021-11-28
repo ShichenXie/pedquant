@@ -1,117 +1,58 @@
-r_arithmetic = function(x, x_lag) x/x_lag-1
-r_log = function(x, x_lag) log(x/x_lag)
+return_arithmetic = function(x, x_lag) x/x_lag-1
+return_log = function(x, x_lag) log(x/x_lag)
 
-pq1_dreturn = function(dt, x='close|value', type='arithmetic') {
-    x_lag = daily_return = NULL
-    xx = intersect(unlist(strsplit(x,'\\|')), names(dt))[1]
-    dt2 = copy(dt)[, x_lag := shift(get(xx),n=1,type = 'lag')
-                 ][, daily_return := do.call(paste0('r_',type), args = list(x=get(xx), x_lag))]
+# rename the column name of asset returns
+ra_rename = function(dt, freq, rcol_rename=NULL) {
+    if (is.null(rcol_rename)) rcol_rename = paste0('return_', freq)
+    setnames(dt, 'Ra', rcol_rename)
     
-    cols_ret = intersect(c('symbol', 'name', 'date', 'daily_return'), names(dt2))
-    return(dt2[,cols_ret, with=FALSE])
+    return(dt)
 }
 
-pq1_wreturn = function(dt, x='close|value', type='arithmetic') {
-    w = wi = x_lag = weekly_return = NULL
+pq1_return = function(dt, x, method='arithmetic', freq='daily', rcol_rename = NULL, cols_keep) {
+    . = byfreq = func = byyear = wkdiff = wkN = x_lag = Ra = NULL
     
-    xx = intersect(unlist(strsplit(x,'\\|')), names(dt))[1]
-    dt2 = copy(dt)[, w := isoweek(date)
-                   ][, wi := w - shift(w, 1, type="lag")
-                     ][, wi := ifelse(wi!=0 | is.na(wi), 1, wi)
-                       ][, wi := cumsum(wi)]
-    
-    dt3 = dt2[, .SD[.N], by = wi
-            ][, x_lag := shift(get(xx),n=1,type = 'lag')
-              ][, weekly_return := do.call(paste0('r_',type), args = list(x=get(xx), x_lag))]
-    
-    if (xx == 'close' & 'open' %in% names(dt)) {
-        dt3[1, weekly_return := dt2[wi==1, do.call(paste0('r_',type), args = list(x=close[.N], x_lag=open[1]))]]
-    } else {
-        dt3[1, weekly_return := dt2[wi==1, do.call(paste0('r_',type), args = list(x=get(xx)[.N], x_lag=get(xx)[1]))]]
-    }
-
-    cols_ret = intersect(c('symbol', 'name', 'date', 'weekly_return'), names(dt3))
-    return(dt3[,cols_ret, with=FALSE])
-}
-
-pq1_mreturn = function(dt, x='close|value', type='arithmetic') {
-    .=y=m=x_lag=monthly_return=NULL
-    
-    xx = intersect(unlist(strsplit(x,'\\|')), names(dt))[1]
-    dt2 = copy(dt)[, `:=`(y=year(date), m=month(date))]
-    
-    dt3 = copy(dt2)[, .SD[.N], by = .(y, m)
-                 ][, x_lag := shift(get(xx),n=1,type = 'lag') 
-                 ][, monthly_return := do.call(paste0('r_',type), args = list(x=get(xx), x_lag))]
-    
-    if (xx == 'close' & 'open' %in% names(dt)) {
-        dt3[1, monthly_return := dt2[y==y[1] & m==m[1], do.call(paste0('r_',type), args = list(x=close[.N], x_lag=open[1]))]]
-    } else {
-        dt3[1, monthly_return := dt2[y==y[1] & m==m[1], do.call(paste0('r_',type), args = list(x=get(xx)[.N], x_lag=get(xx)[1]))]]
-    }
-    
-    cols_ret = intersect(c('symbol', 'name', 'date', 'monthly_return'), names(dt3))
-    return(dt3[,cols_ret, with=FALSE])
-}
-
-pq1_qreturn = function(dt, x='close|value', type='arithmetic') {
-    . = y = x_lag = quarterly_return = NULL
-    
-    xx = intersect(unlist(strsplit(x,'\\|')), names(dt))[1]
-    dt2 = copy(dt)[, `:=`(y=year(date), q=quarter(date))]
-    
-    dt3 = copy(dt2)[, .SD[.N], by = .(y, q)
-                    ][, x_lag := shift(get(xx),n=1,type = 'lag') 
-                      ][, quarterly_return := do.call(paste0('r_',type), args = list(x=get(xx), x_lag))]
-    
-    if (xx == 'close' & 'open' %in% names(dt)) {
-        dt3[1, quarterly_return := dt2[y==y[1] & q==q[1], do.call(paste0('r_',type), args = list(x=close[.N], x_lag=open[1]))]]
-    } else {
-        dt3[1, quarterly_return := dt2[y==y[1] & q==q[1], do.call(paste0('r_',type), args = list(x=get(xx)[.N], x_lag=get(xx)[1]))]]
-    }
-    
-    cols_ret = intersect(c('symbol', 'name', 'date', 'quarterly_return'), names(dt3))
-    return(dt3[,cols_ret, with=FALSE])
-}
-
-pq1_yreturn = function(dt, x='close|value', type='arithmetic') {
-    .=y=x_lag=yearly_return=NULL
-    
-    xx = intersect(unlist(strsplit(x,'\\|')), names(dt))[1]
-    dt2 = copy(dt)[, `:=`(y=year(date))]
-    
-    dt3 = copy(dt2)[, .SD[.N], by = .(y)
-                    ][, x_lag := shift(get(xx),n=1,type = 'lag') 
-                      ][, yearly_return := do.call(paste0('r_',type), args = list(x=get(xx), x_lag))]
-    
-    if (xx == 'close' & 'open' %in% names(dt)) {
-        dt3[1, yearly_return := dt2[y==y[1], do.call(paste0('r_',type), args = list(x=close[.N], x_lag=open[1]))]]
-    } else {
-        dt3[1, yearly_return := dt2[y==y[1], do.call(paste0('r_',type), args = list(x=get(xx)[.N], x_lag=get(xx)[1]))]]
-    }
-    
-    cols_ret = intersect(c('symbol', 'name', 'date', 'yearly_return'), names(dt3))
-    return(dt3[,cols_ret, with=FALSE])
-}
-
-
-pq1_return = function(dt, x='close|value', type='arithmetic', freq='daily', date_range='3y', from=NULL, to=Sys.Date()) {
     setkeyv(dt, "date")
-    if (freq == 'all') freq = c('daily', 'weekly', 'monthly', 'quarterly', 'yearly')
     
+    freq_list = c('daily', 'weekly', 'monthly', 'quarterly', 'yearly')
+    if (freq == 'all') freq = freq_list
+    freq = intersect(freq_list, freq)
     
-    ## from/to
-    ft = get_fromto(date_range, from, to, min_date = dt[1,date], default_date_range = 'max')
-    from = ft$f
-    to = ft$t
-    
-    
-    dt_rt = lapply(freq, function(f) {
-        do.call(sprintf("pq1_%sreturn",substr(f,1,1)), list(dt=dt[date>=from & date<=to], x=x, type=type))
+    freqfunc = data.table(
+        freq = freq_list, 
+        func = c('yday', 'isoweek', 'month', 'quarter', 'year'), 
+        key = 'freq'
+    )
+        
+    dt_rt = lapply(freq, function(freqi) {
+        dt2 = copy(dt)[, byfreq := do.call(freqfunc[freqi,func], args = list(x=date))
+        ][, byyear := year(date)]
+        
+        if (freqi == 'weekly') {
+            dt2 = dt2[byfreq %in% c(1,52,53), 
+                      wkdiff := byfreq - shift(byfreq, 1, type="lag") 
+            ][byfreq %in% c(1,52,53) & (wkdiff!=0|is.na(wkdiff)), wkdiff := 1
+            ][byfreq %in% c(1,52,53), wkN := cumsum(wkdiff)
+            ][byfreq %in% c(1,52,53) & wkN>0, byyear := max(byyear), by=wkN
+            ][, (c('wkdiff', 'wkN')) := NULL]
+        } 
+        
+        # BOP, bebinning of period
+        bop = dt2[, .SD[1], by = .(byyear, byfreq)]
+        # EOP, end of period
+        eop = dt2[, .SD[.N], by = .(byyear, byfreq)
+        ][, x_lag := shift(get(x),n=1,type = 'lag') 
+        ][1, x_lag := bop[1,get(x)]
+        ][, Ra := do.call(
+            sprintf('return_%s', method), 
+            args = list(x=get(x), x_lag)
+        )][, unique(c(cols_keep, 'Ra')), with = FALSE]
+        
+        eop = ra_rename(eop, freqi, rcol_rename)
+        return(eop)
     })
 
-    by_cols = intersect(c('symbol', 'name', 'date'), names(dt))
-    dt_rt2 = Reduce(function(x,y) merge(x,y, all.x=TRUE, by=by_cols), dt_rt)
+    dt_rt2 = Reduce(function(x,y) merge(x,y, all.x=TRUE, by=cols_keep), dt_rt)
     return(dt_rt2)
 }
 
@@ -121,9 +62,11 @@ pq1_return = function(dt, x='close|value', type='arithmetic', freq='daily', date
 #' \code{pq_return} calculates returns for daily series based on specified column, frequency and method type.
 #' 
 #' @param dt a list/dataframe of daily series dataset
-#' @param x the variable used to calculate returns.
-#' @param method the method to calculate returns.
+#' @param x the column name of adjusted asset price. 
 #' @param freq the frequency of returns. It supports c('all', 'daily', 'weekly', 'monthly', 'quarterly', 'yearly').
+#' @param method the method to calculate returns.
+#' @param rcol_rename setting the column name of returns, defaults to return_freq. 
+#' @param cols_keep the columns keep in the return data. The columns of symbol, name and date will always kept if they are exist in the input data.
 #' @param date_range date range. Available value includes '1m'-'11m', 'ytd', 'max' and '1y'-'ny'. Default is max.
 #' @param from the start date. Default is NULL. If it is NULL, then calculate using date_range and end date.
 #' @param to the end date. Default is the current date.
@@ -131,30 +74,47 @@ pq1_return = function(dt, x='close|value', type='arithmetic', freq='daily', date
 #' 
 #' @examples 
 #' \donttest{
-#' dts = md_stock(c('000001', '^000001'), source = '163')
+#' data(ssec)
+#' 
+#' # create a close_adj column
+#' datadj = md_stock_adjust(ssec, adjust = FALSE)
 #' 
 #' # set freq
-#' dts_returns1 = pq_return(dts, freq = 'all')
-#' dts_returns2 = pq_return(dts, freq = 'weekly')
+#' dts_returns1 = pq_return(datadj, x = 'close_adj', freq = 'all')
 #' 
 #' # set method
-#' dts_returns3 = pq_return(dts, freq = 'monthly', method = 'arithmetic') # default method
-#' dts_returns4 = pq_return(dts, freq = 'monthly', method = 'log')
+#' dts_returns2 = pq_return(datadj, x = 'close_adj', method = 'log')
+#' 
+#' # set cols_keep
+#' dts_returns3 = pq_return(datadj, x = 'close_adj', cols_keep = 'cap_total')
+#' 
 #' }
 #' 
 #' @export
-pq_return = function(dt, x='close|value', method='arithmetic', freq='all', date_range='max', from=NULL, to=Sys.Date(), print_step=1L) {
-    symbol = type = NULL
+pq_return = function(dt, x, freq='monthly', method='arithmetic', rcol_rename=NULL, cols_keep=NULL, date_range='max', from=NULL, to=Sys.Date(), print_step=1L) {
+    symbol = NULL 
     
+    # arg
+    ## method 
     method = check_arg(method, c('arithmetic', 'log'), default='arithmetic', arg_name = 'method')
     # arithmetic: p_{t-1} * (r+1) = p_{t}
     # log: p_{t-1} * e^r = p_{t}
+    ## freq
     freq = check_arg(freq, c('all', 'daily', 'weekly', 'monthly', 'quarterly', 'yearly'), default='all', arg_name = 'freq')
     # if (!check_freq_isdaily(dt)) stop('Please provide daily data')
-    
-    
+    ## from/to
+    ft = get_fromto(date_range, from, to)
+    from = ft$f
+    to = ft$t
+    ## dt
     if (inherits(dt, 'list')) dt = rbindlist(dt, fill = TRUE)
-    dt = setDT(dt)
+    ## price column 
+    x = check_xcol(dt, x)
+    ## kept columns
+    cols_keep = intersect(names(dt), unique(c('symbol', 'name', 'date', cols_keep)))
+    ## dt preprocess
+    dt = setDT(dt)[date >= from & date <= to][, unique(c(cols_keep, x)), with = FALSE]
+    
     
     dt_list = list()
     sybs = dt[, unique(symbol)]
@@ -164,7 +124,10 @@ pq_return = function(dt, x='close|value', method='arithmetic', freq='all', date_
         setkeyv(dt_s, "date")
         
         if ((print_step>0) & (i %% print_step == 0)) cat(sprintf('%s/%s %s\n', i, length(sybs), s))
-        dt_list[[s]] = do.call(pq1_return, args = list(dt=dt_s, x=x, type=method, freq=freq, date_range=date_range, from=from, to=to))
+        dt_list[[s]] = do.call(
+            'pq1_return', 
+            args = list(dt=dt_s, x=x, method=method, freq=freq, rcol_rename = rcol_rename, cols_keep = cols_keep)
+        )
     }
     return(dt_list)
 }

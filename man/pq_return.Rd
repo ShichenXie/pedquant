@@ -4,17 +4,22 @@
 \alias{pq_return}
 \title{calculating returns by frequency}
 \usage{
-pq_return(dt, x = "close|value", method = "arithmetic", freq = "all",
-  date_range = "max", from = NULL, to = Sys.Date(), print_step = 1L)
+pq_return(dt, x, freq = "monthly", method = "arithmetic",
+  rcol_rename = NULL, cols_keep = NULL, date_range = "max",
+  from = NULL, to = Sys.Date(), print_step = 1L)
 }
 \arguments{
 \item{dt}{a list/dataframe of daily series dataset}
 
-\item{x}{the variable used to calculate returns.}
+\item{x}{the column name of adjusted asset price.}
+
+\item{freq}{the frequency of returns. It supports c('all', 'daily', 'weekly', 'monthly', 'quarterly', 'yearly').}
 
 \item{method}{the method to calculate returns.}
 
-\item{freq}{the frequency of returns. It supports c('all', 'daily', 'weekly', 'monthly', 'quarterly', 'yearly').}
+\item{rcol_rename}{setting the column name of returns, defaults to return_freq.}
+
+\item{cols_keep}{the columns keep in the return data. The columns of symbol, name and date will always kept if they are exist in the input data.}
 
 \item{date_range}{date range. Available value includes '1m'-'11m', 'ytd', 'max' and '1y'-'ny'. Default is max.}
 
@@ -29,15 +34,20 @@ pq_return(dt, x = "close|value", method = "arithmetic", freq = "all",
 }
 \examples{
 \donttest{
-dts = md_stock(c('000001', '^000001'), source = '163')
+data(ssec)
+
+# create a close_adj column
+datadj = md_stock_adjust(ssec, adjust = FALSE)
 
 # set freq
-dts_returns1 = pq_return(dts, freq = 'all')
-dts_returns2 = pq_return(dts, freq = 'weekly')
+dts_returns1 = pq_return(datadj, x = 'close_adj', freq = 'all')
 
 # set method
-dts_returns3 = pq_return(dts, freq = 'monthly', method = 'arithmetic') # default method
-dts_returns4 = pq_return(dts, freq = 'monthly', method = 'log')
+dts_returns2 = pq_return(datadj, x = 'close_adj', method = 'log')
+
+# set cols_keep
+dts_returns3 = pq_return(datadj, x = 'close_adj', cols_keep = 'cap_total')
+
 }
 
 }

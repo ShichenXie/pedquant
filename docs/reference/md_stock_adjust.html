@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pedquant</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.6.999</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.7.999</span>
       </span>
     </div>
 
@@ -125,7 +125,7 @@
     <p><code>md_stock_adjust</code> adjusts the open, high, low and close stock prices for split and dividend.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>md_stock_adjust</span><span class='op'>(</span><span class='va'>dt</span>, <span class='va'>source</span>, adjust <span class='op'>=</span> <span class='cn'>TRUE</span>, <span class='va'>...</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>md_stock_adjust</span><span class='op'>(</span><span class='va'>dt</span>, adjust <span class='op'>=</span> <span class='cn'>TRUE</span>, source <span class='op'>=</span> <span class='cn'>NULL</span>, <span class='va'>...</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -135,13 +135,13 @@
       <td><p>a list/dataframe of time series datasets that didnt adjust for split or dividend.</p></td>
     </tr>
     <tr>
-      <th>source</th>
-      <td><p>the available data sources are 'yahoo' (<a href='https://finance.yahoo.com'>https://finance.yahoo.com</a>) and '163' (<a href='https://money.163.com'>https://money.163.com</a>).</p></td>
+      <th>adjust</th>
+      <td><p>whether to adjust the OHLC prices, defaults to TRUE. If it is NULL, return the original data; if it is FALSE, create a close_adj column if not exist; if it is TRUE, adjust all open, high, low, close columns.
+For the yahoo data, the adjustment is based on the close_adj; for the 163 data, the adjustment is based on the cumulative products of close/close_prev.</p></td>
     </tr>
     <tr>
-      <th>adjust</th>
-      <td><p>whether to adjust the OHLC prices. If it is NULL or FALSE, return the original data. Default is TRUE.
-For the yahoo data, the adjustment is based on the close_adj; for the 163 data, the adjustment is based on the cumulative products of close/close_prev.</p></td>
+      <th>source</th>
+      <td><p>the available data sources are 'yahoo' and '163'. The source will set to yahoo, if the dt has close_adj column; and will set to 163, if the dt has close_prev column.</p></td>
     </tr>
     <tr>
       <th>...</th>
@@ -152,10 +152,9 @@ For the yahoo data, the adjustment is based on the close_adj; for the 163 data, 
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='co'># \donttest{</span>
-<span class='va'>dt</span> <span class='op'>=</span> <span class='fu'><a href='md_stock.html'>md_stock</a></span><span class='op'>(</span><span class='st'>'600547'</span>, source <span class='op'>=</span> <span class='st'>'163'</span>, date_range <span class='op'>=</span> <span class='st'>'max'</span>, 
-              type <span class='op'>=</span> <span class='st'>'history'</span>, adjust <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span>
+<span class='va'>dt</span> <span class='op'>=</span> <span class='fu'><a href='md_stock.html'>md_stock</a></span><span class='op'>(</span><span class='st'>'600547'</span>, source <span class='op'>=</span> <span class='st'>'163'</span>, date_range <span class='op'>=</span> <span class='st'>'max'</span><span class='op'>)</span>
 </div><div class='output co'>#&gt; 1/1 600547</div><div class='input'>
-<span class='va'>dtadj</span> <span class='op'>=</span> <span class='fu'>md_stock_adjust</span><span class='op'>(</span><span class='va'>dt</span>, source <span class='op'>=</span> <span class='st'>'163'</span>, adjust <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
+<span class='va'>dtadj</span> <span class='op'>=</span> <span class='fu'>md_stock_adjust</span><span class='op'>(</span><span class='va'>dt</span>, source <span class='op'>=</span> <span class='st'>'163'</span><span class='op'>)</span>
 <span class='co'># }</span>
 </div></pre>
   </div>

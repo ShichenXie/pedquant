@@ -1,5 +1,5 @@
 Package: pedquant
-Version: 0.1.7
+Version: 0.1.7.999
 Title: Public Economic Data and Quantitative Analysis
 Description: 
     Provides an interface to access public economic and financial data for 
@@ -11,18 +11,19 @@ Depends:
     R (>= 3.1.0)
 Imports: 
     data.table,
-    TTR,
-    zoo,
-    curl,
-    xml2,
-    httr,
+    TTR, 
+    zoo, 
+    PerformanceAnalytics, 
+    curl, 
+    xml2, 
+    httr, 
     rvest,
     jsonlite,
     stringi,
-    readxl,
+    readxl, 
     readr,
-    ggplot2,
-    scales,
+    ggplot2, 
+    scales, 
     gridExtra,
     plotly
 Suggests: 
@@ -32,6 +33,6 @@ License: GPL-3
 URL: https://github.com/ShichenXie/pedquant
 BugReports: https://github.com/ShichenXie/pedquant/issues
 LazyData: true
-RoxygenNote: 7.1.1
+RoxygenNote: 7.1.2
 Roxygen: list(markdown = TRUE, old_usage = TRUE)
 Encoding: UTF-8

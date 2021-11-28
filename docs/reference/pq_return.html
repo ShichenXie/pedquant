@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pedquant</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.6.999</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.7.999</span>
       </span>
     </div>
 
@@ -125,8 +125,9 @@
     <p><code>pq_return</code> calculates returns for daily series based on specified column, frequency and method type.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>pq_return</span><span class='op'>(</span><span class='va'>dt</span>, x <span class='op'>=</span> <span class='st'>"close|value"</span>, method <span class='op'>=</span> <span class='st'>"arithmetic"</span>, freq <span class='op'>=</span> <span class='st'>"all"</span>,
-  date_range <span class='op'>=</span> <span class='st'>"max"</span>, from <span class='op'>=</span> <span class='cn'>NULL</span>, to <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/Sys.time.html'>Sys.Date</a></span><span class='op'>(</span><span class='op'>)</span>, print_step <span class='op'>=</span> <span class='fl'>1L</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>pq_return</span><span class='op'>(</span><span class='va'>dt</span>, <span class='va'>x</span>, freq <span class='op'>=</span> <span class='st'>"monthly"</span>, method <span class='op'>=</span> <span class='st'>"arithmetic"</span>,
+  col_rename <span class='op'>=</span> <span class='cn'>NULL</span>, date_range <span class='op'>=</span> <span class='st'>"max"</span>, from <span class='op'>=</span> <span class='cn'>NULL</span>, to <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/Sys.time.html'>Sys.Date</a></span><span class='op'>(</span><span class='op'>)</span>,
+  print_step <span class='op'>=</span> <span class='fl'>1L</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -137,15 +138,19 @@
     </tr>
     <tr>
       <th>x</th>
-      <td><p>the variable used to calculate returns.</p></td>
+      <td><p>the variable name used to calculate returns.</p></td>
+    </tr>
+    <tr>
+      <th>freq</th>
+      <td><p>the frequency of returns. It supports c('all', 'daily', 'weekly', 'monthly', 'quarterly', 'yearly').</p></td>
     </tr>
     <tr>
       <th>method</th>
       <td><p>the method to calculate returns.</p></td>
     </tr>
     <tr>
-      <th>freq</th>
-      <td><p>the frequency of returns. It supports c('all', 'daily', 'weekly', 'monthly', 'quarterly', 'yearly').</p></td>
+      <th>col_rename</th>
+      <td><p>the column name of returns, defaults to return_freq.</p></td>
     </tr>
     <tr>
       <th>date_range</th>
@@ -168,21 +173,29 @@
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='co'># \donttest{</span>
-<span class='va'>dts</span> <span class='op'>=</span> <span class='fu'><a href='md_stock.html'>md_stock</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>'000001'</span>, <span class='st'>'^000001'</span><span class='op'>)</span>, source <span class='op'>=</span> <span class='st'>'163'</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; 1/2 000001
-#&gt; 2/2 ^000001</div><div class='input'>
+<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>ssec</span><span class='op'>)</span>
 <span class='co'># set freq</span>
-<span class='va'>dts_returns1</span> <span class='op'>=</span> <span class='fu'>pq_return</span><span class='op'>(</span><span class='va'>dts</span>, freq <span class='op'>=</span> <span class='st'>'all'</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; 1/2 000001.SZ
-#&gt; 2/2 000001.SS</div><div class='input'><span class='va'>dts_returns2</span> <span class='op'>=</span> <span class='fu'>pq_return</span><span class='op'>(</span><span class='va'>dts</span>, freq <span class='op'>=</span> <span class='st'>'weekly'</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; 1/2 000001.SZ
-#&gt; 2/2 000001.SS</div><div class='input'>
-<span class='co'># set method</span>
-<span class='va'>dts_returns3</span> <span class='op'>=</span> <span class='fu'>pq_return</span><span class='op'>(</span><span class='va'>dts</span>, freq <span class='op'>=</span> <span class='st'>'monthly'</span>, method <span class='op'>=</span> <span class='st'>'arithmetic'</span><span class='op'>)</span> <span class='co'># default method</span>
-</div><div class='output co'>#&gt; 1/2 000001.SZ
-#&gt; 2/2 000001.SS</div><div class='input'><span class='va'>dts_returns4</span> <span class='op'>=</span> <span class='fu'>pq_return</span><span class='op'>(</span><span class='va'>dts</span>, freq <span class='op'>=</span> <span class='st'>'monthly'</span>, method <span class='op'>=</span> <span class='st'>'log'</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; 1/2 000001.SZ
-#&gt; 2/2 000001.SS</div><div class='input'><span class='co'># }</span>
+<span class='va'>dts_returns1</span> <span class='op'>=</span> <span class='fu'>pq_return</span><span class='op'>(</span><span class='va'>ssec</span>, x <span class='op'>=</span> <span class='st'>'close'</span>, freq <span class='op'>=</span> <span class='st'>'all'</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; 1/6 000001.SS
+#&gt; 2/6 601288.SS
+#&gt; 3/6 601328.SS
+#&gt; 4/6 601398.SS
+#&gt; 5/6 601939.SS
+#&gt; 6/6 601988.SS</div><div class='input'><span class='co'># set method</span>
+<span class='va'>dts_returns4</span> <span class='op'>=</span> <span class='fu'>pq_return</span><span class='op'>(</span><span class='va'>ssec</span>, x <span class='op'>=</span> <span class='st'>'close'</span>, freq <span class='op'>=</span> <span class='st'>'monthly'</span>, method <span class='op'>=</span> <span class='st'>'log'</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; 1/6 000001.SS
+#&gt; 2/6 601288.SS
+#&gt; 3/6 601328.SS
+#&gt; 4/6 601398.SS
+#&gt; 5/6 601939.SS
+#&gt; 6/6 601988.SS</div><div class='input'>
+<span class='co'># load data</span>
+<span class='va'>dat</span> <span class='op'>=</span> <span class='fu'><a href='md_stock.html'>md_stock</a></span><span class='op'>(</span><span class='st'>'600036'</span>, source <span class='op'>=</span> <span class='st'>'163'</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; 1/1 600036</div><div class='input'><span class='co'># create the close_adj </span>
+<span class='va'>datadj</span> <span class='op'>=</span> <span class='fu'><a href='md_stock_adjust.html'>md_stock_adjust</a></span><span class='op'>(</span><span class='va'>dat</span>, adjust <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span>
+<span class='co'># returns</span>
+<span class='va'>datret</span> <span class='op'>=</span> <span class='fu'>pq_return</span><span class='op'>(</span><span class='va'>datadj</span>, x <span class='op'>=</span> <span class='st'>'close_adj'</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; 1/1 600036.SS</div><div class='input'><span class='co'># }</span>
 
 </div></pre>
   </div>

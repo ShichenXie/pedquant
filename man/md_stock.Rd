@@ -5,7 +5,7 @@
 \title{query stock market data}
 \usage{
 md_stock(symbol, source = "yahoo", type = "history", freq = "daily",
-  date_range = "3y", from = NULL, to = Sys.Date(), adjust = FALSE,
+  date_range = "3y", from = NULL, to = Sys.Date(), adjust = NULL,
   print_step = 1L, ...)
 }
 \arguments{
@@ -13,7 +13,7 @@ md_stock(symbol, source = "yahoo", type = "history", freq = "daily",
 
 \item{source}{the available data sources are 'yahoo' (\url{https://finance.yahoo.com}) and '163' (\url{https://money.163.com}).}
 
-\item{type}{the data type, including history, adjfactor and spot. Default is history.}
+\item{type}{the data type, including history, adjfactor, spot and info. Default is history.}
 
 \item{freq}{default is daily. It supports daily, weekly and monthly for yahoo data; daily for 163 data.}
 
@@ -23,7 +23,7 @@ md_stock(symbol, source = "yahoo", type = "history", freq = "daily",
 
 \item{to}{the end date. Default is current system date.}
 
-\item{adjust}{whether to adjust the OHLC prices. If it is NULL or FALSE, return the original data. Default is FALSE.
+\item{adjust}{whether to adjust the OHLC prices, defaults to NULL. If it is NULL, return the original data; if it is FALSE, create a close_adj column if not exist; if it is TRUE, adjust all open, high, low, close columns.
 For the yahoo data, the adjustment is based on the close_adj; for the 163 data, the adjustment is based on the cumulative products of close/close_prev.}
 
 \item{print_step}{A non-negative integer. Print symbol name by each print_step iteration. Default is 1L.}
@@ -79,11 +79,11 @@ dt_spot4 = md_stock(symbol = c('a', 'b', 'index', 'fund'), source = '163',
   type = 'spot', show_tags = TRUE)
 
 # Example IV
-# query company information, including profile, IPO, structure of income, structure of employee
-dt_info = md_stock('600036', type = 'info')
+# query company information (profile/ipo), revenue and staff
+dt_info1 = md_stock('600036', type = 'info')
 
-# query structure of income in history only
-dt_info2 = md_stock('600036', type = 'info', str_income_hist = TRUE)
+# query history revenue 
+dt_info2 = md_stock('600036', type = 'info', rev_hist = TRUE)
 
 }
 

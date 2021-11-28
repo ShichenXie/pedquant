@@ -6,10 +6,10 @@
 \usage{
 pq_plot(dt, chart_type = "line", freq = NULL, date_range = "max",
   from = NULL, to = Sys.Date(), x = "close|value", addti = list(volume
-  = list()), linear_trend = NULL, perf = FALSE, yaxis_log = FALSE,
-  color_up = "#CF002F", color_down = "#000000", multi_series = list(nrow
-  = NULL, ncol = NULL), rm_weekend = NULL, title = NULL,
-  interact = FALSE, ...)
+  = list()), linear_trend = NULL, cumchg_trend = FALSE,
+  yaxis_log = FALSE, color_up = "#CF002F", color_down = "#000000",
+  multi_series = list(nrow = NULL, ncol = NULL), rm_weekend = NULL,
+  title = NULL, interact = FALSE, ...)
 }
 \arguments{
 \item{dt}{a list/dataframe of time series dataset}
@@ -30,7 +30,7 @@ pq_plot(dt, chart_type = "line", freq = NULL, date_range = "max",
 
 \item{linear_trend}{a numeric vector. Default is NULL. If it is not NULL, then display linear trend lines on charts.}
 
-\item{perf}{logical, display the performance of input series. Default is FALSE. If it is TRUE, then call \code{pq_code} to convert data into performance trends.}
+\item{cumchg_trend}{logical, display the cumulative change trend of price. Default is FALSE.}
 
 \item{yaxis_log}{logical. Default is FALSE.}
 
@@ -84,8 +84,8 @@ pq_plot(dat, multi_series=list(nrow=2, scales='free_y'), linear_trend=c(-0.8, 0,
         yaxis_log=TRUE)
 
 # performance
-pq_plot(dat, multi_series = list(nrow=2), perf=TRUE, date_range = 'ytd')
-pq_plot(dat, multi_series = list(nrow=1, ncol=1), perf=TRUE, date_range = 'ytd')
+pq_plot(dat, multi_series = list(nrow=2), cumchg_trend=TRUE, date_range = 'ytd')
+pq_plot(dat, multi_series = list(nrow=1, ncol=1), cumchg_trend=TRUE, date_range = 'ytd')
 
 }
 

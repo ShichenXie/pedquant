@@ -75,6 +75,29 @@ getfrom_xtd = function(date_range, to) {
     
     return(as.Date(from))
 }
+# last x date
+lxd = function(date_range, to = Sys.Date()) {
+    from = NULL
+    if (grepl("[yqm]td", date_range)) {
+        from = getfrom_xtd(date_range, to)
+    } else if (grepl("[1-9][0-9]*d", date_range)) {
+        from = to - as.integer(sub("d","",date_range))
+    } else if (grepl("[1-9][0-9]*w", date_range)) {
+        from = to - as.integer(sub("w","",date_range))*7
+    } else if (grepl("[1-9][0-9]*m", date_range)) {
+        for (i in c(0, 1, -1, 2, -2)) {
+            from = try(getfrom_xm(date_range, to+i), silent = TRUE)
+            if (!inherits(from, 'try-error')) {
+                if (i != 0) from = from - i/abs(i)
+                break
+            }
+        }
+    } else if (grepl("[1-9][0-9]*y", date_range)) {
+        year_from = year(to) - as.integer(sub("y","",date_range))
+        from = sub("^[0-9]{4}", year_from, to)
+    }
+    return(from)
+}
 get_fromto = function(date_range, from, to, min_date = '1000-01-01', default_date_range = 'max') {
     date_range = check_date_range(date_range, default = default_date_range)
     to = check_fromto(to)
@@ -82,26 +105,8 @@ get_fromto = function(date_range, from, to, min_date = '1000-01-01', default_dat
     
     if (inherits(from, 'character') & any(from == '')) from = NULL
     if (is.null(from)) {
-        if (grepl("[yqm]td", date_range)) {
-            from = getfrom_xtd(date_range, to)
-        } else if (grepl("[1-9][0-9]*d", date_range)) {
-            from = to - as.integer(sub("d","",date_range))
-        } else if (grepl("[1-9][0-9]*w", date_range)) {
-            from = to - as.integer(sub("w","",date_range))*7
-        } else if (grepl("[1-9][0-9]*m", date_range)) {
-            for (i in c(0, 1, -1, 2, -2)) {
-                from = try(getfrom_xm(date_range, to+i), silent = TRUE)
-                if (!inherits(from, 'try-error')) {
-                    if (i != 0) from = from - i/abs(i)
-                    break
-                }
-            }
-        } else if (grepl("[1-9][0-9]*y", date_range)) {
-            year_from = year(to) - as.integer(sub("y","",date_range))
-            from = sub("^[0-9]{4}", year_from, to)
-        } else {
-            from = min_date
-        }
+        from = lxd(date_range, to)
+        if (is.null(from)) from = min_date
     }
     from = check_fromto(from)
     if (from < min_date) from = min_date
@@ -114,6 +119,29 @@ get_fromto = function(date_range, from, to, min_date = '1000-01-01', default_dat
     }
     
     return(list(f=from, t = to))
+}
+
+# check column name
+check_xcol = function(dt, x) {
+    if (inherits(dt, 'list')) dt = rbindlist(dt, fill = TRUE)
+    
+    if (is.null(x)) {
+        if ('close' %in% names(dt)) {
+            x = 'close'
+        } else if ('value' %in% names(dt)) {
+            x = 'value'
+        } else {
+            stop('Please specify the asset price column.')
+        }
+    } else if (!(x %in% names(dt))) {
+        if (grepl('\\|', x)) {
+            x = intersect(unlist(strsplit(x, '\\|')), names(dt))[1] 
+            warning(sprintf('The column of %s is chosen.', x))
+        } else {
+            stop(sprintf('The column %s is not exist in the input data.', x))
+        }
+    }
+    return(x)
 }
 
 # this function has been removed
@@ -183,6 +211,9 @@ tags_dt = function() {
         stock 301 szse,A,chinext
         stock 200 szse,B,main
         stock 201 szse,B,main
+        stock 43 bse,A,main
+        stock 83 bse,A,main
+        stock 87 bse,A,main
         index 000 sse,-,-
         index 399 szse,-,-
         fund 15 szse,-,-
@@ -375,8 +406,9 @@ load_read_csv = function(url, encode="UTF-8", handle=new_handle(), csv_header=TR
     on.exit(unlink(temp))
     
     curl_download(url, destfile = temp, handle = handle)
-    dat = suppressWarnings(read.csv(temp, fileEncoding = encode, header = csv_header))
-    return(setDT(dat))
+    dat = try(suppressWarnings(read.csv(temp, fileEncoding = encode, header = csv_header)), silent = TRUE)
+    if (inherits(dat, 'try-error')) return(invisible()) 
+    else return(setDT(dat))
 }
 
 
@@ -659,4 +691,16 @@ chn_font_family = function() {
         Darwin = 'Hei Regular',
         NA
     )
+}
+
+
+# remove not available data
+rm_error_dat = function(datlst) {
+    # remove error symbols
+    error_symbols = names(datlst)[which(sapply(datlst, function(x) inherits(x, 'try-error')))]
+    if (length(error_symbols) > 0) {
+        warning(sprintf('The following symbols can\'t imported:\n%s', paste0(error_symbols, collapse=', ')))
+        datlst = datlst[setdiff(names(datlst), error_symbols)]
+    }
+    return(datlst)
 }

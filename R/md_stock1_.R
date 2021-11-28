@@ -29,12 +29,12 @@
 #' 
 #' @param symbol symbols of stock shares.
 #' @param source the available data sources are 'yahoo' (\url{https://finance.yahoo.com}) and '163' (\url{https://money.163.com}).
-#' @param type the data type, including history, adjfactor and spot. Default is history.
+#' @param type the data type, including history, adjfactor, spot and info. Default is history.
 #' @param freq default is daily. It supports daily, weekly and monthly for yahoo data; daily for 163 data.
 #' @param date_range date range. Available value including '1m'-'11m', 'ytd', 'max' and '1y'-. Default is '3y'.
 #' @param from the start date. Default is NULL.
 #' @param to the end date. Default is current system date.
-#' @param adjust whether to adjust the OHLC prices. If it is NULL or FALSE, return the original data. Default is FALSE. 
+#' @param adjust whether to adjust the OHLC prices, defaults to NULL. If it is NULL, return the original data; if it is FALSE, create a close_adj column if not exist; if it is TRUE, adjust all open, high, low, close columns. 
 #' For the yahoo data, the adjustment is based on the close_adj; for the 163 data, the adjustment is based on the cumulative products of close/close_prev.
 #' @param print_step A non-negative integer. Print symbol name by each print_step iteration. Default is 1L.
 #' @param ... Additional parameters.
@@ -86,16 +86,16 @@
 #'   type = 'spot', show_tags = TRUE)
 #' 
 #' # Example IV
-#' # query company information, including profile, IPO, structure of income, structure of employee
-#' dt_info = md_stock('600036', type = 'info')
+#' # query company information (profile/ipo), revenue and staff
+#' dt_info1 = md_stock('600036', type = 'info')
 #' 
-#' # query structure of income in history only
-#' dt_info2 = md_stock('600036', type = 'info', str_income_hist = TRUE)
+#' # query history revenue 
+#' dt_info2 = md_stock('600036', type = 'info', rev_hist = TRUE)
 #' 
 #' }
 #' 
 #' @export
-md_stock = function(symbol, source = "yahoo", type='history', freq = "daily", date_range = "3y", from = NULL, to = Sys.Date(), adjust = FALSE, print_step = 1L, ...) {
+md_stock = function(symbol, source = "yahoo", type='history', freq = "daily", date_range = "3y", from = NULL, to = Sys.Date(), adjust = NULL, print_step = 1L, ...) {
     # cat(source,"\n")
     if (source == '163') {
         check_internet('www.163.com')
@@ -128,11 +128,6 @@ md_stock = function(symbol, source = "yahoo", type='history', freq = "daily", da
     dat = try(do.call(paste0("md_stock_", source), args=list(symbol = syb, freq = freq, from = from, to = to, print_step = print_step, env = env, adjust=adjust, zero_rm=zero_rm, na_rm=na_rm, type=type, ...)), silent = TRUE)
     
     if (is.null(dat)) return(dat)
-    # remove error symbols
-    error_symbols = names(dat)[which(sapply(dat, function(x) inherits(x, 'try-error')))]
-    if (length(error_symbols) > 0) {
-        warning(sprintf('The following symbols can\'t imported:\n%s', paste0(error_symbols, collapse=', ')))
-        dat = dat[setdiff(names(dat), error_symbols)]
-    }
+    dat = rm_error_dat(dat)
     return(dat)
 }

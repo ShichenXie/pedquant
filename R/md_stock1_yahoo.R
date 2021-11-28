@@ -1,3 +1,6 @@
+# http://tiingo.com/
+# https://finance.yahoo.com
+
 #' @importFrom curl handle_setopt new_handle curl_download handle_cookies
 handle_new_session = function(url="https://finance.yahoo.com", curl_options=list(), env = NULL, handle_name = ".handle", reload = FALSE) {
     h = NULL

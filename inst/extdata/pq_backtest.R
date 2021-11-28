@@ -153,7 +153,7 @@ pq_backtest = function(
     
     if (show_plot) {
         w2 = w[,.(date, w_price=price, w_position=position, w_type=type)]
-        perf = pq_perf(pq_portfolio(dt, w, init_equity = init_equity))[['equity']][,.(date, performance=value)]
+        perf = pq_trend(pq_portfolio(dt, w, init_equity = init_equity))[['equity']][,.(date, performance=value)]
         
         addti_lst = list(w=list(), performance=list())
         show_ti = list(...)$show_ti
