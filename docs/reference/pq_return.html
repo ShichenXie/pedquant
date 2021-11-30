@@ -126,8 +126,8 @@
     </div>
 
     <pre class="usage"><span class='fu'>pq_return</span><span class='op'>(</span><span class='va'>dt</span>, <span class='va'>x</span>, freq <span class='op'>=</span> <span class='st'>"monthly"</span>, method <span class='op'>=</span> <span class='st'>"arithmetic"</span>,
-  col_rename <span class='op'>=</span> <span class='cn'>NULL</span>, date_range <span class='op'>=</span> <span class='st'>"max"</span>, from <span class='op'>=</span> <span class='cn'>NULL</span>, to <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/Sys.time.html'>Sys.Date</a></span><span class='op'>(</span><span class='op'>)</span>,
-  print_step <span class='op'>=</span> <span class='fl'>1L</span><span class='op'>)</span></pre>
+  rcol_name <span class='op'>=</span> <span class='st'>"return"</span>, cols_keep <span class='op'>=</span> <span class='cn'>NULL</span>, date_range <span class='op'>=</span> <span class='st'>"max"</span>,
+  from <span class='op'>=</span> <span class='cn'>NULL</span>, to <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/Sys.time.html'>Sys.Date</a></span><span class='op'>(</span><span class='op'>)</span>, print_step <span class='op'>=</span> <span class='fl'>1L</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -138,7 +138,7 @@
     </tr>
     <tr>
       <th>x</th>
-      <td><p>the variable name used to calculate returns.</p></td>
+      <td><p>the column name of adjusted asset price.</p></td>
     </tr>
     <tr>
       <th>freq</th>
@@ -149,8 +149,12 @@
       <td><p>the method to calculate returns.</p></td>
     </tr>
     <tr>
-      <th>col_rename</th>
-      <td><p>the column name of returns, defaults to return_freq.</p></td>
+      <th>rcol_name</th>
+      <td><p>setting the name of return column, defaults to return.</p></td>
+    </tr>
+    <tr>
+      <th>cols_keep</th>
+      <td><p>the columns keep in the return data. The columns of symbol, name and date will always kept if they are exist in the input data.</p></td>
     </tr>
     <tr>
       <th>date_range</th>
@@ -172,32 +176,42 @@
 
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='co'># \donttest{</span>
-<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>ssec</span><span class='op'>)</span>
-<span class='co'># set freq</span>
-<span class='va'>dts_returns1</span> <span class='op'>=</span> <span class='fu'>pq_return</span><span class='op'>(</span><span class='va'>ssec</span>, x <span class='op'>=</span> <span class='st'>'close'</span>, freq <span class='op'>=</span> <span class='st'>'all'</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; 1/6 000001.SS
-#&gt; 2/6 601288.SS
-#&gt; 3/6 601328.SS
-#&gt; 4/6 601398.SS
-#&gt; 5/6 601939.SS
-#&gt; 6/6 601988.SS</div><div class='input'><span class='co'># set method</span>
-<span class='va'>dts_returns4</span> <span class='op'>=</span> <span class='fu'>pq_return</span><span class='op'>(</span><span class='va'>ssec</span>, x <span class='op'>=</span> <span class='st'>'close'</span>, freq <span class='op'>=</span> <span class='st'>'monthly'</span>, method <span class='op'>=</span> <span class='st'>'log'</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; 1/6 000001.SS
-#&gt; 2/6 601288.SS
-#&gt; 3/6 601328.SS
-#&gt; 4/6 601398.SS
-#&gt; 5/6 601939.SS
-#&gt; 6/6 601988.SS</div><div class='input'>
-<span class='co'># load data</span>
-<span class='va'>dat</span> <span class='op'>=</span> <span class='fu'><a href='md_stock.html'>md_stock</a></span><span class='op'>(</span><span class='st'>'600036'</span>, source <span class='op'>=</span> <span class='st'>'163'</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; 1/1 600036</div><div class='input'><span class='co'># create the close_adj </span>
-<span class='va'>datadj</span> <span class='op'>=</span> <span class='fu'><a href='md_stock_adjust.html'>md_stock_adjust</a></span><span class='op'>(</span><span class='va'>dat</span>, adjust <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span>
-<span class='co'># returns</span>
-<span class='va'>datret</span> <span class='op'>=</span> <span class='fu'>pq_return</span><span class='op'>(</span><span class='va'>datadj</span>, x <span class='op'>=</span> <span class='st'>'close_adj'</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; 1/1 600036.SS</div><div class='input'><span class='co'># }</span>
-
-</div></pre>
+    <pre class="examples"><span class='r-in'><span class='co'># \donttest{</span></span>
+<span class='r-in'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>ssec</span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'># create a close_adj column</span></span>
+<span class='r-in'><span class='va'>datadj</span> <span class='op'>=</span> <span class='fu'><a href='md_stock_adjust.html'>md_stock_adjust</a></span><span class='op'>(</span><span class='va'>ssec</span>, adjust <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'># set freq</span></span>
+<span class='r-in'><span class='va'>dts_returns1</span> <span class='op'>=</span> <span class='fu'>pq_return</span><span class='op'>(</span><span class='va'>datadj</span>, x <span class='op'>=</span> <span class='st'>'close_adj'</span>, freq <span class='op'>=</span> <span class='st'>'all'</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 1/6 000001.SS</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 2/6 601288.SS</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 3/6 601328.SS</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 4/6 601398.SS</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 5/6 601939.SS</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 6/6 601988.SS</span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'># set method</span></span>
+<span class='r-in'><span class='va'>dts_returns2</span> <span class='op'>=</span> <span class='fu'>pq_return</span><span class='op'>(</span><span class='va'>datadj</span>, x <span class='op'>=</span> <span class='st'>'close_adj'</span>, method <span class='op'>=</span> <span class='st'>'log'</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 1/6 000001.SS</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 2/6 601288.SS</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 3/6 601328.SS</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 4/6 601398.SS</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 5/6 601939.SS</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 6/6 601988.SS</span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'># set cols_keep</span></span>
+<span class='r-in'><span class='va'>dts_returns3</span> <span class='op'>=</span> <span class='fu'>pq_return</span><span class='op'>(</span><span class='va'>datadj</span>, x <span class='op'>=</span> <span class='st'>'close_adj'</span>, cols_keep <span class='op'>=</span> <span class='st'>'cap_total'</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 1/6 000001.SS</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 2/6 601288.SS</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 3/6 601328.SS</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 4/6 601398.SS</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 5/6 601939.SS</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 6/6 601988.SS</span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'># }</span></span>
+<span class='r-in'></span>
+</pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

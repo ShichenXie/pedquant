@@ -5,7 +5,7 @@
 \title{calculating returns by frequency}
 \usage{
 pq_return(dt, x, freq = "monthly", method = "arithmetic",
-  rcol_rename = NULL, cols_keep = NULL, date_range = "max",
+  rcol_name = "return", cols_keep = NULL, date_range = "max",
   from = NULL, to = Sys.Date(), print_step = 1L)
 }
 \arguments{
@@ -17,7 +17,7 @@ pq_return(dt, x, freq = "monthly", method = "arithmetic",
 
 \item{method}{the method to calculate returns.}
 
-\item{rcol_rename}{setting the column name of returns, defaults to return_freq.}
+\item{rcol_name}{setting the name of return column, defaults to return.}
 
 \item{cols_keep}{the columns keep in the return data. The columns of symbol, name and date will always kept if they are exist in the input data.}
 

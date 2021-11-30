@@ -25,6 +25,8 @@ md_future_symbol = function() {
 }
 
 md_future_sybnam = function(symbol) {
+    name = NULL
+    
     # symbol and name
     syb = toupper(symbol)
     nam = setDT(copy(symbol_future_sina))[symbol == sub('[0-9]+', '0', syb), name]

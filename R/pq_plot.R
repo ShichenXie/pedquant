@@ -1386,7 +1386,6 @@ pp_add_ti_oscillator = function(
 #' 
 #' @param dt a list/dataframe of time series dataset
 #' @param chart_type chart type, including line, step, bar, candle.
-#' @param freq the frequency that the input daily data will converted to. It supports weekly, monthly, quarterly and yearly.
 #' @param date_range date range. Available value includes '1m'-'11m', 'ytd', 'max' and '1y'-'ny'. Default is max.
 #' @param from the start date. Default is NULL. If it is NULL, then calculate using date_range and end date.
 #' @param to the end date. Default is the current date.
@@ -1446,7 +1445,7 @@ pp_add_ti_oscillator = function(
 #' @importFrom plotly plot_ly add_trace add_lines add_segments layout subplot `%>%`
 #' @export
 pq_plot = function(
-    dt, chart_type = 'line', freq = NULL, 
+    dt, chart_type = 'line', 
     date_range = 'max', from = NULL, to = Sys.Date(), 
     x = 'close|value', 
     addti = list(volume = list()), 
@@ -1457,11 +1456,6 @@ pq_plot = function(
     rm_weekend = NULL, title = NULL, interact = FALSE, ...) {
     
     xcol=symbol=.=close_prev=name=title1=updn_2day=change=change_pct=price_str11=NULL
-    
-    ## change freq of input data
-    if (!is.null(freq) || match.arg(freq, 'daily')!='daily') {
-        dt = pq_to_freq(dt, freq, print_step = 0L)
-    }
     
     # change into performance
     if (cumchg_trend) {

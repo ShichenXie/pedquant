@@ -2,6 +2,7 @@
 
 * fixed bugs in functions of md_stock, md_future
 * modified multiple functions such as pq_performance etc
+* rename pq_to_freq to pq_freq
 
 # pedquant 0.1.7
 

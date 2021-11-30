@@ -142,7 +142,7 @@
     </tr>
     <tr>
       <th>type</th>
-      <td><p>the data type, including history, adjfactor and spot. Default is history.</p></td>
+      <td><p>the data type, including history, adjfactor, spot and info. Default is history.</p></td>
     </tr>
     <tr>
       <th>freq</th>
@@ -177,60 +177,60 @@ For the yahoo data, the adjustment is based on the close_adj; for the 163 data, 
 
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
-<span class='co'># Example I</span>
-<span class='co'># query history prices from yahoo</span>
-<span class='va'>dt_yahoo1</span> <span class='op'>=</span> <span class='fu'>md_stock</span><span class='op'>(</span>symbol<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"^GSPC"</span>, <span class='st'>"000001.SS"</span><span class='op'>)</span><span class='op'>)</span>
-
-<span class='co'># FAANG</span>
-<span class='va'>FAANG</span> <span class='op'>=</span> <span class='fu'>md_stock</span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>'FB'</span>, <span class='st'>'AMZN'</span>, <span class='st'>'AAPL'</span>, <span class='st'>'NFLX'</span>, <span class='st'>'GOOG'</span><span class='op'>)</span>, date_range <span class='op'>=</span> <span class='st'>'max'</span><span class='op'>)</span>
-
-<span class='co'># for Chinese shares/fund</span>
-<span class='co'>## the symbol without suffix</span>
-<span class='va'>dt_yahoo2</span> <span class='op'>=</span> <span class='fu'>md_stock</span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"000001"</span>, <span class='st'>"^000001"</span>, <span class='st'>"512510"</span><span class='op'>)</span><span class='op'>)</span>
-<span class='co'>## the symbol with suffix</span>
-<span class='va'>dt_yahoo3</span> <span class='op'>=</span> <span class='fu'>md_stock</span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"000001.sz"</span>, <span class='st'>"000001.ss"</span><span class='op'>)</span><span class='op'>)</span>
-
-<span class='co'># adjust factors, splits and dividend</span>
-<span class='va'>dt_adj</span> <span class='op'>=</span> <span class='fu'>md_stock</span><span class='op'>(</span>symbol<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"AAPL"</span>, <span class='st'>"000001.SZ"</span>, <span class='st'>"000001.SS"</span><span class='op'>)</span>, 
-                    type<span class='op'>=</span><span class='st'>'adjfactor'</span>, date_range<span class='op'>=</span><span class='st'>'max'</span><span class='op'>)</span>
-
- 
-<span class='co'># Example II</span>
-<span class='co'># query history prices from 163</span>
-<span class='va'>dt1</span> <span class='op'>=</span> <span class='fu'>md_stock</span><span class='op'>(</span>symbol<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>'600000'</span>, <span class='st'>'000001'</span>, <span class='st'>'^000001'</span>, <span class='st'>'^399001'</span><span class='op'>)</span>, 
-               source<span class='op'>=</span><span class='st'>"163"</span><span class='op'>)</span>
-
-<span class='co'># valuation ratios (pe, pb, ps)</span>
-<span class='co'># only available for stock shares in sse and szse</span>
-<span class='va'>dt2</span> <span class='op'>=</span> <span class='fu'>md_stock</span><span class='op'>(</span>symbol<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>'600000'</span>, <span class='st'>'000001'</span>, <span class='st'>'^000001'</span>, <span class='st'>'^399001'</span><span class='op'>)</span>, 
-               source<span class='op'>=</span><span class='st'>"163"</span>, valuation <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
-             
-             
-<span class='co'># Example III</span>
-<span class='co'># query spot prices</span>
-<span class='va'>dt_spot1</span> <span class='op'>=</span> <span class='fu'>md_stock</span><span class='op'>(</span>symbol<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>'600000.SS'</span>, <span class='st'>'000001.SZ'</span>, <span class='st'>'000001.SS'</span>, <span class='st'>'399001.SZ'</span><span class='op'>)</span>, 
-                    type<span class='op'>=</span><span class='st'>'spot'</span>, source<span class='op'>=</span><span class='st'>"163"</span><span class='op'>)</span>
-
-<span class='co'># query spot prices of all A shares in sse and szse</span>
-<span class='va'>dt_spot2</span> <span class='op'>=</span> <span class='fu'>md_stock</span><span class='op'>(</span>symbol<span class='op'>=</span><span class='st'>'a'</span>, source<span class='op'>=</span><span class='st'>"163"</span>, type<span class='op'>=</span><span class='st'>'spot'</span><span class='op'>)</span>
-<span class='co'># query spot prices of all A/B shares and index in sse and szse</span>
-<span class='va'>dt_spot3</span> <span class='op'>=</span> <span class='fu'>md_stock</span><span class='op'>(</span>symbol<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>'a'</span>, <span class='st'>'b'</span>, <span class='st'>'index'</span><span class='op'>)</span>, source<span class='op'>=</span><span class='st'>"163"</span>, type<span class='op'>=</span><span class='st'>'spot'</span><span class='op'>)</span>
-
-<span class='co'># show spot prices and sector/industry</span>
-<span class='va'>dt_spot4</span> <span class='op'>=</span> <span class='fu'>md_stock</span><span class='op'>(</span>symbol <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>'a'</span>, <span class='st'>'b'</span>, <span class='st'>'index'</span>, <span class='st'>'fund'</span><span class='op'>)</span>, source <span class='op'>=</span> <span class='st'>'163'</span>, 
-  type <span class='op'>=</span> <span class='st'>'spot'</span>, show_tags <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
-
-<span class='co'># Example IV</span>
-<span class='co'># query company information, including profile, IPO, structure of income, structure of employee</span>
-<span class='va'>dt_info</span> <span class='op'>=</span> <span class='fu'>md_stock</span><span class='op'>(</span><span class='st'>'600036'</span>, type <span class='op'>=</span> <span class='st'>'info'</span><span class='op'>)</span>
-
-<span class='co'># query structure of income in history only</span>
-<span class='va'>dt_info2</span> <span class='op'>=</span> <span class='fu'>md_stock</span><span class='op'>(</span><span class='st'>'600036'</span>, type <span class='op'>=</span> <span class='st'>'info'</span>, str_income_hist <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
-
-<span class='op'>}</span>
-
-</div></pre>
+    <pre class="examples"><span class='r-in'><span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span></span>
+<span class='r-in'><span class='co'># Example I</span></span>
+<span class='r-in'><span class='co'># query history prices from yahoo</span></span>
+<span class='r-in'><span class='va'>dt_yahoo1</span> <span class='op'>=</span> <span class='fu'>md_stock</span><span class='op'>(</span>symbol<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"^GSPC"</span>, <span class='st'>"000001.SS"</span><span class='op'>)</span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'># FAANG</span></span>
+<span class='r-in'><span class='va'>FAANG</span> <span class='op'>=</span> <span class='fu'>md_stock</span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>'FB'</span>, <span class='st'>'AMZN'</span>, <span class='st'>'AAPL'</span>, <span class='st'>'NFLX'</span>, <span class='st'>'GOOG'</span><span class='op'>)</span>, date_range <span class='op'>=</span> <span class='st'>'max'</span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'># for Chinese shares/fund</span></span>
+<span class='r-in'><span class='co'>## the symbol without suffix</span></span>
+<span class='r-in'><span class='va'>dt_yahoo2</span> <span class='op'>=</span> <span class='fu'>md_stock</span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"000001"</span>, <span class='st'>"^000001"</span>, <span class='st'>"512510"</span><span class='op'>)</span><span class='op'>)</span></span>
+<span class='r-in'><span class='co'>## the symbol with suffix</span></span>
+<span class='r-in'><span class='va'>dt_yahoo3</span> <span class='op'>=</span> <span class='fu'>md_stock</span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"000001.sz"</span>, <span class='st'>"000001.ss"</span><span class='op'>)</span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'># adjust factors, splits and dividend</span></span>
+<span class='r-in'><span class='va'>dt_adj</span> <span class='op'>=</span> <span class='fu'>md_stock</span><span class='op'>(</span>symbol<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"AAPL"</span>, <span class='st'>"000001.SZ"</span>, <span class='st'>"000001.SS"</span><span class='op'>)</span>, </span>
+<span class='r-in'>                    type<span class='op'>=</span><span class='st'>'adjfactor'</span>, date_range<span class='op'>=</span><span class='st'>'max'</span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'> </span>
+<span class='r-in'><span class='co'># Example II</span></span>
+<span class='r-in'><span class='co'># query history prices from 163</span></span>
+<span class='r-in'><span class='va'>dt1</span> <span class='op'>=</span> <span class='fu'>md_stock</span><span class='op'>(</span>symbol<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>'600000'</span>, <span class='st'>'000001'</span>, <span class='st'>'^000001'</span>, <span class='st'>'^399001'</span><span class='op'>)</span>, </span>
+<span class='r-in'>               source<span class='op'>=</span><span class='st'>"163"</span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'># valuation ratios (pe, pb, ps)</span></span>
+<span class='r-in'><span class='co'># only available for stock shares in sse and szse</span></span>
+<span class='r-in'><span class='va'>dt2</span> <span class='op'>=</span> <span class='fu'>md_stock</span><span class='op'>(</span>symbol<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>'600000'</span>, <span class='st'>'000001'</span>, <span class='st'>'^000001'</span>, <span class='st'>'^399001'</span><span class='op'>)</span>, </span>
+<span class='r-in'>               source<span class='op'>=</span><span class='st'>"163"</span>, valuation <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span></span>
+<span class='r-in'>             </span>
+<span class='r-in'>             </span>
+<span class='r-in'><span class='co'># Example III</span></span>
+<span class='r-in'><span class='co'># query spot prices</span></span>
+<span class='r-in'><span class='va'>dt_spot1</span> <span class='op'>=</span> <span class='fu'>md_stock</span><span class='op'>(</span>symbol<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>'600000.SS'</span>, <span class='st'>'000001.SZ'</span>, <span class='st'>'000001.SS'</span>, <span class='st'>'399001.SZ'</span><span class='op'>)</span>, </span>
+<span class='r-in'>                    type<span class='op'>=</span><span class='st'>'spot'</span>, source<span class='op'>=</span><span class='st'>"163"</span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'># query spot prices of all A shares in sse and szse</span></span>
+<span class='r-in'><span class='va'>dt_spot2</span> <span class='op'>=</span> <span class='fu'>md_stock</span><span class='op'>(</span>symbol<span class='op'>=</span><span class='st'>'a'</span>, source<span class='op'>=</span><span class='st'>"163"</span>, type<span class='op'>=</span><span class='st'>'spot'</span><span class='op'>)</span></span>
+<span class='r-in'><span class='co'># query spot prices of all A/B shares and index in sse and szse</span></span>
+<span class='r-in'><span class='va'>dt_spot3</span> <span class='op'>=</span> <span class='fu'>md_stock</span><span class='op'>(</span>symbol<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>'a'</span>, <span class='st'>'b'</span>, <span class='st'>'index'</span><span class='op'>)</span>, source<span class='op'>=</span><span class='st'>"163"</span>, type<span class='op'>=</span><span class='st'>'spot'</span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'># show spot prices and sector/industry</span></span>
+<span class='r-in'><span class='va'>dt_spot4</span> <span class='op'>=</span> <span class='fu'>md_stock</span><span class='op'>(</span>symbol <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>'a'</span>, <span class='st'>'b'</span>, <span class='st'>'index'</span>, <span class='st'>'fund'</span><span class='op'>)</span>, source <span class='op'>=</span> <span class='st'>'163'</span>, </span>
+<span class='r-in'>  type <span class='op'>=</span> <span class='st'>'spot'</span>, show_tags <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'># Example IV</span></span>
+<span class='r-in'><span class='co'># query company information (profile/ipo), revenue and staff</span></span>
+<span class='r-in'><span class='va'>dt_info1</span> <span class='op'>=</span> <span class='fu'>md_stock</span><span class='op'>(</span><span class='st'>'600036'</span>, type <span class='op'>=</span> <span class='st'>'info'</span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'># query history revenue </span></span>
+<span class='r-in'><span class='va'>dt_info2</span> <span class='op'>=</span> <span class='fu'>md_stock</span><span class='op'>(</span><span class='st'>'600036'</span>, type <span class='op'>=</span> <span class='st'>'info'</span>, rev_hist <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='op'>}</span></span>
+<span class='r-in'></span>
+</pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

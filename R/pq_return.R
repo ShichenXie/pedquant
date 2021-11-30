@@ -2,14 +2,13 @@ return_arithmetic = function(x, x_lag) x/x_lag-1
 return_log = function(x, x_lag) log(x/x_lag)
 
 # rename the column name of asset returns
-ra_rename = function(dt, freq, rcol_rename=NULL) {
-    if (is.null(rcol_rename)) rcol_rename = paste0('return_', freq)
-    setnames(dt, 'Ra', rcol_rename)
+ra_rename = function(dt, freq, rcol_name = 'return') {
+    if (!is.null(rcol_name)) setnames(dt, 'Ra', rcol_name)
     
     return(dt)
 }
 
-pq1_return = function(dt, x, method='arithmetic', freq='daily', rcol_rename = NULL, cols_keep) {
+pq1_return = function(dt, x, method='arithmetic', freq='daily', rcol_name = NULL, cols_keep) {
     . = byfreq = func = byyear = wkdiff = wkN = x_lag = Ra = NULL
     
     setkeyv(dt, "date")
@@ -17,6 +16,9 @@ pq1_return = function(dt, x, method='arithmetic', freq='daily', rcol_rename = NU
     freq_list = c('daily', 'weekly', 'monthly', 'quarterly', 'yearly')
     if (freq == 'all') freq = freq_list
     freq = intersect(freq_list, freq)
+    
+    freq = as.list(freq)
+    names(freq) = freq
     
     freqfunc = data.table(
         freq = freq_list, 
@@ -48,12 +50,12 @@ pq1_return = function(dt, x, method='arithmetic', freq='daily', rcol_rename = NU
             args = list(x=get(x), x_lag)
         )][, unique(c(cols_keep, 'Ra')), with = FALSE]
         
-        eop = ra_rename(eop, freqi, rcol_rename)
+        eop = ra_rename(eop, freqi, rcol_name)
         return(eop)
     })
 
-    dt_rt2 = Reduce(function(x,y) merge(x,y, all.x=TRUE, by=cols_keep), dt_rt)
-    return(dt_rt2)
+    
+    return(rbindlist(dt_rt, idcol = 'freq'))
 }
 
 
@@ -65,7 +67,7 @@ pq1_return = function(dt, x, method='arithmetic', freq='daily', rcol_rename = NU
 #' @param x the column name of adjusted asset price. 
 #' @param freq the frequency of returns. It supports c('all', 'daily', 'weekly', 'monthly', 'quarterly', 'yearly').
 #' @param method the method to calculate returns.
-#' @param rcol_rename setting the column name of returns, defaults to return_freq. 
+#' @param rcol_name setting the name of return column, defaults to return.
 #' @param cols_keep the columns keep in the return data. The columns of symbol, name and date will always kept if they are exist in the input data.
 #' @param date_range date range. Available value includes '1m'-'11m', 'ytd', 'max' and '1y'-'ny'. Default is max.
 #' @param from the start date. Default is NULL. If it is NULL, then calculate using date_range and end date.
@@ -91,7 +93,7 @@ pq1_return = function(dt, x, method='arithmetic', freq='daily', rcol_rename = NU
 #' }
 #' 
 #' @export
-pq_return = function(dt, x, freq='monthly', method='arithmetic', rcol_rename=NULL, cols_keep=NULL, date_range='max', from=NULL, to=Sys.Date(), print_step=1L) {
+pq_return = function(dt, x, freq='monthly', method='arithmetic', rcol_name = 'return', cols_keep=NULL, date_range='max', from=NULL, to=Sys.Date(), print_step=1L) {
     symbol = NULL 
     
     # arg
@@ -126,7 +128,7 @@ pq_return = function(dt, x, freq='monthly', method='arithmetic', rcol_rename=NUL
         if ((print_step>0) & (i %% print_step == 0)) cat(sprintf('%s/%s %s\n', i, length(sybs), s))
         dt_list[[s]] = do.call(
             'pq1_return', 
-            args = list(dt=dt_s, x=x, method=method, freq=freq, rcol_rename = rcol_rename, cols_keep = cols_keep)
+            args = list(dt=dt_s, x=x, method=method, freq=freq, rcol_name = rcol_name, cols_keep = cols_keep)
         )
     }
     return(dt_list)

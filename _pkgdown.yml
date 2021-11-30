@@ -43,8 +43,10 @@ reference:
   - title: "quantitative analysis" 
     contents:
       - '`pq_addti`'
+      - '`pq_addti_funs`'
       - '`pq_index`'
-      - '`pq_perf`'
+      - '`pq_performance`'
+      - '`pq_performance_funs`'
       - '`pq_plot`'
       - '`pq_return`'
-      - '`pq_to_freq`'
+      - '`pq_freq`'

@@ -4,19 +4,17 @@
 \alias{pq_plot}
 \title{creating charts for time series}
 \usage{
-pq_plot(dt, chart_type = "line", freq = NULL, date_range = "max",
-  from = NULL, to = Sys.Date(), x = "close|value", addti = list(volume
-  = list()), linear_trend = NULL, cumchg_trend = FALSE,
-  yaxis_log = FALSE, color_up = "#CF002F", color_down = "#000000",
-  multi_series = list(nrow = NULL, ncol = NULL), rm_weekend = NULL,
-  title = NULL, interact = FALSE, ...)
+pq_plot(dt, chart_type = "line", date_range = "max", from = NULL,
+  to = Sys.Date(), x = "close|value", addti = list(volume = list()),
+  linear_trend = NULL, cumchg_trend = FALSE, yaxis_log = FALSE,
+  color_up = "#CF002F", color_down = "#000000", multi_series = list(nrow
+  = NULL, ncol = NULL), rm_weekend = NULL, title = NULL,
+  interact = FALSE, ...)
 }
 \arguments{
 \item{dt}{a list/dataframe of time series dataset}
 
 \item{chart_type}{chart type, including line, step, bar, candle.}
-
-\item{freq}{the frequency that the input daily data will converted to. It supports weekly, monthly, quarterly and yearly.}
 
 \item{date_range}{date range. Available value includes '1m'-'11m', 'ytd', 'max' and '1y'-'ny'. Default is max.}
 

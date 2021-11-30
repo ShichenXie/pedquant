@@ -29,7 +29,7 @@ library(pedquant)
 # load data
 data(ssec)
 # transfer prices to returns
-datret = pq_return(ssec, 'close', freq = 'monthly', rcol_rename = 'Ra')
+datret = pq_return(ssec, 'close', freq = 'monthly', rcol_name = 'Ra')
 datret2 = rbindlist(datret)[, date := as.Date(sub('[0-9]{2}$', '01', date))][]
 
 # merge returns of assets and baseline

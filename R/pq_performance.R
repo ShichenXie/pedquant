@@ -99,7 +99,7 @@ pq1_performance = function(dt1, Ra, Rb=NULL, perf_fun, col_date='date', ...) {
 #' # load data
 #' data(ssec)
 #' # transfer prices to returns
-#' datret = pq_return(ssec, 'close', freq = 'monthly', rcol_rename = 'Ra')
+#' datret = pq_return(ssec, 'close', freq = 'monthly', rcol_name = 'Ra')
 #' datret2 = rbindlist(datret)[, date := as.Date(sub('[0-9]{2}$', '01', date))][]
 #' 
 #' # merge returns of assets and baseline
