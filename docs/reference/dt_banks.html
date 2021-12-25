@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>converting frequency of daily data — pq_freq • pedquant</title>
+<title>dataset of bank stocks in sse — dt_banks • pedquant</title>
 
 
 <!-- jquery -->
@@ -39,8 +39,8 @@
 
 
 
-<meta property="og:title" content="converting frequency of daily data — pq_freq" />
-<meta property="og:description" content="pq_freq convert a daily OHLC dataframe into a specified frequency." />
+<meta property="og:title" content="dataset of bank stocks in sse — dt_banks" />
+<meta property="og:description" content="The daily historical data of bank stocks" />
 
 
 
@@ -116,43 +116,40 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>converting frequency of daily data</h1>
-    <small class="dont-index">Source: <a href='https://github.com/ShichenXie/pedquant/blob/master/R/pq_freq.R'><code>R/pq_freq.R</code></a></small>
-    <div class="hidden name"><code>pq_freq.Rd</code></div>
+    <h1>dataset of bank stocks in sse</h1>
+    <small class="dont-index">Source: <a href='https://github.com/ShichenXie/pedquant/blob/master/R/datasets.R'><code>R/datasets.R</code></a></small>
+    <div class="hidden name"><code>dt_banks.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p><code>pq_freq</code> convert a daily OHLC dataframe into a specified frequency.</p>
+    <p>The daily historical data of bank stocks</p>
     </div>
 
-    <pre class="usage"><span class='fu'>pq_freq</span><span class='op'>(</span><span class='va'>dt</span>, freq <span class='op'>=</span> <span class='st'>"monthly"</span>, date_type <span class='op'>=</span> <span class='st'>"eop"</span><span class='op'>)</span></pre>
-
-    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
-    <table class="ref-arguments">
-    <colgroup><col class="name" /><col class="desc" /></colgroup>
-    <tr>
-      <th>dt</th>
-      <td><p>a list/dataframe of time series dataset.</p></td>
-    </tr>
-    <tr>
-      <th>freq</th>
-      <td><p>the frequency that the input daily data will converted to. It supports weekly, monthly, quarterly and yearly.</p></td>
-    </tr>
-    <tr>
-      <th>date_type</th>
-      <td><p>the available date type are eop (end of period) and bop (bebinning of period), defaults to the eop.</p></td>
-    </tr>
-    </table>
+    <pre class="usage"><span class='va'>dt_banks</span></pre>
 
 
-    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><span class='r-in'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>dt_ssec</span><span class='op'>)</span></span>
-<span class='r-in'><span class='va'>dat1_weekly</span> <span class='op'>=</span> <span class='fu'>pq_freq</span><span class='op'>(</span><span class='va'>dt_ssec</span>, <span class='st'>"weekly"</span><span class='op'>)</span></span>
-<span class='r-in'></span>
-<span class='r-in'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>dt_banks</span><span class='op'>)</span></span>
-<span class='r-in'><span class='va'>dat2_weekly</span> <span class='op'>=</span> <span class='fu'>pq_freq</span><span class='op'>(</span><span class='va'>dt_banks</span>, <span class='st'>"monthly"</span><span class='op'>)</span></span>
-<span class='r-in'></span>
-</pre>
+    <h2 class="hasAnchor" id="format"><a class="anchor" href="#format"></a>Format</h2>
+
+    <p>A data frame with 7506 rows and 15 variables:</p><dl>
+<dt>symbol</dt><dd><p>stock ticker symbol</p></dd>
+<dt>name</dt><dd><p>stock ticker name</p></dd>
+<dt>date</dt><dd><p>trade date</p></dd>
+<dt>open</dt><dd><p>stock price at the open of trading</p></dd>
+<dt>high</dt><dd><p>stock price at the highest point during trading</p></dd>
+<dt>low</dt><dd><p>stock price at the lowest point during trading</p></dd>
+<dt>close</dt><dd><p>stock price at the close of trading</p></dd>
+<dt>close_prev</dt><dd><p>stock price at the close of previous trading day</p></dd>
+<dt>change_pct</dt><dd><p>change percentage of stock close price</p></dd>
+<dt>volume</dt><dd><p>number of shares traded</p></dd>
+<dt>amount</dt><dd><p>monetary value of shares traded</p></dd>
+<dt>turnover</dt><dd><p>rate of shares traded over total</p></dd>
+<dt>cap_market</dt><dd><p>tradable market capitalisation</p></dd>
+<dt>cap_total</dt><dd><p>total market capitalisation</p></dd>
+<dt>unit</dt><dd><p>price unit, such as in CNY/USD</p></dd>
+
+</dl>
+
+
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

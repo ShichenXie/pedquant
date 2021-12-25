@@ -1,9 +1,11 @@
 ## code to prepare `DATASET` dataset goes here
 library(pedquant)
 library(data.table)
-ssec = md_stock('^000001', date_range = 'max', to = '2021-09-01', source = '163')
-ssec = setDF(ssec$`^000001`)
-usethis::use_data(ssec, overwrite = TRUE)
+dt_ssec = md_stock('^000001', date_range = 'max', to = '2021-09-01', source = '163')
+dt_ssec = setDF(dt_ssec)
+
+usethis::use_data(dt_banks, overwrite = TRUE)
+usethis::use_data(dt_ssec, overwrite = TRUE)
 
 library(pedb)
 ssecbank = db_query("select * from md_stock_history

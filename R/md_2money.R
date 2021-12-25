@@ -127,9 +127,8 @@ md_libor = function(symbol, date_range = '3y', from=NULL, to=Sys.Date(), print_s
     syb_len = length(symbol)
     if (syb_len == 0) return(NULL)
     ## from/to
-    ft = get_fromto(date_range, from, to, min_date = "1000-01-01", default_date_range = '3y')
-    from = ft$f
-    to = ft$t
+    to = check_to(to)
+    from = check_from(date_range, from, to, default_from = "1000-01-01", default_date_range = '3y')
     
     # libor in last 5days
     currency = unique(substr(symbol, 4, 6))
@@ -172,9 +171,8 @@ md_money = function(symbol=NULL, date_range = '3y', from=NULL, to=Sys.Date(), pr
     }
     syb = intersect(symbol, ibor_symbol$symbol)
     ## from/to
-    ft = get_fromto(date_range, from, to, min_date = "1000-01-01", default_date_range = '3y')
-    from = ft$f
-    to = ft$t
+    to = check_to(to)
+    from = check_from(date_range, from, to, default_from = "1000-01-01", default_date_range = '3y')
     
     # data
     dt_list = c(

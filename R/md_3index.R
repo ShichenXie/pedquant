@@ -21,9 +21,7 @@ md_index = function(symbol=NULL, date_range = '3y', from=NULL, to=Sys.Date(), pr
     . = name = NULL
     # arguments
     # ## from/to
-    # ft = get_fromto(date_range, from, to, min_date = "1000-01-01", default_date_range = '3y')
-    # from = ft$f
-    # to = ft$t
+
     ## symbol
     syb = tolower(symbol)
     if (is.null(symbol)) {

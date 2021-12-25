@@ -162,10 +162,10 @@
     <pre class="examples"><span class='r-in'><span class='co'># \donttest{</span></span>
 <span class='r-in'><span class='co'># Example I bank share index</span></span>
 <span class='r-in'><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://r-datatable.com'>data.table</a></span><span class='op'>)</span></span>
-<span class='r-in'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>ssec</span><span class='op'>)</span></span>
-<span class='r-in'><span class='va'>bank_dat</span> <span class='op'>=</span> <span class='fu'><a href='https://Rdatatable.gitlab.io/data.table/reference/setDT.html'>setDT</a></span><span class='op'>(</span><span class='va'>ssec</span><span class='op'>)</span><span class='op'>[</span><span class='va'>symbol</span> <span class='op'>!=</span> <span class='st'>'000001.SS'</span><span class='op'>]</span></span>
+<span class='r-in'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>banks</span><span class='op'>)</span></span>
+<span class='r-in'></span>
 <span class='r-in'><span class='co'># creating index</span></span>
-<span class='r-in'><span class='va'>bank_index</span> <span class='op'>=</span> <span class='fu'>pq_index</span><span class='op'>(</span><span class='va'>bank_dat</span>, x<span class='op'>=</span><span class='st'>'close'</span>, w<span class='op'>=</span><span class='st'>'cap_total'</span><span class='op'>)</span></span>
+<span class='r-in'><span class='va'>bank_index</span> <span class='op'>=</span> <span class='fu'>pq_index</span><span class='op'>(</span><span class='va'>banks</span>, x<span class='op'>=</span><span class='st'>'close'</span>, w<span class='op'>=</span><span class='st'>'cap_total'</span><span class='op'>)</span></span>
 <span class='r-in'><span class='co'># pq_plot(bank_index)</span></span>
 <span class='r-in'></span>
 <span class='r-in'><span class='co'># }</span></span>

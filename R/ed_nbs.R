@@ -350,9 +350,8 @@ ed_nbs = function(symbol=NULL, freq=NULL, geo_type=NULL, subregion=NULL, date_ra
     subregion = select_rows_df(subregion_df, column='code', input_string=subregion)[,code]
   }
   ## from/to
-  ft = get_fromto(date_range, from, to, min_date = "1000-01-01", default_date_range = '10y')
-  from = ft$f
-  to = ft$t
+  to = check_to(to)
+  from = check_from(date_range, from, to, default_from = "1000-01-01", default_date_range = '10y') 
   ## symbol
   if (is.null(symbol)) symbol = ed_nbs_symbol(geo_type = geo_type, freq = freq, eng = eng)
   

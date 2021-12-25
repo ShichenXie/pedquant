@@ -1,75 +1,60 @@
 # to_period in xts package
 
-pq1_dtow = function(dat) {
-    w=wi=.=symbol=name=high=low=volume=NULL
-    
-    dat[, w := isoweek(date)
-      ][, wi := w - shift(w, 1, type="lag")
-      ][, wi := ifelse(wi!=0 | is.na(wi), 1, wi)
-      ][, wi := cumsum(wi)]
-    
-    dat2 = dat[, .(
-        date=date[.N],
-        open=open[1], high=max(high), low=min(low), close=close[.N], 
-        volume=sum(volume)
-    ), by = wi][, wi := NULL]
-    
-    return(dat2)
-}
-pq1_dtom = function(dat) {
-    .=symbol=name=high=low=volume=NULL
-    
-    dat2 = dat[, .(
-        date=date[.N], 
-        open=open[1], high=max(high), low=min(low), close=close[.N], 
-        volume=sum(volume)
-    ), by = .(y=year(date), m=month(date))][, (c('y','m')) := NULL]
-    
-    return(dat2)
-}
-pq1_dtoq = function(dat) {
-    . = symbol = name = high = low = volume = NULL
-    
-    dat2 = dat[, .(
-        date=date[.N], 
-        open=open[1], high=max(high), low=min(low), close=close[.N], 
-        volume=sum(volume)
-    ), by = .(y=year(date), q=quarter(date))][, (c('y','q')) := NULL]
-    
-    return(dat2)
-}
-pq1_dtoy = function(dat) {
-    .=symbol=name=high=low=volume=NULL
-    
-    dat2 = dat[, .(
-        date=date[.N], 
-        open=open[1], high=max(high), low=min(low), close=close[.N], 
-        volume=sum(volume)
-    ), by = .(y=year(date))][, (c('y')) := NULL]
-    
-    return(dat2)
+to_freq = function(dat, freq, date_type='eop') {
+  .=amount=byfreq=byyear=close_prev=close_prev_lag=high=low=volume=NULL
+  
+  dat_byfreq = dat_add_byfreq(dat, freq)
+  setkeyv(dat_byfreq, 'date')
+  
+  datN = dat_byfreq[
+    , close_prev_lag := shift(close_prev, type = 'lead')
+  ][][
+    , .SD[.N], 
+    keyby = .(byyear, byfreq),
+    .SDcols = setdiff(names(dat_byfreq), c('open', 'high', 'low', 'close_prev', 'change_pct', 'volume', 'amount', 'turnover', 'byyear', 'byfreq'))
+  ][, close_prev := shift(close_prev_lag, type = 'lag')
+  ][]
+  
+  dat1 = dat_byfreq[,.(
+    date_bop = date[1], # date bebinning of period
+    open = open[1], 
+    high = max(high, na.rm = TRUE), 
+    low  = min(low, na.rm = TRUE), 
+    volume = sum(volume, na.rm = TRUE), 
+    amount = sum(amount, na.rm = TRUE)
+  ), 
+  keyby = .(byyear, byfreq)
+  ]
+  
+  if (date_type == 'eop') {
+    datN = datN[, date := date_eop(date, freq, workday = TRUE)]
+  } else if (date_type == 'bop') {
+    datN = datN[, date := date_bop(date, freq, workday = TRUE)]
+  }
+  
+  
+  merge(
+    datN, dat1, by = c('byyear', 'byfreq')
+  )[, (c('byyear', 'byfreq')) := NULL
+  ][]
+  
 }
 
-pq1_to_freq = function(dat, freq) {
-    . = high = low = name = symbol = volume = NULL
+pq1_freq = function(dat, freq, date_type='eop') {
     
-    if (freq == "daily" || !check_freq_isdaily(dat)) return(dat)
+    # if (freq == "daily" || !check_freq_isdaily(dat)) return(dat)
     setkeyv(dat, "date")
+    datcols = names(dat)
     
-    # add volume column if it not exists in dat
-    vol_in_dat = 'volume' %in% names(dat)
-    if (!vol_in_dat) dat = copy(dat)[, volume := 0]
+    # add col
+    for (col in setdiff(c('close_prev', 'volume', 'amount'), datcols)) dat[[col]] = 0
     # converting freq
-    dat2 = do.call(paste0("pq1_dto",substr(freq,1,1)), list(dat=dat))
-    # remove volume column if it not exists in dat
-    if (!vol_in_dat) dat2[, volume := NULL]
-      
-    # add symbol and name columns to dat2
-    if ('symbol' %in% names(dat)) dat2[, symbol := dat[.N,symbol]]
-    if ('name'   %in% names(dat)) dat2[, name   := dat[.N,name]]
-    # symbol and name
-    cols_ret = intersect(c('symbol', 'name', 'date', 'open', 'high', 'low', 'close', 'volume'), names(dat2))
-    return(dat2[, cols_ret, with=FALSE])
+    dat2 = to_freq(dat, freq=freq, date_type=date_type)
+    # remove col
+    for (col in setdiff(c('close_prev', 'volume', 'amount'), datcols)) dat2[[col]] = NULL
+    
+    kpcols = c('symbol', 'name', 'date', "open", "high", "low", "close", "close_prev", "volume", "amount", "cap_market", "cap_total", "unit")
+    return(dat2[, intersect(datcols, kpcols), with = FALSE])
 }
 
 #' converting frequency of daily data
@@ -78,36 +63,30 @@ pq1_to_freq = function(dat, freq) {
 #' 
 #' @param dt a list/dataframe of time series dataset.
 #' @param freq the frequency that the input daily data will converted to. It supports weekly, monthly, quarterly and yearly.
-#' @param print_step A non-negative integer. Print symbol name by each print_step iteration. Default is 1L.
+#' @param date_type the available date type are eop (end of period) and bop (bebinning of period), defaults to the eop. 
 #' 
 #' @examples 
-#' \donttest{
-#' dts = md_stock(c("^000001", "000001"), date_range = 'max', source = '163')
+#' data(dt_ssec)
+#' dat1_weekly = pq_freq(dt_ssec, "weekly")
 #' 
-#' dts_weekly = pq_freq(dts, "weekly")
-#' }
+#' data(dt_banks)
+#' dat2_weekly = pq_freq(dt_banks, "monthly")
 #' 
 #' @export
 #' 
-pq_freq = function(dt, freq, print_step=1L) {
-    symbol = NULL
+pq_freq = function(dt, freq = "monthly", date_type = "eop") {
     # check freq argument
     freq = check_arg(freq, c("weekly","monthly","quarterly","yearly"))
   
     if (inherits(dt, 'list')) dt = rbindlist(dt, fill = TRUE)
     dt = setDT(dt)
     
-    dt_list = list()
-    sybs = dt[, unique(symbol)]
-    for (i in seq_along(sybs)) {
-      s = sybs[i]
-      dt_s = dt[symbol == s]
-      setkeyv(dt_s, "date")
-      
-      if ((print_step>0) & (i %% print_step == 0)) cat(sprintf('%s/%s %s\n', i, length(sybs), s))
-      dt_list[[s]] = do.call(pq1_to_freq, args = list(dat=dt_s, freq=freq))
-    }
-    
+    dt_list = lapply(
+      split(dt, by = 'symbol'), 
+      function(dts) {do.call(
+        'pq1_freq', args = list(dat=dts, freq=freq)
+      )}
+    )
     
     return(dt_list)
 }

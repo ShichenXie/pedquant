@@ -41,9 +41,8 @@ md_commodity = function(symbol=NULL, date_range = '3y', from=NULL, to=Sys.Date()
     }
     syb = intersect(syb, commodity_symbol_fred$symbol)
     ## from/to
-    ft = get_fromto(date_range, from, to, min_date = "1000-01-01", default_date_range = '3y')
-    from = ft$f
-    to = ft$t
+    to = check_to(to)
+    from = check_from(date_range, from, to, default_from = "1000-01-01", default_date_range = '3y')
 
     # data
     dat_list = load_dat_loop(syb, "md_commodity1_fred", args = list(from = from, to = to), print_step=print_step)

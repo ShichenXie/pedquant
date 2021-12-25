@@ -22,25 +22,26 @@ pq_performance(dt, Ra, Rb = NULL, perf_fun, ...)
 }
 \examples{
  
-\donttest{
-library(data.table)
 library(pedquant) 
+library(data.table)
 
 # load data
-data(ssec)
-# transfer prices to returns
-datret = pq_return(ssec, 'close', freq = 'monthly', rcol_name = 'Ra')
-datret2 = rbindlist(datret)[, date := as.Date(sub('[0-9]{2}$', '01', date))][]
+data(dt_banks)
+data(dt_ssec)
+
+# calculate returns
+datret1 = pq_return(dt_banks, 'close', freq = 'monthly', rcol_name = 'Ra')
+datret2 = pq_return(dt_ssec, 'close', freq = 'monthly', rcol_name = 'Rb')
 
 # merge returns of assets and baseline
 datRaRb = merge(
-    datret2[symbol != '000001.SS', .(date, symbol, Ra)], 
-    datret2[symbol == '000001.SS', .(date, Rb = Ra)],
+    rbindlist(datret1)[, .(date, symbol, Ra)], 
+    rbindlist(datret2)[, .(date, Rb)],
     by = 'date', all.x = TRUE
 )
 
 # claculate table.CAPM metrics
 perf_capm = pq_performance(datRaRb, Ra = 'Ra', Rb = 'Rb', perf_fun = 'table.CAPM')
 rbindlist(perf_capm, idcol = 'symbol')
-}
+
 }

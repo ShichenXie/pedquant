@@ -5,11 +5,11 @@
 \title{creating charts for time series}
 \usage{
 pq_plot(dt, chart_type = "line", date_range = "max", from = NULL,
-  to = Sys.Date(), x = "close|value", addti = list(volume = list()),
-  linear_trend = NULL, cumchg_trend = FALSE, yaxis_log = FALSE,
-  color_up = "#CF002F", color_down = "#000000", multi_series = list(nrow
-  = NULL, ncol = NULL), rm_weekend = NULL, title = NULL,
-  interact = FALSE, ...)
+  to = Sys.Date(), x = "close|value", addti = NULL,
+  linear_trend = NULL, cumreturns = FALSE, freq = "daily",
+  yaxis_log = FALSE, color_up = "#CF002F", color_down = "#000000",
+  multi_series = list(nrow = NULL, ncol = NULL), rm_weekend = NULL,
+  title = NULL, interact = FALSE, ...)
 }
 \arguments{
 \item{dt}{a list/dataframe of time series dataset}
@@ -28,7 +28,9 @@ pq_plot(dt, chart_type = "line", date_range = "max", from = NULL,
 
 \item{linear_trend}{a numeric vector. Default is NULL. If it is not NULL, then display linear trend lines on charts.}
 
-\item{cumchg_trend}{logical, display the cumulative change trend of price. Default is FALSE.}
+\item{cumreturns}{logical, display the cumulative returns. Default is FALSE.}
+
+\item{freq}{the data frequency. It supports c('daily', 'weekly', 'monthly', 'quarterly', 'yearly').}
 
 \item{yaxis_log}{logical. Default is FALSE.}
 
@@ -52,29 +54,33 @@ pq_plot(dt, chart_type = "line", date_range = "max", from = NULL,
 \examples{
 \donttest{
 # single symbol
-ssec = md_stock('^000001', source='163', date_range = 'max')
+data(dt_ssec)
+# dt_ssec = md_stock('^000001', source='163', date_range = 'max')
 
 # chart type
-  pq_plot(ssec, chart_type = 'line',   date_range = '6m') # line chart (default)
-# pq_plot(ssec, chart_type = 'step',   date_range = '6m') # step line
-# pq_plot(ssec, chart_type = 'candle', date_range = '6m') # candlestick
-# pq_plot(ssec, chart_type = 'bar',    date_range = '6m') # bar chart
+  pq_plot(dt_ssec, chart_type = 'line',   date_range = '6m') # line chart (default)
+# pq_plot(dt_ssec, chart_type = 'step',   date_range = '6m') # step line
+# pq_plot(dt_ssec, chart_type = 'candle', date_range = '6m') # candlestick
+# pq_plot(dt_ssec, chart_type = 'bar',    date_range = '6m') # bar chart
 
 # add technical indicators
-pq_plot(ssec, chart_type = 'line', addti = list(
+pq_plot(dt_ssec, chart_type = 'line', addti = list(
         sma = list(n = 200), 
         sma = list(n = 50), 
         macd = list()
 ))
 # linear trend with yaxis in log
-pq_plot(ssec, chart_type = 'line', linear_trend = c(-0.8, 0, 0.8), yaxis_log = TRUE)
+pq_plot(dt_ssec, chart_type = 'line', linear_trend = c(-0.8, 0, 0.8), yaxis_log = TRUE)
 
 
 # multiple symbols
 # download datasets
 # dat = md_stock(c('FB', 'AMZN', 'AAPL', 'NFLX', 'GOOG'), date_range = 'max')
-dat = md_stock(c('^000001', '^399001', '^399006', '^000016', '^000300', '^000905'), 
-               date_range = 'max', source='163')
+# dat = md_stock(c('^000001', '^399001', '^399006', '^000016', '^000300', '^000905'), 
+#               date_range = 'max', source='163')
+
+data(dt_banks)
+dat = md_stock_adjust(dt_banks, adjust = TRUE)
 
 # linear trend
 pq_plot(dat, multi_series=list(nrow=2, scales='free_y'), linear_trend=c(-0.8, 0, 0.8))
@@ -82,8 +88,8 @@ pq_plot(dat, multi_series=list(nrow=2, scales='free_y'), linear_trend=c(-0.8, 0,
         yaxis_log=TRUE)
 
 # performance
-pq_plot(dat, multi_series = list(nrow=2), cumchg_trend=TRUE, date_range = 'ytd')
-pq_plot(dat, multi_series = list(nrow=1, ncol=1), cumchg_trend=TRUE, date_range = 'ytd')
+pq_plot(dat, x='close', multi_series = list(nrow=2), cumreturns=TRUE, date_range = 'ytd')
+pq_plot(dat, x='close', multi_series = list(nrow=1, ncol=1), cumreturns=TRUE, date_range = 'ytd')
 
 }
 

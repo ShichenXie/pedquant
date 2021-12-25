@@ -92,49 +92,41 @@ pq1_performance = function(dt1, Ra, Rb=NULL, perf_fun, col_date='date', ...) {
 #' @param ... additional parameters, the arguments used in `PerformanceAnalytics` functions.
 #' 
 #' @examples  
-#' \donttest{
-#' library(data.table)
 #' library(pedquant) 
+#' library(data.table)
 #' 
 #' # load data
-#' data(ssec)
-#' # transfer prices to returns
-#' datret = pq_return(ssec, 'close', freq = 'monthly', rcol_name = 'Ra')
-#' datret2 = rbindlist(datret)[, date := as.Date(sub('[0-9]{2}$', '01', date))][]
+#' data(dt_banks)
+#' data(dt_ssec)
+#' 
+#' # calculate returns
+#' datret1 = pq_return(dt_banks, 'close', freq = 'monthly', rcol_name = 'Ra')
+#' datret2 = pq_return(dt_ssec, 'close', freq = 'monthly', rcol_name = 'Rb')
 #' 
 #' # merge returns of assets and baseline
 #' datRaRb = merge(
-#'     datret2[symbol != '000001.SS', .(date, symbol, Ra)], 
-#'     datret2[symbol == '000001.SS', .(date, Rb = Ra)],
+#'     rbindlist(datret1)[, .(date, symbol, Ra)], 
+#'     rbindlist(datret2)[, .(date, Rb)],
 #'     by = 'date', all.x = TRUE
 #' )
 #' 
 #' # claculate table.CAPM metrics
 #' perf_capm = pq_performance(datRaRb, Ra = 'Ra', Rb = 'Rb', perf_fun = 'table.CAPM')
 #' rbindlist(perf_capm, idcol = 'symbol')
-#' }
+#' 
 #' @export
 #' 
 pq_performance = function(dt, Ra, Rb=NULL, perf_fun, ...) {
-    symbol = NULL
-    
     # list to data.table
-    if (inherits(dt, 'list')) dt = rbindlist(dt, fill = TRUE)
-    dt = setDT(dt)
+    dt = check_dt(dt)
     
-    # plot symbol
-    ret_list = list()
-    sybs = dt[, unique(symbol)]
-    for (s in sybs) {
-        dt_s = dt[symbol == s]
-        setkeyv(dt_s, 'date')
-        
-        ret_list[[s]] = do.call(pq1_performance, args = c(
-            list(dt1=dt_s, Ra = Ra, Rb=Rb, perf_fun=perf_fun), 
-            list(...)
-        ))
-    }
-    
+    ret_list = lapply(
+        split(dt, by = 'symbol'), 
+        function(dts) {do.call(
+            'pq1_performance', 
+            args = c(list(dt1=dts, Ra=Ra, Rb=Rb, perf_fun=perf_fun), list(...))
+        )}
+    )
     return(ret_list)
 }
 

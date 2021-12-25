@@ -87,9 +87,8 @@ ed_fred = function(symbol=NULL, date_range='10y', from=NULL, to=Sys.Date(), na_r
     # 
     if (is.null(symbol)) symbol = ed_fred_symbol()[,symbol]
     # from/to # "1776-07-04"/"9999-12-31"
-    ft = get_fromto(date_range, from, to, min_date = "1776-07-04", default_date_range = '10y')
-    from = ft$f
-    to = ft$t
+    to = check_to(to)
+    from = check_from(date_range, from, to, default_from = "1776-07-04", default_date_range = '10y')
     
     # data list
     dat_list = load_dat_loop(symbol, "ed_fred1", args = list(from = from, to = to, na_rm = na_rm), print_step = print_step)

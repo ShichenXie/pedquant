@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>creating the equity trends for portfolio — pq_portfolio • pedquant</title>
+<title>calculating returns of portfolio — pq_portfolio • pedquant</title>
 
 
 <!-- jquery -->
@@ -39,8 +39,8 @@
 
 
 
-<meta property="og:title" content="creating the equity trends for portfolio — pq_portfolio" />
-<meta property="og:description" content="pq_portfolio creates the equity trends of a portfolio secturites." />
+<meta property="og:title" content="calculating returns of portfolio — pq_portfolio" />
+<meta property="og:description" content="pq_portfolio calculates the weight returns or the wealth index of a portfolio of assets." />
 
 
 
@@ -116,69 +116,69 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>creating the equity trends for portfolio</h1>
+    <h1>calculating returns of portfolio</h1>
     <small class="dont-index">Source: <a href='https://github.com/ShichenXie/pedquant/blob/master/R/pq_portfolio.R'><code>R/pq_portfolio.R</code></a></small>
     <div class="hidden name"><code>pq_portfolio.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p><code>pq_portfolio</code> creates the equity trends of a portfolio secturites.</p>
+    <p><code>pq_portfolio</code> calculates the weight returns or the wealth index of a portfolio of assets.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>pq_portfolio</span><span class='op'>(</span><span class='va'>dt</span>, <span class='va'>w</span>, x <span class='op'>=</span> <span class='st'>"close"</span>, init_equity <span class='op'>=</span> <span class='cn'>NULL</span>, date_range <span class='op'>=</span> <span class='st'>"max"</span>,
-  from <span class='op'>=</span> <span class='cn'>NULL</span>, to <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/Sys.time.html'>Sys.Date</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>pq_portfolio</span><span class='op'>(</span><span class='va'>dt</span>, w <span class='op'>=</span> <span class='cn'>NULL</span>, rcol <span class='op'>=</span> <span class='st'>"returns"</span>, wcol <span class='op'>=</span> <span class='st'>"weights"</span>,
+  wealthindex <span class='op'>=</span> <span class='cn'>FALSE</span>, method <span class='op'>=</span> <span class='st'>"arithmetic"</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>dt</th>
-      <td><p>a list/dataframe of time series dataset</p></td>
+      <td><p>a list/dataframe of returns by asset</p></td>
     </tr>
     <tr>
       <th>w</th>
-      <td><p>a dataframe of position and price of all transactions.</p></td>
+      <td><p>a dataframe of weights by asset. If it is NULL, then the weights by asset are equal.</p></td>
     </tr>
     <tr>
-      <th>x</th>
-      <td><p>the name of column to calculate. Default is 'close|value'.</p></td>
+      <th>rcol</th>
+      <td><p>the returns column name</p></td>
     </tr>
     <tr>
-      <th>init_equity</th>
-      <td><p>initial equity</p></td>
+      <th>wcol</th>
+      <td><p>the weights column name</p></td>
     </tr>
     <tr>
-      <th>date_range</th>
-      <td><p>date range. Available value includes '1m'-'11m', 'ytd', 'max' and '1y'-'ny'. Default is max.</p></td>
+      <th>wealthindex</th>
+      <td><p>logical, whether to return a wealth index. Defaults to FALSE.</p></td>
     </tr>
     <tr>
-      <th>from</th>
-      <td><p>the start date. Default is NULL. If it is NULL, then calculate using date_range and end date.</p></td>
-    </tr>
-    <tr>
-      <th>to</th>
-      <td><p>the end date. Default is the current date.</p></td>
+      <th>method</th>
+      <td><p>the method to calculate asset returns, the available values include arithmetic and log, defaults to arithmetic.</p></td>
     </tr>
     </table>
 
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='co'># \donttest{</span>
-<span class='va'>dat</span> <span class='op'>=</span> <span class='fu'><a href='md_stock.html'>md_stock</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>'FB'</span>, <span class='st'>'AMZN'</span>, <span class='st'>'AAPL'</span>, <span class='st'>'NFLX'</span>, <span class='st'>'GOOG'</span><span class='op'>)</span>, date_range <span class='op'>=</span> <span class='st'>'max'</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; 1/5 FB
-#&gt; 2/5 AMZN
-#&gt; 3/5 AAPL
-#&gt; 4/5 NFLX
-#&gt; 5/5 GOOG</div><div class='input'><span class='va'>w</span> <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span><span class='op'>(</span>
-      date <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>'2016-01-08'</span><span class='op'>)</span>,
-      symbol <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>'FB'</span>, <span class='st'>'AMZN'</span>, <span class='st'>'AAPL'</span>, <span class='st'>'NFLX'</span>, <span class='st'>'GOOG'</span><span class='op'>)</span>,
-      price <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>99.88</span>, <span class='fl'>618.88</span>, <span class='fl'>97.88</span>, <span class='fl'>115.88</span>, <span class='fl'>716.88</span><span class='op'>)</span>,
-      position <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>100</span>, <span class='fl'>200</span>, <span class='fl'>300</span>, <span class='fl'>400</span>, <span class='fl'>500</span><span class='op'>)</span>,
-      type <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span><span class='op'>(</span><span class='st'>'buy_op'</span>, <span class='fl'>5</span><span class='op'>)</span>
-    <span class='op'>)</span>
-<span class='va'>pf</span> <span class='op'>=</span> <span class='fu'>pq_portfolio</span><span class='op'>(</span><span class='va'>dat</span>, <span class='va'>w</span><span class='op'>)</span>
-<span class='co'># }</span>
-</div></pre>
+    <pre class="examples"><span class='r-in'><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://github.com/ShichenXie/pedquant'>pedquant</a></span><span class='op'>)</span></span>
+<span class='r-in'><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://r-datatable.com'>data.table</a></span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>dt_banks</span><span class='op'>)</span></span>
+<span class='r-in'><span class='va'>datadj</span> <span class='op'>=</span> <span class='fu'><a href='md_stock_adjust.html'>md_stock_adjust</a></span><span class='op'>(</span><span class='va'>dt_banks</span>, adjust <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='va'>dt</span> <span class='op'>=</span> <span class='fu'><a href='pq_return.html'>pq_return</a></span><span class='op'>(</span><span class='va'>datadj</span>, x <span class='op'>=</span> <span class='st'>'close_adj'</span>, freq <span class='op'>=</span> <span class='st'>'monthly'</span><span class='op'>)</span></span>
+<span class='r-in'><span class='va'>w</span> <span class='op'>=</span> <span class='fu'><a href='https://Rdatatable.gitlab.io/data.table/reference/data.table.html'>data.table</a></span><span class='op'>(</span></span>
+<span class='r-in'>   symbol <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"601288.SS"</span>,<span class='st'>"601328.SS"</span>,<span class='st'>"601398.SS"</span>,<span class='st'>"601939.SS"</span>,<span class='st'>"601988.SS"</span><span class='op'>)</span>, </span>
+<span class='r-in'>   weights <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>0.1</span>, <span class='fl'>0.2</span>, <span class='fl'>0.3</span>, <span class='fl'>0.3</span>, <span class='fl'>0.1</span><span class='op'>)</span></span>
+<span class='r-in'>   <span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='va'>ret</span> <span class='op'>=</span> <span class='fu'>pq_portfolio</span><span class='op'>(</span><span class='va'>dt</span>, <span class='va'>w</span><span class='op'>)</span></span>
+<span class='r-in'><span class='va'>retidx</span> <span class='op'>=</span> <span class='fu'>pq_portfolio</span><span class='op'>(</span><span class='va'>dt</span>, <span class='va'>w</span>, wealthindex <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span></span>
+<span class='r-in'><span class='fu'><a href='pq_plot.html'>pq_plot</a></span><span class='op'>(</span><span class='va'>retidx</span>, x <span class='op'>=</span> <span class='st'>'wealthindex'</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $symbol</span>
+<span class='r-plt img'><img src='pq_portfolio-1.png' alt='' width='700' height='433' /></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-in'></span>
+</pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

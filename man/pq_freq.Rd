@@ -4,23 +4,23 @@
 \alias{pq_freq}
 \title{converting frequency of daily data}
 \usage{
-pq_freq(dt, freq, print_step = 1L)
+pq_freq(dt, freq = "monthly", date_type = "eop")
 }
 \arguments{
 \item{dt}{a list/dataframe of time series dataset.}
 
 \item{freq}{the frequency that the input daily data will converted to. It supports weekly, monthly, quarterly and yearly.}
 
-\item{print_step}{A non-negative integer. Print symbol name by each print_step iteration. Default is 1L.}
+\item{date_type}{the available date type are eop (end of period) and bop (bebinning of period), defaults to the eop.}
 }
 \description{
 \code{pq_freq} convert a daily OHLC dataframe into a specified frequency.
 }
 \examples{
-\donttest{
-dts = md_stock(c("^000001", "000001"), date_range = 'max', source = '163')
+data(dt_ssec)
+dat1_weekly = pq_freq(dt_ssec, "weekly")
 
-dts_weekly = pq_freq(dts, "weekly")
-}
+data(dt_banks)
+dat2_weekly = pq_freq(dt_banks, "monthly")
 
 }

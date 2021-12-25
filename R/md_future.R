@@ -114,9 +114,9 @@ md_future = function(symbol=NULL, source='sina', freq='daily', date_range='3y', 
     
     
     ## from/to
-    ft = get_fromto(date_range, from, to, min_date = '1000-01-01', default_date_range = '3y')
-    from = ft$f
-    to = ft$t
+    to = check_to(to)
+    from = check_from(date_range, from, to, default_from = "1000-01-01", default_date_range = '3y')
+    
     ## handle
     hd = new_handle()#handle_new_session(url='http://vip.stock.finance.sina.com.cn/quotes_service/view/qihuohangqing.html')
     ## frequency

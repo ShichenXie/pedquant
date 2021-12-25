@@ -4,7 +4,7 @@
 \alias{md_stock}
 \title{query stock market data}
 \usage{
-md_stock(symbol, source = "yahoo", type = "history", freq = "daily",
+md_stock(symbol, source = "163", type = "history", freq = "daily",
   date_range = "3y", from = NULL, to = Sys.Date(), adjust = NULL,
   print_step = 1L, ...)
 }
@@ -37,10 +37,10 @@ For the yahoo data, the adjustment is based on the close_adj; for the 163 data, 
 \dontrun{
 # Example I
 # query history prices from yahoo
-dt_yahoo1 = md_stock(symbol=c("^GSPC", "000001.SS"))
+# dt_yahoo1 = md_stock(symbol=c("^GSPC", "000001.SS"), source = 'yahoo')
 
 # FAANG
-FAANG = md_stock(c('FB', 'AMZN', 'AAPL', 'NFLX', 'GOOG'), date_range = 'max')
+# FAANG = md_stock(c('FB', 'AMZN', 'AAPL', 'NFLX', 'GOOG'), date_range = 'max', source = 'yahoo')
 
 # for Chinese shares/fund
 ## the symbol without suffix
@@ -49,8 +49,8 @@ dt_yahoo2 = md_stock(c("000001", "^000001", "512510"))
 dt_yahoo3 = md_stock(c("000001.sz", "000001.ss"))
 
 # adjust factors, splits and dividend
-dt_adj = md_stock(symbol=c("AAPL", "000001.SZ", "000001.SS"), 
-                    type='adjfactor', date_range='max')
+dt_adj = md_stock(symbol=c("000001.SZ", "000001.SS"), 
+                    type='adjfactor', date_range='max', source = '163')
 
  
 # Example II

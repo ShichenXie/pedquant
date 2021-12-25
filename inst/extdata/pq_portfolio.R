@@ -10,8 +10,8 @@ check_wdf = function(w) {
 
     if ('type' %in% names(w)) {
         dim_type = data.table(
-            type = c('buy_op', 'sell_cl', 'sell_op', 'buy_cl'),
-            long_short = c('long', 'long', 'short', 'short'))
+            type = c('buy_op', 'sell_cl', 'sell_op', 'buy_cl', 'buy', 'sell'),
+            long_short = c('long', 'long', 'short', 'short', 'long', 'long'))
 
         w = merge(w, dim_type, by = 'type', all.x = TRUE)
     } else {
@@ -141,9 +141,14 @@ pq_portfolio = function() {
 }
 
 # return
-pq_portfolio_return = function(dt, x, w, init_value=NULL) {
-
-}
+dat = setDT(ssec)[symbol != '000001.SS']
+datadj = md_stock_adjust(dat, adjust = FALSE)
+dt = pq_return(datadj, x = 'close_adj', freq = 'monthly')
+r = 'returns'
+w = data.table(
+    symbol = c("601288.SS", "601328.SS", "601398.SS", "601939.SS", "601988.SS"), 
+    weights = c(0.1, 0.2, 0.3, 0.3, 0.1)
+)
 
 # equity
 pq_portfolio_equity = function(dt, x, w, init_value=NULL) {

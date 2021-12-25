@@ -1,27 +1,3 @@
-#' dataset of shanghai composite index
-#'
-#' The daily historical Shanghai Composite Index from the beginning of the Index to Sept 1, 2020
-#'
-#' @format A data frame with 7506 rows and 15 variables:
-#' \describe{
-#'   \item{symbol}{stock ticker symbol}
-#'   \item{name}{stock ticker name}
-#'   \item{date}{trade date}
-#'   \item{open}{stock price at the open of trading}
-#'   \item{high}{stock price at the highest point during trading}
-#'   \item{low}{stock price at the lowest point during trading}
-#'   \item{close}{stock price at the close of trading}
-#'   \item{close_prev}{stock price at the close of previous trading day}
-#'   \item{change_pct}{change percentage of stock close price}
-#'   \item{volume}{number of shares traded}
-#'   \item{amount}{monetary value of shares traded}
-#'   \item{turnover}{rate of shares traded over total}
-#'   \item{cap_market}{tradable market capitalisation}
-#'   \item{cap_total}{total market capitalisation}
-#'   \item{unit}{price unit, such as in CNY/USD}
-#' }
-#' 
-"ssec"
 
 #' query stock market data 
 #' 
@@ -44,10 +20,10 @@
 #' \dontrun{
 #' # Example I
 #' # query history prices from yahoo
-#' dt_yahoo1 = md_stock(symbol=c("^GSPC", "000001.SS"))
+#' # dt_yahoo1 = md_stock(symbol=c("^GSPC", "000001.SS"), source = 'yahoo')
 #' 
 #' # FAANG
-#' FAANG = md_stock(c('FB', 'AMZN', 'AAPL', 'NFLX', 'GOOG'), date_range = 'max')
+#' # FAANG = md_stock(c('FB', 'AMZN', 'AAPL', 'NFLX', 'GOOG'), date_range = 'max', source = 'yahoo')
 #' 
 #' # for Chinese shares/fund
 #' ## the symbol without suffix
@@ -56,8 +32,8 @@
 #' dt_yahoo3 = md_stock(c("000001.sz", "000001.ss"))
 #' 
 #' # adjust factors, splits and dividend
-#' dt_adj = md_stock(symbol=c("AAPL", "000001.SZ", "000001.SS"), 
-#'                     type='adjfactor', date_range='max')
+#' dt_adj = md_stock(symbol=c("000001.SZ", "000001.SS"), 
+#'                     type='adjfactor', date_range='max', source = '163')
 #' 
 #'  
 #' # Example II
@@ -95,7 +71,7 @@
 #' }
 #' 
 #' @export
-md_stock = function(symbol, source = "yahoo", type='history', freq = "daily", date_range = "3y", from = NULL, to = Sys.Date(), adjust = NULL, print_step = 1L, ...) {
+md_stock = function(symbol, source = "163", type='history', freq = "daily", date_range = "3y", from = NULL, to = Sys.Date(), adjust = NULL, print_step = 1L, ...) {
     # cat(source,"\n")
     if (source == '163') {
         check_internet('www.163.com')
@@ -119,9 +95,8 @@ md_stock = function(symbol, source = "yahoo", type='history', freq = "daily", da
     env = list(...)[['env']]
     if (is.null(env)) env = parent.frame()
     ## from/to
-    ft = get_fromto(date_range, from, to, min_date = "1000-01-01", default_date_range = '3y')
-    from = ft$f
-    to = ft$t
+    to = check_to(to)
+    from = check_from(date_range, from, to, default_from = "1000-01-01", default_date_range = '3y')
     
     
     # data

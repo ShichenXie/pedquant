@@ -1,15 +1,33 @@
 return_arithmetic = function(x, x_lag) x/x_lag-1
 return_log = function(x, x_lag) log(x/x_lag)
 
-# rename the column name of asset returns
-ra_rename = function(dt, freq, rcol_name = 'return') {
-    if (!is.null(rcol_name)) setnames(dt, 'Ra', rcol_name)
+dat_add_byfreq = function(dat, freq) {
+    byfreq = funcs = byyear = wkdiff = wkN = NULL
+
+    freqfunc = data.table(
+        freqs = c('daily', 'weekly', 'monthly', 'quarterly', 'yearly'), 
+        funcs = c('yday', 'isoweek', 'month', 'quarter', 'year'), 
+        key = 'freqs'
+    )
     
-    return(dt)
+    dat2 = copy(dat)[
+        , byfreq := do.call(freqfunc[freq,funcs], args = list(x=date))
+    ][, byyear := year(date)]
+    
+    if (freq == 'weekly') {
+        dat2 = dat2[byfreq %in% c(1,52,53), 
+                  wkdiff := byfreq - shift(byfreq, 1, type="lag") 
+        ][byfreq %in% c(1,52,53) & (wkdiff!=0|is.na(wkdiff)), wkdiff := 1
+        ][byfreq %in% c(1,52,53), wkN := cumsum(wkdiff)
+        ][byfreq %in% c(1,52,53) & wkN>0, byyear := max(byyear), by=wkN
+        ][, (c('wkdiff', 'wkN')) := NULL]
+    } 
+    
+    return(dat2)
 }
 
-pq1_return = function(dt, x, method='arithmetic', freq='daily', rcol_name = NULL, cols_keep) {
-    . = byfreq = func = byyear = wkdiff = wkN = x_lag = Ra = NULL
+pq1_return = function(dt, x, freq='monthly', num=1, date_type = 'eop', method = 'arithmetic', leading=TRUE, cumreturns = FALSE, rcol_name = 'returns', cols_keep = NULL) {
+    . = Ra = chg = cumRa = byfreq = byyear = x_lag = NULL
     
     setkeyv(dt, "date")
     
@@ -20,42 +38,47 @@ pq1_return = function(dt, x, method='arithmetic', freq='daily', rcol_name = NULL
     freq = as.list(freq)
     names(freq) = freq
     
-    freqfunc = data.table(
-        freq = freq_list, 
-        func = c('yday', 'isoweek', 'month', 'quarter', 'year'), 
-        key = 'freq'
-    )
+    
         
     dt_rt = lapply(freq, function(freqi) {
-        dt2 = copy(dt)[, byfreq := do.call(freqfunc[freqi,func], args = list(x=date))
-        ][, byyear := year(date)]
-        
-        if (freqi == 'weekly') {
-            dt2 = dt2[byfreq %in% c(1,52,53), 
-                      wkdiff := byfreq - shift(byfreq, 1, type="lag") 
-            ][byfreq %in% c(1,52,53) & (wkdiff!=0|is.na(wkdiff)), wkdiff := 1
-            ][byfreq %in% c(1,52,53), wkN := cumsum(wkdiff)
-            ][byfreq %in% c(1,52,53) & wkN>0, byyear := max(byyear), by=wkN
-            ][, (c('wkdiff', 'wkN')) := NULL]
-        } 
+        dt2 = dat_add_byfreq(dt, freqi)
         
         # BOP, bebinning of period
-        bop = dt2[, .SD[1], by = .(byyear, byfreq)]
+        datbop = dt2[, .SD[1], by = .(byyear, byfreq)]
         # EOP, end of period
-        eop = dt2[, .SD[.N], by = .(byyear, byfreq)
-        ][, x_lag := shift(get(x),n=1,type = 'lag') 
-        ][1, x_lag := bop[1,get(x)]
+        dateop = dt2[, .SD[.N], by = .(byyear, byfreq)
+        ][, x_lag := shift(get(x), n=num, type = 'lag') 
+        ][1 & leading, x_lag := datbop[1,get(x)] 
         ][, Ra := do.call(
             sprintf('return_%s', method), 
             args = list(x=get(x), x_lag)
-        )][, unique(c(cols_keep, 'Ra')), with = FALSE]
+        )][, unique(c(cols_keep, 'Ra')), with = FALSE
+         ][, freq := freqi
+         ]
         
-        eop = ra_rename(eop, freqi, rcol_name)
-        return(eop)
+        if (cumreturns == TRUE) {
+            dateop = dateop[
+                , chg := sum(Ra,1,na.rm = TRUE), keyby = c('symbol', 'date')
+            ][, cumRa := cumprod(chg), by = 'symbol'
+            ][, chg := NULL]
+        }
+        
+        if (date_type == 'eop') {
+            dateop = dateop[, date := date_eop(date, freqi, workday = TRUE)]
+        } else if (date_type == 'bop') {
+            dateop = dateop[, date := date_bop(date, freqi, workday = TRUE)]
+        }
+        
+        if (!is.null(rcol_name)) {
+            cols_rename = 'Ra'
+            if (cumreturns == TRUE) cols_rename = c('Ra', 'cumRa')
+            setnames(dateop, cols_rename, sub('Ra', rcol_name, cols_rename))
+        }
+        return(dateop)
     })
 
     
-    return(rbindlist(dt_rt, idcol = 'freq'))
+    return(rbindlist(dt_rt)[])
 }
 
 
@@ -66,20 +89,23 @@ pq1_return = function(dt, x, method='arithmetic', freq='daily', rcol_name = NULL
 #' @param dt a list/dataframe of daily series dataset
 #' @param x the column name of adjusted asset price. 
 #' @param freq the frequency of returns. It supports c('all', 'daily', 'weekly', 'monthly', 'quarterly', 'yearly').
-#' @param method the method to calculate returns.
-#' @param rcol_name setting the name of return column, defaults to return.
+#' @param num the number of preceding periods used as the base value, defaults to 1, which means based on the previous period value.
+#' @param date_type the available date type are eop (end of period) and bop (beginning of period), defaults to the eop.
+#' @param method the method to calculate asset returns, the available methods including arithmetic and log, defaults to arithmetic. 
+#' @param leading whether to return the incomplete leading period returns.
+#' @param cumreturns logical, whether to return cumulative returns. Defaults to FALSE. 
+#' @param rcol_name setting the column name of returns, defaults to returns.
 #' @param cols_keep the columns keep in the return data. The columns of symbol, name and date will always kept if they are exist in the input data.
 #' @param date_range date range. Available value includes '1m'-'11m', 'ytd', 'max' and '1y'-'ny'. Default is max.
 #' @param from the start date. Default is NULL. If it is NULL, then calculate using date_range and end date.
 #' @param to the end date. Default is the current date.
-#' @param print_step a non-negative integer. Print symbol name by each print_step iteration. Default is 1L.
 #' 
 #' @examples 
 #' \donttest{
-#' data(ssec)
+#' data(dt_banks)
 #' 
 #' # create a close_adj column
-#' datadj = md_stock_adjust(ssec, adjust = FALSE)
+#' datadj = md_stock_adjust(dt_banks, adjust = FALSE)
 #' 
 #' # set freq
 #' dts_returns1 = pq_return(datadj, x = 'close_adj', freq = 'all')
@@ -93,9 +119,7 @@ pq1_return = function(dt, x, method='arithmetic', freq='daily', rcol_name = NULL
 #' }
 #' 
 #' @export
-pq_return = function(dt, x, freq='monthly', method='arithmetic', rcol_name = 'return', cols_keep=NULL, date_range='max', from=NULL, to=Sys.Date(), print_step=1L) {
-    symbol = NULL 
-    
+pq_return = function(dt, x, freq='monthly', num=1, date_type='eop', method='arithmetic', leading = TRUE, cumreturns = FALSE, rcol_name = 'returns', cols_keep=NULL, date_range='max', from=NULL, to=Sys.Date()) {
     # arg
     ## method 
     method = check_arg(method, c('arithmetic', 'log'), default='arithmetic', arg_name = 'method')
@@ -105,11 +129,11 @@ pq_return = function(dt, x, freq='monthly', method='arithmetic', rcol_name = 're
     freq = check_arg(freq, c('all', 'daily', 'weekly', 'monthly', 'quarterly', 'yearly'), default='all', arg_name = 'freq')
     # if (!check_freq_isdaily(dt)) stop('Please provide daily data')
     ## from/to
-    ft = get_fromto(date_range, from, to)
-    from = ft$f
-    to = ft$t
+    to = check_to(to)
+    from = check_from(date_range, from, to, default_from = "1000-01-01", default_date_range = 'max')
+    
     ## dt
-    if (inherits(dt, 'list')) dt = rbindlist(dt, fill = TRUE)
+    dt = check_dt(dt)
     ## price column 
     x = check_xcol(dt, x)
     ## kept columns
@@ -118,18 +142,12 @@ pq_return = function(dt, x, freq='monthly', method='arithmetic', rcol_name = 're
     dt = setDT(dt)[date >= from & date <= to][, unique(c(cols_keep, x)), with = FALSE]
     
     
-    dt_list = list()
-    sybs = dt[, unique(symbol)]
-    for (i in seq_len(length(sybs))) {
-        s = sybs[i]
-        dt_s = dt[symbol == s]
-        setkeyv(dt_s, "date")
-        
-        if ((print_step>0) & (i %% print_step == 0)) cat(sprintf('%s/%s %s\n', i, length(sybs), s))
-        dt_list[[s]] = do.call(
+    dt_list = lapply(
+        split(dt, by = 'symbol'), 
+        function(dts) {do.call(
             'pq1_return', 
-            args = list(dt=dt_s, x=x, method=method, freq=freq, rcol_name = rcol_name, cols_keep = cols_keep)
-        )
-    }
+            args = list(dt=dts, x=x, method=method, leading=leading, freq=freq, num=num, cumreturns=cumreturns, rcol_name = rcol_name, cols_keep = cols_keep, date_type=date_type)
+        )}
+    )
     return(dt_list)
 }

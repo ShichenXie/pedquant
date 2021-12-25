@@ -398,13 +398,21 @@ pq1_addti = function(dt, ...) {
 #' @examples 
 #' \donttest{
 #' # load data
-#' data('ssec')
+#' data('dt_ssec')
 #' 
 #' # add technical indicators
-#' dt_ti1 = pq_addti(ssec, sma=list(n=20), sma=list(n=50), macd = list())
+#' dt_ti1 = pq_addti(dt_ssec, sma=list(n=20), sma=list(n=50), macd = list())
 #' 
 #' # only technical indicators
-#' dt_ti2 = pq_addti(ssec, sma=list(n=20), sma=list(n=50), macd = list(), col_kp = FALSE)
+#' dt_ti2 = pq_addti(
+#'   dt_ssec, sma=list(n=20), sma=list(n=50), macd = list(), 
+#'   col_kp = c('symbol', 'name')
+#' )
+#' 
+#' dt_ti3 = pq_addti(
+#'   dt_ssec, sma=list(n=20), sma=list(n=50), macd = list(), 
+#'   col_kp = NULL
+#' )
 #' 
 #' # self-defined technical indicators
 #' bias = function(x, n=50, maType='SMA') {
@@ -412,7 +420,7 @@ pq1_addti = function(dt, ...) {
 #'     (x/do.call(maType, list(x=x, n=n))-1)*100
 #' }
 #' 
-#' dt_ti3 = pq_addti(ssec, bias = list(n = 200))
+#' dt_ti3 = pq_addti(dt_ssec, bias = list(n = 200))
 # 
 # maroc = function(x, n=10, m=3, maType='SMA') {
 #   ROC(do.call(maType, list(x=x, n=n)), n=m)*100
@@ -425,8 +433,7 @@ pq_addti = function(dt, ...) {
   symbol = NULL
   
   # bind list of dataframes
-  if (inherits(dt, 'list')) dt = rbindlist(dt, fill = TRUE)
-  dt = setDT(dt)
+  dt = check_dt(dt)
   
   ## single series
   dt_list = list()

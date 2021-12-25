@@ -125,7 +125,7 @@
     <p><code>md_stock</code> provides an interface to query EOD (end of date) stock prices.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>md_stock</span><span class='op'>(</span><span class='va'>symbol</span>, source <span class='op'>=</span> <span class='st'>"yahoo"</span>, type <span class='op'>=</span> <span class='st'>"history"</span>, freq <span class='op'>=</span> <span class='st'>"daily"</span>,
+    <pre class="usage"><span class='fu'>md_stock</span><span class='op'>(</span><span class='va'>symbol</span>, source <span class='op'>=</span> <span class='st'>"163"</span>, type <span class='op'>=</span> <span class='st'>"history"</span>, freq <span class='op'>=</span> <span class='st'>"daily"</span>,
   date_range <span class='op'>=</span> <span class='st'>"3y"</span>, from <span class='op'>=</span> <span class='cn'>NULL</span>, to <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/Sys.time.html'>Sys.Date</a></span><span class='op'>(</span><span class='op'>)</span>, adjust <span class='op'>=</span> <span class='cn'>NULL</span>,
   print_step <span class='op'>=</span> <span class='fl'>1L</span>, <span class='va'>...</span><span class='op'>)</span></pre>
 
@@ -180,10 +180,10 @@ For the yahoo data, the adjustment is based on the close_adj; for the 163 data, 
     <pre class="examples"><span class='r-in'><span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span></span>
 <span class='r-in'><span class='co'># Example I</span></span>
 <span class='r-in'><span class='co'># query history prices from yahoo</span></span>
-<span class='r-in'><span class='va'>dt_yahoo1</span> <span class='op'>=</span> <span class='fu'>md_stock</span><span class='op'>(</span>symbol<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"^GSPC"</span>, <span class='st'>"000001.SS"</span><span class='op'>)</span><span class='op'>)</span></span>
+<span class='r-in'><span class='co'># dt_yahoo1 = md_stock(symbol=c("^GSPC", "000001.SS"), source = 'yahoo')</span></span>
 <span class='r-in'></span>
 <span class='r-in'><span class='co'># FAANG</span></span>
-<span class='r-in'><span class='va'>FAANG</span> <span class='op'>=</span> <span class='fu'>md_stock</span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>'FB'</span>, <span class='st'>'AMZN'</span>, <span class='st'>'AAPL'</span>, <span class='st'>'NFLX'</span>, <span class='st'>'GOOG'</span><span class='op'>)</span>, date_range <span class='op'>=</span> <span class='st'>'max'</span><span class='op'>)</span></span>
+<span class='r-in'><span class='co'># FAANG = md_stock(c('FB', 'AMZN', 'AAPL', 'NFLX', 'GOOG'), date_range = 'max', source = 'yahoo')</span></span>
 <span class='r-in'></span>
 <span class='r-in'><span class='co'># for Chinese shares/fund</span></span>
 <span class='r-in'><span class='co'>## the symbol without suffix</span></span>
@@ -192,8 +192,8 @@ For the yahoo data, the adjustment is based on the close_adj; for the 163 data, 
 <span class='r-in'><span class='va'>dt_yahoo3</span> <span class='op'>=</span> <span class='fu'>md_stock</span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"000001.sz"</span>, <span class='st'>"000001.ss"</span><span class='op'>)</span><span class='op'>)</span></span>
 <span class='r-in'></span>
 <span class='r-in'><span class='co'># adjust factors, splits and dividend</span></span>
-<span class='r-in'><span class='va'>dt_adj</span> <span class='op'>=</span> <span class='fu'>md_stock</span><span class='op'>(</span>symbol<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"AAPL"</span>, <span class='st'>"000001.SZ"</span>, <span class='st'>"000001.SS"</span><span class='op'>)</span>, </span>
-<span class='r-in'>                    type<span class='op'>=</span><span class='st'>'adjfactor'</span>, date_range<span class='op'>=</span><span class='st'>'max'</span><span class='op'>)</span></span>
+<span class='r-in'><span class='va'>dt_adj</span> <span class='op'>=</span> <span class='fu'>md_stock</span><span class='op'>(</span>symbol<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"000001.SZ"</span>, <span class='st'>"000001.SS"</span><span class='op'>)</span>, </span>
+<span class='r-in'>                    type<span class='op'>=</span><span class='st'>'adjfactor'</span>, date_range<span class='op'>=</span><span class='st'>'max'</span>, source <span class='op'>=</span> <span class='st'>'163'</span><span class='op'>)</span></span>
 <span class='r-in'></span>
 <span class='r-in'> </span>
 <span class='r-in'><span class='co'># Example II</span></span>

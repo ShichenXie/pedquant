@@ -4,9 +4,10 @@
 \alias{pq_return}
 \title{calculating returns by frequency}
 \usage{
-pq_return(dt, x, freq = "monthly", method = "arithmetic",
-  rcol_name = "return", cols_keep = NULL, date_range = "max",
-  from = NULL, to = Sys.Date(), print_step = 1L)
+pq_return(dt, x, freq = "monthly", num = 1, date_type = "eop",
+  method = "arithmetic", leading = TRUE, cumreturns = FALSE,
+  rcol_name = "returns", cols_keep = NULL, date_range = "max",
+  from = NULL, to = Sys.Date())
 }
 \arguments{
 \item{dt}{a list/dataframe of daily series dataset}
@@ -15,9 +16,17 @@ pq_return(dt, x, freq = "monthly", method = "arithmetic",
 
 \item{freq}{the frequency of returns. It supports c('all', 'daily', 'weekly', 'monthly', 'quarterly', 'yearly').}
 
-\item{method}{the method to calculate returns.}
+\item{num}{the number of preceding periods used as the base value, defaults to 1, which means based on the previous period value.}
 
-\item{rcol_name}{setting the name of return column, defaults to return.}
+\item{date_type}{the available date type are eop (end of period) and bop (beginning of period), defaults to the eop.}
+
+\item{method}{the method to calculate asset returns, the available methods including arithmetic and log, defaults to arithmetic.}
+
+\item{leading}{whether to return the incomplete leading period returns.}
+
+\item{cumreturns}{logical, whether to return cumulative returns. Defaults to FALSE.}
+
+\item{rcol_name}{setting the column name of returns, defaults to returns.}
 
 \item{cols_keep}{the columns keep in the return data. The columns of symbol, name and date will always kept if they are exist in the input data.}
 
@@ -26,18 +35,16 @@ pq_return(dt, x, freq = "monthly", method = "arithmetic",
 \item{from}{the start date. Default is NULL. If it is NULL, then calculate using date_range and end date.}
 
 \item{to}{the end date. Default is the current date.}
-
-\item{print_step}{a non-negative integer. Print symbol name by each print_step iteration. Default is 1L.}
 }
 \description{
 \code{pq_return} calculates returns for daily series based on specified column, frequency and method type.
 }
 \examples{
 \donttest{
-data(ssec)
+data(dt_banks)
 
 # create a close_adj column
-datadj = md_stock_adjust(ssec, adjust = FALSE)
+datadj = md_stock_adjust(dt_banks, adjust = FALSE)
 
 # set freq
 dts_returns1 = pq_return(datadj, x = 'close_adj', freq = 'all')

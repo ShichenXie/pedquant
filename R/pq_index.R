@@ -38,8 +38,8 @@ fbi_cpicn = function(sybs = c('A01010101', 'A01010201','A01030101', 'A01030201')
     cpicn = ed_nbs(geo_type = 'n', freq = 'm', symbol = sybs, na_rm = TRUE, from='1900-01-01')
     
     cpicn2 = dcast(
-        cpicn[, value := value/100], date~name, value.var = 'value'
-    )[, date := as.Date(paste0(date,'01'),format='%Y%m%d')]
+        rbindlist(cpicn)[, value := value/100], date~name, value.var = 'value'
+    )
     setnames(cpicn2, c('date', 'cpi_yoy', 'cpi_mom'))
     
     cpi_fbi = pq_fbi(
@@ -74,31 +74,31 @@ pq_rp1 = function(dt, region='cn', columns = c('open', 'high', 'low', 'close')) 
 
 
 
-#' creating weighted index 
-#' 
-#' \code{pq_index} creates a sector/industry index using the method of weighted geometric mean, based on a set of data and corresponding weights.
-#' 
-#' @param dt a list/dataframe of time series dataset
-#' @param x the name of column to create index. Default is 'close|value'
-#' @param w the name of weights column. Default is 'cap_total'. If x is not available or is NULL, then using equal weights.
-#' @param base_value the base value of index. Default is 1.
-#' @param base_date the base date of index. Default is the minimum date.
-#' @param name the name of index. Default is NULL, then using 'index'.
-#' 
-#' @examples 
-#' \donttest{
-#' # Example I bank share index
-#' library(data.table)
-#' data(ssec)
-#' bank_dat = setDT(ssec)[symbol != '000001.SS']
-#' # creating index
-#' bank_index = pq_index(bank_dat, x='close', w='cap_total')
-#' # pq_plot(bank_index)
-#' 
-#' }
-#' 
+# creating weighted index
+# 
+# \code{pq_index} creates a sector/industry index using the method of weighted geometric mean, based on a set of data and corresponding weights.
+# 
+# @param dt a list/dataframe of time series dataset
+# @param x the name of column to create index. Default is 'close|value'
+# @param w the name of weights column. Default is 'cap_total'. If x is not available or is NULL, then using equal weights.
+# @param base_value the base value of index. Default is 1.
+# @param base_date the base date of index. Default is the minimum date.
+# @param name the name of index. Default is NULL, then using 'index'.
+# 
+# @examples
+# \donttest{
+# # Example I bank share index
+# library(data.table)
+# data(dt_banks)
+# 
+# # creating index
+# bank_index = pq_index(dt_banks, x='close', w='cap_total')
+# # pq_plot(bank_index)
+# 
+# }
+# 
 #' @import data.table
-#' @export
+# @export
 pq_index = function(dt, x='close|value', w='cap_total', base_value=1, base_date=NULL, name = NULL) {
   chain_index=weight=chain_index=cw=.=value=index=NULL
   

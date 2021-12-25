@@ -1379,6 +1379,25 @@ pp_add_ti_oscillator = function(
     return(p)
 }
 
+check_dt_plot = function(dt, x) {
+    . = close_prev = symbol = NULL
+    
+    dt = check_dt(dt)
+    
+    xcol <- intersect(names(dt), unlist(strsplit(x,'\\|')))[1]
+    if (xcol != 'close') dt[['close']]  = dt[[xcol]]
+    
+    # dt = split(dt, by = 'symbol')
+    dt[, symbol := factor(symbol, levels = dt[,unique(symbol)])]
+    
+    # rowid
+    dt = dt[unique(dt[,.(date)])[order(date)][,rowid := .I][], on='date'][order(symbol, date)]
+    # close_prev
+    dt = dt[, close_prev := shift(close, 1, type = 'lag'), by = symbol]
+    
+    setkeyv(dt, c('symbol','date'))
+    return(dt)
+}
 
 #' creating charts for time series
 #' 
@@ -1390,9 +1409,10 @@ pp_add_ti_oscillator = function(
 #' @param from the start date. Default is NULL. If it is NULL, then calculate using date_range and end date.
 #' @param to the end date. Default is the current date.
 #' @param x the name of column display on chart.
+#' @param freq the data frequency. It supports c('daily', 'weekly', 'monthly', 'quarterly', 'yearly').
 #' @param addti list of technical indicators or numerical columns in dt. For technical indicator, it is calculated via \code{pq_addti}, which including overlay and oscillator indicators.
 #' @param linear_trend a numeric vector. Default is NULL. If it is not NULL, then display linear trend lines on charts. 
-#' @param cumchg_trend logical, display the cumulative change trend of price. Default is FALSE. 
+#' @param cumreturns logical, display the cumulative returns. Default is FALSE.
 #' @param yaxis_log logical. Default is FALSE.
 #' @param color_up the color indicates price going up
 #' @param color_down the color indicates price going down
@@ -1405,29 +1425,33 @@ pp_add_ti_oscillator = function(
 #' @examples 
 #' \donttest{
 #' # single symbol
-#' ssec = md_stock('^000001', source='163', date_range = 'max')
+#' data(dt_ssec)
+#' # dt_ssec = md_stock('^000001', source='163', date_range = 'max')
 #' 
 #' # chart type
-#'   pq_plot(ssec, chart_type = 'line',   date_range = '6m') # line chart (default)
-#' # pq_plot(ssec, chart_type = 'step',   date_range = '6m') # step line
-#' # pq_plot(ssec, chart_type = 'candle', date_range = '6m') # candlestick
-#' # pq_plot(ssec, chart_type = 'bar',    date_range = '6m') # bar chart
+#'   pq_plot(dt_ssec, chart_type = 'line',   date_range = '6m') # line chart (default)
+#' # pq_plot(dt_ssec, chart_type = 'step',   date_range = '6m') # step line
+#' # pq_plot(dt_ssec, chart_type = 'candle', date_range = '6m') # candlestick
+#' # pq_plot(dt_ssec, chart_type = 'bar',    date_range = '6m') # bar chart
 #' 
 #' # add technical indicators
-#' pq_plot(ssec, chart_type = 'line', addti = list(
+#' pq_plot(dt_ssec, chart_type = 'line', addti = list(
 #'         sma = list(n = 200), 
 #'         sma = list(n = 50), 
 #'         macd = list()
 #' ))
 #' # linear trend with yaxis in log
-#' pq_plot(ssec, chart_type = 'line', linear_trend = c(-0.8, 0, 0.8), yaxis_log = TRUE)
+#' pq_plot(dt_ssec, chart_type = 'line', linear_trend = c(-0.8, 0, 0.8), yaxis_log = TRUE)
 #' 
 #' 
 #' # multiple symbols
 #' # download datasets
 #' # dat = md_stock(c('FB', 'AMZN', 'AAPL', 'NFLX', 'GOOG'), date_range = 'max')
-#' dat = md_stock(c('^000001', '^399001', '^399006', '^000016', '^000300', '^000905'), 
-#'                date_range = 'max', source='163')
+#' # dat = md_stock(c('^000001', '^399001', '^399006', '^000016', '^000300', '^000905'), 
+#' #               date_range = 'max', source='163')
+#'
+#' data(dt_banks)
+#' dat = md_stock_adjust(dt_banks, adjust = TRUE)
 #' 
 #' # linear trend
 #' pq_plot(dat, multi_series=list(nrow=2, scales='free_y'), linear_trend=c(-0.8, 0, 0.8))
@@ -1435,8 +1459,8 @@ pp_add_ti_oscillator = function(
 #'         yaxis_log=TRUE)
 #' 
 #' # performance
-#' pq_plot(dat, multi_series = list(nrow=2), cumchg_trend=TRUE, date_range = 'ytd')
-#' pq_plot(dat, multi_series = list(nrow=1, ncol=1), cumchg_trend=TRUE, date_range = 'ytd')
+#' pq_plot(dat, x='close', multi_series = list(nrow=2), cumreturns=TRUE, date_range = 'ytd')
+#' pq_plot(dat, x='close', multi_series = list(nrow=1, ncol=1), cumreturns=TRUE, date_range = 'ytd')
 #' 
 #' }
 #' 
@@ -1448,8 +1472,8 @@ pq_plot = function(
     dt, chart_type = 'line', 
     date_range = 'max', from = NULL, to = Sys.Date(), 
     x = 'close|value', 
-    addti = list(volume = list()), 
-    linear_trend = NULL, cumchg_trend = FALSE, 
+    addti = NULL, 
+    linear_trend = NULL, cumreturns = FALSE, freq = 'daily',
     yaxis_log = FALSE, 
     color_up = '#CF002F', color_down = '#000000', 
     multi_series = list(nrow=NULL, ncol=NULL), 
@@ -1457,44 +1481,26 @@ pq_plot = function(
     
     xcol=symbol=.=close_prev=name=title1=updn_2day=change=change_pct=price_str11=NULL
     
+    ## bind list of dataframes
+    dt = check_dt(dt)
+    
+    ## from/to
+    to = check_to(to, default_to = dt[,max(date)])
+    from = check_from(date_range, from, to, default_from = dt[,min(date)], default_date_range = 'max')
+    
     # change into performance
-    if (cumchg_trend) {
-        dt = pq_trend(dt, x=x, date_range=date_range, from=from, to=to)
+    if (cumreturns) {
+        dt = pq_return(dt, x=x, freq = freq, cumreturns=cumreturns, date_range=date_range, from=from, to=to)
+        x = 'cumreturns'
         title = ifelse(is.null(title), 'performance', paste(title, 'performance')) 
     }
     
-    ## check x columns 
-    if (!inherits(dt, 'list') & inherits(dt, 'data.frame')) {
-        if (!('symbol' %in% names(dt))) dt[['symbol']] = 'symbol'
-        if (!('name'   %in% names(dt))) dt[['name']]   = 'name'
-        dat_lst = list()
-        for (s in dt[,unique(symbol)]) dat_lst[[s]] = dt[symbol == s]
-        dt = dat_lst
-        rm(dat_lst)
-    }
-    dt = lapply(dt, function(d) {
-        xcol <<- intersect(names(d), unlist(strsplit(x,'\\|')))[1]
-        if (xcol != 'close')           d[['close']]  = d[[xcol]]
-        if (!('symbol' %in% names(d))) d[['symbol']] = 'symbol'
-        if (!('name'   %in% names(d))) d[['name']]   = 'name'
-        return(d)
-    })
-    ## bind list of dataframes
-    dt = rbindlist(dt, fill = TRUE)
-    dt = dt[, symbol := factor(symbol, levels = dt[,unique(symbol)])]
-    setkeyv(dt, c('symbol','date'))
-    
-    ## from/to
-    ft = get_fromto(date_range, from, to, min_date = dt[,min(date)], default_date_range = 'max')
-    from = ft$f
-    to = ft$t
     
     # add columns of rowid, close_prev, change, change_pct, x, title1, title2, updn_2day, 
-    # rowid
-    dt = dt[unique(dt[,.(date)])[order(date)][,rowid := .I][], on='date']
+    xcol <- intersect(names(dt), unlist(strsplit(x,'\\|')))[1]
+    dt = check_dt_plot(dt, x)
     # close_prev, change, change_pct, x, title1, title2, updn_2day, 
-    dt = dt[, close_prev := shift(close, 1, type = 'lag'), by = symbol
-     ][, `:=`(
+    dt = dt[, `:=`(
          change = close - close_prev,
          change_pct = (1-close_prev/close)*100,
          x = date

@@ -125,9 +125,9 @@
     <p><code>pq_return</code> calculates returns for daily series based on specified column, frequency and method type.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>pq_return</span><span class='op'>(</span><span class='va'>dt</span>, <span class='va'>x</span>, freq <span class='op'>=</span> <span class='st'>"monthly"</span>, method <span class='op'>=</span> <span class='st'>"arithmetic"</span>,
-  rcol_name <span class='op'>=</span> <span class='st'>"return"</span>, cols_keep <span class='op'>=</span> <span class='cn'>NULL</span>, date_range <span class='op'>=</span> <span class='st'>"max"</span>,
-  from <span class='op'>=</span> <span class='cn'>NULL</span>, to <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/Sys.time.html'>Sys.Date</a></span><span class='op'>(</span><span class='op'>)</span>, print_step <span class='op'>=</span> <span class='fl'>1L</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>pq_return</span><span class='op'>(</span><span class='va'>dt</span>, <span class='va'>x</span>, freq <span class='op'>=</span> <span class='st'>"monthly"</span>, date_type <span class='op'>=</span> <span class='st'>"eop"</span>,
+  method <span class='op'>=</span> <span class='st'>"arithmetic"</span>, cumreturns <span class='op'>=</span> <span class='cn'>FALSE</span>, rcol_name <span class='op'>=</span> <span class='st'>"returns"</span>,
+  cols_keep <span class='op'>=</span> <span class='cn'>NULL</span>, date_range <span class='op'>=</span> <span class='st'>"max"</span>, from <span class='op'>=</span> <span class='cn'>NULL</span>, to <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/Sys.time.html'>Sys.Date</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -145,12 +145,20 @@
       <td><p>the frequency of returns. It supports c('all', 'daily', 'weekly', 'monthly', 'quarterly', 'yearly').</p></td>
     </tr>
     <tr>
+      <th>date_type</th>
+      <td><p>the available date type are eop (end of period) and bop (bebinning of period), defaults to the eop.</p></td>
+    </tr>
+    <tr>
       <th>method</th>
-      <td><p>the method to calculate returns.</p></td>
+      <td><p>the method to calculate asset returns, the available methods including arithmetic and log, defaults to arithmetic.</p></td>
+    </tr>
+    <tr>
+      <th>cumreturns</th>
+      <td><p>logical, whether to return cumulative returns. Defaults to FALSE.</p></td>
     </tr>
     <tr>
       <th>rcol_name</th>
-      <td><p>setting the name of return column, defaults to return.</p></td>
+      <td><p>setting the column name of returns, defaults to returns.</p></td>
     </tr>
     <tr>
       <th>cols_keep</th>
@@ -168,46 +176,24 @@
       <th>to</th>
       <td><p>the end date. Default is the current date.</p></td>
     </tr>
-    <tr>
-      <th>print_step</th>
-      <td><p>a non-negative integer. Print symbol name by each print_step iteration. Default is 1L.</p></td>
-    </tr>
     </table>
 
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><span class='r-in'><span class='co'># \donttest{</span></span>
-<span class='r-in'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>ssec</span><span class='op'>)</span></span>
+<span class='r-in'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>dt_banks</span><span class='op'>)</span></span>
 <span class='r-in'></span>
 <span class='r-in'><span class='co'># create a close_adj column</span></span>
-<span class='r-in'><span class='va'>datadj</span> <span class='op'>=</span> <span class='fu'><a href='md_stock_adjust.html'>md_stock_adjust</a></span><span class='op'>(</span><span class='va'>ssec</span>, adjust <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span></span>
+<span class='r-in'><span class='va'>datadj</span> <span class='op'>=</span> <span class='fu'><a href='md_stock_adjust.html'>md_stock_adjust</a></span><span class='op'>(</span><span class='va'>dt_banks</span>, adjust <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span></span>
 <span class='r-in'></span>
 <span class='r-in'><span class='co'># set freq</span></span>
 <span class='r-in'><span class='va'>dts_returns1</span> <span class='op'>=</span> <span class='fu'>pq_return</span><span class='op'>(</span><span class='va'>datadj</span>, x <span class='op'>=</span> <span class='st'>'close_adj'</span>, freq <span class='op'>=</span> <span class='st'>'all'</span><span class='op'>)</span></span>
-<span class='r-out co'><span class='r-pr'>#&gt;</span> 1/6 000001.SS</span>
-<span class='r-out co'><span class='r-pr'>#&gt;</span> 2/6 601288.SS</span>
-<span class='r-out co'><span class='r-pr'>#&gt;</span> 3/6 601328.SS</span>
-<span class='r-out co'><span class='r-pr'>#&gt;</span> 4/6 601398.SS</span>
-<span class='r-out co'><span class='r-pr'>#&gt;</span> 5/6 601939.SS</span>
-<span class='r-out co'><span class='r-pr'>#&gt;</span> 6/6 601988.SS</span>
 <span class='r-in'></span>
 <span class='r-in'><span class='co'># set method</span></span>
 <span class='r-in'><span class='va'>dts_returns2</span> <span class='op'>=</span> <span class='fu'>pq_return</span><span class='op'>(</span><span class='va'>datadj</span>, x <span class='op'>=</span> <span class='st'>'close_adj'</span>, method <span class='op'>=</span> <span class='st'>'log'</span><span class='op'>)</span></span>
-<span class='r-out co'><span class='r-pr'>#&gt;</span> 1/6 000001.SS</span>
-<span class='r-out co'><span class='r-pr'>#&gt;</span> 2/6 601288.SS</span>
-<span class='r-out co'><span class='r-pr'>#&gt;</span> 3/6 601328.SS</span>
-<span class='r-out co'><span class='r-pr'>#&gt;</span> 4/6 601398.SS</span>
-<span class='r-out co'><span class='r-pr'>#&gt;</span> 5/6 601939.SS</span>
-<span class='r-out co'><span class='r-pr'>#&gt;</span> 6/6 601988.SS</span>
 <span class='r-in'></span>
 <span class='r-in'><span class='co'># set cols_keep</span></span>
 <span class='r-in'><span class='va'>dts_returns3</span> <span class='op'>=</span> <span class='fu'>pq_return</span><span class='op'>(</span><span class='va'>datadj</span>, x <span class='op'>=</span> <span class='st'>'close_adj'</span>, cols_keep <span class='op'>=</span> <span class='st'>'cap_total'</span><span class='op'>)</span></span>
-<span class='r-out co'><span class='r-pr'>#&gt;</span> 1/6 000001.SS</span>
-<span class='r-out co'><span class='r-pr'>#&gt;</span> 2/6 601288.SS</span>
-<span class='r-out co'><span class='r-pr'>#&gt;</span> 3/6 601328.SS</span>
-<span class='r-out co'><span class='r-pr'>#&gt;</span> 4/6 601398.SS</span>
-<span class='r-out co'><span class='r-pr'>#&gt;</span> 5/6 601939.SS</span>
-<span class='r-out co'><span class='r-pr'>#&gt;</span> 6/6 601988.SS</span>
 <span class='r-in'></span>
 <span class='r-in'><span class='co'># }</span></span>
 <span class='r-in'></span>
