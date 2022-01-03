@@ -1,15 +1,21 @@
 ########################### condition functions ###########################
 # check dt
-check_dt = function(dt) {
+check_dt = function(dt, symb_name = TRUE, check_date = TRUE) {
+    if (is.null(dt)) return(dt)
+    
     if (inherits(dt, 'list')) dt = rbindlist(dt, fill = TRUE)
-    dt = setDT(dt)
+    dt = setDT(dt)[]
     
     dtcols = names(dt)
-    for (sn in c('symbol', 'name')) {
-        if (!(sn %in% dtcols)) dt[[sn]] = sn
-    }
     
-    setkeyv(dt, c('symbol','date'))
+    if (check_date & 'date' %in% dtcols) dt = dt[, date := as_date(date)]
+        
+    if (symb_name) {
+        for (sn in c('symbol', 'name')) {
+            if (!(sn %in% dtcols)) dt[[sn]] = sn
+        }
+    }
+
     return(dt)
 }
     
@@ -539,7 +545,7 @@ rm_error_dat = function(datlst) {
 # date time -----
 # check date format of from/to
 as_date = function(x) {
-    if (is.null(x)) return(x)
+    if (is.null(x) || inherits(x, 'Date')) return(x)
     
     x2 = sapply(
         x, 

@@ -2,26 +2,26 @@
 % Please edit documentation in R/pq_portfolio.R
 \name{pq_portfolio}
 \alias{pq_portfolio}
-\title{calculating returns of portfolio}
+\title{calculating returns/equity of portfolio}
 \usage{
-pq_portfolio(dt, w = NULL, rcol = "returns", wcol = "weights",
-  wealthindex = FALSE, method = "arithmetic")
+pq_portfolio(dt, dtv, x, v = "volume", init_value = NULL,
+  method = "arithmetic")
 }
 \arguments{
-\item{dt}{a list/dataframe of returns by asset}
+\item{dt}{a list/dataframe of price by asset.}
 
-\item{w}{a dataframe of weights by asset. If it is NULL, then the weights by asset are equal.}
+\item{dtv}{a dataframe of transaction volume by asset.}
 
-\item{rcol}{the returns column name}
+\item{x}{the column name of adjusted asset price.}
 
-\item{wcol}{the weights column name}
+\item{v}{the column name of asset volume, defaults to volume.}
 
-\item{wealthindex}{logical, whether to return a wealth index. Defaults to FALSE.}
+\item{init_value}{initial equity value.}
 
 \item{method}{the method to calculate asset returns, the available values include arithmetic and log, defaults to arithmetic.}
 }
 \description{
-\code{pq_portfolio} calculates the weight returns or the wealth index of a portfolio of assets.
+\code{pq_portfolio} calculates the weighted returns or the equity of a portfolio assets.
 }
 \examples{
 library(pedquant)
@@ -30,14 +30,26 @@ library(data.table)
 data(dt_banks)
 datadj = md_stock_adjust(dt_banks, adjust = FALSE)
 
-dt = pq_return(datadj, x = 'close_adj', freq = 'monthly')
-w = data.table(
-   symbol = c("601288.SS","601328.SS","601398.SS","601939.SS","601988.SS"), 
-   weights = c(0.1, 0.2, 0.3, 0.3, 0.1)
-   )
+# example I 
+dtv = data.table(
+    symbol = c("601288.SS","601328.SS","601398.SS","601939.SS","601988.SS"), 
+    volume = c(100, 200, 300, 300, 100)
+)
+dtRa = pq_portfolio(datadj, x='close_adj', dtv=dtv) 
+pq_plot(dtRa, x = 'cumreturns')
 
-ret = pq_portfolio(dt, w)
-retidx = pq_portfolio(dt, w, wealthindex = TRUE)
-pq_plot(retidx, x = 'wealthindex')
+dtRb = pq_return(dt_ssec, x = 'close', freq = 'daily', cumreturns = TRUE)
+pq_plot(list(Ra = dtRa, Rb = dtRb$`000001.SS`), x = 'cumreturns', 
+        multi_series = list(nrow=1, ncol=1))
+
+# example II 
+dtv = data.table(
+    symbol = rep(c("601288.SS","601328.SS","601398.SS","601939.SS","601988.SS"), 3), 
+    date = rep(c('2009-03-02', '2010-01-04', '2014-09-01'), each = 5), 
+    volume = rep(c(100, 200, 300, 300, 100), 3) * rep(c(1, -1, 2), each = 5)
+)
+dtRa2 = pq_portfolio(datadj, x='close_adj', dtv=dtv, init_value = 10000) 
+pq_plot(dtRa2, x = 'balance', 
+        addti = list(equity = list(), fund = list()))
 
 }

@@ -48,8 +48,9 @@ pq1_return = function(dt, x, freq='monthly', num=1, date_type = 'eop', method = 
         # EOP, end of period
         dateop = dt2[, .SD[.N], by = .(byyear, byfreq)
         ][, x_lag := shift(get(x), n=num, type = 'lag') 
-        ][1 & leading, x_lag := datbop[1,get(x)] 
-        ][, Ra := do.call(
+        ][]
+        if (leading) dateop = dateop[1, x_lag := datbop[1,get(x)]][]
+        dateop = dateop[, Ra := do.call(
             sprintf('return_%s', method), 
             args = list(x=get(x), x_lag)
         )][, unique(c(cols_keep, 'Ra')), with = FALSE
@@ -137,6 +138,7 @@ pq_return = function(dt, x, freq='monthly', num=1, date_type='eop', method='arit
     ## price column 
     x = check_xcol(dt, x)
     ## kept columns
+    if (cols_keep == 'all' && !is.null(cols_keep)) cols_keep = names(dt)
     cols_keep = intersect(names(dt), unique(c('symbol', 'name', 'date', cols_keep)))
     ## dt preprocess
     dt = setDT(dt)[date >= from & date <= to][, unique(c(cols_keep, x)), with = FALSE]

@@ -364,7 +364,7 @@ md_stock_hist1_163 = function(symbol1, from='1900-01-01', to=Sys.Date(), zero_rm
     # adjust = list(...)[['adjust']]
     # if (is.null(adjust)) adjust = 'split'
     # adjust = ifelse(adjust, 'dividend', 'split') 
-    dt = md_stock_adjust1(dt, source = '163', adjust = list(...)[['adjust']])
+    dt = md_stock_adj1ohlc(dt, source = '163', adjust = list(...)[['adjust']])
   }
   
   # create unit/name columns
