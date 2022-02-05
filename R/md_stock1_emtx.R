@@ -1,7 +1,7 @@
 # symbol1 = c('AAPL')
 # symbol1 = c('01810.hk')
 md_stock1_history_eastmoney = function(symbol1, from=NULL, to=Sys.Date(), date_range='max', adjust = TRUE, ...) {
-    . = V2 = urlcode = symbol = NULL
+    . = V1 = amount = urlcode = symbol = NULL
     # from
     to = check_to(to)
     from = check_from(date_range, from, to, default_from = "1000-01-01", default_date_range = '3y')
