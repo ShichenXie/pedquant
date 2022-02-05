@@ -106,7 +106,7 @@ md_stock_adj1vol = function(dt, adjfactor, col_vol = 'volume', adj_ohlc = FALSE)
     if (is.null(divspl)) {
         # div <- getDividends(symbol.name, from="1900-01-01")
         # splits <- getSplits(symbol.name, from="1900-01-01")
-        divspl = try(md_stock_divsplit1_163(symbol1), silent = TRUE)
+        divspl = try(md_stock1_divsplit_163(symbol1), silent = TRUE)
     }
     
     if (inherits(divspl, 'data.frame')) {

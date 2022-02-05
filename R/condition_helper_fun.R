@@ -174,7 +174,7 @@ check_symbol_cn = function(symbol, mkt = NULL) {
     cn_dt = cn_dt[, `:=`(
         syb = sub("^.*?([0-9]+).*$","\\1",symbol),
         syb_code = gsub("[^a-zA-Z]+",'',symbol)
-    )][,syb3 := substr(syb, 1, syb_num)
+    )][nchar(syb) == 6,syb3 := substr(syb, 1, syb_num)
      ][syb_code %in% c('ss','sz'), exchg_code := syb_code
      ][syb_code %in% c('sh','sz'), city := syb_code][]
     
@@ -187,7 +187,10 @@ check_symbol_cn = function(symbol, mkt = NULL) {
         sub_cn_tags = merge(c, tags, by = by_cols, all.x = TRUE, sort = FALSE)
         return(sub_cn_tags)
     })
-    cn_tag = rbindlist(cn_tag_lst, fill = TRUE)
+    cn_tag = rbindlist(cn_tag_lst, fill = TRUE)[
+        is.na(city) & grepl('.hk$', symbol), 
+        `:=`(city = 'hk', exchg_code = 'hk') 
+    ]
     
     return(cn_tag)
 }
@@ -314,15 +317,17 @@ load_read_xl = function(url, handle=new_handle()) {
 
 #download and read csv file from website
 #' @importFrom utils download.file read.csv
+#' @importFrom readr read_csv
 #' @importFrom curl curl_download new_handle
-# load_read_csv2 = function(url, encode="UTF-8") {
-#     temp = tempfile()
-#     download.file(url=url, destfile=temp, quiet=TRUE)
-#     dat = read.csv(temp, fileEncoding = encode)
-#     unlink(temp)
-# 
-#     return(dat)
-# }
+load_read_csv2 = function(url) {
+    temp = tempfile()
+    on.exit(unlink(temp))
+    
+    download.file(url=url, destfile=temp, quiet=TRUE)
+    dat = read_csv(temp)
+
+    return(dat)
+}
 load_read_csv = function(url, encode="UTF-8", handle=new_handle(), csv_header=TRUE) {
     temp = tempfile()
     on.exit(unlink(temp))
@@ -334,9 +339,8 @@ load_read_csv = function(url, encode="UTF-8", handle=new_handle(), csv_header=TR
 }
 
 
-# @importFrom webdriver run_phantomjs Session install_phantomjs
+#' @importFrom webdriver run_phantomjs Session install_phantomjs
 load_web_source = function(url) {
-    Session = install_phantomjs = run_phantomjs = NULL
     
     pjs <- try(run_phantomjs(), silent = TRUE)
     if (inherits(pjs, 'try-error')) {
@@ -387,6 +391,86 @@ load_web_source2 = function(url, sleep_time = 0, close_remDr = TRUE) {
     return(wb)
 }
 
+#' @importFrom readr read_lines
+#' @importFrom httr POST add_headers
+read_api_sina = function(url) {
+    datmp = GET(
+        url, 
+        add_headers(referer = "https://finance.sina.com.cn/")
+    ) %>% 
+        read_html(encoding = 'GBK') %>% 
+        html_nodes('p') %>% 
+        html_text() %>% 
+        read_lines()
+    
+    return(datmp)
+}
+read_apidata_sina = function(url, sybs, cols_name) {
+    doc = doc2 = symbol = NULL
+    datmp = read_api_sina(url)
+    
+    dt = data.table(
+        doc = datmp
+    )[#, doc := iconv(doc, 'GB18030', 'UTF-8')
+    ][, doc2 := sub('.+=\"(.+)\".+', '\\1', doc)
+    ][, symbol := sybs
+    ][doc != doc2
+    ]
+    
+    dt2 = dt[, tstrsplit(doc2, ',')]
+    dt2 = setnames(dt2, cols_name[1:ncol(dt2)])[, symbol := dt$symbol]
+    return(dt2)
+}
+
+read_api_eastmoney = function(url) {
+    datmp = GET(url) %>% 
+        read_html() %>% 
+        html_nodes('p') %>% 
+        html_text() %>% 
+        fromJSON()
+    
+    return(datmp)
+}
+read_apidata_eastmoney = function(url, type='history') {
+    doc = NULL
+    datmp = read_api_eastmoney(url)
+    if (is.null(datmp$data)) return(invisible())
+    
+    if (type == 'history') {
+        dat = data.table(doc = datmp$data$klines)[, tstrsplit(doc, ',')][,`:=`(
+            symbol = datmp$data$code, 
+            name = datmp$data$name, 
+            market = datmp$data$market
+        )][]
+    } else if (type == 'real_us') {
+        dat = data.table(datmp$data$diff)
+        setnames(dat, c("v1", "close", "change_pct", "change", "volume", "amount", "amplitude", "turnover", "pe", "v2", "v3", "symbol", "exchange_code", "name", "high", "low", "open", "close_prev", 'cap_total', paste0('v', 5:6), "pb", paste0('v', 7:17)))
+    }
+    
+    return(dat)
+}
+
+read_api_tencent = function(url) {
+    datmp = GET(url) %>% 
+        read_html(encoding = 'GBK') %>% 
+        html_nodes('p') %>% 
+        html_text() %>% 
+        read_lines()
+    
+    return(datmp)
+}
+read_apidata_tencent = function(url) {
+    . = doc = doc2 = NULL 
+    
+    datmp = read_api_tencent(url)
+    
+    dat = data.table(
+        doc = datmp
+    )[, .(doc2 = sub('.+=\"(.+)\".+', '\\1', doc))
+    ][, tstrsplit(doc2, '~')]
+    
+    return(dat)
+}
 # fill 0/na in a vector with last non 0/na value
 fill0 = function(x, from_last = FALSE) {
     x[x==0] <- NA
@@ -419,7 +503,8 @@ fillna = function(x, from_last = FALSE) {
 
 
 # loop on get_data1
-load_dat_loop = function(symbol, func, args=list(), print_step) {
+#' @importFrom stats rnorm
+load_dat_loop = function(symbol, func, args=list(), print_step, sleep = 0, ...) {
     runif = dt_list = NULL
     syb_len = length(symbol)
     for (i in 1:syb_len) {
@@ -428,7 +513,7 @@ load_dat_loop = function(symbol, func, args=list(), print_step) {
         if ((print_step>0) & (i %% print_step == 0)) cat(sprintf('%s %s\n', paste0(format(c(i, syb_len)), collapse = '/'), syb_i))
         dt_list[[syb_i]] = try(do.call(func, c(syb_i, args)), silent = TRUE)
         # sleep for 1s
-        # Sys.sleep(runif(1))
+        if (sleep > 0) Sys.sleep(abs(rnorm(1, mean=sleep)))
     }
     return(dt_list)
 }

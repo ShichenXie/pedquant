@@ -7,13 +7,11 @@
 md_future_symbol()
 }
 \description{
-\code{md_future_symbol} search the symbols in future market indicators that provided by sina finance only currently.
+\code{md_future_symbol} returns all future symbols that provided by sina finance, see details on \url{http://vip.stock.finance.sina.com.cn/quotes_service/view/qihuohangqing.html} or \url{http://vip.stock.finance.sina.com.cn/mkt/#global_qh})
 }
 \examples{
 \dontrun{
-# interactivly search future market symbols
 sybs = md_future_symbol()
-
 }
 
 }

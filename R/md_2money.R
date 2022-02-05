@@ -1,78 +1,72 @@
 # interbank offered rate, IBOR ------
 # http://www.shibor.org/
 
-# london
-libor_symbol = setDT(list(
-    symbol =paste0('uko', rep(c('usd','eur','gbp','jpy','chf'),each=7), c('on','1w','1m','2m','3m','6m','1y')),
-    name = paste('libor', rep(c('usd','eur','gbp','jpy','chf'),each=7), c('overnight','1w','1m','2m','3m','6m','1y')),
-    symbol_fred = paste0(rep(c('usd','eur','gbp','jpy','chf'),each=7), c('ont','1wk','1mt','2mt','3mt','6mt','12m'), 'd156n')
-))
 
-# shanghai
-shibor_symbol = setDT(list(
-    symbol = paste0('cnocny', c('on','1w','2w','1m','3m','6m','9m','1y')),
-    name = paste('shibor cny', c('overnight','1w','2w','1m','3m','6m','9m','1y'))
-))
-
-# ibor symbol list
-ibor_symbol = rbindlist(list(libor_symbol, shibor_symbol), fill = TRUE)
-func_ibor_symbol = function() ibor_symbol    
+func_ibor_symbol = function() {
+    # london
+    libor_symbol = setDT(list(
+        symbol =paste0('uko', rep(c('usd','eur','gbp','jpy','chf'),each=7), c('on','1w','1m','2m','3m','6m','1y')),
+        name = paste('libor', rep(c('usd','eur','gbp','jpy','chf'),each=7), c('overnight','1w','1m','2m','3m','6m','1y')),
+        symbol_fred = paste0(rep(c('usd','eur','gbp','jpy','chf'),each=7), c('ont','1wk','1mt','2mt','3mt','6mt','12m'), 'd156n')
+    ))
+    
+    # shanghai
+    shibor_symbol = setDT(list(
+        symbol = paste0('cnocny', c('on','1w','2w','1m','3m','6m','9m','1y')),
+        name = paste('shibor cny', c('overnight','1w','2w','1m','3m','6m','9m','1y'))
+    ))
+    
+    # ibor symbol list
+    ibor_symbol = rbindlist(list(libor_symbol, shibor_symbol), fill = TRUE)
+    return(ibor_symbol[])
+}
+        
 
 
 # shanghai interbank offered rate, shibor
 #' @import data.table
-md_shibor = function(symbol, from=NULL, to=Sys.Date(), print_step=1L) {
-    . = name = value = X1 = NULL
+md_shibor = function(symbols, date_range = '3y', from=NULL, to=Sys.Date(), print_step=1L) {
+    . = name = value = X1 = f = cnocny1m = symbol_fred = NULL
     
     # arguments
+    shibor_symbol = func_ibor_symbol()[is.na(symbol_fred)]
+    ## from/to
+    to = check_to(to)
+    from = check_from(date_range, from, to, default_from = "1000-01-01", default_date_range = '3y')
     ## symbols
-    syb_len = length(symbol)
-    if (syb_len == 0) return(NULL)
+    syb_len = length(symbols)
+    if (syb_len == 0) return(invisible())
     
-    # download data
-    if (as.integer(Sys.Date() - check_fromto(from)) <= 10 ) {
-        # shibor in recent 10 days
-        wb = read_html("http://www.shibor.org/shibor/ShiborTendaysShow_e.do")
-        
-        dt_shibor = setDT(html_table(wb, fill = TRUE)[[3]])[, X1 := as.Date(X1)]
-            #setDT(xml_table(wb, 3)[[1]])[, V1 := as.Date(V1)]
-        setnames(setDT(dt_shibor), c("date", shibor_symbol$symbol))
-        
-    } else {
-        # shibor in history
-        fromto_y = lapply(list(from=from, to=to), function(x) {
-            # year of from/to
-            y = as.integer(substr(x,1,4))
-            # current year
-            cur_year = as.integer(substr(Sys.Date(),1,4))
-            # check year
-            y = ifelse(y < 2006, 2006, ifelse(y > cur_year, cur_year, y))
-            return(y)
-        })
-        years = seq(fromto_y$from, fromto_y$to)
-        
-        dt_shibor = lapply(years, function(y) {
-            path = paste0("http://www.shibor.org/shibor/web/html/downLoad.html?nameNew=Historical_Shibor_Data_",y,".xls&nameOld=Shibor%CA%FD%BE%DD",y,".xls&shiborSrc=http%3A%2F%2Fwww.shibor.org%2Fshibor%2F&downLoadPath=data")
-            dt = load_read_xl(path)
+    ft = data.table(f = unique(c(seq(from, to, by = 360), to)))[
+        , t := shift(f, type = 'lead')
+    ][!is.na(t)]
+    # download shibor history data
+    # https://www.chinamoney.com.cn/dqs/rest/cm-u-bk-shibor/ShiborHisExcel?lang=cn&startDate=2021-12-27&endDate=2022-01-26
+    cols_num = paste0('cnocny',c('on', '1w', '2w', '1m', '3m', '6m', '9m', '1y'))
+    datlst = lapply(
+        split(ft, by = 'f'),
+        function(x) {
+            dat = load_read_xl(sprintf(
+                'https://www.chinamoney.com.cn/dqs/rest/cm-u-bk-shibor/ShiborHisExcel?lang=cn&startDate=%s&endDate=%s', x$f, x$t
+            ))
             
-            setnames(setDT(dt), c("date", shibor_symbol$symbol))
-            return(dt)# dt[, date := as.Date(date)]
-        })
-        dt_shibor = rbindlist(dt_shibor, fill = TRUE)[, date := as.Date(date)]
-        
-    }
-    dt = melt(dt_shibor[date>=from & date<=to], id.vars = 'date', variable.name = 'symbol'
-             )[shibor_symbol, on='symbol'][, .(symbol, name, date, value)]
+            setnames(dat, c('date', cols_num))
+            return(dat[!is.na(cnocny1m)])
+        }
+    )
+    
+    
+    dat = melt(
+        unique(rbindlist(datlst))[,`:=`(
+            date = as_date(date)
+        )][, (cols_num) := lapply(.SD, as.numeric), .SDcols = cols_num], 
+        id.vars = 'date', variable.name = 'symbol'
+    )[shibor_symbol, on='symbol'
+    ][, c('symbol', 'name', 'date', 'value'), with = FALSE]
     
     # return data list
-    dt_list = list()
-    for (i in seq_len(syb_len)) {
-        syb_i = symbol[i]
-        # print step info
-        if ((print_step>0) & (i %% print_step == 0)) cat(sprintf('%s %s\n', paste0(format(c(i, syb_len)), collapse = '/'), syb_i))
-        dt_list[[syb_i]] = setDT(dt[symbol == syb_i], key = 'date')
-    }
-    return(dt_list)
+    data_list = split(dat, by = 'symbol')[symbols]
+    return(data_list)
 }
 
 # euribor
@@ -80,11 +74,11 @@ md_shibor = function(symbol, from=NULL, to=Sys.Date(), print_step=1L) {
 
 # london interbank offered rate, libor
 md_libor1_last5 = function(currency) {
-    symbol = value = . = name = NULL
+    symbol = symbol_fred = value = . = name = NULL
     
     # libor in recent 5 days
     # from # https://www.global-rates.com
-    
+    libor_symbol = func_ibor_symbol()[!is.na(symbol_fred)]
     #c('usd','eur','gbp','jpy','chf')
     url_lst = list(
         usd='/american-dollar/american-dollar.aspx', 
@@ -107,10 +101,13 @@ md_libor1_last5 = function(currency) {
     )][][libor_symbol[,.(symbol, name)], on='symbol', nomatch=0]
     return(dt_libor_5)
 }
-md_libor1_hist = function(syb, from, to) {
+
+# libor history data from FRED
+md_libor1_hist = function(syb, from=Sys.Date()-365, to=Sys.Date(), ...) {
     symbol = symbol_fred = . = name = value = geo = NULL
     
     # libor in history
+    libor_symbol = func_ibor_symbol()[!is.na(symbol_fred)]
     dt_libor_hist = ed_fred(
         libor_symbol[symbol == syb, symbol_fred], from=from, to=to, print_step=0L
     )[[1]][,`:=`(symbol_fred = symbol, symbol = NULL, name = NULL
@@ -121,53 +118,48 @@ md_libor1_hist = function(syb, from, to) {
     return(dt_libor_hist)
 }
 
-md_libor = function(symbol, date_range = '3y', from=NULL, to=Sys.Date(), print_step=1L) {
+md_libor = function(symbol, date_range = '3y', from=NULL, to=Sys.Date(), print_step=1L, ...) {
     # arguments
     ## symbols
     syb_len = length(symbol)
-    if (syb_len == 0) return(NULL)
+    if (syb_len == 0) return(invisible())
     ## from/to
     to = check_to(to)
     from = check_from(date_range, from, to, default_from = "1000-01-01", default_date_range = '3y')
     
-    # libor in last 5days
-    currency = unique(substr(symbol, 4, 6))
-    dat_lst_last5 = list()
-    for (c in currency) dat_lst_last5[[c]] = md_libor1_last5(c)
-    dat_last5 = rbindlist(dat_lst_last5)
-    
     # libor
-    dt_list = list()
-    for (i in seq_len(syb_len)) {
-        syb_i = symbol[i]
-        # print step info
-        if ((print_step>0) & (i %% print_step == 0)) cat(sprintf('%s %s\n', paste0(format(c(i, syb_len)), collapse = '/'), syb_i))
-        # load data
-        temp = rbind(md_libor1_hist(syb_i, from=from, to=to), dat_last5[symbol==syb_i],fill=TRUE)
-        setkey(temp, 'date')
-        cols_fillna = intersect(c('geo', 'unit'), names(temp))
-        if (length(cols_fillna) > 0) {
-            temp = unique(temp, by='date')[, (cols_fillna) := lapply(.SD, function(x) fillna(x)), .SDcols = cols_fillna]
-        }
-        dt_list[[syb_i]] = temp
-    }
-    return(dt_list)
+    dat_list = load_dat_loop(
+        symbol, 'md_libor1_hist', 
+        args = list(from = from, to = to, ...), 
+        print_step=print_step, ...)
+    dat_list = rm_error_dat(dat_list)
+    
+    return(dat_list)
 }
 
 
 
-# interbank offerd rate
-# 
-# @export
-md_money = function(symbol=NULL, date_range = '3y', from=NULL, to=Sys.Date(), print_step=1L, ...) {
-    . = name = NULL
+#' query interbank offerd rate
+#' 
+#' \code{md_money} query libor from FRED or shibor from chinamoney.
+#' 
+#' @param symbol ibor symbols. Default is NULL. 
+#' @param type the data type. Default is history. 
+#' @param date_range date range. Available value includes '1m'-'11m', 'ytd', 'max' and '1y'-'ny'. Default is 3y.
+#' @param from the start date. Default is NULL. If it is NULL, then calculate using date_range and end date.
+#' @param to the end date. Default is the current date.
+#' @param print_step a non-negative integer, which will print symbol name by each print_step iteration. Default is 1L. 
+#' 
+#' @export
+md_money = function(symbol=NULL, type = 'history', date_range = '3y', from=NULL, to=Sys.Date(), print_step=1L) {
     
     # arguments
     ## symbol
+    ibor_symbol = func_ibor_symbol()
     if (is.null(symbol)) {
-        symbol = select_rows_df(ibor_symbol[,.(symbol,name)], column='symbol')[,symbol]
+        symbol = select_rows_df(ibor_symbol[, c('symbol','name'), with=FALSE], column='symbol')[,symbol]
     } else if (length(symbol)==1) {
-        symbol = select_rows_df(ibor_symbol[,.(symbol,name)], column='symbol', input_string=symbol)[,symbol]
+        symbol = select_rows_df(ibor_symbol[, c('symbol','name'), with=FALSE], column='symbol', input_string=symbol)[,symbol]
     }
     syb = intersect(symbol, ibor_symbol$symbol)
     ## from/to
@@ -183,5 +175,8 @@ md_money = function(symbol=NULL, date_range = '3y', from=NULL, to=Sys.Date(), pr
 }
 
     
+md_money_symbol = function() {
+    func_ibor_symbol()[, c('symbol', 'name'), with = FALSE]
+}
     
     

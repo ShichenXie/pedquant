@@ -4,8 +4,8 @@
 \alias{pq_portfolio}
 \title{calculating returns/equity of portfolio}
 \usage{
-pq_portfolio(dt, dtv, x, v = "volume", init_value = NULL,
-  method = "arithmetic")
+pq_portfolio(dt, dtv, x, v = "volume", init_fund = NULL,
+  method = "arithmetic", ...)
 }
 \arguments{
 \item{dt}{a list/dataframe of price by asset.}
@@ -16,9 +16,11 @@ pq_portfolio(dt, dtv, x, v = "volume", init_value = NULL,
 
 \item{v}{the column name of asset volume, defaults to volume.}
 
-\item{init_value}{initial equity value.}
+\item{init_fund}{initial fund value.}
 
 \item{method}{the method to calculate asset returns, the available values include arithmetic and log, defaults to arithmetic.}
+
+\item{...}{ignored}
 }
 \description{
 \code{pq_portfolio} calculates the weighted returns or the equity of a portfolio assets.
@@ -48,7 +50,7 @@ dtv = data.table(
     date = rep(c('2009-03-02', '2010-01-04', '2014-09-01'), each = 5), 
     volume = rep(c(100, 200, 300, 300, 100), 3) * rep(c(1, -1, 2), each = 5)
 )
-dtRa2 = pq_portfolio(datadj, x='close_adj', dtv=dtv, init_value = 10000) 
+dtRa2 = pq_portfolio(datadj, x='close_adj', dtv=dtv, init_fund = 10000) 
 pq_plot(dtRa2, x = 'balance', 
         addti = list(equity = list(), fund = list()))
 

@@ -4,33 +4,37 @@
 \alias{md_future}
 \title{query future market data}
 \usage{
-md_future(symbol = NULL, source = "sina", freq = "daily",
-  date_range = "3y", from = NULL, to = Sys.Date(), print_step = 1L)
+md_future(symbol, type = "history", date_range = "max", from = NULL,
+  to = Sys.Date(), freq = "daily", print_step = 1L, ...)
 }
 \arguments{
-\item{symbol}{symbols of future market data. It is available via function \code{md_future_symbol} or its website. Default is NULL.}
+\item{symbol}{future symbols It is available via function \code{md_future_symbol} or its website.}
 
-\item{source}{the data source is sina finance (\url{https://finance.sina.com.cn/futuremarket/}).}
+\item{type}{the data type, including history, real and info. Default is history.}
 
-\item{freq}{the frequency of NBS indicators, including '5m','15m','30m','60m','daily'. Default is 'daily'.}
-
-\item{date_range}{date range. Available value includes '1m'-'11m', 'ytd', 'max' and '1y'-'ny'. Default is '3y'.}
+\item{date_range}{date range. Available value includes '1m'-'11m', 'ytd', 'max' and '1y'-'ny'. Default is max.}
 
 \item{from}{the start date. Default is NULL. If it is NULL, then calculate using date_range and end date.}
 
 \item{to}{the end date. Default is the current date.}
 
+\item{freq}{data frequency, default is daily.}
+
 \item{print_step}{a non-negative integer, which will print symbol name by each print_step iteration. Default is 1L.}
+
+\item{...}{Additional parameters.}
 }
 \description{
-\code{md_future} query future market prices data. Only Chinese future market has been considered currently.
+\code{md_future} query future market data from sina finance, \url{https://finance.sina.com.cn/futuremarket/}.
 }
 \examples{
 \dontrun{
-dt1 = md_future(symbol = c('J0', 'RB0', 'M0', 'CF0', 'IH0', 'IF0', 'IC0'))
+# history data
+df_hist = md_future(symbol = c('IF0', 'A0', 'CU0', 'CF0', 'XAU'))
 
-# interactivly choose symbols
-dt2 = md_future()
+# real data
+df_real = md_future(symbol = c('IF0', 'A0', 'CU0', 'CF0', 'XAU'), 
+                    type = 'real')
 }
 
 

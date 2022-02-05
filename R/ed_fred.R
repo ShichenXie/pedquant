@@ -11,8 +11,6 @@
 #     src
 #     seas
 # 
-# # oanda (forex & currency)
-# # https://www.oanda.com
 
 
 #' @import data.table

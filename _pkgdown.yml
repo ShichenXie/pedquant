@@ -34,13 +34,16 @@ reference:
     contents:
       - '`dt_ssec`'
       - '`dt_banks`'
-      - '`md_cate`'
-      - '`md_future`'
-      - '`md_future_symbol`'
+      - '`md_symbol`'
+      - '`md_bond`'
+      - '`md_forex`'
+      - '`md_money`'
       - '`md_stock`'
+      - '`md_stock_symbol`'
       - '`md_stock_adjust`'
       - '`md_stock_financials`'
-      - '`md_stock_symbol`'
+      - '`md_future`'
+      - '`md_future_symbol`'
   - title: "quantitative analysis" 
     contents:
       - '`pq_freq`'

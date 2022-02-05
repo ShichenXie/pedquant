@@ -1,34 +1,38 @@
 # http://www.chinabond.com.cn/
 # http://www.worldgovernmentbonds.com/
 
-# bond symbol of us, fred 
-freq_usbond = c('1m', '3m', '6m', '1y', '2y', '3y', '5y', '7y', '10y', '20y', '30y')
-bond_symbol_fred1 = setDT(list(
-    symbol = paste0('us', freq_usbond, 'dy_b'),
-    name = paste('United States', toupper(freq_usbond), 'Bond Daily Yield'),
-    symbol_fred = c('DGS1MO', 'DGS3MO', 'DGS6MO', 'DGS1', 'DGS2', 'DGS3', 'DGS5', 'DGS7', 'DGS10', 'DGS20', 'DGS30')
-))
 
-# bond symbol of other, fred
-reg_nam = c('AU','AT','BE','CA','CL','DK','FI','FR','DE','GR','HU','IS','IE','IL','IT','JP','MX','NZ','NO','PL','PT','SI','ZA','ES','SE','CH','CZ','NL','KR','RU','SK','GB')
-bond_symbol_fred2 = setDT(list(
-    symbol = paste0(tolower(reg_nam),'10ymy_b'),
-    name = paste(c('Australia','Austria','Belgium','Canada','Chile','Denmark','Finland','France','Germany','Greece','Hungary','Iceland','Ireland','Israel','Italy','Japan','Mexico','New Zealand','Norway','Poland','Portugal','Slovenia','South Africa','Spain','Sweden','Switzerland','Czech Republic','Netherlands','South Korea','Russia','Slovakia','United Kingdom'),'10Y Bond Monthly Yield'),
-    symbol_fred = paste0('IRLTLT01', reg_nam, 'M156N')
-))
-
-bond_symbol_fred = rbind(bond_symbol_fred1,bond_symbol_fred2)
-
-# bond symbol of China, chinabond.com
-freq_chinabond = c('0d','1m','2m','3m','6m','9m','1y','3y','5y','7y','10y','15y','20y','30y','40y','50y')
-bond_symbol_chinabond = setDT(list(
-    symbol = paste0('cn', freq_chinabond, 'dy_b'),
-    name = paste('China', toupper(freq_chinabond), 'Bond Daily Yield')
-))
-
-# bond symbol
-bond_symbol = rbind(bond_symbol_fred, bond_symbol_chinabond, fill=TRUE)[c(9,43,27,20,39,19,37,30,28,26,14,35,54,41),main:=TRUE]#[order(main)]
-func_bond_symbol = function() bond_symbol
+func_bond_symbol = function() {
+    main = NULL
+    # bond symbol of us, fred 
+    freq_usbond = c('1m', '3m', '6m', '1y', '2y', '3y', '5y', '7y', '10y', '20y', '30y')
+    bond_symbol_fred1 = setDT(list(
+        symbol = paste0('us', freq_usbond, 'dy_b'),
+        name = paste('United States', toupper(freq_usbond), 'Bond Daily Yield'),
+        symbol_fred = c('DGS1MO', 'DGS3MO', 'DGS6MO', 'DGS1', 'DGS2', 'DGS3', 'DGS5', 'DGS7', 'DGS10', 'DGS20', 'DGS30')
+    ))
+    
+    # bond symbol of other, fred
+    reg_nam = c('AU','AT','BE','CA','CL','DK','FI','FR','DE','GR','HU','IS','IE','IL','IT','JP','MX','NZ','NO','PL','PT','SI','ZA','ES','SE','CH','CZ','NL','KR','RU','SK','GB')
+    bond_symbol_fred2 = setDT(list(
+        symbol = paste0(tolower(reg_nam),'10ymy_b'),
+        name = paste(c('Australia','Austria','Belgium','Canada','Chile','Denmark','Finland','France','Germany','Greece','Hungary','Iceland','Ireland','Israel','Italy','Japan','Mexico','New Zealand','Norway','Poland','Portugal','Slovenia','South Africa','Spain','Sweden','Switzerland','Czech Republic','Netherlands','South Korea','Russia','Slovakia','United Kingdom'),'10Y Bond Monthly Yield'),
+        symbol_fred = paste0('IRLTLT01', reg_nam, 'M156N')
+    ))
+    
+    bond_symbol_fred = rbind(bond_symbol_fred1,bond_symbol_fred2)
+    
+    # bond symbol of China, chinabond.com
+    freq_chinabond = c('0d','1m','2m','3m','6m','9m','1y','3y','5y','7y','10y','15y','20y','30y','40y','50y')
+    bond_symbol_chinabond = setDT(list(
+        symbol = paste0('cn', freq_chinabond, 'dy_b'),
+        name = paste('China', toupper(freq_chinabond), 'Bond Daily Yield')
+    ))
+    
+    # bond symbol
+    bond_symbol = rbind(bond_symbol_fred, bond_symbol_chinabond, fill=TRUE)[c(9,43,27,20,39,19,37,30,28,26,14,35,54,41),main:=TRUE]#[order(main)]
+    return(bond_symbol)
+}
 
 #' @import xml2
 urls_bond_chinabond = function() {
@@ -112,6 +116,7 @@ md_bond1_fred = function(syb, from, to) {
     symbol = symbol_fred = . = name = value = geo = NULL
     
     # libor in history
+    bond_symbol_fred = func_bond_symbol()[!is.na(symbol_fred)]
     dt_bond_hist = ed_fred(
         bond_symbol_fred[symbol %in% syb, symbol_fred], from=from, to=to, print_step=0L
     )[[1]][,`:=`(symbol_fred = symbol, symbol = NULL, name = NULL
@@ -134,16 +139,26 @@ md_bond_fred = function(symbol, from=NULL, to=Sys.Date(), print_step=1L) {
     return(dat_list)
 }
 
-# query bond data
-# 
-# 
-# @export
-md_bond = function(symbol=NULL, date_range = '3y', from=NULL, to=Sys.Date(), print_step=1L, ...) {
+#' query bond data
+#' 
+#' \code{md_bond} query bond market data from FRED and ChinaBond.
+#' 
+#' @param symbol bond symbols. Default is NULL. 
+#' @param type the data type. Default is history. 
+#' @param date_range date range. Available value includes '1m'-'11m', 'ytd', 'max' and '1y'-'ny'. Default is 3y.
+#' @param from the start date. Default is NULL. If it is NULL, then calculate using date_range and end date.
+#' @param to the end date. Default is the current date.
+#' @param print_step a non-negative integer, which will print symbol name by each print_step iteration. Default is 1L. 
+#' @param ... Additional parameters.
+#' 
+#' @export
+md_bond = function(symbol=NULL, type = 'history', date_range = '3y', from=NULL, to=Sys.Date(), print_step=1L, ...) {
     . = name = NULL
     
     # arguments
     syb = tolower(symbol)
     ## symbol
+    bond_symbol = func_bond_symbol()
     if (is.null(symbol)) {
         syb = select_rows_df(bond_symbol[,.(symbol,name)], column='symbol')[,symbol]
     } else if (length(symbol)==1) {
@@ -162,3 +177,6 @@ md_bond = function(symbol=NULL, date_range = '3y', from=NULL, to=Sys.Date(), pri
     return(dt_list)
 }
 
+md_bond_symbol = function() {
+    func_bond_symbol()[, c('symbol','name'), with = FALSE]
+}

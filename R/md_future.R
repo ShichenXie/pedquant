@@ -1,72 +1,113 @@
 # query future data from sina
 # ref: http://blog.sina.com.cn/s/blog_53d5ab970102vjj7.html
 
+symbol_future_sina_xchg = function() {
+    exchange = type = NULL
+    syb_dt = setDT(copy(symbol_future_sina))[
+        , c('exchange', 'board', 'symbol', 'name'), with = FALSE
+    ][exchange %in% c('DCE', 'ZCE', 'SHFE', 'CFFEX'), type := 'inner'
+    ][is.na(type), type := 'global'
+    ]
+    syb_lst = split(syb_dt, by = 'type', keep.by = FALSE)
+    syb_lst = c(split(syb_lst$inner, by = 'exchange'), syb_lst[2])
+    
+    return(syb_lst)
+}
 #' symbol of future market data
 #' 
-#' \code{md_future_symbol} search the symbols in future market indicators that provided by sina finance only currently.
+#' \code{md_future_symbol} returns all future symbols that provided by sina finance, see details on \url{http://vip.stock.finance.sina.com.cn/quotes_service/view/qihuohangqing.html} or \url{http://vip.stock.finance.sina.com.cn/mkt/#global_qh})
 #' 
 #' @examples
 #' \dontrun{
-#' # interactivly search future market symbols
 #' sybs = md_future_symbol()
-#' 
 #' }
 #' 
 #' @export
 md_future_symbol = function() {
     .=board=symbol=name=exchange=NULL
     
-    # type = check_arg(type, c('financial', 'energy', 'metal', 'grain', 'soft', 'other'), default = NULL, arg_name = 'future type')
+    type = 'main'
+    if (type == 'main') {
+        syb_dt = symbol_future_sina_xchg()
+        
+    } else if (type == 'all') {
+        urls = as.list(sprintf('http://vip.stock.finance.sina.com.cn/quotes_service/view/qihuohangqing.html#titlePos_%s', 0:3))
+        names(urls) = c("ZCE", "DCE", "SHFE", 'CFFEX')
+        urls = c(urls, list(global = 'http://vip.stock.finance.sina.com.cn/mkt/#global_qh'))
+        
+        datlst = lapply(urls, function(u) {
+            dat = load_web_source(u)
+            tbls = read_html(dat) %>% 
+                html_table(header = TRUE)
+            if (grepl('global_qh', u)) {
+                tbls = tbls[7]
+            }
+            rbindlist(lapply(tbls, function(x) {
+                tbl = setnames(setDT(x)[,1:2], c('symbol', 'name'))[
+                    symbol != ''
+                ]
+                return(tbl)
+            }))
+        })
+        
+        syb_dt = rbindlist(datlst, idcol = 'exchange')
+    }
     
-    # cat('More commodity symbols go to\n', 'http://vip.stock.finance.sina.com.cn/quotes_service/view/qihuohangqing.html\n\n')
-    syb_dt = setDT(copy(symbol_future_sina))[, .(board, symbol, name, exchange)][order(board, exchange, symbol)]
-    syb = select_rows_df(syb_dt, column='symbol')
-    return(syb)
+    return(syb_dt)
 }
 
-md_future_sybnam = function(symbol) {
-    name = NULL
+# main future symbol name
+future_symbols_sybnam = function(symbols) {
+    symbol = name = exchange = NULL
     
+    sybs = toupper(symbols)
     # symbol and name
-    syb = toupper(symbol)
-    nam = setDT(copy(symbol_future_sina))[symbol == sub('[0-9]+', '0', syb), name]
-    nam = sub('[A-Za-z]+', nam, syb)
+    symbol_future = setDT(copy(symbol_future_sina))[
+        sub('[0-9]+', '0', sybs), on = 'symbol'  
+    ][, symbol := sybs
+    ][exchange %in% c('DCE', 'ZCE', 'CFFEX', 'SHFE') & sub('[A-Z]+', '', symbol) != '0', 
+      name := paste0(name, sub('[A-Z]+', '', symbol)) ]
     
-    return(list(symbol = syb, name = nam))
+    return(symbol_future)
 }
+
+# future infomation
+md_future1_info_sina = function(symbol, ...) {
+    . = name = NULL
+    
+    dat = read_html(sprintf('https://finance.sina.com.cn/futures/quotes/%s.shtml', symbol), encoding = 'GBK') 
+    dt = html_table(dat)[[7]]
+    setnames(setDT(dt), rep(c('variable','value'), 3))
+    
+    dtret = cbind(
+        setDT(future_symbols_sybnam(symbol))[,.(symbol, name)], 
+        rbind(dt[,1:2], dt[,3:4], dt[, 5:6])
+    )
+    return(dtret[])
+}
+
 
 #' @importFrom readr read_lines
 #' @importFrom curl curl
-md_future1_sina = function(symbol, name, freq, from, to, handle, ...) {
-    doc = V1 = name = . = high = low = volume = NULL
-
+md_future1_history_sina = function(symbol, name, freq, from, to, handle, ...) {
     
     syb = symbol
-    nam = md_future_sybnam(symbol)$name 
+    sybnam = future_symbols_sybnam(symbol)
     
-        # setDT(copy(symbol_sina))[
-        # grepl(sub('^([A-Z]+)\\d*','\\1',syb), symbol), name]
-        # 
     # url
     # http://stock2.finance.sina.com.cn/futures/api/json.php/IndexService.getInnerFuturesDailyKLine?symbol=M0
-    url0 = 'http://stock2.finance.sina.com.cn/futures/api/json.php/IndexService.getInnerFutures%s?symbol=%s'
-    if (grepl('IF\\d+|TF\\d+|T\\d+|IH\\d+|IC\\d+', syb))
-        url0 = 'http://stock2.finance.sina.com.cn/futures/api/json.php/CffexFuturesService.getCffexFutures%s?symbol=%s'
+    url0 = 'https://stock2.finance.sina.com.cn/futures/api/jsonp.php/var=/InnerFuturesNewService.get%s?symbol=%s'
+    if (!(sybnam$exchange %in% c('DCE', 'ZCE', 'CFFEX', 'SHFE')))  url0 = 'https://stock2.finance.sina.com.cn/futures/api/jsonp.php/var=/GlobalFuturesService.getGlobalFutures%s?symbol=%s'
     urli = sprintf(url0, freq, syb)
+    dat = try(read_lines(urli), silent = TRUE)
     
-    
-    cols_names = c('date', 'open', 'high', 'low', 'close', 'volume')
     # data 
-    dt = setDT(as.data.frame(fromJSON(urli)))
+    cols_names = c("date", "open", "high", "low", "close", "volume", "position", "settle")
+    dt = setDT(fromJSON(sub('.+?(\\[.+\\]).+', '\\1', dat[2])))
     dt = setnames(
         dt, cols_names
     )[, (cols_names[-1]) := lapply(.SD, as.numeric), .SDcols = cols_names[-1]]
-        
-    #     data.table(doc = read_lines(curl(urli, handle=handle)))[
-    #     , strsplit(gsub('\'|\\]\\]|\\[\\[','',doc), '\\]\\,\\[')
-    # ][, (cols_names) := tstrsplit(V1, ',', fixed=TRUE)
-    # ][, lapply(.SD, function(x) gsub('\\"', '', x))
-    # ][, (cols_names[-1]) := lapply(.SD, as.numeric), .SDcols = cols_names[-1]]
+    
     if (freq == 'DailyKLine') {
         dt = dt[, date := as.Date(date)]
     } else {
@@ -74,44 +115,91 @@ md_future1_sina = function(symbol, name, freq, from, to, handle, ...) {
     }
     
     dt = dt[, `:=`(
-        symbol=syb, name=nam
+        symbol = syb, name = sybnam$name, unit = sybnam$unit
     )][date >= from & date <= to,
-     ][,.(symbol, name, date, open, high, low, close, volume)]
+     ][, c('symbol', 'name', 'date', 'open', 'high', 'low', 'close', 'settle', 'volume', 'position', 'unit'), with = FALSE]
     
     setkeyv(dt, 'date')
-    return(dt[,unit := 'CNY'][])
+    return(dt[])
 }
+
+
+md_future_real = function(symbols, source = 'sina', ...) {
+    name = syb = syb_type = symbol = exchange = time = NULL
+    
+    # symbols = c('CU0', 'T0', 'XAU', 'ES')
+    sybnam = future_symbols_sybnam(symbols)[
+        , syb_type := ''
+    ][!(exchange %in% c('DCE', 'ZCE', 'CFFEX', 'SHFE')), syb_type := 'hf_'
+    ][exchange == 'CFFEX', syb_type := 'CFF_'
+    ][, syb := paste0(syb_type, symbol)]
+    
+    datlst = lapply(
+        split(sybnam, by = 'syb_type'), 
+        function(x) {
+            # print(x)
+            url = sprintf('http://hq.sinajs.cn/list=%s', x[, paste0(syb, collapse = ',')])
+            # print(url)
+            
+            cols_name = c('name', '-', 'open', 'high', 'low', 'close_prev', 'buy', 'sell', 'close', 'settle', 'settle_prev', 'buy_vol', 'sell_vol', 'position', 'volume', 'exch_abbr', 'name_abbr', 'date', paste0('v_', 1:10))
+            if (unique(x$syb_type) == 'hf_') cols_name = c('close', 'volume', 'buy', 'sell', 'high', 'low', 'time', 'close_prev', 'open', 'position', 'buy_vol', 'sell_vol', 'date', 'name', '-')
+            if (unique(x$syb_type) == 'CFF_') cols_name = c('open', 'high', 'low', 'close', 'volume', paste0('v1_', 1:8), 'close_prev', paste0('v2_', 1:22), 'date', 'time', '-') 
+            
+            dat = read_apidata_sina(
+                url, sybs = x$symbol, cols_name = cols_name)
+            if (!('name' %in% names(dat))) dat = dat[, name := x$name]
+            
+            return(dat)
+        }
+    )
+    
+    dat = rbindlist(datlst, fill = TRUE)
+    cols_num = intersect(c('open', 'high', 'low', 'close', 'close_prev', 'settle', 'settle_prev', 'volume', 'position'), names(dat))
+    selcols_name = intersect(c('symbol', 'name', 'date', cols_num, 'time'), names(dat))
+    
+    dat = dat[
+        nchar(time)==8, time := paste(date, time)
+    ][, time := as.POSIXct(time)
+    ][, date := as.Date(date)
+    ][, (cols_num) := lapply(.SD, as.numeric), .SDcols = cols_num
+    ][, selcols_name, with = FALSE]
+    
+    return(dat[])
+}
+
 
 #' query future market data
 #' 
-#' \code{md_future} query future market prices data. Only Chinese future market has been considered currently.
+#' \code{md_future} query future market data from sina finance, \url{https://finance.sina.com.cn/futuremarket/}.
 #' 
-#' @param symbol symbols of future market data. It is available via function \code{md_future_symbol} or its website. Default is NULL. 
-#' @param source the data source is sina finance (\url{https://finance.sina.com.cn/futuremarket/}). 
-#' @param freq the frequency of NBS indicators, including '5m','15m','30m','60m','daily'. Default is 'daily'.
-#' @param date_range date range. Available value includes '1m'-'11m', 'ytd', 'max' and '1y'-'ny'. Default is '3y'.
+#' @param symbol future symbols It is available via function \code{md_future_symbol} or its website. 
+#' @param type the data type, including history, real and info. Default is history.
+#' @param date_range date range. Available value includes '1m'-'11m', 'ytd', 'max' and '1y'-'ny'. Default is max.
 #' @param from the start date. Default is NULL. If it is NULL, then calculate using date_range and end date.
 #' @param to the end date. Default is the current date.
+#' @param freq data frequency, default is daily.
 #' @param print_step a non-negative integer, which will print symbol name by each print_step iteration. Default is 1L. 
+#' @param ... Additional parameters.
 #' 
 #' @examples 
 #' \dontrun{
-#' dt1 = md_future(symbol = c('J0', 'RB0', 'M0', 'CF0', 'IH0', 'IF0', 'IC0'))
+#' # history data
+#' df_hist = md_future(symbol = c('IF0', 'A0', 'CU0', 'CF0', 'XAU'))
 #' 
-#' # interactivly choose symbols
-#' dt2 = md_future()
+#' # real data
+#' df_real = md_future(symbol = c('IF0', 'A0', 'CU0', 'CF0', 'XAU'), 
+#'                     type = 'real')
 #' }
 #' 
 #' 
 #' @import data.table 
 #' @export
-md_future = function(symbol=NULL, source='sina', freq='daily', date_range='3y', from=NULL, to=Sys.Date(), print_step=1L) {
+md_future = function(symbol, type='history', date_range='max', from=NULL, to=Sys.Date(), freq='daily', print_step=1L, ...) {
     check_internet('www.sina.com.cn')
     # arguments
     ## symbol
-    if (is.null(symbol)) symbol = md_future_symbol()[, symbol]
-    syb = unlist(lapply(symbol, function(x) md_future_sybnam(x)$symbol))
-    
+    # if (is.null(symbol)) symbol = select_rows_df(md_future_symbol(), column='symbol')[, symbol]
+    syb = future_symbols_sybnam(symbol)[,symbol]
     
     ## from/to
     to = check_to(to)
@@ -130,9 +218,18 @@ md_future = function(symbol=NULL, source='sina', freq='daily', date_range='3y', 
     }
     
     # data
-    dat_list = load_dat_loop(syb, 'md_future1_sina', args = list(handle = hd, freq = freq, from = from, to = to), print_step=print_step)
+    if (type %in% c('history', 'info')) {
+        # function name
+        funcname = sprintf('md_future1_%s_sina', type)
+        # load data by symbol
+        dat_list = load_dat_loop(
+            syb, funcname, 
+            args = list(handle = hd, freq = freq, from = from, to = to), print_step=print_step, ...)
+        dat_list = rm_error_dat(dat_list)
+    } else if (type %in% c('real')) {
+        dat_list = md_future_real(syb, source = source)
+    }
     
-    dat_list = rm_error_dat(dat_list)
     return(dat_list)
 }
 

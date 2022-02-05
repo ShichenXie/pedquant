@@ -1,6 +1,28 @@
+# query forex real data ------
+# http://hq.sinajs.cn/list=fx_susdcnh
+md_forex_real_sina = function(symbols, ...) {
+    symbol = name = NULL
+    
+    # symbols = c("AUDUSD", "USDCNY")
+    symbols = tolower(symbols)
+    url = sprintf('http://hq.sinajs.cn/list=%s', paste0(sprintf('fx_s%s', symbols), collapse = ',') )
+    
+    dat = read_apidata_sina(
+        url = url, 
+        sybs = symbols, 
+        cols_name = c('time', 'buy', 'sell', 'close_prev', 'volatility', 'open', 'high', 'low', 'close', 'name', 'change_pct', 'change', 'amplitude', 'broker', paste0('v', 1:3), 'date'))
+    
+    
+    dat = dat[, `:=`(
+        date = as.Date(date), 
+        name = sub('\u5373\u671f\u6c47\u7387$', '', name)
+    )][, c('symbol', 'name', 'date', 'open', 'high', 'low', 'close', 'close_prev', 'change', 'change_pct', 'volatility', 'amplitude', 'time'), with = FALSE]
+    
+    return(dat)
+}
 # freeforexapi
-md_forex1_spot = function(fx) {
-    forex_spots = function(fs) {
+md_forex_real_freeforex = function(fx) {
+    forex_reals = function(fs) {
         f = paste0(toupper(fs), collapse = ',')
         dat = fromJSON(sprintf('https://www.freeforexapi.com/api/live?pairs=%s', f))
         
@@ -38,7 +60,7 @@ md_forex1_spot = function(fx) {
     
     rtp1 = list()
     if (fx %in% fxls) {
-        rtp1 = forex_spots(fx)
+        rtp1 = forex_reals(fx)
     } else {
         fx1 = substr(fx,1,3)
         fx2 = substr(fx,4,6)
@@ -46,12 +68,12 @@ md_forex1_spot = function(fx) {
         if (any(sapply(c(fx1, fx2), function(x) {
             x == 'USD'
         }))) {
-            rtp1 = forex_spots(paste0(fx2,fx1))
+            rtp1 = forex_reals(paste0(fx2,fx1))
         } else {
             fs = sapply(c(fx1, fx2), function(x) {
                 fxls[grep(sprintf('USD%s',x), fxls)]
             })
-            p2 = forex_spots(fs)
+            p2 = forex_reals(fs)
             rtp1[[fx]] = p2[[2]]/p2[[1]]
         }
     }
@@ -60,26 +82,30 @@ md_forex1_spot = function(fx) {
 
 
 # fred forex
-forex_symbol_fred = setDT(list(
-    symbol = c("usdxtm",
-        "usdbrl","usdcad","usdcny","usddkk","usdhkd","usdinr","usdjpy","usdkrw","usdmyr","usdmxn",
-        "usdnok","usdsek","usdzar","usdsgd","usdlkr","usdchf","usdtwd","usdthb","audusd","eurusd",
-        "nzdusd","gbpusd","btcusd","bchusd","ethusd","ltcusd"), 
-    name = c("US Dollar Index Trade Weighted",
-        "US Dollar/Brazilian Real","US Dollar/Canadian Dollar","US Dollar/Chinese Yuan Renminbi",
-        "US Dollar/Danish Krone","US Dollar/Hong Kong Dollar","US Dollar/Indian Rupee","US Dollar/Japanese Yen",
-        "US Dollar/South-Korean Won","US Dollar/Malaysian Ringgit","US Dollar/Mexican Peso","US Dollar/Norwegian Kroner",
-        "US Dollar/Swedish Krona","US Dollar/South African Rand","US Dollar/Singapore Dollar","US Dollar/Sri Lanka Rupee",
-        "US Dollar/Swiss Franc","US Dollar/Taiwan Dollar","US Dollar/Thai Baht","Australian Dollar/US Dollar",
-        "Euro/US Dollar","New Zealand Dollar/US Dollar","British Pound/US Dollar",
-        "Bitcoin/US Dollar","Bitcoin Cash/US Dollar","Ethereum/US Dollar","Litecoin/US Dollar"
+func_forex_symbol = function() {
+    main = NULL
+    forex_symbol_fred = setDT(list(
+        symbol = c("usdxtm",
+                   "usdbrl","usdcad","usdcny","usddkk","usdhkd","usdinr","usdjpy","usdkrw","usdmyr","usdmxn",
+                   "usdnok","usdsek","usdzar","usdsgd","usdlkr","usdchf","usdtwd","usdthb","audusd","eurusd",
+                   "nzdusd","gbpusd","btcusd","bchusd","ethusd","ltcusd"), 
+        name = c("US Dollar Index Trade Weighted",
+                 "US Dollar/Brazilian Real","US Dollar/Canadian Dollar","US Dollar/Chinese Yuan Renminbi",
+                 "US Dollar/Danish Krone","US Dollar/Hong Kong Dollar","US Dollar/Indian Rupee","US Dollar/Japanese Yen",
+                 "US Dollar/South-Korean Won","US Dollar/Malaysian Ringgit","US Dollar/Mexican Peso","US Dollar/Norwegian Kroner",
+                 "US Dollar/Swedish Krona","US Dollar/South African Rand","US Dollar/Singapore Dollar","US Dollar/Sri Lanka Rupee",
+                 "US Dollar/Swiss Franc","US Dollar/Taiwan Dollar","US Dollar/Thai Baht","Australian Dollar/US Dollar",
+                 "Euro/US Dollar","New Zealand Dollar/US Dollar","British Pound/US Dollar",
+                 "Bitcoin/US Dollar","Bitcoin Cash/US Dollar","Ethereum/US Dollar","Litecoin/US Dollar"
         ),
-    symbol_fred = c("DTWEXM",
-        "DEXBZUS","DEXCAUS","DEXCHUS","DEXDNUS","DEXHKUS","DEXINUS","DEXJPUS","DEXKOUS","DEXMAUS","DEXMXUS",
-        "DEXNOUS","DEXSDUS","DEXSFUS","DEXSIUS","DEXSLUS","DEXSZUS","DEXTAUS","DEXTHUS","DEXUSAL","DEXUSEU",
-        "DEXUSNZ","DEXUSUK","CBBTCUSD","CBBCHUSD","CBETHUSD","CBLTCUSD")
-))[c(1,20,22,19,21,7,3,16,2,10,6,1,23), main := TRUE]
-func_forex_symbol = function() forex_symbol_fred
+        symbol_fred = c("DTWEXM",
+                        "DEXBZUS","DEXCAUS","DEXCHUS","DEXDNUS","DEXHKUS","DEXINUS","DEXJPUS","DEXKOUS","DEXMAUS","DEXMXUS",
+                        "DEXNOUS","DEXSDUS","DEXSFUS","DEXSIUS","DEXSLUS","DEXSZUS","DEXTAUS","DEXTHUS","DEXUSAL","DEXUSEU",
+                        "DEXUSNZ","DEXUSUK","CBBTCUSD","CBBCHUSD","CBETHUSD","CBLTCUSD")
+    ))[c(1,20,22,19,21,7,3,16,2,10,6,1,23), main := TRUE]
+    return(forex_symbol_fred[])
+}
+
 
 # ,"usdx"
 # ,"Trade Weighted USDX Major Currencies"
@@ -142,7 +168,7 @@ forex_symbol_oanda = setDT(list(
 ))
 
     
-# query forex historical data from oanda 
+# query forex historical data ------
 # https://www.oanda.com/fx-for-business/historical-rates
 md_forex1_oanda = function(symbol, from, to) {
     name = NULL
@@ -172,6 +198,7 @@ md_forex1_oanda = function(symbol, from, to) {
 md_forex1_fred = function(syb, from, to) {
     symbol = symbol_fred = . = name = value = geo = NULL
     
+    forex_symbol_fred = func_forex_symbol()
     syb_fred = forex_symbol_fred[symbol == tolower(syb), symbol_fred]
     if (length(syb_fred) == 0) return(NULL)
     # libor in history
@@ -185,60 +212,72 @@ md_forex1_fred = function(syb, from, to) {
     return(dt_forex_hist)
 }
 
-# query forex data
-# 
-# 
-# @export
-md_forex = function(symbol=NULL, date_range = '3y', from=NULL, to=Sys.Date(), print_step=1L, ...) {
+# http://www.fxfupan.com/
+md_forex1_fxfupan = function(syb) {
+    # sybs = c('AUDJPY', 'AUDUSD', 'CHFJPY', 'EURCAD', 'EURCHF', 'EURGBP', 'EURJPY', 'EURUSD', 'GBPCHF', 'GBPJPY', 'GBPUSD', 'NZDJPY', 'NZDUSD', 'USDCAD', 'USDJPY', 'USDCHF', 'XAGUSD', 'XAUUSD') 
+    
+    url = 'http://www.forextester.com/templates/data/files/%s.zip'
+    datmp = load_read_csv2(sprintf(url, syb))
+    setnames(setDT(datmp), c('symbol', 'date', 'time', 'open', 'high', 'low', 'close', 'volume'))
+    
+    return(datmp)
+}
+
+#' query forex data
+#' 
+#' \code{md_forex} query forex market data from FRED (history data) or sina (real data).
+#' 
+#' @param symbol forex symbols. Default is NULL. 
+#' @param type the data type, available values including history and real. Default is history. 
+#' @param date_range date range. Available value includes '1m'-'11m', 'ytd', 'max' and '1y'-'ny'. Default is 3y.
+#' @param from the start date. Default is NULL. If it is NULL, then calculate using date_range and end date.
+#' @param to the end date. Default is the current date.
+#' @param print_step a non-negative integer, which will print symbol name by each print_step iteration. Default is 1L. 
+#' @param ... Additional parameters.
+#' 
+#' @examples 
+#' \dontrun{
+#' # history data
+#' dtfx_hist1 = md_forex(c('usdcny', 'usdjpy'))
+#' 
+#' # real data
+#' dtfx_real = md_forex(c('eurusd', 'usdcny', 'usdjpy'), type = 'real')
+#' 
+#' # interactivly choose symbols
+#' dtfx_hist2 = md_forex()
+#' }
+#' 
+#' 
+#' @import data.table 
+#' @export
+md_forex = function(symbol=NULL, type = 'history', date_range = '3y', from=NULL, to=Sys.Date(), print_step=1L, ...) {
     . = name = NULL
     
-    # arguments
+    # symbol
+    forex_symbol_fred = func_forex_symbol()
+    if (is.null(symbol)) syb = select_rows_df(forex_symbol_fred[,.(symbol,name)], column='symbol')[,symbol]
     syb = tolower(symbol)
-    ## source
-    source = list(...)[['source']]
-    ## symbol
-    if (is.null(source)) {
-        if (is.null(symbol)) {
-            syb = select_rows_df(forex_symbol_fred[,.(symbol,name)], column='symbol')[,symbol]
-        } else if (length(symbol)==1) {
-            syb = select_rows_df(forex_symbol_fred[,.(symbol,name)], column='symbol', input_string=syb)[,symbol]
-        }
-        syb = intersect(syb, forex_symbol_fred$symbol)
-    }
     ## from/to
     to = check_to(to)
     from = check_from(date_range, from, to, default_from = "1000-01-01", default_date_range = '3y')
-
+    ## source
+    source = list(...)[['source']]
+    
     # data
-    syb_len = length(syb)
-    dt_list = list()
-    for (i in seq_len(syb_len)) {
-        syb_i = syb[i]
-        # print step info
-        if ((print_step>0) & (i %% print_step == 0)) cat(sprintf('%s/%s %s\n', i, syb_len, syb_i))
-        # load data
-        if (is.null(source) || source != 'oanda') {
-            if (syb_i %in% c("usdxtm","btcusd","bchusd","ethusd","ltcusd")) {
-                temp = md_forex1_fred(syb_i, from, to)
-            } else if (Sys.Date()-from>179) {
-                temp_fred = md_forex1_fred(syb_i, from, to)
-                temp_oanda = md_forex1_oanda(syb_i, temp_fred[,max(date)], to)
-                temp = rbind(temp_fred, temp_oanda, fill=TRUE)
-            } else {
-                temp = md_forex1_oanda(syb_i, from, to)
-            } 
-        } else if (source == 'oanda') {
-            temp = md_forex1_oanda(syb_i, from, to)
-        }
-        
-        setkey(temp, 'date')
-        cols_fillna = intersect(c('geo', 'unit'), names(temp))
-        if (length(cols_fillna) > 0) {
-            temp = unique(temp, by='date')[, (cols_fillna) := lapply(.SD, function(x) fillna(x)), .SDcols = cols_fillna]
-        }
-        
-        dt_list[[syb_i]] = temp
+    if (type == 'history') {
+        # load data by symbol
+        dat_list = load_dat_loop(
+            syb, 'md_forex1_fred', 
+            args = list(from = from, to = to, ...), 
+            print_step=print_step, ...)
+        dat_list = rm_error_dat(dat_list)
+    } else if (type == 'real') {
+        dat_list = md_forex_real_sina(syb)
     }
-    return(dt_list)
+    
+    return(dat_list)
 }
 
+md_forex_symbol = function() {
+    func_forex_symbol()[, c('symbol', 'name'), with = FALSE]
+}

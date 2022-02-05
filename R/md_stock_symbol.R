@@ -1,8 +1,8 @@
-# hk ------
+# hkex ------
 #' @import data.table
 #' @importFrom stringi stri_unescape_unicode
-md_stock_symbol_hk = function(source="163", return_price=FALSE) {
-  symbol = exchange = market_symbols = stock_list_hk2 = NULL
+md_stock_symbol_hk = function(source="sina", return_price=TRUE) {
+  symbol = exchange = market_symbols = stock_list_hk2 = ticktime = NULL
 
   if (source == "163") {
     # function
@@ -45,34 +45,24 @@ md_stock_symbol_hk = function(source="163", return_price=FALSE) {
     stock_list_hk = rbindlist(stock_list_hk)
 
   } else if (source=="sina") {
-    fun_listcomp_hk_sina = function(urli) {
-      num = doc = V1 = symbol = NULL
-
-      dt = data.table(
-        doc = readLines(urli, warn = FALSE)
-      )[, doc := iconv(doc, "GB18030", "UTF-8")
-      ][, doc := gsub("(\\[\\{)|(\\]\\})", "", doc)
-      ][, strsplit(doc, "\\},\\{")
-      ][, (c("symbol","name","engname","tradetype","lasttrade","prevclose","open","high","low","volume","currentvolume","amount","ticktime","buy","sell","high_52week","low_52week","eps","dividend","stocks_sum","pricechange","changepercent")) := tstrsplit(V1, ",", fixed=TRUE)
-      ][, V1 := NULL
-      ][, lapply(.SD, function(x) gsub(".+:|\"", "", x))
-      ][, `:=`(
-        market = "stock", exchange = "hkex",
-        board = ifelse(substr(symbol,1,2)=="08", "gem", "main")
-      )]
-
-      return(dt)
-    }
-
-
-    url_hk <- c(
+    url_hk_sina <- c(
       "http://vip.stock.finance.sina.com.cn/quotes_service/api/json_v2.php/Market_Center.getHKStockData?page=1&num=100000&sort=symbol&asc=1&node=qbgg_hk&_s_r_a=init"
     )
-    stock_list_hk = fun_listcomp_hk_sina(url_hk)
+    stock_list_hk = setDT(fromJSON(url_hk_sina))[, `:=`(
+        market = "stock", exchange = "hkex",
+        board = ifelse(substr(symbol,1,2)=="08", "gem", "main")
+    )] 
+    setnames(stock_list_hk, c('engname', 'lasttrade', 'prevclose', 'pricechange', 'changepercent', 'market_value', 'pe_ratio'), c('name_eng', 'close', 'close_prev', 'change', 'change_pct', 'cap_total', 'pe'))
+  } else if (source == 'eastmoney') {
+        url_hk_em = "http://72.push2.eastmoney.com/api/qt/clist/get?pn=1&pz=5000&po=1&np=1&ut=bd1d9ddb04089700cf9c27f6f7426281&fltt=2&invt=2&fid=f3&fs=m:128%20t:1&fields=f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f12,f13,f14,f15,f16,f17,f18,f20,f21,f23,f24,f25,f22,f11,f62,f128,f136,f115,f152&_=1624010056945"
+        # %20t:3,m:128%20t:4,m:128%20t:1,m:128%20t:2
     }
 
 
-  stock_list_hk = stock_list_hk[, symbol := paste(symbol, substr(exchange,1,2) ,sep=".")]
+  stock_list_hk = stock_list_hk[,`:=`(
+      symbol = paste0(symbol, '.HK'),
+      date = as_date(ticktime)
+  )][, c('exchange', 'market', 'board', 'symbol', 'name', 'date', 'open', 'high', 'low', 'close', 'close_prev', 'volume', 'amount', 'change_pct',  'cap_total', 'eps', 'dividend', 'pe', 'name_eng', 'ticktime')]
   if (return_price == FALSE) stock_list_hk = stock_list_hk[, c("market", "exchange", "board", "symbol", "name"), with=FALSE]
   # data("market_symbols", envir = environment())
   # stock_list_hk2 = rbindlist(
@@ -81,7 +71,108 @@ md_stock_symbol_hk = function(source="163", return_price=FALSE) {
   return(stock_list_hk)
 }
 
-# 163 ------
+# shse, szse ------
+#' @import data.table 
+#' @importFrom jsonlite fromJSON
+#' @importFrom stringi stri_unescape_unicode
+md_stockall_real_163 = function(symbol = c('a','index'), only_symbol = FALSE, show_tags = FALSE, to_sysdata=FALSE, ...) {
+    prov = tags = market = exchange = time = . = submarket = region = board = name = mkt = indu = sec = NULL
+    
+    fun_stock_163 = function(urli, mkt) {
+        code = symbol = exchange = . = name = high = low = price = yestclose = updown = percent = hs = volume = turnover = mcap = tcap = pe = mfsum = net_income = revenue = plate_ids = time = NULL
+        # stock
+        # c('code', 'five_minute' 'high', 'hs', 'lb', 'low', 'mcap', 'mfratio', 'mfsum', 'name', 'open', 'pe', 'percent', 'plate_ids', 'price', 'sname', 'symbol', 'tcap', 'turnover', 'updown', 'volume', 'wb', 'yestclose', 'zf', 'no', 'announmt', 'uvsnews')
+        # index
+        # c('code', 'high', 'low', 'name', 'open' 'percent', 'price', 'symbol', 'time', 'turnover' 'updown', 'volume', 'yestclose', 'no', 'zhenfu') 
+        data_date = md_stock_real_tx('^000001')$date
+        jsonDat = fromJSON(urli)
+        
+        jsonDF = jsonDat$list
+        if (mkt == 'stock') {
+            jsonDF$net_income = jsonDF$MFRATIO$MFRATIO2
+            jsonDF$revenue = jsonDF$MFRATIO$MFRATIO10
+            jsonDF[,c('MFRATIO', 'UVSNEWS','ANNOUNMT','NO')] = NULL 
+            names(jsonDF) = tolower(names(jsonDF))
+            
+            jsonDF = setDT(jsonDF)[,`:=`(
+                date = data_date, #as.Date(substr(jsonDat$time,1,10)), 
+                time = jsonDat$time#,
+                #strptime(jsonDat$time, '%Y-%m-%d %H:%M:%S', tz = 'Asia/Shanghai')
+            )][, .(symbol, name, date, open, high, low, close=price, close_prev=yestclose, change=updown, change_pct=percent*100, volume, amount=turnover, turnover=hs*100, cap_market=mcap, cap_total=tcap, pe_last=pe, eps=mfsum, net_income, revenue, plate_ids, time=as.POSIXct(time))
+            ][,`:=`(
+                province = sub('.*(dy\\d+).*', '\\1', plate_ids),
+                plate_ids = sub('dy\\d+','',plate_ids)
+            )][,`:=`(
+                sector = sub('.*((hy\\d{3}0{3})|hy012001).*', '\\1', plate_ids),
+                industry = sub('.*(hy\\d+).*', '\\1', sub('hy\\d{3}0{3}','',plate_ids))
+            )]
+            
+        } else if (mkt == 'index') {
+            names(jsonDF) = tolower(names(jsonDF))
+            
+            jsonDF = setDT(jsonDF)[,`:=`(
+                date = data_date#as.Date(substr(jsonDat$time,1,10))
+            )][, .(symbol, name, date, open, high, low, close=price, close_prev=yestclose, change=updown, change_pct=percent*100, volume=volume/100, amount=turnover, time=as.POSIXct(time))]
+        }
+        
+        return(jsonDF[, `:=`(market = mkt, region = 'cn')])
+    }
+    
+    urls_163 = list(
+        a = 'http://quotes.money.163.com/hs/service/diyrank.php?host=http%3A%2F%2Fquotes.money.163.com%2Fhs%2Fservice%2Fdiyrank.php&page=0&query=STYPE%3AEQA&fields=NO%2CSYMBOL%2CNAME%2CPLATE_IDS%2CPRICE%2CPERCENT%2CUPDOWN%2CFIVE_MINUTE%2COPEN%2CYESTCLOSE%2CHIGH%2CLOW%2CVOLUME%2CTURNOVER%2CHS%2CLB%2CWB%2CZF%2CPE%2CMCAP%2CTCAP%2CMFSUM%2CMFRATIO.MFRATIO2%2CMFRATIO.MFRATIO10%2CSNAME%2CCODE%2CANNOUNMT%2CUVSNEWS&sort=CODE&order=desc&count=100000&type=query', 
+        b = 'http://quotes.money.163.com/hs/service/diyrank.php?host=http%3A%2F%2Fquotes.money.163.com%2Fhs%2Fservice%2Fdiyrank.php&page=0&query=STYPE%3AEQB&fields=NO%2CSYMBOL%2CNAME%2CPLATE_IDS%2CPRICE%2CPERCENT%2CUPDOWN%2CFIVE_MINUTE%2COPEN%2CYESTCLOSE%2CHIGH%2CLOW%2CVOLUME%2CTURNOVER%2CHS%2CLB%2CWB%2CZF%2CPE%2CMCAP%2CTCAP%2CMFSUM%2CMFRATIO.MFRATIO2%2CMFRATIO.MFRATIO10%2CSNAME%2CCODE%2CANNOUNMT%2CUVSNEWS&sort=PERCENT&order=desc&count=100000&type=query',
+        index = 'http://quotes.money.163.com/hs/service/hsindexrank.php?host=/hs/service/hsindexrank.php&page=0&query=IS_INDEX:true;EXCHANGE:CNSESH&fields=no,TIME,SYMBOL,NAME,PRICE,UPDOWN,PERCENT,zhenfu,VOLUME,TURNOVER,YESTCLOSE,OPEN,HIGH,LOW&sort=SYMBOL&order=asc&count=10000&type=query',
+        index = 'http://quotes.money.163.com/hs/service/hsindexrank.php?host=/hs/service/hsindexrank.php&page=0&query=IS_INDEX:true;EXCHANGE:CNSESZ&fields=no,TIME,SYMBOL,NAME,PRICE,UPDOWN,PERCENT,zhenfu,VOLUME,TURNOVER,YESTCLOSE,OPEN,HIGH,LOW&sort=SYMBOL&order=asc&count=10000&type=query'
+    )
+    idx = which(names(urls_163) %in% symbol) #unlist(strsplit(symbol,','))
+    
+    df_stock_cn = try(
+        rbindlist(
+            mapply(fun_stock_163, urls_163[idx], c('stock','stock','index','index')[idx], SIMPLIFY = FALSE), 
+            fill = TRUE
+        ), 
+        silent = TRUE
+    )#, idcol = 'mkt')#[mkt %in% c('a','b'), mkt := 'stock']
+    if (!inherits(df_stock_cn, 'try-error') & 'fund' %in% symbol) df_stock_cn = rbind(df_stock_cn, md_fundall_real_163(), fill=TRUE)
+    
+    # date time of download
+    datetime = gsub('[^(0-9)]','',df_stock_cn[1,time])
+    # if (df_stock_cn[1,time] < as.POSIXct(paste(df_stock_cn[1,date], '15:00:00'))) 
+    #   cat('The close price is real price at', as.character(datetime), '\n')
+    
+    # create/export sysdata.rda 
+    if (to_sysdata) return(df_stock_cn)
+    # create/export symbol only or tags
+    if (only_symbol || show_tags) {
+        if (inherits(df_stock_cn, 'try-error')) df_stock_cn = setDT(copy(symbol_stock_163))
+        
+        df_stock_cn = symbol_163_format(df_stock_cn)
+        if ('prov' %in% names(df_stock_cn)) df_stock_cn = df_stock_cn[is.na(prov), prov := stri_unescape_unicode('\\u91cd\\u5e86')]
+        
+        if (only_symbol & show_tags) {
+            df_stock_cn = df_stock_cn[
+                , .(market, submarket, region, exchange, board, symbol, name, prov, sec, indu)
+            ][order(-market, exchange, symbol)]
+        } else if (only_symbol) {
+            df_stock_cn = df_stock_cn[
+                , .(market, submarket, region, exchange, board, symbol, name)
+            ][order(-market, exchange, symbol)]
+        }
+    } else {
+        if (!identical(symbol, 'index')) {
+            cols_rm = intersect(names(df_stock_cn), c('eps', 'net_income', 'revenue'))
+            if (length(cols_rm)>0) df_stock_cn = df_stock_cn[, (cols_rm) := NULL]
+        }
+    }
+    
+    df = df_stock_cn[,unit := 'CNY'][, symbol := check_symbol_for_yahoo(symbol, market)]#[, mkt := NULL][]
+    
+    cols_rm = intersect(names(df), c('sector', 'industry', 'province', 'plate_ids', 'region')) # , 'close_prev', 
+    if (length(cols_rm)>0) df = df[, (cols_rm) := NULL]
+    return(df)
+}
+
+
 symbol_163_format = function(df_symbol) {
   type = . = id = name = symbol = tags = market = submarket = region = exchange = board = prov = indu = sec = mkt = syb  = syb3 = NULL
   
@@ -113,37 +204,46 @@ symbol_163_format = function(df_symbol) {
   
   return(df_symbol)
 }
+
+
 #' @import data.table
 #' @importFrom jsonlite fromJSON 
 md_stock_symbol_163 = function() {
-  . = board = exchange = indu = market = name = prov = sec = submarket = symbol = NULL 
-  df_syb = md_stock_spotall_163(symbol = c('a', 'b', 'index'), only_symbol=TRUE, show_tags=TRUE)[,.(
-    market, submarket, exchange, board, symbol, name, sector = sec, industry = indu, province = prov
-  )]
+  # . = board = exchange = indu = market = name = prov = sec = submarket = symbol = NULL 
+  df_syb = md_stockall_real_163(symbol = c('a', 'b', 'index'), only_symbol=FALSE, show_tags=TRUE)
+  setnames(df_syb, c('sec', 'indu', 'prov'), c('sector', 'industry', 'province'))
+  # [,.(market, submarket, exchange, board, symbol, name, sector = sec, industry = indu, province = prov)]
   return(df_syb)
 }
 
-# nasdaq ------
-md_stock_symbol_nasdaq = function(exchange) {
+
+# us ------
+md_stock_symbol_us = function(exchange) {
   . = symbol = name = sector = industry = country = ipoyear = marketCap = NULL
-  
-  
   # c("AMEX", "NASDAQ", "NYSE")
-  url = sprintf(
-    # "https://old.nasdaq.com/screening/companies-by-name.aspx?letter=0&exchange=%s&render=download",
-    # 'http://www.nasdaq.com/screening/companies-by-name.aspx?letter=0&exchange=%s&render=download', 
-    "https://api.nasdaq.com/api/screener/stocks?tableonly=true&exchange=%s&download=true",
-    toupper(exchange))
+  exchange = toupper(exchange)
+  exchange2code = list(NASDAQ = '105', NYSE='106', NYSE = '107')
   
-  dat = fromJSON(url)
-  dat2 = setDT(dat$data$rows)[,.(market='stock', exchange=exchange, board=NA, symbol, name, sector, industry, cap_market=marketCap, ipoyear, country)] 
+  datem = read_apidata_eastmoney(url = sprintf("http://72.push2.eastmoney.com/api/qt/clist/get?pn=1&pz=20000&po=1&np=1&ut=bd1d9ddb04089700cf9c27f6f7426281&fltt=2&invt=2&fid=f3&fs=m:%s&fields=f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f12,f13,f14,f15,f16,f17,f18,f20,f21,f23,f24,f25,f26,f22,f33,f11,f62,f128,f136,f115,f152&_=1624010056945", exchange2code[[exchange]]), type = 'real_us')
+  dat2 = datem[, c('symbol', 'name', 'open', 'high', 'low', 'close', 'close_prev', 'volume', 'amount', 'change', 'change_pct', 'amplitude', 'turnover', 'pe'), with=FALSE]
+  
+  if (FALSE) {
+      url = sprintf(
+          # "https://old.nasdaq.com/screening/companies-by-name.aspx?letter=0&exchange=%s&render=download",
+          # 'http://www.nasdaq.com/screening/companies-by-name.aspx?letter=0&exchange=%s&render=download', 
+          "https://api.nasdaq.com/api/screener/stocks?tableonly=true&exchange=%s&download=true",
+          exchange)
+      
+      dat = fromJSON(url)
+      dat2 = setDT(dat$data$rows)[,.(market='stock', exchange=exchange, board=NA, symbol, name, sector, industry, cap_market=marketCap, ipoyear, country)] 
+  }
+  
   
   return(dat2)
 }
 
 
-# exchange index ------
-# stock symbol in exchange
+# stock symbol by exchange ------
 md_stock_symbol_exchange = function(XCHG=NULL, print_step=1L) {
   exchange = NULL
   
@@ -180,7 +280,7 @@ md_stock_symbol_exchange = function(XCHG=NULL, print_step=1L) {
     for (e in exc) {
       if ((print_step > 0) & (i %% print_step == 0)) cat(sprintf('%s %s\n', paste0(format(c(i, exc_len)), collapse = '/'), e))
       i = i+1
-      dat_lst[[e]] = md_stock_symbol_nasdaq(e)
+      dat_lst[[e]] = md_stock_symbol_us(e)
     }
   }
   # dat_lst = rbindlist(dat_lst, fill = TRUE)
@@ -188,7 +288,7 @@ md_stock_symbol_exchange = function(XCHG=NULL, print_step=1L) {
 }
 
 
-
+# stock symbol constituent of index ------
 # China securities index, csindex
 
 # query constituent of securities index
@@ -230,36 +330,29 @@ md_stock_symbol_index = function(symbol, print_step=1L) {
 
 # 'http://www.sse.com.cn/assortment/stock/list/share/'
 # 'http://www.szse.cn/market/stock/list/index.html'
+# @param index the stock index symbol provided by China Securities Index Co.Ltd (\url{http://www.csindex.com.cn}).
+# get stock components of a stock index (only in sse and szse)
+# index_syb = md_stock_symbol(index = c('000001', '000016', '000300', '000905'))
 
-#' symbol components of exchange or index
+#' symbol components of exchange
 #' 
-#' \code{md_stock_symbol} returns all stock symbols of stock exchange or index.
+#' \code{md_stock_symbol} returns all stock symbols by exchange
 #' 
 #' @param exchange the available stock exchanges are sse, szse, hkex, amex, nasdaq, nyse.
-#' @param index the stock index symbol provided by China Securities Index Co.Ltd (\url{http://www.csindex.com.cn}).
 #' 
 #' @examples 
 #' \dontrun{
 #' # get stock symbols in a stock exchange
-#' ## specify the name of exchange
+#' ## specify the exchanges
 #' ex_syb1 = md_stock_symbol(exchange = c('sse', 'szse'))
 #' 
-#' ## choose stock exchanges interactivly
+#' ## choose exchanges interactivly
 #' ex_syb2 = md_stock_symbol()
-#' 
-#' 
-#' # get stock components of a stock index (only in sse and szse)
-#' index_syb = md_stock_symbol(index = c('000001', '000016', '000300', '000905'))
 #' 
 #' }
 #' 
 #' @export
-md_stock_symbol = function(exchange=NULL, index=NULL) {
-  if (is.null(index)) {
-    dt = md_stock_symbol_exchange(exchange)
-  } else {
-    dt = md_stock_symbol_index(index)
-  }
-  return(dt)
+md_stock_symbol = function(exchange=NULL) {
+    md_stock_symbol_exchange(exchange)
 }
 

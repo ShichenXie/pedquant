@@ -6,8 +6,9 @@
 #' @param dtv a dataframe of transaction volume by asset.
 #' @param x the column name of adjusted asset price.
 #' @param v the column name of asset volume, defaults to volume.
-#' @param init_value initial equity value.
+#' @param init_fund initial fund value.
 #' @param method the method to calculate asset returns, the available values include arithmetic and log, defaults to arithmetic.
+#' @param ... ignored
 #'
 #' @examples
 #' library(pedquant)
@@ -34,20 +35,22 @@
 #'     date = rep(c('2009-03-02', '2010-01-04', '2014-09-01'), each = 5), 
 #'     volume = rep(c(100, 200, 300, 300, 100), 3) * rep(c(1, -1, 2), each = 5)
 #' )
-#' dtRa2 = pq_portfolio(datadj, x='close_adj', dtv=dtv, init_value = 10000) 
+#' dtRa2 = pq_portfolio(datadj, x='close_adj', dtv=dtv, init_fund = 10000) 
 #' pq_plot(dtRa2, x = 'balance', 
 #'         addti = list(equity = list(), fund = list()))
 #' 
 #' @importFrom stats weighted.mean
 #' @export
-pq_portfolio = function(dt, dtv, x, v = 'volume', init_value = NULL, method = 'arithmetic') {
+pq_portfolio = function(dt, dtv, x, v = 'volume', init_fund = NULL, method = 'arithmetic', ...) {
     . = equity = equityindex = fund = chg = returns = symbol = value = balance = NULL
 
+    w = 'weights'
+    x_value = list(...)[['x_value']]
+    if (is.null(x_value)) x_value = x
     # dt
     dt = check_dt(dt)
     # dtv
     dtv = check_dt(dtv, symb_name = FALSE)
-    w = 'weights'
     if (v == w) {
         setnames(dtv, v, 'volume')
         v = 'volume'
@@ -69,7 +72,7 @@ pq_portfolio = function(dt, dtv, x, v = 'volume', init_value = NULL, method = 'a
     ))[, (c(w,x)) := lapply(.SD, fillna), .SDcols=c(w,x), by='symbol'
     ][]
     ## adding value column
-    if (!('value' %in% names(dtv))) dt_dtv = dt_dtv[, value := get(v) * get(x)]
+    if (!('value' %in% names(dtv))) dt_dtv = dt_dtv[, value := get(v) * get(x_value)]
     
     # equity
     portfolio_equity = dt_dtv[, .(
@@ -86,11 +89,11 @@ pq_portfolio = function(dt, dtv, x, v = 'volume', init_value = NULL, method = 'a
      ][,.(date, returns, cumreturns = cumprod(chg), equity, fund)
      ]
     
-    if (is.null(init_value)) {
-        init_value = round(abs(portfolio_equity[, min(fund)]), 2)
-        warning(sprintf('The initial value is setting to %s', init_value))
+    if (is.null(init_fund)) {
+        init_fund = round(abs(portfolio_equity[, min(fund)]), 2)
+        warning(sprintf('The initial value is setting to %s', init_fund))
     }
-    portfolio_equity = portfolio_equity[, fund := fund + init_value][, balance := equity + fund]
+    portfolio_equity = portfolio_equity[, fund := fund + init_fund][, balance := equity + fund]
     
     return(portfolio_equity[])
 }
