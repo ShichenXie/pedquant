@@ -1,7 +1,6 @@
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-pedquant
-========
+# pedquant
 
 [![Travis build
 status](https://travis-ci.org/ShichenXie/pedquant.svg?branch=master)](https://travis-ci.org/ShichenXie/pedquant)
@@ -16,13 +15,11 @@ research and quantitative analysis. The functions are grouped into three
 main categories,
 
 -   ed\_\* (economic data) functions load economic data from
-    [NBS](http://data.stats.gov.cn) and
-    [FRED](http://data.stats.gov.cn);
--   md\_\* (market data) functions load stock prices from [Yahoo
-    finance](https://finance.yahoo.com), stock prices and financial
-    statements of SSE and SZSE shares from [163
-    Finance](http://quotes.money.163.com/stock#1b01), and future prices
-    from [Sina Finance](https://finance.sina.com.cn/futuremarket/) etc.
+    [NBS](http://www.stats.gov.cn/) and
+    [FRED](https://fred.stlouisfed.org/);
+-   md\_\* (market data) functions load the forex, money, bond, stock,
+    future market data from public data sources, including 163, Sina, qq
+    finance and etc.
 -   pq\_\* (quantitative analysis) functions create technical
     indicators, visualization charts and industrial index etc for time
     series data.
@@ -44,8 +41,7 @@ ggplot2 and interactive graphics by using plotly. Similar works
 including [tidyquant](https://github.com/business-science/tidyquant) or
 [quantmod](https://github.com/joshuaulrich/quantmod).
 
-Installation
-------------
+## Installation
 
 -   Install the release version of `pedquant` from CRAN with:
 
@@ -60,8 +56,7 @@ Installation
 
     devtools::install_github("shichenxie/pedquant")
 
-Example
--------
+## Example
 
 The following examples show you how to import data and create charts.
 
@@ -72,12 +67,12 @@ The following examples show you how to import data and create charts.
     dat2 = ed_nbs(geo_type='nation', freq='quarterly', symbol='A010101')
 
     ## import market data
-    FAAG = md_stock(c('FB', 'AMZN', 'AAPL', 'GOOG'), date_range = 'max') # from yahoo
-    #> 1/4 FB
-    #> 2/4 AMZN
-    #> 3/4 AAPL
-    #> 4/4 GOOG
-    INDX = md_stock(c('^000001','^399001'), date_range = 'max', source = '163')
+    FAAG = md_stock(c('FB', 'AMZN', 'AAPL', 'GOOG'), date_range = '10y')
+    #> 1/4 fb
+    #> 2/4 amzn
+    #> 3/4 aapl
+    #> 4/4 goog
+    INDX = md_stock(c('^000001','^399001'), date_range = '10y')
     #> 1/2 ^000001
     #> 2/2 ^399001
 
@@ -100,8 +95,7 @@ The following examples show you how to import data and create charts.
 
 <img src="man/figures/README-charts2-1.png" width="100%" />
 
-Issues and Contributions
-------------------------
+## Issues and Contributions
 
 This package still on the developing stage. If you have any issue when
 using this package, please update to the latest version from github. If

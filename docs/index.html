@@ -85,8 +85,8 @@
 
 <p><code>pedquant</code> (Public Economic Data and QUANTitative analysis) provides an interface to access public economic and financial data for economic research and quantitative analysis. The functions are grouped into three main categories,</p>
 <ul>
-<li>ed_* (economic data) functions load economic data from <a href="http://data.stats.gov.cn" class="external-link">NBS</a> and <a href="http://data.stats.gov.cn" class="external-link">FRED</a>;</li>
-<li>md_* (market data) functions load stock prices from <a href="https://finance.yahoo.com" class="external-link">Yahoo finance</a>, stock prices and financial statements of SSE and SZSE shares from <a href="http://quotes.money.163.com/stock#1b01" class="external-link">163 Finance</a>, and future prices from <a href="https://finance.sina.com.cn/futuremarket/" class="external-link">Sina Finance</a> etc.</li>
+<li>ed_* (economic data) functions load economic data from <a href="http://www.stats.gov.cn/" class="external-link">NBS</a> and <a href="https://fred.stlouisfed.org/" class="external-link">FRED</a>;</li>
+<li>md_* (market data) functions load the forex, money, bond, stock, future market data from public data sources, including 163, Sina, qq finance and etc.</li>
 <li>pq_* (quantitative analysis) functions create technical indicators, visualization charts and industrial index etc for time series data.</li>
 </ul>
 <p>The functions in this package are designed to write minimum codes for some common tasks in quantitative analysis process. Since the parameters to get data can be interactively specify, it’s very easy to start. The loaded data have been carefully cleansed and provided in a unified format. More public data sources are still under cleansing and developing.</p>
@@ -114,12 +114,12 @@
 <span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>dat2 <span class="ot">=</span> <span class="fu">ed_nbs</span>(<span class="at">geo_type=</span><span class="st">'nation'</span>, <span class="at">freq=</span><span class="st">'quarterly'</span>, <span class="at">symbol=</span><span class="st">'A010101'</span>)</span>
 <span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="do">## import market data</span></span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>FAAG <span class="ot">=</span> <span class="fu">md_stock</span>(<span class="fu">c</span>(<span class="st">'FB'</span>, <span class="st">'AMZN'</span>, <span class="st">'AAPL'</span>, <span class="st">'GOOG'</span>), <span class="at">date_range =</span> <span class="st">'max'</span>) <span class="co"># from yahoo</span></span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1/4 FB</span></span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2/4 AMZN</span></span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3/4 AAPL</span></span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4/4 GOOG</span></span>
-<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>INDX <span class="ot">=</span> <span class="fu">md_stock</span>(<span class="fu">c</span>(<span class="st">'^000001'</span>,<span class="st">'^399001'</span>), <span class="at">date_range =</span> <span class="st">'max'</span>, <span class="at">source =</span> <span class="st">'163'</span>)</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>FAAG <span class="ot">=</span> <span class="fu">md_stock</span>(<span class="fu">c</span>(<span class="st">'FB'</span>, <span class="st">'AMZN'</span>, <span class="st">'AAPL'</span>, <span class="st">'GOOG'</span>), <span class="at">date_range =</span> <span class="st">'10y'</span>)</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1/4 fb</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2/4 amzn</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3/4 aapl</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4/4 goog</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>INDX <span class="ot">=</span> <span class="fu">md_stock</span>(<span class="fu">c</span>(<span class="st">'^000001'</span>,<span class="st">'^399001'</span>), <span class="at">date_range =</span> <span class="st">'10y'</span>)</span>
 <span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1/2 ^000001</span></span>
 <span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2/2 ^399001</span></span>
 <span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a></span>
