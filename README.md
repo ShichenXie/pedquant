@@ -28,8 +28,7 @@ The functions in this package are designed to write minimum codes for
 some common tasks in quantitative analysis process. Since the parameters
 to get data can be interactively specify, it’s very easy to start. The
 loaded data have been carefully cleansed and provided in a unified
-format. More public data sources are still under cleansing and
-developing.
+format.
 
 `pedquant` package has advantages on multiple aspects, such as the
 format of loaded data is a list of data frames, which can be easily

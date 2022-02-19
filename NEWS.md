@@ -1,3 +1,7 @@
+# pedquant 0.1.8.999
+
+* fixed bug in md_stock function for querying sse/szse fund data
+
 # pedquant 0.1.8
 
 * fixed bugs in functions of md_stock, md_future

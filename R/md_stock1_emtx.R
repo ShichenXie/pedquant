@@ -65,24 +65,65 @@ md_stock1_history_eastmoney = function(symbol1, from=NULL, to=Sys.Date(), date_r
 
 # https://web.ifzq.gtimg.cn/appstock/app/fqkline/get?param=usAAPL.OQ,day,2020-3-1,2021-3-1,500,qfq
 # https://web.ifzq.gtimg.cn/appstock/app/fqkline/get?_var=kline_dayhfq&param=sh600519,day,,,320,hfq&r=0.9860043111257255
-md_stock1_history_tx = function(symbol1, from=NULL, to=Sys.Date(), date_range='30y', ...) {
-    city = syb1 = symbol = NULL
-    
+md_stock1_history_tx = function(symbol1, from=NULL, to=Sys.Date(), date_range='max', ...) {
     # from
     to = check_to(to)
     from = check_from(date_range, from, to, default_from = "1000-01-01", default_date_range = '3y')
+    
+    # data 
+    dat0 = md_stock1_history_tx0(symbol1, from, to, adjust='')
+    datadj = md_stock1_history_tx0(symbol1, from, to, adjust='hfq')
+    while (datadj[, min(date) > from]) {
+        to2 = datadj[, min(date)] - 1
+        print(to2)
+        datmp = try(md_stock1_history_tx0(symbol1, from, to2, adjust='hfq'), silent = TRUE) 
+        if (inherits(datmp, 'try-error')) break else datadj = rbind(datmp, datadj) 
+    }
+    # add close_prev column
+    dat0 = merge(
+        dat0, 
+        setnames(datadj, 'close', 'close_prev')[,c('date', 'close_prev'), with=FALSE], 
+        by = 'date', all.x = TRUE
+    )[, c('symbol', 'name', 'date', 'open', 'high', 'low', 'close', 'close_prev', 'volume'), with=FALSE]
+    
+    return(dat0)
+}
+
+
+md_stock1_history_tx0 = function(symbol1, from, to, adjust) {
+    # adjust: '', qfq, hfq
+    city = syb1 = symbol = NULL
     
     # symbol1
     sybs_xchg = check_symbol_cn(toupper(symbol1))[!is.na(city), syb1 := paste0(city, symbol)][is.na(city), syb1 := sprintf('us%s.OQ', symbol)]
     
         
-    url1 = sprintf('https://web.ifzq.gtimg.cn/appstock/app/fqkline/get?param=%s,day,%s,%s,%s,qfq', sybs_xchg$syb1, from, to, to-from)
-    url2 = sprintf('https://web.ifzq.gtimg.cn/appstock/app/fqkline/get?param=%s,day,%s,%s,%s,hfq', sybs_xchg$syb1, from, to, to-from)
+    url = sprintf('https://web.ifzq.gtimg.cn/appstock/app/fqkline/get?param=%s,day,%s,%s,%s,%s', sybs_xchg$syb1, from, to, to-from, adjust)
+    # url = sprintf('https://web.ifzq.gtimg.cn/appstock/app/fqkline/get?param=%s,day,%s,%s,%s,%s', sybs_xchg$syb1, from, to, to-from, adjust)
     
-    dat1 = fromJSON(url1)
-    dat2 = fromJSON(url2)
+    txjson2dt = function(x) {
+        numcols = c('open', 'close', 'high', 'low', 'volume')
+        
+        if (inherits(x, 'list')) {
+            dt = rbindlist(lapply(x, function(dt) as.data.frame(t(dt))), fill=TRUE) 
+        } else {
+            dt = setDT(as.data.frame(x))
+        }
+        
+        dt = setnames(
+            dt[,paste0('V',1:6),with=FALSE], 
+            c('date', 'open', 'close', 'high', 'low', 'volume')
+        )[, date := as_date(date)
+        ][, (numcols) := lapply(.SD, as.numeric), .SDcols =numcols]
+        return(dt)
+    }
+    dat = fromJSON(url)
+    # datlst = txjson2dt(dat$data[[1]][[1]])
+    datlst = cbind(
+        data.table(symbol=sybs_xchg$syb_exp, name = dat$data[[1]][['qt']][[1]][2])[], 
+        txjson2dt(dat$data[[1]][[1]])
+    )
     
-    datlst1 = rbindlist(lapply(dat1$data[[1]][[1]], function(x) as.data.frame(t(x))), fill=TRUE) 
-    datlst2 = rbindlist(lapply(dat2$data[[1]][[1]], function(x) as.data.frame(t(x))), fill=TRUE) 
-    
+    return(datlst)
 }
+

@@ -114,14 +114,15 @@ md_stock_real_tx = function(symbols, only_syb_nam = FALSE, ...) {
             
             
             setnames(dat, cols_name[1:ncol(dat)])
-            sybs = x[,ifelse(is.na(exchg_code), syb, paste(syb, exchg_code, sep='.'))]
-            dat = dat[, symbol := toupper(sybs)
+            # sybs = x[,ifelse(is.na(exchg_code), syb, paste(syb, exchg_code, sep='.'))]
+            dat = dat[, symbol := x$syb_exp
                     ][, intersect(c('symbol', 'name', 'date', 'open', 'high', 'low', 'close', 'close_prev', 'change', 'change_pct', 'amplitude', 'turnover', 'volume', 'amount', 'cap_market', 'cap_total', 'name_eng', 'unit'), names(dat)), with=FALSE]
             return(dat)
         }
     )
     dt = rbindlist(datlst, fill = TRUE)
-    
+    if (!('unit' %in% names(dt))) dt[, unit := 'CNY'] 
+        
     if (only_syb_nam) {
         dt2 = dt[, c('symbol', 'name'), with = FALSE]
     } else {
@@ -129,11 +130,11 @@ md_stock_real_tx = function(symbols, only_syb_nam = FALSE, ...) {
             'open', 'high', 'low', 'close', 'close_prev', 'change', 'change_pct', 'amplitude', 'turnover', 'volume', 'amount', 'cap_market', 'cap_total'
         )
         
-        dt2 = dt[, `:=`(
+        dt2 = copy(dt)[, `:=`(
             time = as.POSIXct(gsub('[^0-9]', '', date), format='%Y%m%d%H%M%S', tz='Asia/Shanghai'), 
             date = as_date(substr(gsub('[^0-9]', '', date),1,8))
         )][, (num_cols) := lapply(.SD, as.numeric), .SDcols = num_cols
-        ][is.na(unit) & grepl('HK$', symbol), unit := 'HKD'
+        ][grepl('HK$', symbol), unit := 'HKD'
         ][is.na(unit), unit := 'CNY'
         ][, amount := amount*10000
         ][, mkt := check_symbol_cn(symbol)$mkt

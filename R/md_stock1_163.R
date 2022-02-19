@@ -149,7 +149,7 @@ md_stock1_history_163 = function(symbol1, from='1900-01-01', to=Sys.Date(), zero
   
   # 'http://api.finance.ifeng.com/akmonthly/?code=sh600000&type=last'
   # {'D': 'akdaily', 'W': 'akweekly', 'M': 'akmonthly'}
-  chk_syb1 = check_symbol_cn(symbol1)
+  chk_syb1 = check_symbol_cn(symbol1)[]
   if (chk_syb1$mkt %in% 'fund') {
       return(md_fund1_history_163(symbol1, from, to))
   } else if (!(chk_syb1$exchg_code %in% c('sz', 'ss'))) {
@@ -417,7 +417,7 @@ md_stock_163 = function(symbol, from='1900-01-01', to=Sys.Date(), print_step=1L,
     }
   }
   
-  return(dat_list)
+  return(dat_list[])
 }
 
 
@@ -460,63 +460,74 @@ md_fund1_history_163 = function(symbol1, from='1900-01-01', to=Sys.Date()) {
   # {'D': 'akdaily', 'W': 'akweekly', 'M': 'akmonthly'}
   
   # from tx ------
-  syb1 = check_symbol_for_tx(symbol1)
-  dat1 = 'init'
-  i=1
-  datlst = list()
-  yrng = year(seq(as.Date(to), as.Date(from), by = '-1 years'))
-  while (!inherits(dat1, 'try-error')) {
-    # print(yr1)
-    yr1 = yrng[i]
-    url = sprintf('http://data.gtimg.cn/flashdata/hushen/daily/%s/%s.js?visitDstTime=1', substr(yr1,3,4), syb1)
-    dat1 = try(suppressWarnings(fread(url, showProgress=F)), silent = T)
-    
-    if(!inherits(dat1, 'try-error')) {
-      setnames(dat1, c('date', 'open', 'high', 'low', 'close', 'volume'))
-      datlst[[as.character(yr1)]] <- dat1
-      i = i+1
-    }
+  dat_tx = md_stock1_history_tx(symbol1, from = from, to = to, adjust = '')
+  
+  if (FALSE) {
+      # syb1 = check_symbol_for_tx(symbol1)
+      # dat1 = 'init'
+      # i=1
+      # datlst = list()
+      # yrng = year(seq(as.Date(to), as.Date(from), by = '-1 years'))
+      # while (!inherits(dat1, 'try-error')) {
+      #     # print(yr1)
+      #     yr1 = yrng[i]
+      #     url = sprintf('http://data.gtimg.cn/flashdata/hushen/daily/%s/%s.js?visitDstTime=1', substr(yr1,3,4), syb1)
+      #     dat1 = try(suppressWarnings(fread(url, showProgress=F)), silent = T)
+      #     
+      #     if(!inherits(dat1, 'try-error')) {
+      #         setnames(dat1, c('date', 'open', 'high', 'low', 'close', 'volume'))
+      #         datlst[[as.character(yr1)]] <- dat1
+      #         i = i+1
+      #     }
+      # }
+      # 
+      # dat_tx = rbindlist(
+      #     datlst
+      # )[, volume := gsub('[^0-9.]', '', volume)
+      # ][, lapply(.SD, as.numeric)
+      # ][, date := as.Date(paste0(substr(yrng[i],1,2), date), format = '%Y%m%d')
+      # ][order(date)]
   }
   
-  dat_tx = rbindlist(
-    datlst
-  )[, volume := gsub('[^0-9.]', '', volume)
-  ][, lapply(.SD, as.numeric)
-  ][, date := as.Date(paste0(substr(yrng[i],1,2), date), format = '%Y%m%d')
-  ][order(date)]
   
   # from 163 ------
-  url0 = sprintf('http://quotes.money.163.com/fund/zyjl_%s_0.html?start=%s&end=%s', check_symbol_cn('512510.sh')$syb, from, to)
+  url0 = sprintf('http://quotes.money.163.com/fund/zyjl_%s_0.html?start=%s&end=%s', check_symbol_cn(symbol1)$syb, from, to)
   pagnum = read_html(url0) %>% 
     html_nodes('div.mod_pages a') %>% 
     html_text() %>% .[-length(.)] %>% 
     as.integer() %>% max(., na.rm = T)
   
   dat_lst2 = lapply(
-    sprintf('http://quotes.money.163.com/fund/zyjl_%s_%s.html?start=%s&end=%s', check_symbol_cn('512510.sh')$syb, seq(0,pagnum-1), from, to), 
+    sprintf('http://quotes.money.163.com/fund/zyjl_%s_%s.html?start=%s&end=%s', check_symbol_cn(symbol1)[]$syb, seq(0,pagnum-1), from, to), 
     function(u) {
       read_html(u) %>% html_table(fill = TRUE) %>% .[[1]]
     }
   )
   dat_163 = rbindlist(dat_lst2)
-  setnames(dat_163, c('date', 'close', 'change_pct', 'volume', 'amount', 'turnover', 'discount_pct'))
+  setnames(dat_163, c('date', 'close', 'change_pct', 'volume2', 'amount2', 'turnover', 'discount_pct'))
+  
+  volamt2num = function(x) {
+      x = gsub(',', '', x)
+      # unicode
+      if (grepl('\u4e07', x)) {
+          as.numeric(sub('\u4e07', '', x)) * 10^4
+      } else if (grepl('\u4ebf', x)) {
+          as.numeric(sub('\u4ebf', '', x)) * 10^8
+      }
+  }
   dat_1632 = copy(dat_163)[, `:=`(
     date = as.Date(date), 
     change_pct = as.numeric(sub('%', '', change_pct)),
-    volume = gsub(',', '', volume), 
-    amount = gsub(',', '', amount),
     turnover = as.numeric(sub('%', '', turnover))/100,
     discount_pct = as.numeric(sub('%', '', discount_pct))
-  )][grepl('\u4e07', volume), volume := as.numeric(sub('\u4e07', '', volume)) * 10^4
-   ][grepl('\u4ebf', volume), volume := as.numeric(sub('\u4ebf', '', volume)) * 10^8
-   ][grepl('\u4e07', amount), amount := as.numeric(sub('\u4e07', '', amount)) * 10^4
-   ][grepl('\u4ebf', amount), amount := as.numeric(sub('\u4ebf', '', amount)) * 10^8] # unicode
+  )][, (c('volume', 'amount')) := lapply(.SD, volamt2num), by = date, .SDcols = c('volume2', 'amount2')
+   ][, (c('volume2', 'amount2')) := NULL]
   
-  dat = merge(dat_tx[,.(date, open, high, low)], dat_1632, by = 'date', all.y=TRUE)
-  dat = cbind(data.table(
-    symbol = check_symbol_for_yahoo(symbol1), 
-    name = md_stock_real_tx(symbol1, only_syb_nam = T)$name
-  ), dat)[, unit := 'CNY']
+  dat = merge(
+      dat_tx[,(c('close', 'volume')) := NULL], dat_1632, by = 'date', all.y=TRUE
+  )[, unit := 'CNY'
+  ][, c('symbol', 'name', 'date', 'open', 'high', 'low', 'close', 'change_pct', 'volume', 'amount', 'turnover', 'discount_pct', 'unit'), with = FALSE
+  ]
   
   return(dat)
 }

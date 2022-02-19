@@ -153,7 +153,7 @@ tags_dt = function() {
     
 }
 check_symbol_cn = function(symbol, mkt = NULL) {
-    exchg_code = syb3 = syb = syb_code = syb_num = city = . = NULL
+    exchg_code = syb3 = syb = syb_code = syb_num = city = . = syb_exp = NULL
      
     tags = tags_dt()[, exchg_code := tolower(exchg_code)][]
     
@@ -190,7 +190,9 @@ check_symbol_cn = function(symbol, mkt = NULL) {
     cn_tag = rbindlist(cn_tag_lst, fill = TRUE)[
         is.na(city) & grepl('.hk$', symbol), 
         `:=`(city = 'hk', exchg_code = 'hk') 
-    ]
+    ][!is.na(exchg_code), syb_exp := paste(syb, exchg_code, sep='.')
+    ][is.na(syb_exp), syb_exp := syb
+    ][, syb_exp := toupper(syb_exp)]
     
     return(cn_tag)
 }
@@ -511,7 +513,8 @@ load_dat_loop = function(symbol, func, args=list(), print_step, sleep = 0, ...) 
         syb_i = symbol[i]
         # print
         if ((print_step>0) & (i %% print_step == 0)) cat(sprintf('%s %s\n', paste0(format(c(i, syb_len)), collapse = '/'), syb_i))
-        dt_list[[syb_i]] = try(do.call(func, c(syb_i, args)), silent = TRUE)
+        datmp = try(do.call(func, c(syb_i, args)), silent = TRUE)
+        dt_list[[syb_i]] = datmp[]
         # sleep for 1s
         if (sleep > 0) Sys.sleep(abs(rnorm(1, mean=sleep)))
     }
