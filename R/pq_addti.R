@@ -221,7 +221,6 @@ ti_idicators_hline = function() {list(
 #   )
 # }
 
-
 # add one technical indicator
 #' @import TTR
 addti1 = function(dt, ti, col_formula = FALSE, ...) {
@@ -286,7 +285,7 @@ addti1 = function(dt, ti, col_formula = FALSE, ...) {
   
   
   # parameters
-  param = c('n', 'sd', 'v', 'nFast', 'nSlow', 'nSig', 'accel')
+  param = c('n', 'sd', 'v', 'nFast', 'nSlow', 'nSig', 'accel', 'change')
   param_list = c(
     arg_lst_input[intersect(param, names(arg_lst_input))],
     arg_lst_default[intersect(param, names(arg_lst_default))]
@@ -295,7 +294,7 @@ addti1 = function(dt, ti, col_formula = FALSE, ...) {
   if (ti == 'KST') param_list = NULL
   
   # setnames for dtti
-  par_str = paste(unlist(param_list), collapse='_') 
+  par_str = paste(unlist(lapply(param_list, eval) ), collapse='_') 
   if (ncol(dtti)  == 1) {
     setnames(dtti, tolower(paste(ti, par_str, sep = '_')))
   } else if (ncol(dtti)  >  1) {
@@ -436,13 +435,14 @@ pq_addti = function(dt, ...) {
   dt = check_dt(dt)
   
   ## single series
-  dt_list = list()
-  sybs = dt[, unique(symbol)]
-  for (s in sybs) {
-    dt_s = dt[symbol == s]
-    setkeyv(dt_s, "date")
-    dt_list[[s]] = pq1_addti(dt=dt_s, ...)
-  }
+  dt_list = lapply(
+      split(dt, by = 'symbol'), 
+      function(dt_syb) {
+          setkeyv(dt_syb, "date")
+          dt_syb_ti = pq1_addti(dt=dt_syb, ...)
+          return(dt_syb_ti)
+      }
+  )
   return(dt_list)
 }
 

@@ -8,7 +8,7 @@
 #' @param date_range date range. Available value including '1m'-'11m', 'ytd', 'max' and '1y'-. Default is '3y'.
 #' @param from the start date. Default is NULL.
 #' @param to the end date. Default is current system date.
-#' @param adjust whether to adjust the OHLC prices, defaults to NULL. If it is NULL, return the original data; if it is FALSE, create a close_adj column if not exist; if it is TRUE, adjust all open, high, low, close columns. 
+#' @param adjust whether to adjust the OHLC prices, defaults to FALSE. If it is FALSE, create a close_adj column if not exist; if it is TRUE, adjust all open, high, low, close columns; if it is NULL, return the original data from source.
 #' For the yahoo data, the adjustment is based on the close_adj; for the 163 data, the adjustment is based on the cumulative products of close/close_prev.
 #' @param print_step A non-negative integer. Print symbol name by each print_step iteration. Default is 1L.
 #' @param ... Additional parameters.
@@ -65,7 +65,7 @@
 #' }
 #' 
 #' @export
-md_stock = function(symbol, type = 'history', date_range = "3y", from = NULL, to = Sys.Date(), adjust = NULL, freq = "daily", print_step = 1L, ...) {
+md_stock = function(symbol, type = 'history', date_range = "3y", from = NULL, to = Sys.Date(), adjust = FALSE, freq = "daily", print_step = 1L, ...) {
     # cat(source,"\n")
     # if (source == '163') {
     #     check_internet('www.163.com')

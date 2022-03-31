@@ -13,10 +13,11 @@ Imports:
     data.table,
     TTR, zoo, PerformanceAnalytics, 
     curl, xml2, httr, rvest, webdriver, 
-    jsonlite,
-    stringi,
+    jsonlite, 
+    lubridate, 
+    stringi, 
     readxl, readr,
-    ggplot2, scales, gridExtra, plotly
+    echarts4r, ggplot2, scales, gridExtra, plotly
 Suggests: 
     knitr,
     rmarkdown

@@ -139,6 +139,7 @@ ed_nbs_symbol = function(symbol=NULL, geo_type=NULL, freq=NULL, eng=FALSE) {
 #' city = ed_nbs_subregion(geo_type = 'c', eng = TRUE) 
 #' }
 #' @importFrom jsonlite fromJSON 
+#' @importFrom httr set_config
 #' @export
 ed_nbs_subregion = function(geo_type=NULL, eng=FALSE) {
   dim_region = dim_geo_type = dim_sta_db = . = code = name = NULL
@@ -169,7 +170,11 @@ ed_nbs_subregion = function(geo_type=NULL, eng=FALSE) {
       # dfwds=paste0('[{"wdcode":"sj","valuecode":"LAST10"}]'),
       k1=time_sec
     )
-    req = GET(nbs_url, query=query_list)
+    req = try(GET(nbs_url, query=query_list), silent = TRUE)
+    if (inherits(req, 'try-error')) {
+        set_config(config(ssl_verifypeer = 0L))
+        req = GET(nbs_url, query=query_list)
+    }
     jsondat = fromJSON(content(req, "text", encoding="utf-8"))
     return(jsondat)
   }

@@ -5,7 +5,8 @@
 \title{query stock market data}
 \usage{
 md_stock(symbol, type = "history", date_range = "3y", from = NULL,
-  to = Sys.Date(), adjust = NULL, freq = "daily", print_step = 1L, ...)
+  to = Sys.Date(), adjust = FALSE, freq = "daily", print_step = 1L,
+  ...)
 }
 \arguments{
 \item{symbol}{symbols of stock shares.}
@@ -18,7 +19,7 @@ md_stock(symbol, type = "history", date_range = "3y", from = NULL,
 
 \item{to}{the end date. Default is current system date.}
 
-\item{adjust}{whether to adjust the OHLC prices, defaults to NULL. If it is NULL, return the original data; if it is FALSE, create a close_adj column if not exist; if it is TRUE, adjust all open, high, low, close columns.
+\item{adjust}{whether to adjust the OHLC prices, defaults to FALSE. If it is FALSE, create a close_adj column if not exist; if it is TRUE, adjust all open, high, low, close columns; if it is NULL, return the original data from source.
 For the yahoo data, the adjustment is based on the close_adj; for the 163 data, the adjustment is based on the cumulative products of close/close_prev.}
 
 \item{freq}{data frequency, default is daily. .}
