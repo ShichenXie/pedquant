@@ -70,7 +70,7 @@ get_symbol_name_yahoo = function(syb, encode='UTF-8', handle=new_handle()) {
 # https://query1.finance.yahoo.com/v7/finance/download/000001.SZ?period1=1511841299&period2=1543377299&interval=1d&events=split&crumb=j/T2/8/3fvH
 #' @importFrom curl curl_fetch_memory 
 md_stock1_yahoo = function(symbol, handle, crumb, freq="daily", from="1900-01-01", to=Sys.time(), type="history", na_rm=TRUE, ...) {
-    name = splits = s2 = s1 = . = high = low = close_adj = volume = dividends = NULL
+    name = splits = s2 = s1 = . = high = low = close_adj = volume = dividends = unit = NULL
     
     # symbol
     syb = check_symbol_for_yahoo(symbol)

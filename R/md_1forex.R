@@ -196,7 +196,7 @@ md_forex1_oanda = function(symbol, from, to) {
 }
 # query forex from FRED
 md_forex1_fred = function(syb, from, to) {
-    symbol = symbol_fred = . = name = value = geo = NULL
+    symbol = symbol_fred = . = name = value = geo = unit = NULL
     
     forex_symbol_fred = func_forex_symbol()
     syb_fred = forex_symbol_fred[symbol == tolower(syb), symbol_fred]

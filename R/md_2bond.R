@@ -113,7 +113,7 @@ md_bond_chinabond = function(symbol, from=NULL, to=Sys.Date(), print_step=1L) {
 
 # query bond from FRED
 md_bond1_fred = function(syb, from, to) {
-    symbol = symbol_fred = . = name = value = geo = NULL
+    symbol = symbol_fred = . = name = value = geo = unit = NULL
     
     # libor in history
     bond_symbol_fred = func_bond_symbol()[!is.na(symbol_fred)]

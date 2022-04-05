@@ -16,7 +16,7 @@
 #' @import data.table
 #' @importFrom jsonlite fromJSON
 ed_fred1 = function(symbol1, from="1776-07-04", to="9999-12-31", na_rm=FALSE) {
-    group_id = name = . = title = value = NULL
+    group_id = name = . = title = value = unit = NULL
     
     key = api_key("fred")
     base_url = "https://api.stlouisfed.org/fred/%sapi_key=%s&file_type=json"

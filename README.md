@@ -34,9 +34,9 @@ format.
 format of loaded data is a list of data frames, which can be easily
 manipulated in [data.table](https://rdatatable.gitlab.io/data.table) or
 [tidyverse](https://www.tidyverse.org) packages; high performance on
-speed by use [data.table](https://rdatatable.gitlab.io/data.table) and
-[TTR](https://github.com/joshuaulrich/TTR); and modern graphics by using
-ggplot2 and interactive graphics by using plotly. Similar works
+speed by using [data.table](https://rdatatable.gitlab.io/data.table) and
+[TTR](https://github.com/joshuaulrich/TTR); and interactive charts by
+using [echarts4r](https://echarts4r.john-coene.com/). Similar works
 including [tidyquant](https://github.com/business-science/tidyquant) or
 [quantmod](https://github.com/joshuaulrich/quantmod).
 
@@ -57,7 +57,7 @@ including [tidyquant](https://github.com/business-science/tidyquant) or
 
 ## Example
 
-The following examples show you how to import data and create charts.
+The following examples show you how to import data.
 
     library(pedquant)
     ## import eocnomic data
@@ -74,25 +74,6 @@ The following examples show you how to import data and create charts.
     INDX = md_stock(c('^000001','^399001'), date_range = '10y')
     #> 1/2 ^000001
     #> 2/2 ^399001
-
-    # candlestick chart with technical indicators
-    pq_plot(INDX$`^000001`, chart_type = 'candle', date_range = '1y', addti = list(
-        sma = list(n=50), macd=list()
-    ))
-
-<img src="man/figures/README-charts1-1.png" width="100%" />
-
-    #> $`000001.SS`
-    #> TableGrob (2 x 1) "arrange": 2 grobs
-    #>    z     cells    name           grob
-    #> p0 1 (1-1,1-1) arrange gtable[layout]
-    #> p1 2 (2-2,1-1) arrange gtable[layout]
-
-    # comparing prices
-    pq_plot(FAAG, multi_series = list(nrow=2, scales = 'free_y'), date_range = '3y')
-    #> $multi_series
-
-<img src="man/figures/README-charts2-1.png" width="100%" />
 
 ## Issues and Contributions
 

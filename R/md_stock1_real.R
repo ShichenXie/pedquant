@@ -66,7 +66,7 @@ md_stock_real_sina = function(symbols, only_syb_nam = FALSE, ...) {
 # https://stockapp.finance.qq.com/mstats/#mod=list&id=hk_ah&module=HK&type=AH
 # symbols = c('000001', '01810.hk', 'fb', '^000001', 'aapl')
 md_stock_real_tx = function(symbols, only_syb_nam = FALSE, ...) {
-    city = exchg_code = syb = symbol = amount = mkt = volume = cap_market = cap_total = NULL
+    city = exchg_code = syb = symbol = amount = mkt = volume = cap_market = cap_total = unit = NULL
     
     sybs_xchg = check_symbol_cn(symbols)[is.na(city), `:=`(
         syb = toupper(syb), 

@@ -76,7 +76,7 @@ md_stock_symbol_hk = function(source="sina", return_price=TRUE) {
 #' @importFrom jsonlite fromJSON
 #' @importFrom stringi stri_unescape_unicode
 md_stockall_real_163 = function(symbol = c('a','index'), only_symbol = FALSE, show_tags = FALSE, to_sysdata=FALSE, ...) {
-    prov = tags = market = exchange = time = . = submarket = region = board = name = mkt = indu = sec = NULL
+    prov = tags = market = exchange = time = . = submarket = region = board = name = mkt = indu = sec = unit = NULL
     
     fun_stock_163 = function(urli, mkt) {
         code = symbol = exchange = . = name = high = low = price = yestclose = updown = percent = hs = volume = turnover = mcap = tcap = pe = mfsum = net_income = revenue = plate_ids = time = NULL

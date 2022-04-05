@@ -104,7 +104,7 @@ md_libor1_last5 = function(currency) {
 
 # libor history data from FRED
 md_libor1_hist = function(syb, from=Sys.Date()-365, to=Sys.Date(), ...) {
-    symbol = symbol_fred = . = name = value = geo = NULL
+    symbol = symbol_fred = . = name = value = geo = unit = NULL
     
     # libor in history
     libor_symbol = func_ibor_symbol()[!is.na(symbol_fred)]

@@ -38,11 +38,13 @@ dtv = data.table(
     volume = c(100, 200, 300, 300, 100)
 )
 dtRa = pq_portfolio(datadj, x='close_adj', dtv=dtv) 
-pq_plot(dtRa, x = 'cumreturns')
+e1 = pq_plot(dtRa, y = 'cumreturns')
+e1[[1]]
 
 dtRb = pq_return(dt_ssec, x = 'close', freq = 'daily', cumreturns = TRUE)
-pq_plot(list(Ra = dtRa, Rb = dtRb$`000001.SS`), x = 'cumreturns', 
-        multi_series = list(nrow=1, ncol=1))
+e2 = pq_plot(list(Ra = dtRa, Rb = dtRb$`000001.SS`), y = 'cumreturns', 
+        arrange = list(rows=1, cols=1))
+e2[[1]]
 
 # example II 
 dtv = data.table(
@@ -51,7 +53,8 @@ dtv = data.table(
     volume = rep(c(100, 200, 300, 300, 100), 3) * rep(c(1, -1, 2), each = 5)
 )
 dtRa2 = pq_portfolio(datadj, x='close_adj', dtv=dtv, init_fund = 10000) 
-pq_plot(dtRa2, x = 'balance', 
+e3 = pq_plot(dtRa2, y = 'balance', 
         addti = list(equity = list(), fund = list()))
+e3[[1]]
 
 }

@@ -13,11 +13,9 @@ Imports:
     data.table,
     TTR, zoo, PerformanceAnalytics, 
     curl, xml2, httr, rvest, webdriver, 
-    jsonlite, 
-    lubridate, 
-    stringi, 
-    readxl, readr,
-    echarts4r, ggplot2, scales, gridExtra, plotly
+    lubridate, stringi, 
+    jsonlite, readxl, readr,
+    echarts4r
 Suggests: 
     knitr,
     rmarkdown

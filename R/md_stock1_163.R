@@ -142,7 +142,7 @@ md_stock1_info_163 = function(symbol1, rev_hist = FALSE, ...) {
 #' @import data.table
 #' @importFrom readr read_csv locale col_date col_character col_double col_integer
 md_stock1_history_163 = function(symbol1, from='1900-01-01', to=Sys.Date(), zero_rm=TRUE, ...) {
-  V1 = name = change_pct = symbol = close_prev = NULL
+  V1 = name = change_pct = symbol = close_prev = unit = NULL
   # http://quotes.money.163.com/service/chddata.html?code=0000001&start=19901219&end=20180615&fields=TCLOSE;HIGH;LOW;TOPEN;LCLOSE;CHG;PCHG;VOTURNOVER;VATURNOVER
   # http://quotes.money.163.com/service/chddata.html?code=1399001&start=19910403&end=20180615&fields=TCLOSE;HIGH;LOW;TOPEN;LCLOSE;CHG;PCHG;VOTURNOVER;VATURNOVER
   # https://query1.finance.yahoo.com/v7/finance/download/^SSEC?period1=1526631424&period2=1529309824&interval=1d&events=history&crumb=mO08ZCtWRMI
@@ -423,7 +423,7 @@ md_stock_163 = function(symbol, from='1900-01-01', to=Sys.Date(), print_step=1L,
 
 # fund real ------
 md_fundall_real_163 = function() {
-  . = fund = high = low = name = price = symbol = time = turnover = volume = yestclose = NULL
+  . = fund = high = low = name = price = symbol = time = turnover = volume = yestclose = unit = percent = NULL
   
   dat_lst = lapply(list(
     fund_close = 'http://quotes.money.163.com/fn/service/fundtrade.php?host=/fn/service/fundtrade.php&page=0&query=STYPE:FDC;UPDOWN:_exists_true&fields=no,SYMBOL,NAME,SNAME,PRICE,UPDOWN,PERCENT,VOLUME,TURNOVER,OPEN,HIGH,LOW,YESTCLOSE,CODE&sort=PERCENT&order=desc&count=%s&type=query&callback=callback_11861237&req=0%s',
@@ -454,7 +454,7 @@ md_fundall_real_163 = function() {
 
 # fund history ------
 md_fund1_history_163 = function(symbol1, from='1900-01-01', to=Sys.Date()) {
-  . = amount = change_pct = discount_pct = high = low = mkt = turnover = volume = NULL
+  . = amount = change_pct = discount_pct = high = low = mkt = turnover = volume = unit = NULL
   
   # url = sprintf('http://api.finance.ifeng.com/akdaily/?code=%s&type=last', syb1)
   # {'D': 'akdaily', 'W': 'akweekly', 'M': 'akmonthly'}

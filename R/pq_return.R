@@ -103,9 +103,8 @@ pq1_return = function(dt, x, freq='monthly', num=1, date_type = 'eop', method = 
 #' 
 #' @examples 
 #' \donttest{
+#' # load data and adjust
 #' data(dt_banks)
-#' 
-#' # create a close_adj column
 #' datadj = md_stock_adjust(dt_banks, adjust = FALSE)
 #' 
 #' # set freq
@@ -117,6 +116,11 @@ pq1_return = function(dt, x, freq='monthly', num=1, date_type = 'eop', method = 
 #' # set cols_keep
 #' dts_returns3 = pq_return(datadj, x = 'close_adj', cols_keep = 'cap_total')
 #' 
+#' # cumulative returns
+#' dts_cumreturns = pq_return(datadj, x = 'close_adj', from = '2012-01-01', cumreturns = TRUE)
+#' e1 = pq_plot(dts_cumreturns, y = 'cumreturns', title='cumreturns', 
+#'         arrange = list(rows=1, cols=1))
+#' e1[[1]]
 #' }
 #' 
 #' @export
