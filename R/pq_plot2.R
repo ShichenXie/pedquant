@@ -82,9 +82,22 @@ p_markline = function(e, dt, markline = TRUE) {
 # orders
 p_orders = function(e, orders, color_up = "#CF002F", color_down = "#000000") {
     if (is.null(orders)) return(e)
-    e |> 
+    e = e |> 
         e_scatter_('buy', symbol = 'triangle', symbolSize = 12, color = color_up, legend = FALSE) |> 
         e_scatter_('sell', symbol = 'triangle', symbolSize = 12, symbolRotate=180, color = color_down, legend = FALSE) 
+    
+    for (o in split(orders,by='type')) {
+        for (i in o[,.I]) {
+            e = e |>
+                e_mark_line(
+                    data = list(xAxis = o[i,date]), 
+                    symbol = 'none', 
+                    label = list(show=FALSE), 
+                    lineStyle = list(type = 'dotted', color = 'gray')
+                )
+        }
+    }
+    return(e)
 }
 # lm
 pp_dtlm = function(dt, x, y, yaxis_log = FALSE, nsd_lm = NULL) {
@@ -174,7 +187,7 @@ p_addti_overlay = function(e, dt, addti = NULL) {
 p_addti_indicator = function(e, dt, addti = NULL, x = 'date', theme = 'default') {
     if (is.null(addti)) return(e)
     
-    ti_indicators = setdiff(names(addti), fun_filter_overlays(addti))
+    ti_indicators = setdiff(tolower(names(addti)), fun_filter_overlays(addti))
     len_ti = length(ti_indicators)
     if (len_ti == 0) return(e)
     
@@ -240,7 +253,6 @@ pp_line = function(
         p_lm(x=x, y=y, nsd_lm=nsd_lm) |>
         p_addti_overlay(dt = dt, addti = addti) |>
         p_theme(xstart = xstart, xend = 100, yaxis_log = yaxis_log, title = title, theme = theme) |> 
-        p_addti_overlay(dt = dt, addti = addti) |> 
         p_addti_indicator(dt = dt, addti = addti, x = x, theme = theme)
         
     return(e)
@@ -264,7 +276,6 @@ pp_step = function(
         p_lm(x=x, y=y, nsd_lm=nsd_lm) |>
         p_addti_overlay(dt = dt, addti = addti) |>
         p_theme(xstart = xstart, xend = 100, yaxis_log = yaxis_log, title = title, theme = theme) |>
-        p_addti_overlay(dt = dt, addti = addti) |> 
         p_addti_indicator(dt = dt, addti = addti, x = x, theme = theme)
     
     return(e)
@@ -290,8 +301,7 @@ pp_candle = function(
         p_markline(dt = dt, markline = markline) |> 
         p_lm(x=x, y=y, nsd_lm=nsd_lm) |>
         p_addti_overlay(dt = dt, addti = addti) |>
-        p_theme(xstart = xstart, xend = 100, yaxis_log = yaxis_log, title = title, theme = theme) |>
-        p_addti_overlay(dt = dt, addti = addti) |> 
+        p_theme(xstart = xstart, xend = 100, yaxis_log = yaxis_log, title = title, theme = theme) |> 
         p_addti_indicator(dt = dt, addti = addti, x = x, theme = theme)
     
     return(e)

@@ -89,7 +89,7 @@ pq_portfolio = function(dt, dtv, x, v = 'volume', init_fund = NULL, method = 'ar
         args = list(x=equityindex, shift(equityindex, type ='lag'))
     )][#!is.na(cumreturns)
      ][, chg := sum(1, returns, na.rm = TRUE), by = 'date'
-     ][,.(date, returns, cumreturns = cumprod(chg), equity, fund)
+     ][,.(name='portfolio', date, returns, cumreturns = cumprod(chg), equity, fund)
      ]
     
     if (is.null(init_fund)) {
@@ -98,7 +98,7 @@ pq_portfolio = function(dt, dtv, x, v = 'volume', init_fund = NULL, method = 'ar
     }
     portfolio_equity = portfolio_equity[, fund := fund + init_fund][, balance := equity + fund]
     
-    return(portfolio_equity[, symbol := 'portfolio'])
+    return(portfolio_equity)
 }
 
 

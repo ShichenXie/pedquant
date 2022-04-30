@@ -46,6 +46,7 @@ reference:
       - '`md_future_symbol`'
   - title: "quantitative analysis" 
     contents:
+      - '`pq_opr`'
       - '`pq_freq`'
       - '`pq_return`'
       - '`pq_addti`'
