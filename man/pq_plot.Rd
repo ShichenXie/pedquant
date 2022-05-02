@@ -39,7 +39,7 @@ pq_plot(dt, chart_type = "line", x = "date", y = "close",
 \item{...}{ignored}
 }
 \description{
-\code{pq_plot} provides an easy way to create charts for time series dataset based on predefined formats.
+\code{pq_plot} provides an easy way to create interactive charts for time series dataset based on predefined formats.
 }
 \examples{
 \donttest{

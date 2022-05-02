@@ -310,7 +310,7 @@ pp_candle = function(
 
 #' creating charts for time series
 #' 
-#' \code{pq_plot} provides an easy way to create charts for time series dataset based on predefined formats.
+#' \code{pq_plot} provides an easy way to create interactive charts for time series dataset based on predefined formats.
 #' 
 #' @param dt a list/dataframe of time series dataset
 #' @param chart_type chart type, including line, step, candle.
@@ -382,7 +382,7 @@ pq_plot = function(
     symbol = NULL
     # color_up = "#CF002F", color_down = "#000000", 
     # order_y = 'price', order_type = 'type', 
-    
+    if (!interactive()) return(invisible())
     # arguments
     args = list(...)
     if (!is.null(args[['multi_series']])) {
