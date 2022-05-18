@@ -1,21 +1,33 @@
 Package: pedquant
-Version: 0.1.9
+Version: 0.1.9.999
 Title: Public Economic Data and Quantitative Analysis
 Description: 
     Provides an interface to access public economic and financial data for 
     economic research and quantitative analysis. The data sources including 
-    NBS, FRED, 163, Sina, Eastmoney and etc. 
+    NBS, FRED, 163, Sina, Eastmoney and etc. It also provides quantitative 
+    functions for trading strattegies based on data.table, TTR, PerformanceAnalytics
+    and etc packages.
 Authors@R: 
     person("Shichen", "Xie", email = "xie@shichen.name", role = c("aut", "cre"))
 Depends: 
     R (>= 3.1.0)
 Imports: 
     data.table,
-    TTR, zoo, PerformanceAnalytics, 
-    curl, xml2, httr, rvest, webdriver, 
-    lubridate, stringi, 
-    jsonlite, readxl, readr,
-    echarts4r
+    TTR,
+    zoo,
+    PerformanceAnalytics,
+    curl,
+    xml2,
+    httr,
+    rvest,
+    webdriver,
+    lubridate,
+    stringi,
+    jsonlite,
+    readxl,
+    readr,
+    echarts4r,
+    xefun
 Suggests: 
     knitr,
     rmarkdown

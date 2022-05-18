@@ -43,6 +43,10 @@ data('dt_ssec')
 # add technical indicators
 dt_ti1 = pq_addti(dt_ssec, sma=list(n=20), sma=list(n=50), macd = list())
 
+# specify the price column x
+dt_ti11 = pq_addti(dt_ssec, sma=list(n=20, x='open'), sma=list(n=50, x='open'))
+dt_ti12 = pq_addti(dt_ssec, x='open', sma=list(n=20), sma=list(n=50))
+
 # only technical indicators
 dt_ti2 = pq_addti(
   dt_ssec, sma=list(n=20), sma=list(n=50), macd = list(), 

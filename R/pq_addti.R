@@ -402,6 +402,10 @@ pq1_addti = function(dt, ...) {
 #' # add technical indicators
 #' dt_ti1 = pq_addti(dt_ssec, sma=list(n=20), sma=list(n=50), macd = list())
 #' 
+#' # specify the price column x
+#' dt_ti11 = pq_addti(dt_ssec, sma=list(n=20, x='open'), sma=list(n=50, x='open'))
+#' dt_ti12 = pq_addti(dt_ssec, x='open', sma=list(n=20), sma=list(n=50))
+#' 
 #' # only technical indicators
 #' dt_ti2 = pq_addti(
 #'   dt_ssec, sma=list(n=20), sma=list(n=50), macd = list(), 
@@ -433,21 +437,34 @@ pq_addti = function(dt, ...) {
   
   # bind list of dataframes
   dt = check_dt(dt)
+  # arguments
+  args = list(...)
+  x = args$x
+  args$x = NULL
+  args = arg_addti(args, x)
   
   ## single series
   dt_list = lapply(
       split(dt, by = 'symbol'), 
       function(dt_syb) {
           setkeyv(dt_syb, "date")
-          dt_syb_ti = pq1_addti(dt=dt_syb, ...)
+          dt_syb_ti = do.call('pq1_addti', args = c(list(dt=dt_syb), args))
           return(dt_syb_ti)
       }
   )
   return(dt_list)
 }
 
+# add x to each ti arguments
+arg_addti = function(addti, x) {
+    if (is.null(addti) || is.null(x)) return(addti)
+    lapply(addti, function(a) {
+        a$x = x
+        return(a)
+    })
+}
 
-
-
-
-
+# bias 
+bias = function(x, n=50, maType='SMA') {
+    (x/do.call(maType, list(x=x, n=n))-1)*100
+}

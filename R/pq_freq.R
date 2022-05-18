@@ -16,7 +16,7 @@ to_freq = function(dat, freq, date_type='eop') {
   ][]
   
   dat1 = dat_byfreq[,.(
-    date_bop = date[1], # date bebinning of period
+    datebop = date[1], # date bebinning of period
     open = open[1], 
     high = max(high, na.rm = TRUE), 
     low  = min(low, na.rm = TRUE), 
@@ -27,9 +27,9 @@ to_freq = function(dat, freq, date_type='eop') {
   ]
   
   if (date_type == 'eop') {
-    datN = datN[, date := date_eop(date, freq, workday = TRUE)]
+    datN = datN[, date := as_date(date_eop(freq, date, workday = TRUE)) ]
   } else if (date_type == 'bop') {
-    datN = datN[, date := date_bop(date, freq, workday = TRUE)]
+    datN = datN[, date := as_date(date_bop(freq, date, workday = TRUE)) ]
   }
   
   

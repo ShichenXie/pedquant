@@ -4,7 +4,7 @@
 \alias{pq_plot}
 \title{creating charts for time series}
 \usage{
-pq_plot(dt, chart_type = "line", x = "date", y = "close",
+pq_plot(dt, chart_type = "line", x = "date", y = "close", yb = NULL,
   date_range = "max", yaxis_log = FALSE, title = NULL, addti = NULL,
   nsd_lm = NULL, markline = TRUE, orders = NULL, arrange = list(rows =
   NULL, cols = NULL), theme = "default", ...)
@@ -14,9 +14,11 @@ pq_plot(dt, chart_type = "line", x = "date", y = "close",
 
 \item{chart_type}{chart type, including line, step, candle.}
 
-\item{x}{column name of x axis}
+\item{x}{column name for x axis}
 
-\item{y}{column name of y axis}
+\item{y}{column name for y axis}
+
+\item{yb}{column name for baseline}
 
 \item{date_range}{date range of x axis to display. Available value includes '1m'-'11m', 'ytd', 'max' and '1y'-'ny'. Default is max.}
 
@@ -30,7 +32,7 @@ pq_plot(dt, chart_type = "line", x = "date", y = "close",
 
 \item{markline}{whether to display markline. Default is TRUE.}
 
-\item{orders}{the orders data, including transaction date, price and type.}
+\item{orders}{the data frame of transaction orders, which includes symbol, date (required), prices, volumes (required) and type columns.}
 
 \item{arrange}{a list. Number of rows and columns charts to connect. Default is NULL.}
 
@@ -75,12 +77,15 @@ e4 = pq_plot(dt_banksadj, arrange = list(rows=1, cols=1))
 e4[[1]]
 
 # orders 
-boc = dt_banks[symbol == '601988.SS']
-bocorders = boc[sample(.N, 10), .(date, price=close, 
-                type=sample(c('buy','sell'), 10, replace=TRUE))]
-e5 = pq_plot(boc, orders=bocorders)
+b2 = dt_banks[symbol \%in\% c('601988.SS', '601398.SS')]
+b2orders = b2[sample(.N, 10), .(symbol, date, prices=close, 
+              type=sample(c('buy','sell'), 10, replace=TRUE))]
+                
+e5 = pq_plot(b2, orders=b2orders)
 e5[[1]]
 
+e6 = pq_plot(b2, orders=b2orders, arrange = list(rows=1, cols=1))
+e6[[1]]
 }
 
 }

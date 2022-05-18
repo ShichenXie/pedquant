@@ -202,13 +202,13 @@ md_stock1_history_163 = function(symbol1, from='1900-01-01', to=Sys.Date(), zero
     valuation = list(...)[['valuation']]
     if (is.null(valuation)) valuation = FALSE
     if (valuation) dt = md_stock1_pe_163(dt)
-    
-    # adjust = list(...)[['adjust']]
-    # if (is.null(adjust)) adjust = 'split'
-    # adjust = ifelse(adjust, 'dividend', 'split') 
-    dt = md_stock_adj1ohlc(dt, source = '163', adjust = list(...)[['adjust']])
   }
   
+  # adjust = list(...)[['adjust']]
+  # if (is.null(adjust)) adjust = 'split'
+  # adjust = ifelse(adjust, 'dividend', 'split') 
+  dt = md_stock_adj1ohlc(dt, source = '163', adjust = list(...)[['adjust']])
+
   # create unit/name columns
   dt = dt[, unit := 'CNY']#[, name := name[.N]]
   setkeyv(dt, 'date')

@@ -53,7 +53,7 @@ md_query = function(market=NULL, ...) {
     args = list(...)
     src = args[['source']]
 
-    if (src == 'stooq') {
+    if (src == 'stooq' && !is.null(src)) {
         sybnam = setDT(copy(symbol_stooq))[toupper(args[['symbol']]), on='symbol']
         queryfunc = 'md_stooq'
     } else {

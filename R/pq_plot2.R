@@ -1,7 +1,7 @@
 
 pp_dtpre = function(dt, x='date', y='close', 
                     addti = NULL, markline=TRUE, 
-                    orders, order_y = 'price', order_type='type') {
+                    orders, order_y = 'prices', order_type='type') {
     sybnam = symbol = name = markline_value = NULL
     
     dt = setorderv(copy(dt), c('symbol', x))[, sybnam := sprintf('%s %s', symbol, name[.N]), by = 'symbol']
@@ -18,19 +18,24 @@ pp_dtpre = function(dt, x='date', y='close',
     
     if (is.null(orders)) return(dt)
     
+    do_cols = intersect(c('symbol', 'date'), names(orders))
     dt = merge(
         dt, 
         dcast(orders, 
-              sprintf('%s ~ %s', x, order_type), 
+              sprintf('%s ~ %s', paste0(do_cols,collapse='+'), order_type), 
               value.var = order_y), 
-        by = x, all = TRUE
+        by = do_cols, all.x = TRUE
     )
     
     return(dt)
 }
 pp_title = function(dt, title=NULL) {
-    symbol = name = NULL 
-    if (is.null(title) & dt[,length(unique(symbol))==1]) title = setDT(dt)[.N, paste(symbol, name)]
+    # symbol = name = NULL 
+    if (is.null(title) & length(unique(dt$symbol))==1) {
+        cols_sn = intersect(c('symbol','name'), names(dt))
+        title = setDT(dt)[.N, cols_sn, with=FALSE]
+        title = paste0(unlist(title), collapse = ' ')
+    }
     return(title)
 }
 pp_xstart = function(dt, x = 'date', date_range = 'max') {
@@ -69,13 +74,13 @@ p_markline = function(e, dt, markline = TRUE) {
     
     # e = e |>
     #     e_line_('markline_value', legend=FALSE, symbol='none', 
-    #             lineStyle = list(type = 'dashed', width = 1, color='gray'))
+    #             lineStyle = list(type = 'dashed', width = 1, color='grey'))
     
     markline_yvals = dt[, unique(markline_value)]
     for (yv in markline_yvals) {
         e = e |>
             e_mark_line(data = list(yAxis = yv), symbol = 'none',
-                        lineStyle = list(type = 'dashed', color = 'gray'))
+                        lineStyle = list(type = 'dashed', color = 'grey'))
     }
     return(e)
 }
@@ -93,7 +98,7 @@ p_orders = function(e, orders, color_up = "#CF002F", color_down = "#000000") {
                     data = list(xAxis = o[i,date]), 
                     symbol = 'none', 
                     label = list(show=FALSE), 
-                    lineStyle = list(type = 'dotted', color = 'gray')
+                    lineStyle = list(type = 'dotted', color = 'grey')
                 )
         }
     }
@@ -195,11 +200,27 @@ p_addti_indicator = function(e, dt, addti = NULL, x = 'date', theme = 'default')
         ti_indicators, 
         function(ti) {
             ti_cols = names(dt)[grep(sprintf('^%s', ti), names(dt))]
+            if (ti == 'portfolio') {
+                ti_cols = sort(factor(ti_cols, levels = c("portfolio_balance", "portfolio_equity", "portfolio_fund"))) 
+            }
+                
             e = dt |> 
                 e_charts_(x, height = 150, dispose = FALSE) 
+            
             for (ticol in ti_cols) {
-                 e = e |> 
-                     e_line_(ticol, symbol='none', lineStyle = list(width = 1)) |> 
+                efun = 'e_line_'
+                ticol_args = list(e=e, serie=ticol, symbol='none', lineStyle = list(width = 1))
+                
+                if (ticol %in% paste0('portfolio_', c('fund','equity'))) {
+                    efun = 'e_area_'
+                    ticol_args$lineStyle = list(width = 0)
+                    ticol_args$stack = 'gp1'
+                    if (ticol == 'portfolio_fund') ticol_args$color = 'lightgrey'   
+                } else if (grepl('^cumreturns_', ticol)) {
+                    ticol_args$color = 'grey'
+                }
+                
+                 e = do.call(efun, args = ticol_args) |> 
                      e_y_axis(position = 'right', axisLabel = list(rotate = 90, hideOverlap=TRUE)) |> 
                      e_legend(type = "plain", orient = "vertical", left='30', top='10') |> 
                      e_datazoom(show=FALSE) |>
@@ -220,7 +241,7 @@ p_addti_indicator = function(e, dt, addti = NULL, x = 'date', theme = 'default')
     do.call('e_arrange', args = c(elst, list(cols=1)))
 }
 
-pp_base = function(dt, x = 'date', h='100%') {
+pp_base = function(dt, x = 'date', h='100%', yb=NULL) {
     symbol = name = NULL 
     
     if (dt[,length(unique(symbol))] > 1) {
@@ -232,13 +253,15 @@ pp_base = function(dt, x = 'date', h='100%') {
         e = dt |> 
             e_charts_(x) 
     }
+    if (!is.null(yb)) e = e_line_(e, serie = yb, legend=TRUE, symbol='none', color = 'grey')
+    return(e)
 }
 
 pp_line = function(
-    dt, x = 'date', y = 'close', date_range = 'max', yaxis_log = FALSE, title = NULL, 
+    dt, x = 'date', y = 'close', yb = NULL, date_range = 'max', yaxis_log = FALSE, title = NULL, 
     color_up = "#CF002F", color_down = "#000000", theme = 'default', 
     markline = TRUE, nsd_lm = NULL, addti = NULL, 
-    orders = NULL, order_y = 'price', order_type = 'type', ...
+    orders = NULL, order_y = 'prices', order_type = 'type', ...
 ) {
     dt = pp_dtpre(dt, x, y, addti, markline, orders, order_y, order_type) |>
         pp_dtlm(x, y, yaxis_log, nsd_lm)
@@ -246,9 +269,9 @@ pp_line = function(
     xstart = pp_xstart(dt, x, date_range)
     
     
-    e = pp_base(dt, x) |> 
-        p_orders(orders, color_up, color_down) |>
+    e = pp_base(dt, x, yb=yb) |> 
         e_line_(serie = y, legend=TRUE, symbol='none') |>
+        p_orders(orders, color_up, color_down) |>
         p_markline(dt = dt, markline = markline) |> 
         p_lm(x=x, y=y, nsd_lm=nsd_lm) |>
         p_addti_overlay(dt = dt, addti = addti) |>
@@ -259,19 +282,19 @@ pp_line = function(
 } 
 
 pp_step = function(
-    dt, x = 'date', y = 'close', date_range = 'max', yaxis_log = FALSE, title = NULL, 
+    dt, x = 'date', y = 'close', yb = NULL, date_range = 'max', yaxis_log = FALSE, title = NULL, 
     color_up = "#CF002F", color_down = "#000000", theme = 'default', 
     markline = TRUE, nsd_lm = NULL, addti = NULL, 
-    orders = NULL, order_y = 'price', order_type = 'type', ...
+    orders = NULL, order_y = 'prices', order_type = 'type', ...
 ) {
     dt = pp_dtpre(dt, x, y, addti, markline, orders, order_y, order_type) |>
         pp_dtlm(x, y, yaxis_log, nsd_lm)
     title  = pp_title(dt, title)
     xstart = pp_xstart(dt, x, date_range)
     
-    e = pp_base(dt, x) |> 
-        p_orders(orders, color_up, color_down) |> 
+    e = pp_base(dt, x, yb=yb) |> 
         e_step_(serie = y, symbol='none') |> 
+        p_orders(orders, color_up, color_down) |> 
         p_markline(dt = dt, markline = markline) |> 
         p_lm(x=x, y=y, nsd_lm=nsd_lm) |>
         p_addti_overlay(dt = dt, addti = addti) |>
@@ -282,10 +305,10 @@ pp_step = function(
 } 
 
 pp_candle = function(
-    dt, x = 'date', y = 'close', date_range = 'max', yaxis_log = FALSE, title = NULL, 
+    dt, x = 'date', y = 'close', yb = NULL, date_range = 'max', yaxis_log = FALSE, title = NULL, 
     color_up = "#CF002F", color_down = "#000000", theme = 'default', 
     markline = TRUE, nsd_lm = NULL, addti = NULL, 
-    orders = NULL, order_y = 'price', order_type = 'type', ...
+    orders = NULL, order_y = 'prices', order_type = 'type', ...
 ) {
     dt = pp_dtpre(dt, x, y, addti, markline, orders, order_y, order_type) |>
         pp_dtlm(x, y, yaxis_log, nsd_lm)
@@ -293,11 +316,11 @@ pp_candle = function(
     xstart = pp_xstart(dt, x, date_range)
     
     dt = copy(dt)[, date := as.factor(date)]
-    e = pp_base(dt, x) |> 
-        p_orders(orders, color_up, color_down)  |> 
+    e = pp_base(dt, x, yb=yb) |> 
         e_candle_('open', 'close', 'low', 'high', 
                   itemStyle = list(color = color_up, borderColor = color_up,
                                    color0 = color_down, borderColor0 = color_down)) |> 
+        p_orders(orders, color_up, color_down)  |> 
         p_markline(dt = dt, markline = markline) |> 
         p_lm(x=x, y=y, nsd_lm=nsd_lm) |>
         p_addti_overlay(dt = dt, addti = addti) |>
@@ -314,15 +337,16 @@ pp_candle = function(
 #' 
 #' @param dt a list/dataframe of time series dataset
 #' @param chart_type chart type, including line, step, candle.
-#' @param x column name of x axis 
-#' @param y column name of y axis
+#' @param x column name for x axis 
+#' @param y column name for y axis
+#' @param yb column name for baseline
 #' @param date_range date range of x axis to display. Available value includes '1m'-'11m', 'ytd', 'max' and '1y'-'ny'. Default is max.
 #' @param yaxis_log whether to display y axis values in log. Default is FALSE.
 #' @param title chart title. It will added to the front of chart title if it is specified.
 #' @param addti list of technical indicators or numerical columns in dt. For technical indicator, it is calculated via \code{pq_addti}, which including overlays and indicators.
 #' @param nsd_lm number of standard deviation from linear regression fitting values. 
 #' @param markline whether to display markline. Default is TRUE. 
-#' @param orders the orders data, including transaction date, price and type. 
+#' @param orders the data frame of transaction orders, which includes symbol, date (required), prices, volumes (required) and type columns. 
 #' @param arrange a list. Number of rows and columns charts to connect. Default is NULL.
 #' @param theme name of echarts theme, see details in \code{\link{e_theme}}
 #' @param ... ignored
@@ -361,27 +385,29 @@ pp_candle = function(
 #' e4[[1]]
 #' 
 #' # orders 
-#' boc = dt_banks[symbol == '601988.SS']
-#' bocorders = boc[sample(.N, 10), .(date, price=close, 
-#'                 type=sample(c('buy','sell'), 10, replace=TRUE))]
-#' e5 = pq_plot(boc, orders=bocorders)
+#' b2 = dt_banks[symbol %in% c('601988.SS', '601398.SS')]
+#' b2orders = b2[sample(.N, 10), .(symbol, date, prices=close, 
+#'               type=sample(c('buy','sell'), 10, replace=TRUE))]
+#'                 
+#' e5 = pq_plot(b2, orders=b2orders)
 #' e5[[1]]
 #' 
+#' e6 = pq_plot(b2, orders=b2orders, arrange = list(rows=1, cols=1))
+#' e6[[1]]
 #' }
 #' 
 #' @import echarts4r 
 #' @importFrom stats lm sd predict
 #' @export
 pq_plot = function(
-    dt, chart_type = 'line', x = 'date', y = 'close', 
+    dt, chart_type = 'line', x = 'date', y = 'close', yb = NULL,
     date_range = 'max', yaxis_log = FALSE, title = NULL, 
     addti = NULL, nsd_lm = NULL, markline = TRUE, orders = NULL, 
     arrange = list(rows=NULL, cols=NULL), 
     theme = 'default', 
     ...) {
-    symbol = NULL
     # color_up = "#CF002F", color_down = "#000000", 
-    # order_y = 'price', order_type = 'type', 
+    # order_y = 'prices', order_type = 'type', 
     if (!interactive()) return(invisible())
     # arguments
     args = list(...)
@@ -396,16 +422,17 @@ pq_plot = function(
         chart_type = 'line'
         warning('The chart_type has set to line.')
     }
+    addti = arg_addti(addti, y)
     
     # arrange row col
     arrange_rowcol_allnull = all(sapply(arrange, is.null))
     arrange_rowcol_all1 = all(sapply(list('rows', 'cols'), function(x) any(arrange[[x]] == 1)))
     
     dt = check_dt(dt)
-    arglst = list(dt=dt, x=x, y=y, date_range=date_range, yaxis_log=yaxis_log, title=title, addti=addti, nsd_lm=nsd_lm, markline=markline, orders=orders, arrange=arrange, theme=theme, ...)
+    arglst = list(dt=dt, x=x, y=y, yb=yb, date_range=date_range, yaxis_log=yaxis_log, title=title, addti=addti, nsd_lm=nsd_lm, markline=markline, orders=orders, arrange=arrange, theme=theme, ...)
     
     if (arrange_rowcol_all1) {
-        if (dt[,length(unique(symbol))>1] & chart_type=='candle') {
+        if (length(unique(dt$symbol))>1 & chart_type=='candle') {
             chart_type = 'line'
             warning('Multible candlestick series on one graphic is not supported yet. The chart_type has set to the default (line).')
         }

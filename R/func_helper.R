@@ -1,6 +1,6 @@
 ########################### condition functions ###########################
 # check dt
-check_dt = function(dt, symb_name = TRUE, check_date = TRUE) {
+check_dt = function(dt, symb_name = FALSE, check_date = TRUE) {
     if (is.null(dt)) return(dt)
     
     if (inherits(dt, 'list')) dt = rbindlist(dt, fill = TRUE)
@@ -592,24 +592,6 @@ select_rows_df = function(dt, column=NULL, input_string=NULL, onerow=FALSE) {
 }
 
 
-# ceiling on decimal
-ceiling2 = function(x) {
-    x_sci = format(x, scientific = TRUE, digits=2)
-    z = ceiling(as.numeric(substr(x_sci, 1, 3)))
-    e = substr(x_sci, 4, nchar(x_sci))
-    as.numeric(paste0(z, e))
-}
-
-# chinese font by os
-chn_font_family = function() {
-    switch(
-        Sys.info()[['sysname']],
-        Windows= 'SimHei',
-        Darwin = 'Hei Regular',
-        NA
-    )
-}
-
 
 # remove not available data
 rm_error_dat = function(datlst) {
@@ -621,5 +603,36 @@ rm_error_dat = function(datlst) {
     }
     return(datlst)
 }
+
+# vector to list 
+vec2lst = function(vec, nam=TRUE) {
+    lst = as.list(vec)
+    if (isTRUE(nam)) lst = setNames(lst, vec)
+    return(lst)
+}
+
+# extract table from html via xml2 package
+# @import data.table
+# xml_table = function(wb, num=NULL, sup_rm=NULL, attr=NULL, header=FALSE) {
+#     doc0 = xml_find_all(wb, paste0("//table",attr)) # attr = '[@cellpadding="2"]'
+#     if (!is.null(num)) doc0 = doc0[num]
+#     
+#     doc = lapply(
+#         doc0,
+#         function(x) xml_text(xml_find_all(x, ".//tr"))
+#     )
+#     
+#     dt = lapply(doc, function(x) {
+#         if (!is.null(sup_rm)) x = gsub(sup_rm, "", x)
+#         
+#         dat = data.table(x = x)[, tstrsplit(x, "[\n\t\r]+")]
+#         if (header) {
+#             dat = setnames(dat[-1], as.character(dat[1]))
+#         }
+#         return(dat)
+#     })
+#     
+#     return(dt)
+# }
 
 

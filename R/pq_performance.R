@@ -130,3 +130,7 @@ pq_performance = function(dt, Ra, Rb=NULL, perf_fun, ...) {
     return(ret_list)
 }
 
+pq_perfeva = function(dtorders) {
+    
+}
+

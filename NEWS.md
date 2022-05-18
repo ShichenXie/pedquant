@@ -1,3 +1,9 @@
+# pedquant 0.1.9.999
+
+* fixed various bugs
+* added crossover functions
+* move some inner functions to a new package xefun
+
 # pedquant 0.1.9
 
 * fixed bug in md_stock function for querying sse/szse fund data
