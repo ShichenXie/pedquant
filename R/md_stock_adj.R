@@ -4,7 +4,7 @@
 # zhuanlan.zhihu.com/p/283168542
 # https://wiki.mbalib.com/wiki/%E9%99%A4%E6%9D%83%E9%99%A4%E6%81%AF%E6%97%A5
 
-md_stock_adj1ohlc = function(dt, adjust=FALSE, source=NULL, adjfactor=NULL, ...) {
+md_stock_adj1ohlc = function(dt, adjust=FALSE, forward=TRUE, source=NULL, adjfactor=NULL, ...) {
     close_adj =  close_prev =  adjratio_cumchg =  change_pct =  adjratio = adjratio = NULL
     
     if (is.null(adjust)) return(dt)
@@ -30,8 +30,16 @@ md_stock_adj1ohlc = function(dt, adjust=FALSE, source=NULL, adjfactor=NULL, ...)
                 order(date)
             ][!is.na(close_prev), adjratio_cumchg := cumprod(close/close_prev)
             ][is.na(close_prev), adjratio_cumchg := 1
-            ][][!is.na(close), close_adj := close[.N]/adjratio_cumchg[.N]*adjratio_cumchg
-            ][][, (c('adjratio_cumchg')) := NULL][]
+            ][]
+            
+            if (isTRUE(forward)) {
+                dt = dt[!is.na(close), close_adj := close[.N]/adjratio_cumchg[.N]*adjratio_cumchg
+                ][]
+            } else {
+                dt = dt[!is.na(close), close_adj := close[1]/adjratio_cumchg[1]*adjratio_cumchg
+                ][]
+            }
+            dt[, (c('adjratio_cumchg')) := NULL][]
         }
     }
     ## create change_pct for yahoo data
@@ -61,20 +69,21 @@ md_stock_adj1ohlc = function(dt, adjust=FALSE, source=NULL, adjfactor=NULL, ...)
 #' \code{md_stock_adjust} adjusts the open, high, low and close stock prices for split and dividend. 
 #' 
 #' @param dt a list/dataframe of time series datasets that didnt adjust for split or dividend.
-#' @param adjust whether to adjust the OHLC prices, defaults to FALSE. If it is NULL, return the original data; if it is FALSE, create close_adj or change_pct column if not exist; if it is TRUE, adjust all open, high, low, close columns.
-#' For the yahoo data, the adjustment is based on the close_adj; for the 163 data, the adjustment is based on the cumulative products of close/close_prev.
-#' @param source the available data sources are 'yahoo' and '163'. The source will set to yahoo, if the dt has close_adj column; and will set to 163, if the dt has close_prev column. 
+#' @param adjust whether to adjust the OHLC prices, defaults to FALSE. If it is NULL, return the original data; if it is FALSE, create close_adj or change_pct column if not exist; if it is TRUE, adjust all open, high, low, close columns. The adjustment is based on the cumulative products of close/close_prev.
+#' @param forward forward adjust or backward adjust, defaults to TRUE.
 #' @param ... Additional parameters.
 #' 
 #' @examples 
 #' \donttest{
-#' dt = md_stock('600547', source = '163', date_range = 'max')
+#' data("dt_banks")
 #' 
-#' dtadj = md_stock_adjust(dt, source = '163')
+#' dtadj1 = md_stock_adjust(dt_banks, adjust = FALSE)
+#' dtadj2 = md_stock_adjust(dt_banks, adjust = TRUE)
 #' }
 #' @export
-md_stock_adjust = function(dt, adjust = FALSE, source = NULL, ...) {
+md_stock_adjust = function(dt, adjust = FALSE, forward = TRUE, ...) {
     # adj_vol
+    source = list(...)[['source']]
     adj_vol = list(...)[['adj_vol']]
     # dt
     dt = check_dt(dt)
@@ -84,7 +93,7 @@ md_stock_adjust = function(dt, adjust = FALSE, source = NULL, ...) {
         split(dt, by = 'symbol'), 
         function(dts) {do.call(
             'md_stock_adj1ohlc', 
-            args = list(dt = dts, source=source, adjust=adjust, ...) 
+            args = list(dt = dts, source=source, adjust=adjust, forward=forward, ...) 
         )}
     )
     

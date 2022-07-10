@@ -4,16 +4,14 @@
 \alias{pq_opr}
 \title{dataframe operation}
 \usage{
-pq_opr(dt, opr, x = "date", y = "close", rm_na = FALSE, ...)
+pq_opr(dt, opr, x = "close", rm_na = FALSE, ...)
 }
 \arguments{
 \item{dt}{a list/dataframe of time series datasets.}
 
 \item{opr}{operation string.}
 
-\item{x}{the date column name, defaults to date.}
-
-\item{y}{the numeric column names, defaults to close.}
+\item{x}{the numeric column names, defaults to close.}
 
 \item{rm_na}{weather to remove NA values when perform arithmetic.}
 

@@ -3,7 +3,7 @@
 \name{\%x>\%}
 \alias{\%x>\%}
 \alias{\%x<\%}
-\title{Crossover Operators}
+\title{crossover operators}
 \usage{
 x \%x>\% y
 
@@ -20,16 +20,19 @@ library(data.table)
 library(pedquant)
 
 data("dt_banks")
-dtadj = md_stock_adjust(setDT(dt_banks)[symbol=='601988.SS'])
-dtadjti = pq_addti(dtadj, x='close_adj', sma=list(n=200), sma=list(n=50))
+boc = md_stock_adjust(setDT(dt_banks)[symbol=='601988.SS'])
+bocti = pq_addti(boc, x='close_adj', sma=list(n=200), sma=list(n=50))
 
-dtorders = copy(dtadjti[[1]])[,.(symbol, name, date, close_adj, sma_50, sma_200)
+dtorders = copy(bocti[[1]])[,.(symbol, name, date, close_adj, sma_50, sma_200)
 ][sma_50 \%x>\% sma_200, `:=`(
     type = 'buy', prices = close_adj
 )][sma_50 \%x<\% sma_200, `:=`(
     type = 'sell', prices = close_adj
-)]
+)][, (c('type', 'prices')) := lapply(.SD, shift), .SDcols = c('type', 'prices')]
 orders = dtorders[!is.na(type)]
 head(orders)
+
+e = pq_plot(boc,  y='close_adj', addti = list(sma=list(n=200), sma=list(n=50)), orders = orders)
+e[[1]]
 
 }

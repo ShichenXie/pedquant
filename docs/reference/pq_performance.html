@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pedquant</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.1.9.999</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.0</span>
       </span>
     </div>
 
@@ -106,23 +106,23 @@
 <span class="r-in"><span class="va">perf_capm</span> <span class="op">=</span> <span class="fu">pq_performance</span><span class="op">(</span><span class="va">datRaRb</span>, Ra <span class="op">=</span> <span class="st">'Ra'</span>, Rb <span class="op">=</span> <span class="st">'Rb'</span>, perf_fun <span class="op">=</span> <span class="st">'table.CAPM'</span><span class="op">)</span></span>
 <span class="r-in"><span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/rbindlist.html" class="external-link">rbindlist</a></span><span class="op">(</span><span class="va">perf_capm</span>, idcol <span class="op">=</span> <span class="st">'symbol'</span><span class="op">)</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>       symbol   Alpha   Beta  Beta+  Beta- R-squared Annualized Alpha</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1: 601328.SS -0.0024 0.9744 1.2088 0.8993    0.6584          -0.0282</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2: 601398.SS  0.0003 0.6492 0.7433 0.6784    0.6354           0.0035</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3: 601939.SS  0.0022 0.8753 1.0881 0.8821    0.6286           0.0269</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4: 601988.SS -0.0013 0.7135 0.8570 0.8227    0.6307          -0.0152</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5: 601288.SS  0.0019 0.6059 0.8592 0.5884    0.5217           0.0225</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1: 601288.SS  0.0021 0.6132 0.8765 0.5884    0.5235           0.0261</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2: 601328.SS -0.0020 0.9630 1.2088 0.8683    0.6460          -0.0232</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3: 601398.SS  0.0010 0.6301 0.7433 0.6359    0.6217           0.0121</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4: 601939.SS  0.0026 0.8643 1.0881 0.8556    0.6153           0.0319</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5: 601988.SS -0.0007 0.6991 0.8570 0.7933    0.6164          -0.0089</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Correlation Correlation p-value Tracking Error Active Premium</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1:      0.8114                   0         0.1945        -0.0418</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2:      0.7971                   0         0.1673         0.0194</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3:      0.7929                   0         0.1895         0.0215</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4:      0.7941                   0         0.1708        -0.0046</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5:      0.7223                   0         0.1597         0.0039</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1:      0.7235                   0         0.1587         0.0127</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2:      0.8037                   0         0.1948        -0.0374</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3:      0.7885                   0         0.1678         0.0228</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4:      0.7844                   0         0.1901         0.0250</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5:      0.7851                   0         0.1714        -0.0029</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Information Ratio Treynor Ratio</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1:           -0.2148       -0.0896</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2:            0.1162       -0.0403</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3:            0.1134       -0.0275</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4:           -0.0267       -0.0703</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5:            0.0247        0.0788</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1:            0.0798        0.0712</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2:           -0.1918       -0.0679</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3:            0.1358       -0.0083</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4:            0.1317       -0.0034</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5:           -0.0169       -0.0442</span>
 <span class="r-in"></span>
 </code></pre></div>
     </div>

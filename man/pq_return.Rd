@@ -4,10 +4,10 @@
 \alias{pq_return}
 \title{calculating returns by frequency}
 \usage{
-pq_return(dt, x, freq = "daily", num = 1, date_type = "eop",
-  method = "arithmetic", leading = TRUE, cumreturns = FALSE,
-  rcol_name = NULL, cols_keep = NULL, date_range = "max", from = NULL,
-  to = Sys.Date())
+pq_return(dt, x, freq = "daily", n = 1, date_type = "eop",
+  method = "arithmetic", cumreturns = FALSE, rcol_name = NULL,
+  cols_keep = NULL, date_range = "max", from = NULL, to = Sys.Date(),
+  ...)
 }
 \arguments{
 \item{dt}{a list/dataframe of daily series.}
@@ -16,13 +16,11 @@ pq_return(dt, x, freq = "daily", num = 1, date_type = "eop",
 
 \item{freq}{the frequency of returns. It supports 'daily', 'weekly', 'monthly', 'quarterly', 'yearly' and 'all'. Defaults to daily.}
 
-\item{num}{the number of preceding periods used as the base value, defaults to 1, which means based on the previous period value.}
+\item{n}{the number of preceding periods used as the base value, defaults to 1, which means based on the previous period value.}
 
 \item{date_type}{the available date type are eop (end of period) and bop (beginning of period), defaults to the eop.}
 
 \item{method}{the method to calculate asset returns, the available methods including arithmetic and log, defaults to arithmetic.}
-
-\item{leading}{whether to return the incomplete leading period returns.}
 
 \item{cumreturns}{logical, whether to return cumulative returns. Defaults to FALSE.}
 
@@ -35,6 +33,8 @@ pq_return(dt, x, freq = "daily", num = 1, date_type = "eop",
 \item{from}{the start date. Default is NULL. If it is NULL, then calculate using date_range and end date.}
 
 \item{to}{the end date. Default is the current date.}
+
+\item{...}{ignored}
 }
 \description{
 \code{pq_return} calculates returns for daily series based on specified column, frequency and method type.

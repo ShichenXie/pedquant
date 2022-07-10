@@ -4,15 +4,14 @@
 \alias{md_stock_adjust}
 \title{adjust stock price for split and dividend}
 \usage{
-md_stock_adjust(dt, adjust = FALSE, source = NULL, ...)
+md_stock_adjust(dt, adjust = FALSE, forward = TRUE, ...)
 }
 \arguments{
 \item{dt}{a list/dataframe of time series datasets that didnt adjust for split or dividend.}
 
-\item{adjust}{whether to adjust the OHLC prices, defaults to FALSE. If it is NULL, return the original data; if it is FALSE, create close_adj or change_pct column if not exist; if it is TRUE, adjust all open, high, low, close columns.
-For the yahoo data, the adjustment is based on the close_adj; for the 163 data, the adjustment is based on the cumulative products of close/close_prev.}
+\item{adjust}{whether to adjust the OHLC prices, defaults to FALSE. If it is NULL, return the original data; if it is FALSE, create close_adj or change_pct column if not exist; if it is TRUE, adjust all open, high, low, close columns. The adjustment is based on the cumulative products of close/close_prev.}
 
-\item{source}{the available data sources are 'yahoo' and '163'. The source will set to yahoo, if the dt has close_adj column; and will set to 163, if the dt has close_prev column.}
+\item{forward}{forward adjust or backward adjust, defaults to TRUE.}
 
 \item{...}{Additional parameters.}
 }
@@ -21,8 +20,9 @@ For the yahoo data, the adjustment is based on the close_adj; for the 163 data, 
 }
 \examples{
 \donttest{
-dt = md_stock('600547', source = '163', date_range = 'max')
+data("dt_banks")
 
-dtadj = md_stock_adjust(dt, source = '163')
+dtadj1 = md_stock_adjust(dt_banks, adjust = FALSE)
+dtadj2 = md_stock_adjust(dt_banks, adjust = TRUE)
 }
 }

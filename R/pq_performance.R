@@ -130,7 +130,21 @@ pq_performance = function(dt, Ra, Rb=NULL, perf_fun, ...) {
     return(ret_list)
 }
 
-pq_perfeva = function(dtorders) {
+
+pq_perfeva = function(dt, x, orders, addti=NULL) {
     
+    if ('volumes' %in% names(orders)) {
+        dt = pq_portfolio(dt, x=x, orders=orders, cols_keep = 'all')
+        addti = c(addti, list(cumreturns=list(), portfolio=list()))
+    }
+        
+    
+    e = do.call('pq_plot', args = list(
+        dt=dt, y=x, chart_type='line', 
+        addti = addti,
+        orders = orders
+    ) )
+    
+    return(e)
 }
 

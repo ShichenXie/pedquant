@@ -1,5 +1,6 @@
 ---
 output: md_document
+always_allow_html: true
 ---
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
@@ -46,7 +47,7 @@ devtools::install_github("shichenxie/pedquant")
 
 The following examples show you how to import data.
 
-```{r data}
+```{r data-2sma}
 library(pedquant)
 ## import eocnomic data
 dat1 = ed_fred('GDPCA')
@@ -55,6 +56,29 @@ dat2 = ed_nbs(geo_type='nation', freq='quarterly', symbol='A010101')
 ## import market data
 FAAG = md_stock(c('FB', 'AMZN', 'AAPL', 'GOOG'), date_range = '10y')
 INDX = md_stock(c('^000001','^399001'), date_range = '10y')
+
+# moving average crossover strategy
+library(data.table)
+
+# load data
+data("dt_banks")
+dtboc = md_stock_adjust(setDT(dt_banks)[symbol=='601988.SS'])
+# added technical indicators
+bocti = pq_addti(dtboc, x='close_adj', sma=list(n=200), sma=list(n=50))
+
+# crossover signal 
+dtorders = copy(bocti[[1]])[,.(symbol, name, date, close_adj, sma_50, sma_200)
+ ][sma_50 %x>% sma_200, `:=`(
+    type = 'buy', prices = close_adj
+)][sma_50 %x<% sma_200, `:=`(
+    type = 'sell', prices = close_adj
+)][order(date)
+ ][, (c('type', 'prices')) := lapply(.SD, shift), .SDcols = c('type', 'prices')]
+head(dtorders[!is.na(type)])
+
+# charting
+e = pq_plot(dtboc,  y='close_adj', addti = list(sma=list(n=200), sma=list(n=50)), orders = dtorders[!is.na(type)])
+e[[1]]
 ```
  
 

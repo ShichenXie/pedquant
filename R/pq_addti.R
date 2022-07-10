@@ -235,9 +235,10 @@ addti1 = function(dt, ti, col_formula = FALSE, ...) {
   arg_lst_output = list()
   ## first argument ## OHLC, HLC, HL, price, prices, x
   arg1st = names(arg_lst_default)[1]
+  newlst = list()
   if (arg1st %in% c('OHLC', 'HLC', 'HL')) {
     sel_cols = c(O='open', H='high', L='low', C='close')[unlist(strsplit(arg1st, ''))]
-    newlst = list()
+    
     newlst[[arg1st]] = dt[, sel_cols, with = FALSE]
   } else if (arg1st %in% c('price', 'prices', 'x', 'Ra')) {
     arg1st_input = arg_lst_input[intersect(c('price', 'prices', 'x', 'Ra'), names(arg_lst_input))]
@@ -246,9 +247,10 @@ addti1 = function(dt, ti, col_formula = FALSE, ...) {
       sel_cols = intersect(c('close', 'value'), names(dt))[1]
     } else if (length(arg1st_input) == 1) {
       sel_cols = arg1st_input[[1]]
+    } else if (length(arg1st_input) > 1) {
+      sel_cols = arg1st_input[[arg1st]]
     } else stop(sprintf('%s is missing', arg1st))
     
-    newlst = list()
     if (all(inherits(sel_cols, 'character'))) {
       newlst[[arg1st]] = dt[, sel_cols, with = FALSE]
     } else {
@@ -259,6 +261,7 @@ addti1 = function(dt, ti, col_formula = FALSE, ...) {
   
   ## second argument ## volume, y, w
   arg2nd = names(arg_lst_default)[2]
+  newlst = list()
   if (arg2nd %in% c('volume')) {
     newlst = list(volume=dt[,.(volume)])
   } else if (arg2nd %in% c('y', 'w', 'Rb')) {
@@ -278,7 +281,12 @@ addti1 = function(dt, ti, col_formula = FALSE, ...) {
   
   arg_lst_output = c(
     arg_lst_output, 
-    arg_lst_input[setdiff(names(arg_lst_input), c('color', 'position', 'hline', 'height'))]
+    arg_lst_input[setdiff(names(arg_lst_input), c(
+        'color', 'position', 'hline', 'height',
+        'OHLC', 'HLC', 'HL', 
+        'price', 'prices', 'x', 'Ra', 
+        'volume', 'y', 'w', 'Rb'
+    ))]
   )
   arg_lst_output = arg_lst_output[unique(names(arg_lst_output))]
   dtti = data.table(do.call(ti, args = arg_lst_output))
@@ -465,6 +473,35 @@ arg_addti = function(addti, x) {
 }
 
 # bias 
-bias = function(x, n=50, maType='SMA') {
-    (x/do.call(maType, list(x=x, n=n))-1)*100
+bias = function(x, n=50, nSig=1, maType='SMA') {
+    b = x/do.call(maType, list(x=x, n=n))-1
+    b = do.call(maType, list(x=b, n=nSig))
+    return(b)
 }
+
+# swing range 
+swing = function(x, n) {
+    a = runMax(x, n)
+    b = runMin(x, n)
+    (a - b) / ((a+b) / 2)
+}
+
+# ma rate of change
+maroc = function(x, n, nSig=1, maType='SMA', method='arithmetic') {
+    if (method=='arithmetic') typ = 'discrete' else typ = 'continuous'
+    
+    do.call(maType, list(x=x, n=n)) |>
+        ROC(n=nSig, type=typ)
+
+}
+
+ma2roc = function(x, n, nSig=1, maType='SMA', method='arithmetic') {
+    maroc(x, n, nSig, maType, method) |> 
+        momentum(n=nSig)
+}
+ 
+# ma rate of fast over slow 
+marfs = function(x, nfast, nslow) {
+    SMA(x, nfast) / SMA(x, nslow) -1
+} 
+

@@ -15,8 +15,18 @@ check_dt = function(dt, symb_name = FALSE, check_date = TRUE) {
             if (!(sn %in% dtcols)) dt[[sn]] = sn
         }
     }
-
+    
+    setkeyv(dt, intersect(c('symbol', 'date'), names(dt)) )
     return(dt)
+}
+check_odr = function(orders) {
+    type = NULL
+    # symbol, date, type, prices, volumes
+    if (inherits(orders, 'data.frame')) {
+        orders = setDT(orders)[!is.na(type)]
+    }
+    
+    return(orders)
 }
     
 # check arguments

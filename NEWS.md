@@ -1,8 +1,8 @@
-# pedquant 0.1.9.999
+# pedquant 0.2.0
 
 * fixed various bugs
-* added crossover functions
-* move some inner functions to a new package xefun
+* added functions of crossover and interval operators
+* added a depended package xefun 
 
 # pedquant 0.1.9
 

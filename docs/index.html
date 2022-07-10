@@ -38,7 +38,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">pedquant</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.1.9.999</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.0</span>
       </span>
     </div>
 
@@ -119,7 +119,38 @@
 <span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4/4 goog</span></span>
 <span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>INDX <span class="ot">=</span> <span class="fu">md_stock</span>(<span class="fu">c</span>(<span class="st">'^000001'</span>,<span class="st">'^399001'</span>), <span class="at">date_range =</span> <span class="st">'10y'</span>)</span>
 <span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1/2 ^000001</span></span>
-<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2/2 ^399001</span></span></code></pre></div>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2/2 ^399001</span></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a><span class="co"># moving average crossover strategy</span></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(data.table)</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a><span class="co"># load data</span></span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">"dt_banks"</span>)</span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>dtboc <span class="ot">=</span> <span class="fu">md_stock_adjust</span>(<span class="fu">setDT</span>(dt_banks)[symbol<span class="sc">==</span><span class="st">'601988.SS'</span>])</span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a><span class="co"># added technical indicators</span></span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>bocti <span class="ot">=</span> <span class="fu">pq_addti</span>(dtboc, <span class="at">x=</span><span class="st">'close_adj'</span>, <span class="at">sma=</span><span class="fu">list</span>(<span class="at">n=</span><span class="dv">200</span>), <span class="at">sma=</span><span class="fu">list</span>(<span class="at">n=</span><span class="dv">50</span>))</span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a><span class="co"># crossover signal </span></span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>dtorders <span class="ot">=</span> <span class="fu">copy</span>(bocti[[<span class="dv">1</span>]])[,.(symbol, name, date, close_adj, sma_50, sma_200)</span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a>][sma_50 <span class="sc">%x&gt;%</span> sma_200, <span class="st">`</span><span class="at">:=</span><span class="st">`</span>(</span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>    <span class="at">type =</span> <span class="st">'buy'</span>, <span class="at">prices =</span> close_adj</span>
+<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a>)][sma_50 <span class="sc">%x&lt;%</span> sma_200, <span class="st">`</span><span class="at">:=</span><span class="st">`</span>(</span>
+<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a>    <span class="at">type =</span> <span class="st">'sell'</span>, <span class="at">prices =</span> close_adj</span>
+<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a>)][, (<span class="fu">c</span>(<span class="st">'type'</span>, <span class="st">'prices'</span>)) <span class="sc">:</span><span class="er">=</span> <span class="fu">lapply</span>(.SD, shift), .SDcols <span class="ot">=</span> <span class="fu">c</span>(<span class="st">'type'</span>, <span class="st">'prices'</span>)]</span>
+<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(dtorders[<span class="sc">!</span><span class="fu">is.na</span>(type)])</span>
+<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;       symbol     name       date close_adj   sma_50  sma_200 type   prices</span></span>
+<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1: 601988.SS 中国银行 2009-04-27  2.175686 2.159212 2.154464  buy 2.169398</span></span>
+<span id="cb3-37"><a href="#cb3-37" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2: 601988.SS 中国银行 2010-03-23  2.682837 2.685811 2.690783 sell 2.689302</span></span>
+<span id="cb3-38"><a href="#cb3-38" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3: 601988.SS 中国银行 2010-05-06  2.618190 2.695508 2.694150  buy 2.669908</span></span>
+<span id="cb3-39"><a href="#cb3-39" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4: 601988.SS 中国银行 2010-05-20  2.514756 2.677794 2.679346 sell 2.521220</span></span>
+<span id="cb3-40"><a href="#cb3-40" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 5: 601988.SS 中国银行 2011-04-27  2.332291 2.302393 2.299774  buy 2.318449</span></span>
+<span id="cb3-41"><a href="#cb3-41" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 6: 601988.SS 中国银行 2011-07-21  2.231820 2.285567 2.288007 sell 2.239067</span></span>
+<span id="cb3-42"><a href="#cb3-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-43"><a href="#cb3-43" aria-hidden="true" tabindex="-1"></a><span class="co"># charting</span></span>
+<span id="cb3-44"><a href="#cb3-44" aria-hidden="true" tabindex="-1"></a>e <span class="ot">=</span> <span class="fu">pq_plot</span>(dtboc,  <span class="at">y=</span><span class="st">'close_adj'</span>, <span class="at">addti =</span> <span class="fu">list</span>(<span class="at">sma=</span><span class="fu">list</span>(<span class="at">n=</span><span class="dv">200</span>), <span class="at">sma=</span><span class="fu">list</span>(<span class="at">n=</span><span class="dv">50</span>)), <span class="at">orders =</span> dtorders[<span class="sc">!</span><span class="fu">is.na</span>(type)])</span>
+<span id="cb3-45"><a href="#cb3-45" aria-hidden="true" tabindex="-1"></a>e[[<span class="dv">1</span>]]</span>
+<span id="cb3-46"><a href="#cb3-46" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; NULL</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="issues-and-contributions">Issues and Contributions<a class="anchor" aria-label="anchor" href="#issues-and-contributions"></a>

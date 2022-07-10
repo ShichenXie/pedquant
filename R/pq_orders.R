@@ -1,20 +1,22 @@
-odr_filter_machg = function(dtorders, ma, n=1, odrcols = c('type', 'prices', 'volumes')) {
-    machg = type = NULL
+odr_exp = function(dtorders, odrcols = c('type', 'prices', 'volumes'), kpallrow = FALSE, kp1strow = FALSE, ti = NULL) {
+    type = ctcnt = prices = NULL
     
-    odrcols = intersect(odrcols, names(dtorders))
+    cols_do = intersect(c('symbol', 'date', 'close', odrcols), names(dtorders))
+    ti = c(ti, c('sma', 'bias', 'maroc', 'ma2roc', 'swing', 'runmax', 'runmin', 'swing'))
+    cols_ti = sort(names(dtorders)[grepl(paste0(ti, collapse = '|'), names(dtorders))])
     
-    # order type should consistent with the slop of moving average
-    pq_return(
-        copy(dtorders), x=ma, freq = 'daily', num=n, 
-        rcol_name = 'machg', cols_keep = 'all'
-    )[[1]][
-        # !is.na(type)
-    ][machg < 0 & type == 'buy', (odrcols) := NA  
-    ][machg > 0 & type == 'sell', (odrcols) := NA  
-    ][, machg := NULL
-    ][]
+    dtorders = copy(dtorders)[
+        , c(cols_do, cols_ti), with = FALSE
+    ][, (cols_ti) := lapply(.SD, function(x) round(x,4)), .SDcols = cols_ti
+    ][, prices := round(prices,2)][, close := round(close,2)]
     
-}
+    if (isFALSE(kpallrow)) {
+        dtorders = dtorders[!is.na(type)]
+        if (kp1strow) dtorders = dtorders[order(date)][, ctcnt := conticnt(type,cnt=TRUE)][abs(ctcnt) == 1][, ctcnt := NULL] 
+    }
+    
+    return(dtorders[order(date)])
+} 
 
 odr_filter_vol = function(orders, odrvol = 'volumes') {
     type = rid = cumvol = NULL 

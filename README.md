@@ -75,6 +75,37 @@ The following examples show you how to import data.
     #> 1/2 ^000001
     #> 2/2 ^399001
 
+    # moving average crossover strategy
+    library(data.table)
+
+    # load data
+    data("dt_banks")
+    dtboc = md_stock_adjust(setDT(dt_banks)[symbol=='601988.SS'])
+    # added technical indicators
+    bocti = pq_addti(dtboc, x='close_adj', sma=list(n=200), sma=list(n=50))
+
+    # crossover signal 
+    dtorders = copy(bocti[[1]])[,.(symbol, name, date, close_adj, sma_50, sma_200)
+     ][sma_50 %x>% sma_200, `:=`(
+        type = 'buy', prices = close_adj
+    )][sma_50 %x<% sma_200, `:=`(
+        type = 'sell', prices = close_adj
+    )][order(date)
+     ][, (c('type', 'prices')) := lapply(.SD, shift), .SDcols = c('type', 'prices')]
+    head(dtorders[!is.na(type)])
+    #>       symbol     name       date close_adj   sma_50  sma_200 type   prices
+    #> 1: 601988.SS 中国银行 2009-04-27  2.175686 2.159212 2.154464  buy 2.169398
+    #> 2: 601988.SS 中国银行 2010-03-23  2.682837 2.685811 2.690783 sell 2.689302
+    #> 3: 601988.SS 中国银行 2010-05-06  2.618190 2.695508 2.694150  buy 2.669908
+    #> 4: 601988.SS 中国银行 2010-05-20  2.514756 2.677794 2.679346 sell 2.521220
+    #> 5: 601988.SS 中国银行 2011-04-27  2.332291 2.302393 2.299774  buy 2.318449
+    #> 6: 601988.SS 中国银行 2011-07-21  2.231820 2.285567 2.288007 sell 2.239067
+
+    # charting
+    e = pq_plot(dtboc,  y='close_adj', addti = list(sma=list(n=200), sma=list(n=50)), orders = dtorders[!is.na(type)])
+    e[[1]]
+    #> NULL
+
 ## Issues and Contributions
 
 This package still on the developing stage. If you have any issue when

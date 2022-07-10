@@ -1,5 +1,14 @@
 return_arithmetic = function(x, x_lag) x/x_lag-1
 return_log = function(x, x_lag) log(x/x_lag)
+rateofchange = function(x, n=1, method = 'arithmetic') {
+    p = p_lag = NULL
+    data.table(p=x)[
+        ,p_lag := shift(p,n=n,type='lag')
+    ][, do.call(
+        sprintf('return_%s', method), 
+        args = list(p, p_lag)
+    )]
+}
 
 dat_add_byfreq = function(dat, freq) {
     byfreq = funcs = byyear = wkdiff = wkN = NULL
@@ -27,7 +36,7 @@ dat_add_byfreq = function(dat, freq) {
 }
 
 #' @importFrom xefun date_bop date_eop
-pq1_return = function(dt, x, freq='daily', num=1, date_type = 'eop', method = 'arithmetic', leading=TRUE, cumreturns = FALSE, rcol_name = NULL, cols_keep = c('symbol', 'date')) {
+pq1_return = function(dt, x, freq='daily', n=1, date_type = 'eop', method = 'arithmetic', leading=FALSE, cumreturns = FALSE, rcol_name = NULL, cols_keep = c('symbol', 'date')) {
     . = Ra = chg = cumRa = byfreq = byyear = x_lag = NULL
     
     setkeyv(dt, "date")
@@ -45,7 +54,7 @@ pq1_return = function(dt, x, freq='daily', num=1, date_type = 'eop', method = 'a
         datbop = dt2[, .SD[1], by = .(byyear, byfreq)]
         # EOP, end of period
         dateop = dt2[, .SD[.N], by = .(byyear, byfreq)
-        ][, x_lag := shift(get(x), n=num, type = 'lag') 
+        ][, x_lag := shift(get(x), n=n, type = 'lag') 
         ][]
         if (leading) dateop = dateop[1, x_lag := datbop[1,get(x)]][]
         
@@ -91,16 +100,17 @@ pq1_return = function(dt, x, freq='daily', num=1, date_type = 'eop', method = 'a
 #' @param dt a list/dataframe of daily series.
 #' @param x the column name of adjusted asset price. 
 #' @param freq the frequency of returns. It supports 'daily', 'weekly', 'monthly', 'quarterly', 'yearly' and 'all'. Defaults to daily.
-#' @param num the number of preceding periods used as the base value, defaults to 1, which means based on the previous period value.
+#' @param n the number of preceding periods used as the base value, defaults to 1, which means based on the previous period value.
 #' @param date_type the available date type are eop (end of period) and bop (beginning of period), defaults to the eop.
 #' @param method the method to calculate asset returns, the available methods including arithmetic and log, defaults to arithmetic. 
-#' @param leading whether to return the incomplete leading period returns.
+# @param leading whether to return the incomplete leading period returns.
 #' @param cumreturns logical, whether to return cumulative returns. Defaults to FALSE. 
 #' @param rcol_name setting the column name of returns, defaults to NULL.
 #' @param cols_keep the columns keep in the return data. The columns of symbol, name and date will always kept if they are exist in the input data.
 #' @param date_range date range. Available value includes '1m'-'11m', 'ytd', 'max' and '1y'-'ny'. Default is max.
 #' @param from the start date. Default is NULL. If it is NULL, then calculate using date_range and end date.
 #' @param to the end date. Default is the current date.
+#' @param ... ignored
 #' 
 #' @examples 
 #' \donttest{
@@ -125,8 +135,12 @@ pq1_return = function(dt, x, freq='daily', num=1, date_type = 'eop', method = 'a
 #' }
 #' 
 #' @export
-pq_return = function(dt, x, freq='daily', num=1, date_type='eop', method='arithmetic', leading = TRUE, cumreturns = FALSE, rcol_name = NULL, cols_keep=NULL, date_range='max', from=NULL, to=Sys.Date()) {
+pq_return = function(dt, x, freq='daily', n=1, date_type='eop', method='arithmetic', cumreturns = FALSE, rcol_name = NULL, cols_keep=NULL, date_range='max', from=NULL, to=Sys.Date(), ...) {
     # arg
+    args = list(...)
+    if (!is.null(args$num)) n = args$num
+    leading = args$leading
+    if (is.null(leading)) leading = FALSE
     ## method 
     method = check_arg(method, c('arithmetic', 'log'), default='arithmetic', arg_name = 'method')
     # arithmetic: p_{t-1} * (r+1) = p_{t}
@@ -153,7 +167,7 @@ pq_return = function(dt, x, freq='daily', num=1, date_type='eop', method='arithm
         split(dt, by = 'symbol'), 
         function(dts) {do.call(
             'pq1_return', 
-            args = list(dt=dts, x=x, method=method, leading=leading, freq=freq, num=num, cumreturns=cumreturns, rcol_name = rcol_name, cols_keep = cols_keep, date_type=date_type)
+            args = list(dt=dts, x=x, method=method, leading=leading, freq=freq, n=n, cumreturns=cumreturns, rcol_name = rcol_name, cols_keep = cols_keep, date_type=date_type)
         )}
     )
     return(dt_list)

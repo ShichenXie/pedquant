@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pedquant</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.1.9.999</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.0</span>
       </span>
     </div>
 
@@ -64,7 +64,7 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">md_stock_adjust</span><span class="op">(</span><span class="va">dt</span>, adjust <span class="op">=</span> <span class="cn">FALSE</span>, source <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">...</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">md_stock_adjust</span><span class="op">(</span><span class="va">dt</span>, adjust <span class="op">=</span> <span class="cn">FALSE</span>, forward <span class="op">=</span> <span class="cn">TRUE</span>, <span class="va">...</span><span class="op">)</span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -72,10 +72,9 @@
     <dl><dt>dt</dt>
 <dd><p>a list/dataframe of time series datasets that didnt adjust for split or dividend.</p></dd>
 <dt>adjust</dt>
-<dd><p>whether to adjust the OHLC prices, defaults to FALSE. If it is NULL, return the original data; if it is FALSE, create close_adj or change_pct column if not exist; if it is TRUE, adjust all open, high, low, close columns.
-For the yahoo data, the adjustment is based on the close_adj; for the 163 data, the adjustment is based on the cumulative products of close/close_prev.</p></dd>
-<dt>source</dt>
-<dd><p>the available data sources are 'yahoo' and '163'. The source will set to yahoo, if the dt has close_adj column; and will set to 163, if the dt has close_prev column.</p></dd>
+<dd><p>whether to adjust the OHLC prices, defaults to FALSE. If it is NULL, return the original data; if it is FALSE, create close_adj or change_pct column if not exist; if it is TRUE, adjust all open, high, low, close columns. The adjustment is based on the cumulative products of close/close_prev.</p></dd>
+<dt>forward</dt>
+<dd><p>forward adjust or backward adjust, defaults to TRUE.</p></dd>
 <dt>...</dt>
 <dd><p>Additional parameters.</p></dd>
 </dl></div>
@@ -83,10 +82,10 @@ For the yahoo data, the adjustment is based on the close_adj; for the 163 data, 
     <div id="ref-examples">
     <h2>Examples</h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="co"># \donttest{</span></span>
-<span class="r-in"><span class="va">dt</span> <span class="op">=</span> <span class="fu"><a href="md_stock.html">md_stock</a></span><span class="op">(</span><span class="st">'600547'</span>, source <span class="op">=</span> <span class="st">'163'</span>, date_range <span class="op">=</span> <span class="st">'max'</span><span class="op">)</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1/1 600547</span>
+<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"dt_banks"</span><span class="op">)</span></span>
 <span class="r-in"></span>
-<span class="r-in"><span class="va">dtadj</span> <span class="op">=</span> <span class="fu">md_stock_adjust</span><span class="op">(</span><span class="va">dt</span>, source <span class="op">=</span> <span class="st">'163'</span><span class="op">)</span></span>
+<span class="r-in"><span class="va">dtadj1</span> <span class="op">=</span> <span class="fu">md_stock_adjust</span><span class="op">(</span><span class="va">dt_banks</span>, adjust <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span class="r-in"><span class="va">dtadj2</span> <span class="op">=</span> <span class="fu">md_stock_adjust</span><span class="op">(</span><span class="va">dt_banks</span>, adjust <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span class="r-in"><span class="co"># }</span></span>
 </code></pre></div>
     </div>

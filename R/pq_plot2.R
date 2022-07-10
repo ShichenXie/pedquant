@@ -1,7 +1,7 @@
 
 pp_dtpre = function(dt, x='date', y='close', 
-                    addti = NULL, markline=TRUE, 
-                    orders, order_y = 'prices', order_type='type') {
+                    addti = NULL, markline = TRUE, 
+                    orders = NULL, order_y = 'prices', order_type = 'type') {
     sybnam = symbol = name = markline_value = NULL
     
     dt = setorderv(copy(dt), c('symbol', x))[, sybnam := sprintf('%s %s', symbol, name[.N]), by = 'symbol']
@@ -16,16 +16,19 @@ pp_dtpre = function(dt, x='date', y='close',
     }
     if (isTRUE(markline)) dt = dt[, markline_value := get(y)[.N], by = 'symbol']
     
-    if (is.null(orders)) return(dt)
-    
-    do_cols = intersect(c('symbol', 'date'), names(orders))
-    dt = merge(
-        dt, 
-        dcast(orders, 
-              sprintf('%s ~ %s', paste0(do_cols,collapse='+'), order_type), 
-              value.var = order_y), 
-        by = do_cols, all.x = TRUE
-    )
+
+    if (inherits(orders, 'data.frame') && nrow(orders) > 0) {
+        
+        dtodr_cols = intersect(c('symbol', 'date'), names(orders))
+        
+        dt = merge(
+            dt, 
+            dcast(orders, 
+                  sprintf('%s ~ %s', paste0(dtodr_cols,collapse='+'), order_type), 
+                  value.var = order_y), 
+            by = dtodr_cols, all.x = TRUE
+        )
+    }
     
     return(dt)
 }
@@ -57,7 +60,7 @@ p_theme = function(e, xstart = 0, xend = 100, yaxis_log = FALSE, title = 'none',
     
     e |>  
         e_title(title, left='30') |> 
-        e_tooltip(trigger='axis', axisPointer = list(type = 'line', show = TRUE)) |> 
+        e_tooltip(trigger='axis', axisPointer = list(type = 'cross', show = TRUE)) |> 
         e_datazoom(x_index = 0, start = xstart, end = xend) |> 
         e_y_axis(type = yaxis_type, position = 'right', axisLabel = list(rotate = 90) ) |> 
         e_toolbox(right='30') |> 
@@ -85,12 +88,17 @@ p_markline = function(e, dt, markline = TRUE) {
     return(e)
 }
 # orders
-p_orders = function(e, orders, color_up = "#CF002F", color_down = "#000000") {
+p_orders = function(e, orders, color_up = "#CF002F", color_down = "#000000", orders_ml=FALSE, ...) {
     if (is.null(orders)) return(e)
-    e = e |> 
-        e_scatter_('buy', symbol = 'triangle', symbolSize = 12, color = color_up, legend = FALSE) |> 
-        e_scatter_('sell', symbol = 'triangle', symbolSize = 12, symbolRotate=180, color = color_down, legend = FALSE) 
     
+    if ('buy' %in% unique(orders$type)) e = e_scatter_(e, 'buy', symbol = 'triangle', symbolSize = 12, color = color_up, legend = FALSE)
+    if ('sell' %in% unique(orders$type)) e = e_scatter_(e, 'sell', symbol = 'triangle', symbolSize = 12, symbolRotate=180, color = color_down, legend = FALSE) 
+    if ('bto' %in% unique(orders$type)) e = e_scatter_(e, 'bto', symbol = 'circle', symbolSize = 12, color = color_up, legend = FALSE)
+    if ('stc' %in% unique(orders$type)) e = e_scatter_(e, 'stc', symbol = 'circle', symbolSize = 12, symbolRotate=180, color = color_down, legend = FALSE) 
+    if ('sto' %in% unique(orders$type)) e = e_scatter_(e, 'sto', symbol = 'rect', symbolSize = 12, color = color_up, legend = FALSE)
+    if ('btc' %in% unique(orders$type)) e = e_scatter_(e, 'btc', symbol = 'rect', symbolSize = 12, symbolRotate=180, color = color_down, legend = FALSE) 
+    
+    if (isFALSE(orders_ml)) return(e)
     for (o in split(orders,by='type')) {
         for (i in o[,.I]) {
             e = e |>
@@ -227,7 +235,7 @@ p_addti_indicator = function(e, dt, addti = NULL, x = 'date', theme = 'default')
                      e_toolbox(show=FALSE) |>
                      e_grid(show = TRUE, top = 10, bottom=20, 
                             left='30', right = '30') |>
-                     e_tooltip(trigger='axis', axisPointer = list(type = 'line', show = TRUE)) |> 
+                     e_tooltip(trigger='axis', axisPointer = list(type = 'cross', show = TRUE)) |> 
                      e_group('ind') |>
                      e_theme(theme) 
             }
@@ -271,7 +279,7 @@ pp_line = function(
     
     e = pp_base(dt, x, yb=yb) |> 
         e_line_(serie = y, legend=TRUE, symbol='none') |>
-        p_orders(orders, color_up, color_down) |>
+        p_orders(orders, color_up, color_down, ...) |>
         p_markline(dt = dt, markline = markline) |> 
         p_lm(x=x, y=y, nsd_lm=nsd_lm) |>
         p_addti_overlay(dt = dt, addti = addti) |>
@@ -294,7 +302,7 @@ pp_step = function(
     
     e = pp_base(dt, x, yb=yb) |> 
         e_step_(serie = y, symbol='none') |> 
-        p_orders(orders, color_up, color_down) |> 
+        p_orders(orders, color_up, color_down, ...) |> 
         p_markline(dt = dt, markline = markline) |> 
         p_lm(x=x, y=y, nsd_lm=nsd_lm) |>
         p_addti_overlay(dt = dt, addti = addti) |>
@@ -320,7 +328,7 @@ pp_candle = function(
         e_candle_('open', 'close', 'low', 'high', 
                   itemStyle = list(color = color_up, borderColor = color_up,
                                    color0 = color_down, borderColor0 = color_down)) |> 
-        p_orders(orders, color_up, color_down)  |> 
+        p_orders(orders, color_up, color_down, ...)  |> 
         p_markline(dt = dt, markline = markline) |> 
         p_lm(x=x, y=y, nsd_lm=nsd_lm) |>
         p_addti_overlay(dt = dt, addti = addti) |>
@@ -429,6 +437,8 @@ pq_plot = function(
     arrange_rowcol_all1 = all(sapply(list('rows', 'cols'), function(x) any(arrange[[x]] == 1)))
     
     dt = check_dt(dt)
+    orders = check_odr(orders)
+    
     arglst = list(dt=dt, x=x, y=y, yb=yb, date_range=date_range, yaxis_log=yaxis_log, title=title, addti=addti, nsd_lm=nsd_lm, markline=markline, orders=orders, arrange=arrange, theme=theme, ...)
     
     if (arrange_rowcol_all1) {
