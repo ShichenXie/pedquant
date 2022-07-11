@@ -50,7 +50,7 @@
 
 * Added functions of pq_portfolio and pq_backtest
 * Fixed multiple bugs in pq_plot.
-# Fixed a bug for functions to query data from NBS, which cant load JS data.
+* Fixed a bug for functions to query data from NBS, which cant load JS data.
 
 # pedquant 0.1.0
 
