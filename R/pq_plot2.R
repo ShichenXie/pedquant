@@ -416,7 +416,7 @@ pq_plot = function(
     ...) {
     # color_up = "#CF002F", color_down = "#000000", 
     # order_y = 'prices', order_type = 'type', 
-    # if (!interactive()) return(invisible())
+    if (!interactive()) return(invisible())
     # arguments
     args = list(...)
     if (!is.null(args[['multi_series']])) {

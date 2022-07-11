@@ -5,8 +5,8 @@ Description:
     Provides an interface to access public economic and financial data for 
     economic research and quantitative analysis. The data sources including 
     NBS, FRED, 163, Sina, Eastmoney and etc. It also provides quantitative 
-    functions for trading strategies based on the data.table, TTR, PerformanceAnalytics
-    and etc packages.
+    functions for trading strategies based on the 'data.table', 'TTR', 
+    'PerformanceAnalytics' and etc packages.
 Authors@R: 
     person("Shichen", "Xie", email = "xie@shichen.name", role = c("aut", "cre"))
 Depends: 
