@@ -1,5 +1,5 @@
 
-func_md_symbol = function() {
+func_md_symbol = function(...) {
     .=symbol=name=main=NULL
     
     rbindlist(list(
@@ -84,7 +84,7 @@ md_symbol = function(market=NULL, ...) {
     src = args[['source']]
     if (!is.null(args[['cate']])) market = args[['cate']]
     
-    if (src == 'stooq') {
+    if (any(src == 'stooq')) {
         datsyb = setDT(copy(symbol_stooq))
         datlst = lapply(
             split(datsyb, by='geo'), 

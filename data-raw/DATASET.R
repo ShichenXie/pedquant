@@ -1,18 +1,14 @@
 ## code to prepare `DATASET` dataset goes here
 library(pedquant)
 library(data.table)
-dt_ssec = md_stock('^000001', date_range = 'max', to = '2021-09-01', source = '163')
-dt_ssec = setDF(dt_ssec)
+dt_banks = md_stock(c('601988.SS', '601288.SS', '601398.SS', '601939.SS', '601328.SS'), to = '2018-12-31', date_range = '5y')
+dt_ssec = md_stock(c('000001.SS'), to = '2018-12-31', date_range = '5y')
+
+dt_banks = setDF(rbindlist(dt_banks))
+dt_ssec = setDF(rbindlist(dt_ssec))
 
 usethis::use_data(dt_banks, overwrite = TRUE)
 usethis::use_data(dt_ssec, overwrite = TRUE)
-
-library(pedb)
-ssecbank = db_query("select * from md_stock_history
-                    where symbol in ('601988.SS', '601288.SS', '601398.SS', '601939.SS', '601328.SS', '000001.SS')")
-ssec = setDF(ssecbank[date <= as.Date('2019-03-15') & date >= as.Date('2006-07-05')])
-
-
 
 
 # database urls 

@@ -66,12 +66,6 @@
 #' 
 #' @export
 md_stock = function(symbol, type = 'history', date_range = "3y", from = NULL, to = Sys.Date(), adjust = FALSE, freq = "daily", print_step = 1L, ...) {
-    # cat(source,"\n")
-    # if (source == '163') {
-    #     check_internet('www.163.com')
-    # } else if (source == 'yahoo') {
-    #     check_internet('www.yahoo.com')
-    # }
     # arguments
     args = list(...)
     ## type
@@ -82,9 +76,6 @@ md_stock = function(symbol, type = 'history', date_range = "3y", from = NULL, to
     if (is.null(source)) source = '163'
     ## symbol
     syb = tolower(symbol)
-    ## remove NAs from the yahoo data
-    na_rm = args[['na_rm']]
-    if (is.null(na_rm)) na_rm = TRUE
     ## remove ZEROs from the 163 data download
     zero_rm = args[['zero_rm']]
     if (is.null(zero_rm)) zero_rm = TRUE
@@ -97,7 +88,7 @@ md_stock = function(symbol, type = 'history', date_range = "3y", from = NULL, to
     
     
     # data
-    dat = try(do.call(paste0("md_stock_", source), args=list(symbol = syb, freq = freq, from = from, to = to, print_step = print_step, env = env, adjust=adjust, zero_rm=zero_rm, na_rm=na_rm, type=type, ...)), silent = TRUE)
+    dat = try(do.call(paste0("md_stock_", source), args=list(symbol = syb, freq = freq, from = from, to = to, print_step = print_step, env = env, adjust=adjust, zero_rm=zero_rm, type=type, ...)), silent = TRUE)
     
     if (is.null(dat)) return(dat)
     dat = rm_error_dat(dat)

@@ -18,6 +18,7 @@
 #'   \item{turnover}{rate of shares traded over total}
 #'   \item{cap_market}{tradable market capitalisation}
 #'   \item{cap_total}{total market capitalisation}
+#'   \item{close_adj}{adjusted stock price at the close of trading}
 #'   \item{unit}{price unit, such as in CNY/USD}
 #' }
 #' 
@@ -43,6 +44,7 @@
 #'   \item{turnover}{rate of shares traded over total}
 #'   \item{cap_market}{tradable market capitalisation}
 #'   \item{cap_total}{total market capitalisation}
+#'   \item{close_adj}{adjusted stock price at the close of trading}
 #'   \item{unit}{price unit, such as in CNY/USD}
 #' }
 #' 

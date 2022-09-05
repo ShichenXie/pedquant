@@ -339,6 +339,7 @@ md_stock_symbol_index = function(symbol, print_step=1L) {
 #' \code{md_stock_symbol} returns all stock symbols by exchange
 #' 
 #' @param exchange the available stock exchanges are sse, szse, hkex, amex, nasdaq, nyse.
+#' @param ... ignored parameters
 #' 
 #' @examples 
 #' \dontrun{
@@ -352,7 +353,7 @@ md_stock_symbol_index = function(symbol, print_step=1L) {
 #' }
 #' 
 #' @export
-md_stock_symbol = function(exchange=NULL) {
+md_stock_symbol = function(exchange=NULL, ...) {
     md_stock_symbol_exchange(exchange)
 }
 

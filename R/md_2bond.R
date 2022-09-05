@@ -34,14 +34,17 @@ func_bond_symbol = function() {
     return(bond_symbol)
 }
 
-#' @import xml2
+
 urls_bond_chinabond = function() {
     . = read_html = NULL
     
     path0 = "http://www.chinabond.com.cn"
     
     path_bond = "http://yield.chinabond.com.cn/cbweb-mn/yc/downYearBzqxList?wrjxCBFlag=0&&zblx=txy&&ycDefId=2c9081e50a2f9606010a3068cae70001&&locale=zh_CN"
-    path_cur_his = xml_attr(xml_find_all(read_html(path_bond), "//td//a"), "href")
+    path_cur_his = read_html(path_bond) %>% 
+        html_nodes('td a') %>% 
+        html_attr('href')
+        # xml_attr(xml_find_all(, "//td//a"), "href")
     
     # path of bond yeild in current year
     b_cur = paste0("http://yield.chinabond.com.cn", path_cur_his[2])
@@ -177,6 +180,6 @@ md_bond = function(symbol=NULL, type = 'history', date_range = '3y', from=NULL, 
     return(dt_list)
 }
 
-md_bond_symbol = function() {
+md_bond_symbol = function(...) {
     func_bond_symbol()[, c('symbol','name'), with = FALSE]
 }

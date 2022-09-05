@@ -131,19 +131,26 @@ pq_performance = function(dt, Ra, Rb=NULL, perf_fun, ...) {
 }
 
 
-pq_perfeva = function(dt, x, orders, addti=NULL) {
+pq_perfeva = function(dt, x, orders, addti=NULL, init_fund=NULL) {
+    tid = type = stc = bto = NULL 
     
-    if ('volumes' %in% names(orders)) {
-        dt = pq_portfolio(dt, x=x, orders=orders, cols_keep = 'all')
-        addti = c(addti, list(cumreturns=list(), portfolio=list()))
+    if (!('volumes' %in% names(orders))) {
+        orders = odr_addvol(orders)
     }
-        
+    dt = pq_portfolio(dt, x=x, orders=orders, cols_keep = 'all', init_fund = init_fund)
+    addti = c(addti, list(cumreturns=list(), portfolio=list()))
     
     e = do.call('pq_plot', args = list(
         dt=dt, y=x, chart_type='line', 
         addti = addti,
         orders = orders
     ) )
+    
+    # orders summary
+    odr_summary = dcast(copy(orders)[, tid := cumsum(type == 'bto') ], 'tid ~ type', value.var = 'prices')
+    # winning ratio
+    wr = odr_summary[, round(mean(stc>bto, na.rm = TRUE),3)*100]
+    print(list(winning_ratio = wr))
     
     return(e)
 }

@@ -54,7 +54,7 @@
 #' @importFrom stats weighted.mean
 #' @export
 pq_portfolio = function(dt, x, orders, dtb = NULL, init_fund = NULL, method = 'arithmetic', cols_keep=NULL, ...) {
-    . = equity = equityindex = fund = chg = returns = symbol = value = balance = blchg = NULL
+    . = equity = equityindex = fund = chg = returns = symbol = value = balance = blchg = cumreturns = NULL
 
     w = 'weights'
     v = 'volumes'
@@ -92,23 +92,30 @@ pq_portfolio = function(dt, x, orders, dtb = NULL, init_fund = NULL, method = 'a
     # equity
     portfolio_equity = dt_dtv[, .(
         equity = sum(get(x) * get(w), na.rm=TRUE),
-        equityindex = weighted.mean(get(x), get(w), na.rm=TRUE), 
+        # equityindex = weighted.mean(get(x), get(w), na.rm=TRUE), 
         value = sum(value, na.rm = TRUE)
     ), keyby = 'date' 
     ][, fund := round(cumsum(-value), 2)
-    ][, returns := do.call(
-        sprintf('return_%s', method), 
-        args = list(x=equityindex, shift(equityindex, type ='lag'))
-    )][#!is.na(cumreturns)
-     ][, chg := sum(1, returns, na.rm = TRUE), by = 'date'
-     ][,.(date, returns, cumreturns = cumprod(chg), equity, fund)
+    ][,.(date, equity, fund)
      ]
     
+    # initial fund
     if (is.null(init_fund)) {
         init_fund = round(abs(portfolio_equity[, min(fund)]), 2)
         warning(sprintf('The initial value is setting to %s', init_fund))
     }
     portfolio_equity = portfolio_equity[, fund := fund + init_fund][, balance := equity + fund]
+    
+    # returns
+    portfolio_equity[
+        , returns := do.call(
+            sprintf('return_%s', method), 
+            args = list(x=balance, shift(balance, type ='lag'))
+        )
+    ][#!is.na(cumreturns)
+    ][, chg := sum(1, returns, na.rm = TRUE), by = 'date'
+    ][, cumreturns := cumprod(chg) ]
+    
     
     bal_cols = c('equity', 'fund', 'balance')
     setnames(portfolio_equity, bal_cols, paste0('portfolio_',bal_cols))

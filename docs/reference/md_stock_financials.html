@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pedquant</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.0.999</span>
       </span>
     </div>
 
@@ -64,39 +64,44 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">md_stock_financials</span><span class="op">(</span><span class="va">symbol</span>, type <span class="op">=</span> <span class="cn">NULL</span>, print_step <span class="op">=</span> <span class="fl">1L</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">md_stock_financials</span><span class="op">(</span><span class="va">symbol</span>, type <span class="op">=</span> <span class="cn">NULL</span>, print_step <span class="op">=</span> <span class="fl">1L</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>symbol</dt>
 <dd><p>symbol of stock shares.</p></dd>
+
+
 <dt>type</dt>
 <dd><p>the type of financial statements.</p></dd>
+
+
 <dt>print_step</dt>
 <dd><p>A non-negative integer. Print symbol name by each print_step iteration. Default is 1L.</p></dd>
+
 </dl></div>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span>
-<span class="r-in"><span class="co"># interactively specify type of financial table </span></span>
-<span class="r-in"><span class="va">dat1</span> <span class="op">=</span> <span class="fu">md_stock_financials</span><span class="op">(</span><span class="st">"000001"</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># manually specify type of financial table</span></span>
-<span class="r-in"><span class="co"># type = "fr0"</span></span>
-<span class="r-in"><span class="va">dat2</span> <span class="op">=</span> <span class="fu">md_stock_financials</span><span class="op">(</span><span class="st">"000001"</span>, type<span class="op">=</span><span class="st">"fs0"</span><span class="op">)</span></span>
-<span class="r-in"><span class="co"># or type = "fr0_summary"</span></span>
-<span class="r-in"><span class="va">dat3</span> <span class="op">=</span> <span class="fu">md_stock_financials</span><span class="op">(</span><span class="st">"000001"</span>, type<span class="op">=</span><span class="st">"fs0_summary"</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># multiple symbols and statements</span></span>
-<span class="r-in"><span class="va">dat4</span> <span class="op">=</span> <span class="fu">md_stock_financials</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"000001"</span>, <span class="st">"600000"</span><span class="op">)</span>, type <span class="op">=</span> <span class="st">"fi"</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># dupont analysis indicators</span></span>
-<span class="r-in"><span class="va">fs_idx</span> <span class="op">=</span> <span class="fu">md_stock_financials</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'000001'</span>, <span class="st">'^000001'</span><span class="op">)</span>, type <span class="op">=</span> <span class="st">'dupont'</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="op">}</span></span>
-<span class="r-in"></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span><span class="co"># interactively specify type of financial table </span></span></span>
+<span class="r-in"><span><span class="va">dat1</span> <span class="op">=</span> <span class="fu">md_stock_financials</span><span class="op">(</span><span class="st">"000001"</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># manually specify type of financial table</span></span></span>
+<span class="r-in"><span><span class="co"># type = "fr0"</span></span></span>
+<span class="r-in"><span><span class="va">dat2</span> <span class="op">=</span> <span class="fu">md_stock_financials</span><span class="op">(</span><span class="st">"000001"</span>, type<span class="op">=</span><span class="st">"fs0"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="co"># or type = "fr0_summary"</span></span></span>
+<span class="r-in"><span><span class="va">dat3</span> <span class="op">=</span> <span class="fu">md_stock_financials</span><span class="op">(</span><span class="st">"000001"</span>, type<span class="op">=</span><span class="st">"fs0_summary"</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># multiple symbols and statements</span></span></span>
+<span class="r-in"><span><span class="va">dat4</span> <span class="op">=</span> <span class="fu">md_stock_financials</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"000001"</span>, <span class="st">"600000"</span><span class="op">)</span>, type <span class="op">=</span> <span class="st">"fi"</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># dupont analysis indicators</span></span></span>
+<span class="r-in"><span><span class="va">fs_idx</span> <span class="op">=</span> <span class="fu">md_stock_financials</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'000001'</span>, <span class="st">'^000001'</span><span class="op">)</span>, type <span class="op">=</span> <span class="st">'dupont'</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -111,7 +116,7 @@
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

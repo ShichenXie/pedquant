@@ -4,10 +4,12 @@
 \alias{md_stock_symbol}
 \title{symbol components of exchange}
 \usage{
-md_stock_symbol(exchange = NULL)
+md_stock_symbol(exchange = NULL, ...)
 }
 \arguments{
 \item{exchange}{the available stock exchanges are sse, szse, hkex, amex, nasdaq, nyse.}
+
+\item{...}{ignored parameters}
 }
 \description{
 \code{md_stock_symbol} returns all stock symbols by exchange

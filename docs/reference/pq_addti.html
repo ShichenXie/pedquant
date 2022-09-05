@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pedquant</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.0.999</span>
       </span>
     </div>
 
@@ -64,13 +64,15 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">pq_addti</span><span class="op">(</span><span class="va">dt</span>, <span class="va">...</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">pq_addti</span><span class="op">(</span><span class="va">dt</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>dt</dt>
 <dd><p>a list/dataframe of time series datasets.</p></dd>
+
+
 <dt>...</dt>
 <dd><p>list of technical indicator parameters: sma = list(n=50), macd = list().</p><ol><li><p>There are four types of parameters.</p><ul><li><p>set by default and do not required, such as 'OHLC', 'HLC', 'HL' and 'volume'.</p></li>
 <li><p>set by default and can be modified, such as 'price', 'prices', 'x'. Its default value is 'close' or 'value' column.</p></li>
@@ -88,41 +90,42 @@
 <li><p>oscillator: MACD, DPO, DVI, ultimateOscillator; RSI, CMO; stoch, SMI, WPR</p></li>
 </ul></li>
 </ol></dd>
+
 </dl></div>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="co"># \donttest{</span></span>
-<span class="r-in"><span class="co"># load data</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">'dt_ssec'</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># add technical indicators</span></span>
-<span class="r-in"><span class="va">dt_ti1</span> <span class="op">=</span> <span class="fu">pq_addti</span><span class="op">(</span><span class="va">dt_ssec</span>, sma<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>n<span class="op">=</span><span class="fl">20</span><span class="op">)</span>, sma<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>n<span class="op">=</span><span class="fl">50</span><span class="op">)</span>, macd <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># specify the price column x</span></span>
-<span class="r-in"><span class="va">dt_ti11</span> <span class="op">=</span> <span class="fu">pq_addti</span><span class="op">(</span><span class="va">dt_ssec</span>, sma<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>n<span class="op">=</span><span class="fl">20</span>, x<span class="op">=</span><span class="st">'open'</span><span class="op">)</span>, sma<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>n<span class="op">=</span><span class="fl">50</span>, x<span class="op">=</span><span class="st">'open'</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">dt_ti12</span> <span class="op">=</span> <span class="fu">pq_addti</span><span class="op">(</span><span class="va">dt_ssec</span>, x<span class="op">=</span><span class="st">'open'</span>, sma<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>n<span class="op">=</span><span class="fl">20</span><span class="op">)</span>, sma<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>n<span class="op">=</span><span class="fl">50</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># only technical indicators</span></span>
-<span class="r-in"><span class="va">dt_ti2</span> <span class="op">=</span> <span class="fu">pq_addti</span><span class="op">(</span></span>
-<span class="r-in">  <span class="va">dt_ssec</span>, sma<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>n<span class="op">=</span><span class="fl">20</span><span class="op">)</span>, sma<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>n<span class="op">=</span><span class="fl">50</span><span class="op">)</span>, macd <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>, </span>
-<span class="r-in">  col_kp <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'symbol'</span>, <span class="st">'name'</span><span class="op">)</span></span>
-<span class="r-in"><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="va">dt_ti3</span> <span class="op">=</span> <span class="fu">pq_addti</span><span class="op">(</span></span>
-<span class="r-in">  <span class="va">dt_ssec</span>, sma<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>n<span class="op">=</span><span class="fl">20</span><span class="op">)</span>, sma<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>n<span class="op">=</span><span class="fl">50</span><span class="op">)</span>, macd <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>, </span>
-<span class="r-in">  col_kp <span class="op">=</span> <span class="cn">NULL</span></span>
-<span class="r-in"><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># self-defined technical indicators</span></span>
-<span class="r-in"><span class="va">bias</span> <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span>, <span class="va">n</span><span class="op">=</span><span class="fl">50</span>, <span class="va">maType</span><span class="op">=</span><span class="st">'SMA'</span><span class="op">)</span> <span class="op">{</span></span>
-<span class="r-in">    <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/joshuaulrich/TTR" class="external-link">TTR</a></span><span class="op">)</span></span>
-<span class="r-in">    <span class="op">(</span><span class="va">x</span><span class="op">/</span><span class="fu"><a href="https://rdrr.io/r/base/do.call.html" class="external-link">do.call</a></span><span class="op">(</span><span class="va">maType</span>, <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>x<span class="op">=</span><span class="va">x</span>, n<span class="op">=</span><span class="va">n</span><span class="op">)</span><span class="op">)</span><span class="op">-</span><span class="fl">1</span><span class="op">)</span><span class="op">*</span><span class="fl">100</span></span>
-<span class="r-in"><span class="op">}</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="va">dt_ti3</span> <span class="op">=</span> <span class="fu">pq_addti</span><span class="op">(</span><span class="va">dt_ssec</span>, bias <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fl">200</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># }</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># \donttest{</span></span></span>
+<span class="r-in"><span><span class="co"># load data</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">'dt_ssec'</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># add technical indicators</span></span></span>
+<span class="r-in"><span><span class="va">dt_ti1</span> <span class="op">=</span> <span class="fu">pq_addti</span><span class="op">(</span><span class="va">dt_ssec</span>, sma<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>n<span class="op">=</span><span class="fl">20</span><span class="op">)</span>, sma<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>n<span class="op">=</span><span class="fl">50</span><span class="op">)</span>, macd <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># specify the price column x</span></span></span>
+<span class="r-in"><span><span class="va">dt_ti11</span> <span class="op">=</span> <span class="fu">pq_addti</span><span class="op">(</span><span class="va">dt_ssec</span>, sma<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>n<span class="op">=</span><span class="fl">20</span>, x<span class="op">=</span><span class="st">'open'</span><span class="op">)</span>, sma<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>n<span class="op">=</span><span class="fl">50</span>, x<span class="op">=</span><span class="st">'open'</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">dt_ti12</span> <span class="op">=</span> <span class="fu">pq_addti</span><span class="op">(</span><span class="va">dt_ssec</span>, x<span class="op">=</span><span class="st">'open'</span>, sma<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>n<span class="op">=</span><span class="fl">20</span><span class="op">)</span>, sma<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>n<span class="op">=</span><span class="fl">50</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># only technical indicators</span></span></span>
+<span class="r-in"><span><span class="va">dt_ti2</span> <span class="op">=</span> <span class="fu">pq_addti</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">dt_ssec</span>, sma<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>n<span class="op">=</span><span class="fl">20</span><span class="op">)</span>, sma<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>n<span class="op">=</span><span class="fl">50</span><span class="op">)</span>, macd <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>, </span></span>
+<span class="r-in"><span>  col_kp <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'symbol'</span>, <span class="st">'name'</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">dt_ti3</span> <span class="op">=</span> <span class="fu">pq_addti</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">dt_ssec</span>, sma<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>n<span class="op">=</span><span class="fl">20</span><span class="op">)</span>, sma<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>n<span class="op">=</span><span class="fl">50</span><span class="op">)</span>, macd <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>, </span></span>
+<span class="r-in"><span>  col_kp <span class="op">=</span> <span class="cn">NULL</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># self-defined technical indicators</span></span></span>
+<span class="r-in"><span><span class="va">bias</span> <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span>, <span class="va">n</span><span class="op">=</span><span class="fl">50</span>, <span class="va">maType</span><span class="op">=</span><span class="st">'SMA'</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>    <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/joshuaulrich/TTR" class="external-link">TTR</a></span><span class="op">)</span></span></span>
+<span class="r-in"><span>    <span class="op">(</span><span class="va">x</span><span class="op">/</span><span class="fu"><a href="https://rdrr.io/r/base/do.call.html" class="external-link">do.call</a></span><span class="op">(</span><span class="va">maType</span>, <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>x<span class="op">=</span><span class="va">x</span>, n<span class="op">=</span><span class="va">n</span><span class="op">)</span><span class="op">)</span><span class="op">-</span><span class="fl">1</span><span class="op">)</span><span class="op">*</span><span class="fl">100</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">dt_ti3</span> <span class="op">=</span> <span class="fu">pq_addti</span><span class="op">(</span><span class="va">dt_ssec</span>, bias <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fl">200</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># }</span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -137,7 +140,7 @@
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

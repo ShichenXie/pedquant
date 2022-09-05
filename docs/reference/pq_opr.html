@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pedquant</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.0.999</span>
       </span>
     </div>
 
@@ -64,75 +64,84 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">pq_opr</span><span class="op">(</span><span class="va">dt</span>, <span class="va">opr</span>, x <span class="op">=</span> <span class="st">"close"</span>, rm_na <span class="op">=</span> <span class="cn">FALSE</span>, <span class="va">...</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">pq_opr</span><span class="op">(</span><span class="va">dt</span>, <span class="va">opr</span>, x <span class="op">=</span> <span class="st">"close"</span>, rm_na <span class="op">=</span> <span class="cn">FALSE</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>dt</dt>
 <dd><p>a list/dataframe of time series datasets.</p></dd>
+
+
 <dt>opr</dt>
 <dd><p>operation string.</p></dd>
+
+
 <dt>x</dt>
 <dd><p>the numeric column names, defaults to close.</p></dd>
+
+
 <dt>rm_na</dt>
 <dd><p>weather to remove NA values when perform arithmetic.</p></dd>
+
+
 <dt>...</dt>
 <dd><p>additional parameters.</p></dd>
+
 </dl></div>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"dt_banks"</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="va">dt1</span> <span class="op">=</span> <span class="fu">pq_opr</span><span class="op">(</span><span class="va">dt_banks</span>, <span class="st">'601288.SS/601988.SS'</span><span class="op">)</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">dt1</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"dt_banks"</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">dt1</span> <span class="op">=</span> <span class="fu">pq_opr</span><span class="op">(</span><span class="va">dt_banks</span>, <span class="st">'601288.SS/601988.SS'</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">dt1</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $`601288.SS/601988.SS`</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                    symbol              name       date     close</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    1: 601288.SS/601988.SS 农业银行/中国银行 2010-07-15 0.7826087</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    2: 601288.SS/601988.SS 农业银行/中国银行 2010-07-16 0.7842566</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    3: 601288.SS/601988.SS 农业银行/中国银行 2010-07-19 0.7832370</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    4: 601288.SS/601988.SS 农业银行/中国银行 2010-07-20 0.7698864</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    5: 601288.SS/601988.SS 农业银行/中国银行 2010-07-21 0.7677054</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    1: 601288.SS/601988.SS 农业银行/中国银行 2013-12-31 0.9465649</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    2: 601288.SS/601988.SS 农业银行/中国银行 2014-01-02 0.9463602</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    3: 601288.SS/601988.SS 农业银行/中国银行 2014-01-03 0.9609375</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    4: 601288.SS/601988.SS 农业银行/中国银行 2014-01-06 0.9644269</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    5: 601288.SS/601988.SS 农业银行/中国银行 2014-01-07 0.9642857</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   ---                                                           </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1812: 601288.SS/601988.SS 农业银行/中国银行 2017-12-25 0.9387755</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1813: 601288.SS/601988.SS 农业银行/中国银行 2017-12-26 0.9518987</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1814: 601288.SS/601988.SS 农业银行/中国银行 2017-12-27 0.9566327</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1815: 601288.SS/601988.SS 农业银行/中国银行 2017-12-28 0.9618321</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1816: 601288.SS/601988.SS 农业银行/中国银行 2017-12-29 0.9647355</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1217: 601288.SS/601988.SS 农业银行/中国银行 2018-12-24 0.9832869</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1218: 601288.SS/601988.SS 农业银行/中国银行 2018-12-25 0.9861496</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1219: 601288.SS/601988.SS 农业银行/中国银行 2018-12-26 0.9889807</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1220: 601288.SS/601988.SS 农业银行/中国银行 2018-12-27 0.9917355</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1221: 601288.SS/601988.SS 农业银行/中国银行 2018-12-28 0.9972299</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-in"></span>
-<span class="r-in"><span class="va">dt2</span> <span class="op">=</span> <span class="fu">pq_opr</span><span class="op">(</span><span class="va">dt_banks</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'(601288.SS+601988.SS)/2'</span>, <span class="st">'(601288.SS*601988.SS)^0.5'</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">dt2</span><span class="op">)</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">dt2</span> <span class="op">=</span> <span class="fu">pq_opr</span><span class="op">(</span><span class="va">dt_banks</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'(601288.SS+601988.SS)/2'</span>, <span class="st">'(601288.SS*601988.SS)^0.5'</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">dt2</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $`(601288.SS+601988.SS)/2`</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                        symbol                  name       date close</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    1: (601288.SS+601988.SS)/2 (农业银行+中国银行)/2 2010-07-15 3.075</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    2: (601288.SS+601988.SS)/2 (农业银行+中国银行)/2 2010-07-16 3.060</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    3: (601288.SS+601988.SS)/2 (农业银行+中国银行)/2 2010-07-19 3.085</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    4: (601288.SS+601988.SS)/2 (农业银行+中国银行)/2 2010-07-20 3.115</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    5: (601288.SS+601988.SS)/2 (农业银行+中国银行)/2 2010-07-21 3.120</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    1: (601288.SS+601988.SS)/2 (农业银行+中国银行)/2 2013-12-31 2.550</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    2: (601288.SS+601988.SS)/2 (农业银行+中国银行)/2 2014-01-02 2.540</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    3: (601288.SS+601988.SS)/2 (农业银行+中国银行)/2 2014-01-03 2.510</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    4: (601288.SS+601988.SS)/2 (农业银行+中国银行)/2 2014-01-06 2.485</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    5: (601288.SS+601988.SS)/2 (农业银行+中国银行)/2 2014-01-07 2.475</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   ---                                                               </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1812: (601288.SS+601988.SS)/2 (农业银行+中国银行)/2 2017-12-25 3.800</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1813: (601288.SS+601988.SS)/2 (农业银行+中国银行)/2 2017-12-26 3.855</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1814: (601288.SS+601988.SS)/2 (农业银行+中国银行)/2 2017-12-27 3.835</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1815: (601288.SS+601988.SS)/2 (农业银行+中国银行)/2 2017-12-28 3.855</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1816: (601288.SS+601988.SS)/2 (农业银行+中国银行)/2 2017-12-29 3.900</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1217: (601288.SS+601988.SS)/2 (农业银行+中国银行)/2 2018-12-24 3.560</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1218: (601288.SS+601988.SS)/2 (农业银行+中国银行)/2 2018-12-25 3.585</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1219: (601288.SS+601988.SS)/2 (农业银行+中国银行)/2 2018-12-26 3.610</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1220: (601288.SS+601988.SS)/2 (农业银行+中国银行)/2 2018-12-27 3.615</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1221: (601288.SS+601988.SS)/2 (农业银行+中国银行)/2 2018-12-28 3.605</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $`(601288.SS*601988.SS)^0.5`</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                          symbol                    name       date    close</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    1: (601288.SS*601988.SS)^0.5 (农业银行*中国银行)^0.5 2010-07-15 3.052048</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    2: (601288.SS*601988.SS)^0.5 (农业银行*中国银行)^0.5 2010-07-16 3.037548</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    3: (601288.SS*601988.SS)^0.5 (农业银行*中国银行)^0.5 2010-07-19 3.062123</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    4: (601288.SS*601988.SS)^0.5 (农业银行*中国银行)^0.5 2010-07-20 3.088560</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    5: (601288.SS*601988.SS)^0.5 (农业银行*中国银行)^0.5 2010-07-21 3.092944</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    1: (601288.SS*601988.SS)^0.5 (农业银行*中国银行)^0.5 2013-12-31 2.549039</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    2: (601288.SS*601988.SS)^0.5 (农业银行*中国银行)^0.5 2014-01-02 2.539035</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    3: (601288.SS*601988.SS)^0.5 (农业银行*中国银行)^0.5 2014-01-03 2.509502</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    4: (601288.SS*601988.SS)^0.5 (农业银行*中国银行)^0.5 2014-01-06 2.484593</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    5: (601288.SS*601988.SS)^0.5 (农业银行*中国银行)^0.5 2014-01-07 2.474591</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   ---                                                                      </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1812: (601288.SS*601988.SS)^0.5 (农业银行*中国银行)^0.5 2017-12-25 3.798105</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1813: (601288.SS*601988.SS)^0.5 (农业银行*中国银行)^0.5 2017-12-26 3.853829</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1814: (601288.SS*601988.SS)^0.5 (农业银行*中国银行)^0.5 2017-12-27 3.834058</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1815: (601288.SS*601988.SS)^0.5 (农业银行*中国银行)^0.5 2017-12-28 3.854270</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1816: (601288.SS*601988.SS)^0.5 (农业银行*中国银行)^0.5 2017-12-29 3.899372</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1217: (601288.SS*601988.SS)^0.5 (农业银行*中国银行)^0.5 2018-12-24 3.559874</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1218: (601288.SS*601988.SS)^0.5 (农业银行*中国银行)^0.5 2018-12-25 3.584913</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1219: (601288.SS*601988.SS)^0.5 (农业银行*中国银行)^0.5 2018-12-26 3.609945</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1220: (601288.SS*601988.SS)^0.5 (农业银行*中国银行)^0.5 2018-12-27 3.614969</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1221: (601288.SS*601988.SS)^0.5 (农业银行*中国银行)^0.5 2018-12-28 3.604997</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-in"></span>
+<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -147,7 +156,7 @@
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

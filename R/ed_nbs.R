@@ -22,16 +22,13 @@ dim_nbs_db = function() {
 
 
 
-#' @importFrom rvest html_nodes html_text %>%
+#' @importFrom rvest read_html html_nodes html_text html_attr html_table %>% 
 nbs_read_json = function(url, eng=FALSE) {
-  wb = url# load_web_source(url)
-  
-  dt = read_html(wb) %>% 
+  dt = read_html(url) %>% 
     html_nodes('pre') %>% 
     html_text() %>% 
     fromJSON()
   
-  if (eng == FALSE) warning('The Chinese characters cannot be encoded when using phantomjs in webdriver package.')
   return(dt)
 }
 # query a symbol from nbs

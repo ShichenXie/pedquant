@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pedquant</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.0.999</span>
       </span>
     </div>
 
@@ -64,54 +64,71 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">ed_nbs</span><span class="op">(</span>symbol <span class="op">=</span> <span class="cn">NULL</span>, freq <span class="op">=</span> <span class="cn">NULL</span>, geo_type <span class="op">=</span> <span class="cn">NULL</span>, subregion <span class="op">=</span> <span class="cn">NULL</span>,
-  date_range <span class="op">=</span> <span class="st">"10y"</span>, from <span class="op">=</span> <span class="cn">NULL</span>, to <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.Date</a></span><span class="op">(</span><span class="op">)</span>, na_rm <span class="op">=</span> <span class="cn">FALSE</span>,
-  eng <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">ed_nbs</span><span class="op">(</span>symbol <span class="op">=</span> <span class="cn">NULL</span>, freq <span class="op">=</span> <span class="cn">NULL</span>, geo_type <span class="op">=</span> <span class="cn">NULL</span>, subregion <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  date_range <span class="op">=</span> <span class="st">"10y"</span>, from <span class="op">=</span> <span class="cn">NULL</span>, to <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.Date</a></span><span class="op">(</span><span class="op">)</span>, na_rm <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  eng <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>symbol</dt>
 <dd><p>symbols of NBS indicators. It is available via <code>ed_nbs_symbol</code>. Default is NULL.</p></dd>
+
+
 <dt>freq</dt>
 <dd><p>the frequency of NBS indicators, including 'monthly', 'quarterly', 'yearly'. Default is NULL.</p></dd>
+
+
 <dt>geo_type</dt>
 <dd><p>geography type in NBS, including 'nation', 'province', 'city'. Default is NULL.</p></dd>
+
+
 <dt>subregion</dt>
 <dd><p>codes of province or city, which is available via <code>ed_nbs_subregion</code>. Default is NULL.</p></dd>
+
+
 <dt>date_range</dt>
 <dd><p>date range. Available value includes '1m'-'11m', 'ytd', 'max' and '1y'-'ny'. Default is '10y'.</p></dd>
+
+
 <dt>from</dt>
 <dd><p>the start date. Default is NULL. If it is NULL, then calculate using date_range and end date.</p></dd>
+
+
 <dt>to</dt>
 <dd><p>the end date. Default is the current date.</p></dd>
+
+
 <dt>na_rm</dt>
 <dd><p>logical. Whether to remove missing values from datasets. Default is FALSE.</p></dd>
+
+
 <dt>eng</dt>
 <dd><p>logical. The language of the query results is in English or in Chinese Default is FALSE.</p></dd>
+
 </dl></div>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span>
-<span class="r-in"><span class="co"># query NBS data without setting any parameters</span></span>
-<span class="r-in"><span class="va">dt</span> <span class="op">=</span> <span class="fu">ed_nbs</span><span class="op">(</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># specify paratmeters</span></span>
-<span class="r-in"><span class="va">dt1</span> <span class="op">=</span> <span class="fu">ed_nbs</span><span class="op">(</span>geo_type<span class="op">=</span><span class="st">'nation'</span>, freq<span class="op">=</span><span class="st">'quarterly'</span>, symbol<span class="op">=</span><span class="st">'A010101'</span><span class="op">)</span></span>
-<span class="r-in"><span class="co"># or using 'n'/'q' represents 'nation'/'quarterly'</span></span>
-<span class="r-in"><span class="va">dt2</span> <span class="op">=</span> <span class="fu">ed_nbs</span><span class="op">(</span>geo_type<span class="op">=</span><span class="st">'n'</span>, freq<span class="op">=</span><span class="st">'q'</span>, symbol<span class="op">=</span><span class="st">'A010101'</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># query data in one province</span></span>
-<span class="r-in"><span class="va">dt3</span> <span class="op">=</span> <span class="fu">ed_nbs</span><span class="op">(</span>geo_type<span class="op">=</span><span class="st">'province'</span>, freq<span class="op">=</span><span class="st">'quarterly'</span>, </span>
-<span class="r-in">  symbol<span class="op">=</span><span class="st">'A010101'</span>, subregion<span class="op">=</span><span class="st">'110000'</span><span class="op">)</span></span>
-<span class="r-in">  </span>
-<span class="r-in"><span class="co"># query data in all province</span></span>
-<span class="r-in"><span class="va">dt4</span> <span class="op">=</span> <span class="fu">ed_nbs</span><span class="op">(</span>geo_type<span class="op">=</span><span class="st">'province'</span>, freq<span class="op">=</span><span class="st">'quarterly'</span>, </span>
-<span class="r-in">  symbol<span class="op">=</span><span class="st">'A010101'</span>, subregion<span class="op">=</span><span class="st">'all'</span><span class="op">)</span></span>
-<span class="r-in"><span class="op">}</span></span>
-<span class="r-in"></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span><span class="co"># query NBS data without setting any parameters</span></span></span>
+<span class="r-in"><span><span class="va">dt</span> <span class="op">=</span> <span class="fu">ed_nbs</span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># specify paratmeters</span></span></span>
+<span class="r-in"><span><span class="va">dt1</span> <span class="op">=</span> <span class="fu">ed_nbs</span><span class="op">(</span>geo_type<span class="op">=</span><span class="st">'nation'</span>, freq<span class="op">=</span><span class="st">'quarterly'</span>, symbol<span class="op">=</span><span class="st">'A010101'</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="co"># or using 'n'/'q' represents 'nation'/'quarterly'</span></span></span>
+<span class="r-in"><span><span class="va">dt2</span> <span class="op">=</span> <span class="fu">ed_nbs</span><span class="op">(</span>geo_type<span class="op">=</span><span class="st">'n'</span>, freq<span class="op">=</span><span class="st">'q'</span>, symbol<span class="op">=</span><span class="st">'A010101'</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># query data in one province</span></span></span>
+<span class="r-in"><span><span class="va">dt3</span> <span class="op">=</span> <span class="fu">ed_nbs</span><span class="op">(</span>geo_type<span class="op">=</span><span class="st">'province'</span>, freq<span class="op">=</span><span class="st">'quarterly'</span>, </span></span>
+<span class="r-in"><span>  symbol<span class="op">=</span><span class="st">'A010101'</span>, subregion<span class="op">=</span><span class="st">'110000'</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  </span></span>
+<span class="r-in"><span><span class="co"># query data in all province</span></span></span>
+<span class="r-in"><span><span class="va">dt4</span> <span class="op">=</span> <span class="fu">ed_nbs</span><span class="op">(</span>geo_type<span class="op">=</span><span class="st">'province'</span>, freq<span class="op">=</span><span class="st">'quarterly'</span>, </span></span>
+<span class="r-in"><span>  symbol<span class="op">=</span><span class="st">'A010101'</span>, subregion<span class="op">=</span><span class="st">'all'</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -126,7 +143,7 @@
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

@@ -1,3 +1,19 @@
+check_odr = function(orders) {
+    type = NULL
+    # symbol, date, type, prices, volumes
+    if (inherits(orders, 'data.frame')) {
+        orders = setDT(orders)[!is.na(type)]
+    }
+    
+    return(orders)
+}
+
+odr_lag = function(dtorders, odrcols = c('type', 'prices', 'volumes')) {
+    odrcols = intersect(odrcols, names(dtorders))
+    dtorders = dtorders[, (odrcols) := lapply(.SD, shift), .SDcols = odrcols]
+    return(dtorders)
+}
+
 odr_exp = function(dtorders, odrcols = c('type', 'prices', 'volumes'), kpallrow = FALSE, kp1strow = FALSE, ti = NULL) {
     type = ctcnt = prices = NULL
     
@@ -45,7 +61,20 @@ odr_filter_vol = function(orders, odrvol = 'volumes') {
     return(orders)
 }
 
-odr_place = function(orders, init_fund = 10^6, rate = 1, odrvol = 'volumes') {
+odr_addvol = function(orders) {
+    volumes = type = NULL 
+    
+    if (!('volumes' %in% names(orders))) {
+        orders[, volumes := 1]
+    }
+    
+    orders = orders[
+        type %in% c('bto', 'buy'), volumes := abs(volumes)
+    ][type %in% c('stc', 'sell'), volumes := -abs(volumes)]
+    
+    return(orders)
+}
+odr_place = function(orders, init_fund = 10^6, rate = 1, odrvol = 'volumes', lot = 100) {
     rid=type=volumes=prices=position=value=equity=fund=balace=.=symbol=NULL 
     
     fundi = init_fund
@@ -53,12 +82,12 @@ odr_place = function(orders, init_fund = 10^6, rate = 1, odrvol = 'volumes') {
     
     for (i in dtodr[,rid]) {
         dtodr = dtodr[
-            rid == i & type == 'buy', volumes := floor(fundi*rate/prices/100)*100 
+            rid == i & type %in% c('bto', 'buy'), volumes := floor(fundi*rate/prices/lot)*lot 
         ][, position := cumsum(volumes)
         ]
         
         dtodr = dtodr[
-            rid == i & type == 'sell', volumes := dtodr[i-1, -position]
+            rid == i & type %in% c('stc', 'sell'), volumes := dtodr[i-1, -position]
         ][, position := cumsum(volumes)
         ]
         

@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pedquant</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.0.999</span>
       </span>
     </div>
 
@@ -64,82 +64,99 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">md_stock</span><span class="op">(</span><span class="va">symbol</span>, type <span class="op">=</span> <span class="st">"history"</span>, date_range <span class="op">=</span> <span class="st">"3y"</span>, from <span class="op">=</span> <span class="cn">NULL</span>,
-  to <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.Date</a></span><span class="op">(</span><span class="op">)</span>, adjust <span class="op">=</span> <span class="cn">FALSE</span>, freq <span class="op">=</span> <span class="st">"daily"</span>, print_step <span class="op">=</span> <span class="fl">1L</span>,
-  <span class="va">...</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">md_stock</span><span class="op">(</span><span class="va">symbol</span>, type <span class="op">=</span> <span class="st">"history"</span>, date_range <span class="op">=</span> <span class="st">"3y"</span>, from <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  to <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.Date</a></span><span class="op">(</span><span class="op">)</span>, adjust <span class="op">=</span> <span class="cn">FALSE</span>, freq <span class="op">=</span> <span class="st">"daily"</span>, print_step <span class="op">=</span> <span class="fl">1L</span>,</span>
+<span>  <span class="va">...</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>symbol</dt>
 <dd><p>symbols of stock shares.</p></dd>
+
+
 <dt>type</dt>
 <dd><p>the data type, including history, adjfactor, real and info. Default is history.</p></dd>
+
+
 <dt>date_range</dt>
 <dd><p>date range. Available value including '1m'-'11m', 'ytd', 'max' and '1y'-. Default is '3y'.</p></dd>
+
+
 <dt>from</dt>
 <dd><p>the start date. Default is NULL.</p></dd>
+
+
 <dt>to</dt>
 <dd><p>the end date. Default is current system date.</p></dd>
+
+
 <dt>adjust</dt>
 <dd><p>whether to adjust the OHLC prices, defaults to FALSE. If it is FALSE, create a close_adj column if not exist; if it is TRUE, adjust all open, high, low, close columns; if it is NULL, return the original data from source.
 For the yahoo data, the adjustment is based on the close_adj; for the 163 data, the adjustment is based on the cumulative products of close/close_prev.</p></dd>
+
+
 <dt>freq</dt>
 <dd><p>data frequency, default is daily. .</p></dd>
+
+
 <dt>print_step</dt>
 <dd><p>A non-negative integer. Print symbol name by each print_step iteration. Default is 1L.</p></dd>
+
+
 <dt>...</dt>
 <dd><p>Additional parameters.</p></dd>
+
 </dl></div>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span>
-<span class="r-in"><span class="co"># Example I: query history data</span></span>
-<span class="r-in"><span class="co"># us</span></span>
-<span class="r-in"><span class="va">FAANG</span> <span class="op">=</span> <span class="fu">md_stock</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'FB'</span>, <span class="st">'AMZN'</span>, <span class="st">'AAPL'</span>, <span class="st">'NFLX'</span>, <span class="st">'GOOG'</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># hkex</span></span>
-<span class="r-in"><span class="va">TMX</span> <span class="op">=</span> <span class="fu">md_stock</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'00700.hk'</span>, <span class="st">'03690.hk'</span>, <span class="st">'01810.hk'</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># sse/szse</span></span>
-<span class="r-in"><span class="co">## the symbol without suffix</span></span>
-<span class="r-in"><span class="va">dt_cn1</span> <span class="op">=</span> <span class="fu">md_stock</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"000001"</span>, <span class="st">"^000001"</span>, <span class="st">"512510"</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in"><span class="co">## the symbol with suffix</span></span>
-<span class="r-in"><span class="va">dt_cn2</span> <span class="op">=</span> <span class="fu">md_stock</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"000001.sz"</span>, <span class="st">"000001.ss"</span>, <span class="st">'512510.ss'</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># Example II: price adjust factors</span></span>
-<span class="r-in"><span class="co"># adjust factors, splits and dividend</span></span>
-<span class="r-in"><span class="va">dt_adj</span> <span class="op">=</span> <span class="fu">md_stock</span><span class="op">(</span>symbol<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"000001"</span>, <span class="st">"^000001"</span><span class="op">)</span>, type<span class="op">=</span><span class="st">'adjfactor'</span>, date_range<span class="op">=</span><span class="st">'max'</span><span class="op">)</span></span>
-<span class="r-in">             </span>
-<span class="r-in">             </span>
-<span class="r-in"><span class="co"># Example III: query real prices</span></span>
-<span class="r-in"><span class="co"># real price for equities</span></span>
-<span class="r-in"></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># real prices of all A shares in sse and szse</span></span>
-<span class="r-in"><span class="va">dt_real2</span> <span class="op">=</span> <span class="fu">md_stock</span><span class="op">(</span>symbol<span class="op">=</span><span class="st">'a'</span>, type<span class="op">=</span><span class="st">'real'</span><span class="op">)</span></span>
-<span class="r-in"><span class="co"># real prices of all A/B shares and index in sse and szse</span></span>
-<span class="r-in"><span class="va">dt_real3</span> <span class="op">=</span> <span class="fu">md_stock</span><span class="op">(</span>symbol<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'a'</span>, <span class="st">'b'</span>, <span class="st">'index'</span><span class="op">)</span>, type<span class="op">=</span><span class="st">'real'</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># show real prices and sector/industry</span></span>
-<span class="r-in"><span class="va">dt_real4</span> <span class="op">=</span> <span class="fu">md_stock</span><span class="op">(</span>symbol <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'a'</span>, <span class="st">'b'</span>, <span class="st">'index'</span>, <span class="st">'fund'</span><span class="op">)</span>, </span>
-<span class="r-in">  type <span class="op">=</span> <span class="st">'real'</span>, show_tags <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># Example IV: </span></span>
-<span class="r-in"><span class="co"># valuation ratios (pe, pb, ps) for shares in sse and szse</span></span>
-<span class="r-in"><span class="va">dt_valuation</span> <span class="op">=</span> <span class="fu">md_stock</span><span class="op">(</span>symbol<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'600000'</span>, <span class="st">'000001'</span>, <span class="st">'^000001'</span>, <span class="st">'^399001'</span><span class="op">)</span>, </span>
-<span class="r-in">               valuation <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span class="r-in">               </span>
-<span class="r-in">               </span>
-<span class="r-in"><span class="co"># query company information (profile/ipo), revenue and staff</span></span>
-<span class="r-in"><span class="va">dt_info1</span> <span class="op">=</span> <span class="fu">md_stock</span><span class="op">(</span><span class="st">'600036'</span>, type <span class="op">=</span> <span class="st">'info'</span><span class="op">)</span></span>
-<span class="r-in"><span class="co"># query history revenue </span></span>
-<span class="r-in"><span class="va">dt_info2</span> <span class="op">=</span> <span class="fu">md_stock</span><span class="op">(</span><span class="st">'600036'</span>, type <span class="op">=</span> <span class="st">'info'</span>, rev_hist <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span class="r-in"><span class="op">}</span></span>
-<span class="r-in"></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span><span class="co"># Example I: query history data</span></span></span>
+<span class="r-in"><span><span class="co"># us</span></span></span>
+<span class="r-in"><span><span class="va">FAANG</span> <span class="op">=</span> <span class="fu">md_stock</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'FB'</span>, <span class="st">'AMZN'</span>, <span class="st">'AAPL'</span>, <span class="st">'NFLX'</span>, <span class="st">'GOOG'</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># hkex</span></span></span>
+<span class="r-in"><span><span class="va">TMX</span> <span class="op">=</span> <span class="fu">md_stock</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'00700.hk'</span>, <span class="st">'03690.hk'</span>, <span class="st">'01810.hk'</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># sse/szse</span></span></span>
+<span class="r-in"><span><span class="co">## the symbol without suffix</span></span></span>
+<span class="r-in"><span><span class="va">dt_cn1</span> <span class="op">=</span> <span class="fu">md_stock</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"000001"</span>, <span class="st">"^000001"</span>, <span class="st">"512510"</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="co">## the symbol with suffix</span></span></span>
+<span class="r-in"><span><span class="va">dt_cn2</span> <span class="op">=</span> <span class="fu">md_stock</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"000001.sz"</span>, <span class="st">"000001.ss"</span>, <span class="st">'512510.ss'</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Example II: price adjust factors</span></span></span>
+<span class="r-in"><span><span class="co"># adjust factors, splits and dividend</span></span></span>
+<span class="r-in"><span><span class="va">dt_adj</span> <span class="op">=</span> <span class="fu">md_stock</span><span class="op">(</span>symbol<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"000001"</span>, <span class="st">"^000001"</span><span class="op">)</span>, type<span class="op">=</span><span class="st">'adjfactor'</span>, date_range<span class="op">=</span><span class="st">'max'</span><span class="op">)</span></span></span>
+<span class="r-in"><span>             </span></span>
+<span class="r-in"><span>             </span></span>
+<span class="r-in"><span><span class="co"># Example III: query real prices</span></span></span>
+<span class="r-in"><span><span class="co"># real price for equities</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># real prices of all A shares in sse and szse</span></span></span>
+<span class="r-in"><span><span class="va">dt_real2</span> <span class="op">=</span> <span class="fu">md_stock</span><span class="op">(</span>symbol<span class="op">=</span><span class="st">'a'</span>, type<span class="op">=</span><span class="st">'real'</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="co"># real prices of all A/B shares and index in sse and szse</span></span></span>
+<span class="r-in"><span><span class="va">dt_real3</span> <span class="op">=</span> <span class="fu">md_stock</span><span class="op">(</span>symbol<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'a'</span>, <span class="st">'b'</span>, <span class="st">'index'</span><span class="op">)</span>, type<span class="op">=</span><span class="st">'real'</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># show real prices and sector/industry</span></span></span>
+<span class="r-in"><span><span class="va">dt_real4</span> <span class="op">=</span> <span class="fu">md_stock</span><span class="op">(</span>symbol <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'a'</span>, <span class="st">'b'</span>, <span class="st">'index'</span>, <span class="st">'fund'</span><span class="op">)</span>, </span></span>
+<span class="r-in"><span>  type <span class="op">=</span> <span class="st">'real'</span>, show_tags <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Example IV: </span></span></span>
+<span class="r-in"><span><span class="co"># valuation ratios (pe, pb, ps) for shares in sse and szse</span></span></span>
+<span class="r-in"><span><span class="va">dt_valuation</span> <span class="op">=</span> <span class="fu">md_stock</span><span class="op">(</span>symbol<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'600000'</span>, <span class="st">'000001'</span>, <span class="st">'^000001'</span>, <span class="st">'^399001'</span><span class="op">)</span>, </span></span>
+<span class="r-in"><span>               valuation <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-in"><span>               </span></span>
+<span class="r-in"><span>               </span></span>
+<span class="r-in"><span><span class="co"># query company information (profile/ipo), revenue and staff</span></span></span>
+<span class="r-in"><span><span class="va">dt_info1</span> <span class="op">=</span> <span class="fu">md_stock</span><span class="op">(</span><span class="st">'600036'</span>, type <span class="op">=</span> <span class="st">'info'</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="co"># query history revenue </span></span></span>
+<span class="r-in"><span><span class="va">dt_info2</span> <span class="op">=</span> <span class="fu">md_stock</span><span class="op">(</span><span class="st">'600036'</span>, type <span class="op">=</span> <span class="st">'info'</span>, rev_hist <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -154,7 +171,7 @@ For the yahoo data, the adjustment is based on the close_adj; for the 163 data, 
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

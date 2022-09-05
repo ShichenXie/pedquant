@@ -19,15 +19,7 @@ check_dt = function(dt, symb_name = FALSE, check_date = TRUE) {
     setkeyv(dt, intersect(c('symbol', 'date'), names(dt)) )
     return(dt)
 }
-check_odr = function(orders) {
-    type = NULL
-    # symbol, date, type, prices, volumes
-    if (inherits(orders, 'data.frame')) {
-        orders = setDT(orders)[!is.na(type)]
-    }
-    
-    return(orders)
-}
+
     
 # check arguments
 check_arg = function(arg, choices, default=NULL, arg_name = 'argument') {
@@ -343,57 +335,6 @@ load_read_csv = function(url, encode="UTF-8", handle=new_handle(), csv_header=TR
 }
 
 
-#' @importFrom webdriver run_phantomjs Session install_phantomjs
-load_web_source = function(url) {
-    
-    pjs <- try(run_phantomjs(), silent = TRUE)
-    if (inherits(pjs, 'try-error')) {
-        cat('Installing phantomjs ...\n')
-        install_phantomjs()
-        pjs <- try(run_phantomjs(), silent = TRUE)
-    }
-    ses <- Session$new(port = pjs$port)
-    ses$go(url)
-    wb = ses$getSource()
-    return(wb)
-}
-
-# @importFrom RSelenium
-load_web_source2 = function(url, sleep_time = 0, close_remDr = TRUE) {
-    remoteDriver = NULL
-    # RSelenium ref
-    ## [Selenium](http://www.seleniumhq.org)
-    ## [Selenium with Python](https://selenium-python.readthedocs.io/installation.html)
-    ## [RSelenium: Basics](https://cran.r-project.org/web/packages/RSelenium/vignettes/RSelenium-basics.html)
-    ## [Installing ChromeDriver on macOS](https://www.kenst.com/2015/03/installing-chromedriver-on-mac-osx/)
-    
-    # docker # browser + webDriver + selenium
-    ## https://docs.docker.com/docker-for-mac/
-    ## https://hub.docker.com/u/selenium/
-    ## [An Introduction to Using Selenium-Docker Containers for End-to-End Testing](https://robotninja.com/blog/introduction-using-selenium-docker-containers-end-end-testing/)
-    
-    # docker command
-    ## docker run hello-world
-    ## docker pull selenium/standalone-chrome
-    ## docker image ls
-    ## docker run -d -p 4445:4444 selenium/standalone-chrome
-    ## docker ps
-    ## docker stop CONTAINER
-
-    remDr <- remoteDriver(port = 4445L, browserName = "chrome")
-    remDr$open(silent = TRUE)
-    
-    # navigate
-    remDr$navigate(url)
-    # if (sleep_time>0) Sys.sleep(sleep_time)
-    
-    wb = remDr$getPageSource()[[1]]
-    # XML::htmlParse(wb)
-    # remDr$getTitle()
-    if (close_remDr) remDr$close()
-    
-    return(wb)
-}
 
 #' @importFrom readr read_lines
 #' @importFrom httr POST add_headers
@@ -480,13 +421,6 @@ fill0 = function(x, from_last = FALSE) {
     x[x==0] <- NA
     x2 = na.locf0(x, fromLast = from_last)
     
-    # xdt = data.table(x = x)
-    # while (xdt[x==0,.N] & xdt[,rowid:=.I][x==0, !all(rowid == .I)]) {
-    #     xdt[, x_lag := shift(x, type='lag')
-    #         ][x==0, x := x_lag]
-    # }
-    # x2 = xdt$x
-    
     return(x2)
 }
 #' @importFrom zoo na.locf0
@@ -494,13 +428,7 @@ fillna = function(x, from_last = FALSE) {
     # https://stackoverflow.com/questions/7735647/replacing-nas-with-latest-non-na-value
     
     x2 = na.locf0(x, fromLast = from_last)
-    
-    # xdt = data.table(x = x)
-    # while (xdt[is.na(x),.N] & xdt[,rowid:=.I][is.na(x), !all(rowid == .I)]) {
-    #     xdt[, x_lag := shift(x, type='lag')
-    #       ][is.na(x), x := x_lag]
-    # }
-    # x2 = xdt$x
+    # data.table::nafill 
     
     return(x2)
 }
@@ -614,35 +542,5 @@ rm_error_dat = function(datlst) {
     return(datlst)
 }
 
-# vector to list 
-vec2lst = function(vec, nam=TRUE) {
-    lst = as.list(vec)
-    if (isTRUE(nam)) lst = setNames(lst, vec)
-    return(lst)
-}
-
-# extract table from html via xml2 package
-# @import data.table
-# xml_table = function(wb, num=NULL, sup_rm=NULL, attr=NULL, header=FALSE) {
-#     doc0 = xml_find_all(wb, paste0("//table",attr)) # attr = '[@cellpadding="2"]'
-#     if (!is.null(num)) doc0 = doc0[num]
-#     
-#     doc = lapply(
-#         doc0,
-#         function(x) xml_text(xml_find_all(x, ".//tr"))
-#     )
-#     
-#     dt = lapply(doc, function(x) {
-#         if (!is.null(sup_rm)) x = gsub(sup_rm, "", x)
-#         
-#         dat = data.table(x = x)[, tstrsplit(x, "[\n\t\r]+")]
-#         if (header) {
-#             dat = setnames(dat[-1], as.character(dat[1]))
-#         }
-#         return(dat)
-#     })
-#     
-#     return(dt)
-# }
 
 

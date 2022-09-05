@@ -4,7 +4,10 @@
 \alias{md_future_symbol}
 \title{symbol of future market data}
 \usage{
-md_future_symbol()
+md_future_symbol(...)
+}
+\arguments{
+\item{...}{ignored parameters}
 }
 \description{
 \code{md_future_symbol} returns all future symbols that provided by sina finance, see details on \url{http://vip.stock.finance.sina.com.cn/quotes_service/view/qihuohangqing.html} or \url{http://vip.stock.finance.sina.com.cn/mkt/#global_qh})

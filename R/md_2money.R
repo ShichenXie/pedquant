@@ -92,7 +92,6 @@ md_libor1_last5 = function(currency) {
     wb = read_html(url)
     
     dt_libor_5 = setDT(html_table(wb, fill = TRUE, header = TRUE)[[14]])
-        # xml_table(wb, attr = '[@cellpadding="2"]', header = TRUE)[[1]]
     dt_libor_5 = dt_libor_5[,-1][,symbol := paste0('uko',currency,c('on','1w','2w',paste0(1:11,'m'),'1y'))][]
     dt_libor_5[dt_libor_5=='-'] <- NA
     dt_libor_5 = melt(dt_libor_5, id.vars = 'symbol', na.rm = TRUE, variable.name = 'date')[, `:=`(
@@ -175,7 +174,7 @@ md_money = function(symbol=NULL, type = 'history', date_range = '3y', from=NULL,
 }
 
     
-md_money_symbol = function() {
+md_money_symbol = function(...) {
     func_ibor_symbol()[, c('symbol', 'name'), with = FALSE]
 }
     

@@ -43,7 +43,7 @@ pq1_return = function(dt, x, freq='daily', n=1, date_type = 'eop', method = 'ari
     
     freq_list = c('daily', 'weekly', 'monthly', 'quarterly', 'yearly')
     if (freq == 'all') freq = freq_list
-    freq = vec2lst(intersect(freq_list, freq))
+    freq = xefun:::c_list(intersect(freq_list, freq))
     
     
         

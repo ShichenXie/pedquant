@@ -17,42 +17,16 @@ symbol_future_sina_xchg = function() {
 #' 
 #' \code{md_future_symbol} returns all future symbols that provided by sina finance, see details on \url{http://vip.stock.finance.sina.com.cn/quotes_service/view/qihuohangqing.html} or \url{http://vip.stock.finance.sina.com.cn/mkt/#global_qh})
 #' 
+#' @param ... ignored parameters
+#' 
 #' @examples
 #' \dontrun{
 #' sybs = md_future_symbol()
 #' }
 #' 
 #' @export
-md_future_symbol = function() {
-    .=board=symbol=name=exchange=NULL
-    
-    type = 'main'
-    if (type == 'main') {
-        syb_dt = symbol_future_sina_xchg()
-        
-    } else if (type == 'all') {
-        urls = as.list(sprintf('http://vip.stock.finance.sina.com.cn/quotes_service/view/qihuohangqing.html#titlePos_%s', 0:3))
-        names(urls) = c("ZCE", "DCE", "SHFE", 'CFFEX')
-        urls = c(urls, list(global = 'http://vip.stock.finance.sina.com.cn/mkt/#global_qh'))
-        
-        datlst = lapply(urls, function(u) {
-            dat = load_web_source(u)
-            tbls = read_html(dat) %>% 
-                html_table(header = TRUE)
-            if (grepl('global_qh', u)) {
-                tbls = tbls[7]
-            }
-            rbindlist(lapply(tbls, function(x) {
-                tbl = setnames(setDT(x)[,1:2], c('symbol', 'name'))[
-                    symbol != ''
-                ]
-                return(tbl)
-            }))
-        })
-        
-        syb_dt = rbindlist(datlst, idcol = 'exchange')
-    }
-    
+md_future_symbol = function(...) {
+    syb_dt = symbol_future_sina_xchg()
     return(syb_dt)
 }
 

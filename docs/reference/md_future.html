@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pedquant</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.0.999</span>
       </span>
     </div>
 
@@ -64,42 +64,57 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">md_future</span><span class="op">(</span><span class="va">symbol</span>, type <span class="op">=</span> <span class="st">"history"</span>, date_range <span class="op">=</span> <span class="st">"max"</span>, from <span class="op">=</span> <span class="cn">NULL</span>,
-  to <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.Date</a></span><span class="op">(</span><span class="op">)</span>, freq <span class="op">=</span> <span class="st">"daily"</span>, print_step <span class="op">=</span> <span class="fl">1L</span>, <span class="va">...</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">md_future</span><span class="op">(</span><span class="va">symbol</span>, type <span class="op">=</span> <span class="st">"history"</span>, date_range <span class="op">=</span> <span class="st">"max"</span>, from <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  to <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.Date</a></span><span class="op">(</span><span class="op">)</span>, freq <span class="op">=</span> <span class="st">"daily"</span>, print_step <span class="op">=</span> <span class="fl">1L</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>symbol</dt>
 <dd><p>future symbols It is available via function <code>md_future_symbol</code> or its website.</p></dd>
+
+
 <dt>type</dt>
 <dd><p>the data type, including history, real and info. Default is history.</p></dd>
+
+
 <dt>date_range</dt>
 <dd><p>date range. Available value includes '1m'-'11m', 'ytd', 'max' and '1y'-'ny'. Default is max.</p></dd>
+
+
 <dt>from</dt>
 <dd><p>the start date. Default is NULL. If it is NULL, then calculate using date_range and end date.</p></dd>
+
+
 <dt>to</dt>
 <dd><p>the end date. Default is the current date.</p></dd>
+
+
 <dt>freq</dt>
 <dd><p>data frequency, default is daily.</p></dd>
+
+
 <dt>print_step</dt>
 <dd><p>a non-negative integer, which will print symbol name by each print_step iteration. Default is 1L.</p></dd>
+
+
 <dt>...</dt>
 <dd><p>Additional parameters.</p></dd>
+
 </dl></div>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span>
-<span class="r-in"><span class="co"># history data</span></span>
-<span class="r-in"><span class="va">df_hist</span> <span class="op">=</span> <span class="fu">md_future</span><span class="op">(</span>symbol <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'IF0'</span>, <span class="st">'A0'</span>, <span class="st">'CU0'</span>, <span class="st">'CF0'</span>, <span class="st">'XAU'</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># real data</span></span>
-<span class="r-in"><span class="va">df_real</span> <span class="op">=</span> <span class="fu">md_future</span><span class="op">(</span>symbol <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'IF0'</span>, <span class="st">'A0'</span>, <span class="st">'CU0'</span>, <span class="st">'CF0'</span>, <span class="st">'XAU'</span><span class="op">)</span>, </span>
-<span class="r-in">                    type <span class="op">=</span> <span class="st">'real'</span><span class="op">)</span></span>
-<span class="r-in"><span class="op">}</span></span>
-<span class="r-in"></span>
-<span class="r-in"></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span><span class="co"># history data</span></span></span>
+<span class="r-in"><span><span class="va">df_hist</span> <span class="op">=</span> <span class="fu">md_future</span><span class="op">(</span>symbol <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'IF0'</span>, <span class="st">'A0'</span>, <span class="st">'CU0'</span>, <span class="st">'CF0'</span>, <span class="st">'XAU'</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># real data</span></span></span>
+<span class="r-in"><span><span class="va">df_real</span> <span class="op">=</span> <span class="fu">md_future</span><span class="op">(</span>symbol <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'IF0'</span>, <span class="st">'A0'</span>, <span class="st">'CU0'</span>, <span class="st">'CF0'</span>, <span class="st">'XAU'</span><span class="op">)</span>, </span></span>
+<span class="r-in"><span>                    type <span class="op">=</span> <span class="st">'real'</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -114,7 +129,7 @@
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

@@ -275,6 +275,6 @@ md_forex = function(symbol=NULL, type = 'history', date_range = '3y', from=NULL,
     return(dat_list)
 }
 
-md_forex_symbol = function() {
+md_forex_symbol = function(...) {
     func_forex_symbol()[, c('symbol', 'name'), with = FALSE]
 }
