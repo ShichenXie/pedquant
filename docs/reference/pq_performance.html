@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pedquant</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.0.999</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.1</span>
       </span>
     </div>
 
@@ -106,14 +106,14 @@
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># merge returns of assets and baseline</span></span></span>
 <span class="r-in"><span><span class="va">datRaRb</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/merge.html" class="external-link">merge</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>    <span class="fu"><a href="https://rdrr.io/pkg/data.table/man/rbindlist.html" class="external-link">rbindlist</a></span><span class="op">(</span><span class="va">datret1</span><span class="op">)</span><span class="op">[</span>, <span class="fu">.</span><span class="op">(</span><span class="va">date</span>, <span class="va">symbol</span>, <span class="va">Ra</span><span class="op">)</span><span class="op">]</span>, </span></span>
-<span class="r-in"><span>    <span class="fu"><a href="https://rdrr.io/pkg/data.table/man/rbindlist.html" class="external-link">rbindlist</a></span><span class="op">(</span><span class="va">datret2</span><span class="op">)</span><span class="op">[</span>, <span class="fu">.</span><span class="op">(</span><span class="va">date</span>, <span class="va">Rb</span><span class="op">)</span><span class="op">]</span>,</span></span>
+<span class="r-in"><span>    <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/rbindlist.html" class="external-link">rbindlist</a></span><span class="op">(</span><span class="va">datret1</span><span class="op">)</span><span class="op">[</span>, <span class="fu">.</span><span class="op">(</span><span class="va">date</span>, <span class="va">symbol</span>, <span class="va">Ra</span><span class="op">)</span><span class="op">]</span>, </span></span>
+<span class="r-in"><span>    <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/rbindlist.html" class="external-link">rbindlist</a></span><span class="op">(</span><span class="va">datret2</span><span class="op">)</span><span class="op">[</span>, <span class="fu">.</span><span class="op">(</span><span class="va">date</span>, <span class="va">Rb</span><span class="op">)</span><span class="op">]</span>,</span></span>
 <span class="r-in"><span>    by <span class="op">=</span> <span class="st">'date'</span>, all.x <span class="op">=</span> <span class="cn">TRUE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># claculate table.CAPM metrics</span></span></span>
 <span class="r-in"><span><span class="va">perf_capm</span> <span class="op">=</span> <span class="fu">pq_performance</span><span class="op">(</span><span class="va">datRaRb</span>, Ra <span class="op">=</span> <span class="st">'Ra'</span>, Rb <span class="op">=</span> <span class="st">'Rb'</span>, perf_fun <span class="op">=</span> <span class="st">'table.CAPM'</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/pkg/data.table/man/rbindlist.html" class="external-link">rbindlist</a></span><span class="op">(</span><span class="va">perf_capm</span>, idcol <span class="op">=</span> <span class="st">'symbol'</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/rbindlist.html" class="external-link">rbindlist</a></span><span class="op">(</span><span class="va">perf_capm</span>, idcol <span class="op">=</span> <span class="st">'symbol'</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>       symbol  Alpha   Beta  Beta+  Beta- R-squared Annualized Alpha Correlation</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1: 601288.SS 0.0048 0.6490 0.9538 0.4703    0.4898           0.0592      0.6998</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2: 601328.SS 0.0057 0.7513 0.9886 0.5825    0.4789           0.0701      0.6920</span>

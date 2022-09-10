@@ -1,4 +1,4 @@
-# pedquant 0.2.0.999
+# pedquant 0.2.1
 
 * remove several not needed scripts
 

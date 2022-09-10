@@ -46,7 +46,6 @@ reference:
       - '`md_future_symbol`'
   - title: "quantitative analysis" 
     contents:
-      - '`%()%`'
       - '`%x>%`'
       - '`pq_opr`'
       - '`pq_freq`'

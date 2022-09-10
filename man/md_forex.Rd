@@ -4,8 +4,8 @@
 \alias{md_forex}
 \title{query forex data}
 \usage{
-md_forex(symbol = NULL, type = "history", date_range = "3y",
-  from = NULL, to = Sys.Date(), print_step = 1L, ...)
+md_forex(symbol, type = "history", date_range = "3y", from = NULL,
+  to = Sys.Date(), print_step = 1L, ...)
 }
 \arguments{
 \item{symbol}{forex symbols. Default is NULL.}
@@ -33,8 +33,6 @@ dtfx_hist1 = md_forex(c('usdcny', 'usdjpy'))
 # real data
 dtfx_real = md_forex(c('eurusd', 'usdcny', 'usdjpy'), type = 'real')
 
-# interactivly choose symbols
-dtfx_hist2 = md_forex()
 }
 
 

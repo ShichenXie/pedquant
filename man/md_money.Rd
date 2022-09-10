@@ -4,13 +4,11 @@
 \alias{md_money}
 \title{query interbank offerd rate}
 \usage{
-md_money(symbol = NULL, type = "history", date_range = "3y",
-  from = NULL, to = Sys.Date(), print_step = 1L)
+md_money(symbol = NULL, date_range = "3y", from = NULL,
+  to = Sys.Date(), print_step = 1L)
 }
 \arguments{
 \item{symbol}{ibor symbols. Default is NULL.}
-
-\item{type}{the data type. Default is history.}
 
 \item{date_range}{date range. Available value includes '1m'-'11m', 'ytd', 'max' and '1y'-'ny'. Default is 3y.}
 

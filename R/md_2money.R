@@ -143,39 +143,36 @@ md_libor = function(symbol, date_range = '3y', from=NULL, to=Sys.Date(), print_s
 #' \code{md_money} query libor from FRED or shibor from chinamoney.
 #' 
 #' @param symbol ibor symbols. Default is NULL. 
-#' @param type the data type. Default is history. 
 #' @param date_range date range. Available value includes '1m'-'11m', 'ytd', 'max' and '1y'-'ny'. Default is 3y.
 #' @param from the start date. Default is NULL. If it is NULL, then calculate using date_range and end date.
 #' @param to the end date. Default is the current date.
-#' @param print_step a non-negative integer, which will print symbol name by each print_step iteration. Default is 1L. 
+#' @param print_step a non-negative integer, which will print symbol name by each print_step iteration. Default is 1L.
 #' 
 #' @export
-md_money = function(symbol=NULL, type = 'history', date_range = '3y', from=NULL, to=Sys.Date(), print_step=1L) {
+md_money = function(symbol=NULL, date_range = '3y', from=NULL, to=Sys.Date(), print_step=1L) {
     
-    # arguments
-    ## symbol
-    ibor_symbol = func_ibor_symbol()
-    if (is.null(symbol)) {
-        symbol = select_rows_df(ibor_symbol[, c('symbol','name'), with=FALSE], column='symbol')[,symbol]
-    } else if (length(symbol)==1) {
-        symbol = select_rows_df(ibor_symbol[, c('symbol','name'), with=FALSE], column='symbol', input_string=symbol)[,symbol]
-    }
-    syb = intersect(symbol, ibor_symbol$symbol)
+    # syb = intersect(symbol, ibor_symbol$symbol)
+    if (is.null(symbol)) symbol = select_rows_df(md_money_symbol(), column='symbol')[,symbol]
     ## from/to
     to = check_to(to)
     from = check_from(date_range, from, to, default_from = "1000-01-01", default_date_range = '3y')
     
-    # data
-    dt_list = c(
-        do.call(md_libor, args = list(symbol=syb[grepl('uk',syb)], from=from, to=to, print_step=print_step)), 
-        do.call(md_shibor, args = list(symbol=syb[grepl('cn',syb)], from=from, to=to, print_step=print_step))
-    )
-    return(dt_list)
+    # load data by symbol
+    dat_list = load_dat_loop(
+        symbol, 'md_stooq1', 
+        args = list(from = from, to = to), 
+        print_step=print_step)
+    dat_list = rm_error_dat(dat_list)
+    
+    return(dat_list)
 }
 
     
 md_money_symbol = function(...) {
-    func_ibor_symbol()[, c('symbol', 'name'), with = FALSE]
+    market = NULL
+    
+    setDT(copy(symbol_stooq))[market == 'money', c('symbol', 'name'), with = FALSE]
+    # func_ibor_symbol()[, c('symbol', 'name'), with = FALSE]
 }
     
     

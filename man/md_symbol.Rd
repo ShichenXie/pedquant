@@ -2,7 +2,7 @@
 % Please edit documentation in R/md_0query.R
 \name{md_symbol}
 \alias{md_symbol}
-\title{symbol of market data by category}
+\title{symbol of market data}
 \usage{
 md_symbol(market = NULL, ...)
 }

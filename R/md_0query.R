@@ -66,7 +66,7 @@ md_query = function(market=NULL, ...) {
     return(datlst)
 }
 
-#' symbol of market data by category
+#' symbol of market data
 #' 
 #' \code{md_stock_symbol} returns all symbols by market category, including forex, money, bond, stock, future.
 #' 

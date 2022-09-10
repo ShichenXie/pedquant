@@ -1,42 +1,42 @@
-#' interval operators
-#' 
-#' Binary operators which create the interval signals.
-#' 
-#' @param x numeric vectors
-#' @param rng numeric vectors, top and bottom limitation
-#' 
-#' @examples 
-#' # 0:4 %()% c(1,3)
-#' 
-#' # 0:4 %[)% c(1,3)
-#' 
-#' # 0:4 %(]% c(1,3)
-#' 
-#' # 0:4 %[]% c(1,3)
-#' 
-#' @rdname interval
-#' @export
+# interval operators
+# 
+# Binary operators which create the interval signals.
+# 
+# @param x numeric vectors
+# @param rng numeric vectors, top and bottom limitation
+# 
+# @examples 
+# # 0:4 %()% c(1,3)
+# 
+# # 0:4 %[)% c(1,3)
+# 
+# # 0:4 %(]% c(1,3)
+# 
+# # 0:4 %[]% c(1,3)
+# 
+# @rdname interval
+# @export
 `%()%` = function(x, rng) {
     rng = sort(rng)
     x > rng[1] & x < rng[2]
 }
 
-#' @rdname interval
-#' @export
+# @rdname interval
+# @export
 `%[)%` = function(x, rng) {
     rng = sort(rng)
     x >= rng[1] & x < rng[2]
 }
 
-#' @rdname interval
-#' @export
+# @rdname interval
+# @export
 `%(]%` = function(x, rng) {
     rng = sort(rng)
     x > rng[1] & x <= rng[2]
 }
 
-#' @rdname interval
-#' @export
+# @rdname interval
+# @export
 `%[]%` = function(x, rng) {
     rng = sort(rng)
     x >= rng[1] & x <= rng[2]

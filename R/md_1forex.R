@@ -243,14 +243,12 @@ md_forex1_fxfupan = function(syb) {
 #' # real data
 #' dtfx_real = md_forex(c('eurusd', 'usdcny', 'usdjpy'), type = 'real')
 #' 
-#' # interactivly choose symbols
-#' dtfx_hist2 = md_forex()
 #' }
 #' 
 #' 
 #' @import data.table 
 #' @export
-md_forex = function(symbol=NULL, type = 'history', date_range = '3y', from=NULL, to=Sys.Date(), print_step=1L, ...) {
+md_forex = function(symbol, type = 'history', date_range = '3y', from=NULL, to=Sys.Date(), print_step=1L, ...) {
     
     # symbol
     syb = tolower(symbol)
