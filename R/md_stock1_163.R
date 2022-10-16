@@ -217,7 +217,7 @@ md_stock1_history_163 = function(symbol1, from='1900-01-01', to=Sys.Date(), zero
 
 # valuation ratios pe, pb, ps, pcf
 md_stock1_pe_163 = function(dat) {
-  symbol=V1=var_id=value=fs_month_diff=REV_Q=REV=REV_Y=NP_Q=NP=NP_Y=fs_month=NP_Dec=NP_LY=date2=cap_total=BV=NIDCash=NULL
+  symbol=V1=var_id=value=fs_mth_diff=REV_Q=REV=REV_Y=NP_Q=NP=NP_Y=fs_mth=NP_EOY=NP_LY=date2=cap_total=BV=NIDCash=NULL
   
   
   # symbol1 = '000001'
@@ -241,26 +241,30 @@ md_stock1_pe_163 = function(dat) {
       by = 'var_id', all.x = TRUE
     ), 
     date ~ var
-  )[, `:=`(fs_month = month(date), fs_month_diff = mean(month(date) - shift(month(date), type='lag', fill = 0))), by = year(date)
+  )[!is.na(BV)
+  ][, `:=`(fs_mth = month(date), fs_mth_diff = mean(month(date) - shift(month(date), type='lag', fill = 0))), by = year(date)
   # trailing REV/Income from main operation  
-  ][fs_month_diff == 3,                  REV_Q   := REV-shift(REV, type='lag'), by = year(date)
-  ][fs_month_diff == 3 & is.na(REV_Q),   REV_Q   := REV
-  ][fs_month_diff == 3,                  REV_Y := runSum(REV_Q, 4)
+  ][fs_mth_diff == 3,                  REV_Q   := REV-shift(REV, type='lag'), by = year(date)
+  ][fs_mth_diff == 3 & is.na(REV_Q),   REV_Q   := REV
+  ][fs_mth_diff == 3,                  REV_Y := runSum(REV_Q, 4)
   # trailing NP/Net Income
-  ][fs_month_diff == 3,                  NP_Q := NP-shift(NP, type='lag'), by = year(date)
-  ][fs_month_diff == 3 & is.na(NP_Q),    NP_Q := NP
-  ][fs_month_diff == 3,                  NP_Y := runSum(NP_Q, 4)
+  ][fs_mth_diff == 3,                  NP_Q := NP-shift(NP, type='lag'), by = year(date)
+  ][fs_mth_diff == 3 & is.na(NP_Q),    NP_Q := NP
+  ][fs_mth_diff == 3,                  NP_Y := runSum(NP_Q, 4)
   # last year NP/Net Income              
-  ][fs_month==12, NP_Dec := NP
-  ][, NP_LY := shift(NP_Dec, type='lag')
+  ][fs_mth==12, NP_EOY := NP
+  ][, NP_LY := shift(NP_EOY, type='lag')
   ][, NP_LY := fillna(NP_LY)
-  ][fs_month_diff ==  3, date2 := as.Date(paste(year(date), month(date)- 2, 1, sep='-'))
-  ][fs_month_diff ==  6, date2 := as.Date(paste(year(date), month(date)- 5, 1, sep='-'))
-  ][fs_month_diff == 12, date2 := as.Date(paste(year(date), month(date)-11, 1, sep='-'))
-  ][, date := date2]
+  ][fs_mth_diff ==  3, date2 := date_from('2m', date_bop('m', date)), by = 'date'
+  ][fs_mth_diff ==  6, date2 := date_from('5m', date_bop('m', date)), by = 'date'
+  ][fs_mth_diff == 12, date2 := date_from('11m', date_bop('m', date)), by = 'date'
+  # ][fs_mth_diff ==  3, date2 := as.Date(paste(year(date), month(date)- 2, 1, sep='-'))
+  # ][fs_mth_diff ==  6, date2 := as.Date(paste(year(date), month(date)- 5, 1, sep='-'))
+  # ][fs_mth_diff == 12, date2 := as.Date(paste(year(date), month(date)-11, 1, sep='-'))
+  ][, date := date2] 
   
   # merge mfi with dat
-  cols_fillna = c('fs_month','BV','NIDCash', 'REV_Y', 'NP', 'NP_Y', 'NP_LY')
+  cols_fillna = c('fs_mth','BV','NIDCash', 'REV_Y', 'NP', 'NP_Y', 'NP_LY')
   dat_pbpe = merge(
     dat, 
     mfi[, c('date', cols_fillna), with=FALSE], all = TRUE, by = 'date'
@@ -270,7 +274,7 @@ md_stock1_pe_163 = function(dat) {
     pb = cap_total/BV/10000,
     pe_last = cap_total/NP_LY/10000, # last year ratio
     pe_trailing = cap_total/NP_Y/10000, # trailing twelve month
-    pe_forward = cap_total/(NP/(fs_month/12))/10000, # forward
+    pe_forward = cap_total/(NP/(fs_mth/12))/10000, # forward
     ps = cap_total/REV_Y/10000,
     pcf = cap_total/NIDCash/10000
   )][, (cols_fillna) := NULL]
