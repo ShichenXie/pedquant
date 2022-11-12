@@ -22,6 +22,7 @@ pq_performance(dt, Ra, Rb = NULL, perf_fun, ...)
 }
 \examples{
  
+\donttest{
 library(pedquant) 
 library(data.table)
 
@@ -43,5 +44,5 @@ datRaRb = merge(
 # claculate table.CAPM metrics
 perf_capm = pq_performance(datRaRb, Ra = 'Ra', Rb = 'Rb', perf_fun = 'table.CAPM')
 rbindlist(perf_capm, idcol = 'symbol')
-
+}
 }

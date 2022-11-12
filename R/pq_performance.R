@@ -92,6 +92,7 @@ pq1_performance = function(dt1, Ra, Rb=NULL, perf_fun, col_date='date', ...) {
 #' @param ... additional parameters, the arguments used in `PerformanceAnalytics` functions.
 #' 
 #' @examples  
+#' \donttest{
 #' library(pedquant) 
 #' library(data.table)
 #' 
@@ -113,7 +114,7 @@ pq1_performance = function(dt1, Ra, Rb=NULL, perf_fun, col_date='date', ...) {
 #' # claculate table.CAPM metrics
 #' perf_capm = pq_performance(datRaRb, Ra = 'Ra', Rb = 'Rb', perf_fun = 'table.CAPM')
 #' rbindlist(perf_capm, idcol = 'symbol')
-#' 
+#' }
 #' @export
 #' 
 pq_performance = function(dt, Ra, Rb=NULL, perf_fun, ...) {
