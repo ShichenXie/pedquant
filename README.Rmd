@@ -74,7 +74,7 @@ head(dtorders[!is.na(type)])
 
 # charting
 e = pq_plot(dt_banks,  y='close_adj', addti = list(sma=list(n=200), sma=list(n=50)), orders = dtorders[!is.na(type)])
-e[['601988.SS']]
+# e[['601988.SS']]
 ```
 
 ## Issues and Contributions
