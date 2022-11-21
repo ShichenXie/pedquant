@@ -222,7 +222,7 @@ md_stock_symbol_us = function(exchange) {
   . = symbol = name = sector = industry = country = ipoyear = marketCap = NULL
   # c("AMEX", "NASDAQ", "NYSE")
   exchange = toupper(exchange)
-  exchange2code = list(NASDAQ = '105', NYSE='106', NYSE = '107')
+  exchange2code = list(NASDAQ = '105', NYSE='106', AMEX = '107')
   
   datem = read_apidata_eastmoney(url = sprintf("http://72.push2.eastmoney.com/api/qt/clist/get?pn=1&pz=20000&po=1&np=1&ut=bd1d9ddb04089700cf9c27f6f7426281&fltt=2&invt=2&fid=f3&fs=m:%s&fields=f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f12,f13,f14,f15,f16,f17,f18,f20,f21,f23,f24,f25,f26,f22,f33,f11,f62,f128,f136,f115,f152&_=1624010056945", exchange2code[[exchange]]), type = 'real_us')
   dat2 = datem[, c('symbol', 'name', 'open', 'high', 'low', 'close', 'close_prev', 'volume', 'amount', 'change', 'change_pct', 'amplitude', 'turnover', 'pe'), with=FALSE]

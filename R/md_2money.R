@@ -23,51 +23,6 @@ func_ibor_symbol = function() {
         
 
 
-# shanghai interbank offered rate, shibor
-#' @import data.table
-md_shibor = function(symbols, date_range = '3y', from=NULL, to=Sys.Date(), print_step=1L) {
-    . = name = value = X1 = f = cnocny1m = symbol_fred = NULL
-    
-    # arguments
-    shibor_symbol = func_ibor_symbol()[is.na(symbol_fred)]
-    ## from/to
-    to = check_to(to)
-    from = check_from(date_range, from, to, default_from = "1000-01-01", default_date_range = '3y')
-    ## symbols
-    syb_len = length(symbols)
-    if (syb_len == 0) return(invisible())
-    
-    ft = data.table(f = unique(c(seq(from, to, by = 360), to)))[
-        , t := shift(f, type = 'lead')
-    ][!is.na(t)]
-    # download shibor history data
-    # https://www.chinamoney.com.cn/dqs/rest/cm-u-bk-shibor/ShiborHisExcel?lang=cn&startDate=2021-12-27&endDate=2022-01-26
-    cols_num = paste0('cnocny',c('on', '1w', '2w', '1m', '3m', '6m', '9m', '1y'))
-    datlst = lapply(
-        split(ft, by = 'f'),
-        function(x) {
-            dat = load_read_xl(sprintf(
-                'https://www.chinamoney.com.cn/dqs/rest/cm-u-bk-shibor/ShiborHisExcel?lang=cn&startDate=%s&endDate=%s', x$f, x$t
-            ))
-            
-            setnames(dat, c('date', cols_num))
-            return(dat[!is.na(cnocny1m)])
-        }
-    )
-    
-    
-    dat = melt(
-        unique(rbindlist(datlst))[,`:=`(
-            date = as_date(date)
-        )][, (cols_num) := lapply(.SD, as.numeric), .SDcols = cols_num], 
-        id.vars = 'date', variable.name = 'symbol'
-    )[shibor_symbol, on='symbol'
-    ][, c('symbol', 'name', 'date', 'value'), with = FALSE]
-    
-    # return data list
-    data_list = split(dat, by = 'symbol')[symbols]
-    return(data_list)
-}
 
 # euribor
 # https://www.euribor-rates.eu/interesting-websites.asp
