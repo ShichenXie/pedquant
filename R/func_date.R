@@ -59,15 +59,3 @@ check_from = function(date_range, from, to, default_from = '1000-01-01', default
     return(from)
 }
 
-# is date/time class
-isdatetime = function(x) {
-    inherits(x, c("Date","POSIXlt","POSIXct","POSIXt"))
-}
-
-# convert date to second 
-date_to_sec = function(x=Sys.time()) {
-    datetime = as.POSIXct(as.Date(x, origin = "1970-01-01"))
-    return(trunc(as.numeric(datetime))) 
-}
-
-

@@ -39,7 +39,6 @@ nbs_symbol1 = function(geo_type=NULL, freq=NULL, symbol='zb', eng=FALSE) {
   
   #param
   nbs_url = sel_nbs_url(eng)
-  # time_sec = as.character(date_to_sec()*100)
   if (is.null(symbol)) symbol = 'zb'
   # name of geography in NBS
   nbs_dbcode = dim_nbs_db()[
@@ -137,13 +136,14 @@ ed_nbs_symbol = function(symbol=NULL, geo_type=NULL, freq=NULL, eng=FALSE) {
 #' }
 #' @importFrom jsonlite fromJSON 
 #' @importFrom httr set_config
+#' @importFrom xefun date_num
 #' @export
 ed_nbs_subregion = function(geo_type=NULL, eng=FALSE) {
   dim_region = dim_geo_type = dim_sta_db = . = code = name = NULL
   
   # param
   nbs_url = sel_nbs_url(eng)
-  time_sec = as.character(date_to_sec()*100)
+  time_sec = date_num(Sys.time(), 'ms')
   
   # geography type
   geo_type = check_arg(geo_type, c("province", "city"), default = NULL, arg_name = 'geo_type')
@@ -195,7 +195,7 @@ ed1_nbs = function(symbol1, geo_type, subregion=NULL, from, freq, eng=FALSE) {
   nbs_dbcode = dim_nbs_db()[dim_geo_type==geo_type & dim_freq==freq, dim_sta_db]
   
   nbs_url = sel_nbs_url(eng)
-  time_sec = as.character(date_to_sec()*100)
+  time_sec = date_num(Sys.time(), 'ms')
   
   ## symbol
   symbol1 = ed_nbs_symbol(symbol=symbol1, geo_type, freq, eng)

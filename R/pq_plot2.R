@@ -153,8 +153,10 @@ p_lm = function(e, x='date', y='close', nsd_lm = NULL) {
 fun_filter_overlays = function(addti) {
     names(addti) <- tolower(names(addti))
     ti_not_topbottom = names(addti)[sapply(addti, function(x) !any(x[['position']] %in% c('top','bottom')))]
-    ti_overlay = intersect( ti_not_topbottom, tolower(pq_addti_funs()[['overlays']]) ) 
-    return(ti_overlay)
+    ti_overlay = names(addti)[sapply(addti, function(x) any(x[['position']] %in% c('overlay')))]
+    
+    ti_overlays = c(intersect( ti_not_topbottom, tolower(pq_addti_funs()[['overlays']]) ), ti_overlay) 
+    return(ti_overlays)
 }
 
 p_addti_overlay = function(e, dt, addti = NULL) {
@@ -430,13 +432,20 @@ pq_plot = function(
         chart_type = 'line'
         warning('The chart_type has set to line.')
     }
+    
+    # y 
+    if (length(y) > 1) {
+        addtiy = lapply(xefun:::c_list(y[-1]), function(x) list(position='overlay'))
+        addti = c(addti, addtiy)
+        y = y[1]
+    }
     addti = arg_addti(addti, y)
     
     # arrange row col
     arrange_rowcol_allnull = all(sapply(arrange, is.null))
     arrange_rowcol_all1 = all(sapply(list('rows', 'cols'), function(x) any(arrange[[x]] == 1)))
     
-    dt = check_dt(dt)
+    dt = check_dt(dt, symb_name = TRUE)
     orders = check_odr(orders)
     
     arglst = list(dt=dt, x=x, y=y, yb=yb, date_range=date_range, yaxis_log=yaxis_log, title=title, addti=addti, nsd_lm=nsd_lm, markline=markline, orders=orders, arrange=arrange, theme=theme, ...)
