@@ -357,6 +357,7 @@ ed_nbs = function(symbol=NULL, freq=NULL, geo_type=NULL, subregion=NULL, date_ra
   ## symbol
   if (is.null(symbol)) symbol = ed_nbs_symbol(geo_type = geo_type, freq = freq, eng = eng)
   
+  # print(sprintf('symbol = "%s", freq = "%s", geo_type = "%s", subregion = "%s"', symbol, freq, geo_type, subregion))
   # jsondat
   jsondat_list = NULL
   for (s in symbol) {

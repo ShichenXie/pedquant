@@ -38,6 +38,7 @@ reference:
       - '`md_bond`'
       - '`md_forex`'
       - '`md_money`'
+      - '`md_moneycn`'
       - '`md_stock`'
       - '`md_stock_symbol`'
       - '`md_stock_adjust`'
