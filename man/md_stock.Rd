@@ -5,8 +5,7 @@
 \title{query stock market data}
 \usage{
 md_stock(symbol, type = "history", date_range = "3y", from = NULL,
-  to = Sys.Date(), adjust = FALSE, freq = "daily", print_step = 1L,
-  ...)
+  to = Sys.Date(), adjust = FALSE, print_step = 1L, ...)
 }
 \arguments{
 \item{symbol}{symbols of stock shares.}
@@ -22,8 +21,6 @@ md_stock(symbol, type = "history", date_range = "3y", from = NULL,
 \item{adjust}{whether to adjust the OHLC prices, defaults to FALSE. If it is FALSE, create a close_adj column if not exist; if it is TRUE, adjust all open, high, low, close columns; if it is NULL, return the original data from source.
 For the yahoo data, the adjustment is based on the close_adj; for the 163 data, the adjustment is based on the cumulative products of close/close_prev.}
 
-\item{freq}{data frequency, default is daily. .}
-
 \item{print_step}{A non-negative integer. Print symbol name by each print_step iteration. Default is 1L.}
 
 \item{...}{Additional parameters.}
@@ -35,7 +32,7 @@ For the yahoo data, the adjustment is based on the close_adj; for the 163 data, 
 \dontrun{
 # Example I: query history data
 # us
-FAANG = md_stock(c('FB', 'AMZN', 'AAPL', 'NFLX', 'GOOG'))
+FAANG = md_stock(c('META', 'AMZN', 'AAPL', 'NFLX', 'GOOG'))
 
 # hkex
 TMX = md_stock(c('00700.hk', '03690.hk', '01810.hk'))
@@ -54,6 +51,9 @@ dt_adj = md_stock(symbol=c("000001", "^000001"), type='adjfactor', date_range='m
              
 # Example III: query real prices
 # real price for equities
+dt_real1 = md_stock(c('FB', 'AMZN', 'AAPL', 'NFLX', 'GOOG',
+                     '00700.hk', '03690.hk', '01810.hk',
+                     "000001", "^000001", "512510"), type = 'real')
 
 
 # real prices of all A shares in sse and szse

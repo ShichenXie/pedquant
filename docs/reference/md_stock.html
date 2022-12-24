@@ -65,8 +65,7 @@
 
     <div id="ref-usage">
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">md_stock</span><span class="op">(</span><span class="va">symbol</span>, type <span class="op">=</span> <span class="st">"history"</span>, date_range <span class="op">=</span> <span class="st">"3y"</span>, from <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  to <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.Date</a></span><span class="op">(</span><span class="op">)</span>, adjust <span class="op">=</span> <span class="cn">FALSE</span>, freq <span class="op">=</span> <span class="st">"daily"</span>, print_step <span class="op">=</span> <span class="fl">1L</span>,</span>
-<span>  <span class="va">...</span><span class="op">)</span></span></code></pre></div>
+<span>  to <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.Date</a></span><span class="op">(</span><span class="op">)</span>, adjust <span class="op">=</span> <span class="cn">FALSE</span>, print_step <span class="op">=</span> <span class="fl">1L</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -96,10 +95,6 @@
 For the yahoo data, the adjustment is based on the close_adj; for the 163 data, the adjustment is based on the cumulative products of close/close_prev.</p></dd>
 
 
-<dt>freq</dt>
-<dd><p>data frequency, default is daily. .</p></dd>
-
-
 <dt>print_step</dt>
 <dd><p>A non-negative integer. Print symbol name by each print_step iteration. Default is 1L.</p></dd>
 
@@ -114,7 +109,7 @@ For the yahoo data, the adjustment is based on the close_adj; for the 163 data, 
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span></span>
 <span class="r-in"><span><span class="co"># Example I: query history data</span></span></span>
 <span class="r-in"><span><span class="co"># us</span></span></span>
-<span class="r-in"><span><span class="va">FAANG</span> <span class="op">=</span> <span class="fu">md_stock</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'FB'</span>, <span class="st">'AMZN'</span>, <span class="st">'AAPL'</span>, <span class="st">'NFLX'</span>, <span class="st">'GOOG'</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">FAANG</span> <span class="op">=</span> <span class="fu">md_stock</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'META'</span>, <span class="st">'AMZN'</span>, <span class="st">'AAPL'</span>, <span class="st">'NFLX'</span>, <span class="st">'GOOG'</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># hkex</span></span></span>
 <span class="r-in"><span><span class="va">TMX</span> <span class="op">=</span> <span class="fu">md_stock</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'00700.hk'</span>, <span class="st">'03690.hk'</span>, <span class="st">'01810.hk'</span><span class="op">)</span><span class="op">)</span></span></span>
@@ -133,6 +128,9 @@ For the yahoo data, the adjustment is based on the close_adj; for the 163 data, 
 <span class="r-in"><span>             </span></span>
 <span class="r-in"><span><span class="co"># Example III: query real prices</span></span></span>
 <span class="r-in"><span><span class="co"># real price for equities</span></span></span>
+<span class="r-in"><span><span class="va">dt_real1</span> <span class="op">=</span> <span class="fu">md_stock</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'FB'</span>, <span class="st">'AMZN'</span>, <span class="st">'AAPL'</span>, <span class="st">'NFLX'</span>, <span class="st">'GOOG'</span>,</span></span>
+<span class="r-in"><span>                     <span class="st">'00700.hk'</span>, <span class="st">'03690.hk'</span>, <span class="st">'01810.hk'</span>,</span></span>
+<span class="r-in"><span>                     <span class="st">"000001"</span>, <span class="st">"^000001"</span>, <span class="st">"512510"</span><span class="op">)</span>, type <span class="op">=</span> <span class="st">'real'</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># real prices of all A shares in sse and szse</span></span></span>

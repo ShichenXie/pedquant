@@ -1,3 +1,30 @@
+md_stock_real = function(symbol, trytimes = 3, source = c('tx', 'sina'), ...) {
+    dat = NULL
+    ti = 1
+    
+    if (length(intersect(symbol, c('a','b','index', 'fund'))) > 0) {
+        while (!inherits(dat, 'data.frame') & ti <= trytimes) {
+            dat = try(do.call('md_stockall_real_163', args = list(symbol=symbol, ...)), silent = TRUE)
+            ti = ti + 1
+        }
+        
+    } else {
+        si = 1
+        
+        while (!inherits(dat, 'data.frame') & ti <= trytimes & si <= length(source)) {
+            dat = try(do.call(paste0('md_stock_real_', source[si]), args = list(symbol=symbol, ...)), silent = TRUE)
+            if (!inherits(dat, 'data.frame') & ti == trytimes) {
+                ti = 1
+                si = si + 1
+            } else {
+                ti = ti + 1    
+            }
+        }
+    }
+    
+    return(dat)
+}
+
 # real ------
 # sina: hq.sinajs.cn/list=sz150206
 # http://hq.sinajs.cn/list=usr_aapl

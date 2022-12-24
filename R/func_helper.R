@@ -138,6 +138,8 @@ tags_dt = function() {
         fund 50 sse,-,-
         fund 51 sse,-,-
         fund 52 sse,-,-
+        fund 56 sse,-,-
+        fund 58 sse,-,-
         ",
         colClasses=list(character=1:3)
     )[,(c('exchange','AB','board')) := tstrsplit(tags,',')
@@ -146,49 +148,54 @@ tags_dt = function() {
      ][exchg_code == 'SZ', `:=`(city='sz', city_code='1')][]
     
 }
-check_symbol_cn = function(symbol, mkt = NULL) {
-    exchg_code = syb3 = syb = syb_code = syb_num = city = . = syb_exp = NULL
+check_symbol_cn = function(symbol, market = NULL) {
+    . = city = exchg_code = mkt = rid = syb = syb3 = syb_exp = NULL
      
     tags = tags_dt()[, exchg_code := tolower(exchg_code)][]
     
-    cn_dt = setDT(list(symbol = tolower(symbol)))[, syb_num := 3]
-    if (!is.null(mkt) & length(mkt) == 1) {
-        mkt = rep(mkt, length(symbol))
-        cn_dt[, mkt := mkt]
-    } else if (!is.null(mkt) & length(mkt) == length(symbol)) {
-        cn_dt[, mkt := mkt]
-    } else if (is.null(mkt) & !all(grepl('[a-zA-Z]', symbol))) {
-        fund_syb3 = tags[mkt == 'fund', paste0('^',syb3, collapse = '|')]
-        
-        cn_dt[grepl("^\\^",symbol), mkt := 'index'
-          ][grepl(fund_syb3, symbol), `:=`(mkt = "fund", syb_num = 2)
-          ][is.na(mkt), mkt := 'stock']
+    lst_syb = list(
+        rid = seq_along(symbol), 
+        symbol = tolower(as.character(symbol))
+    )
+    if (is.null(market)) {
+        lst_syb$mkt = rep(as.character(NA), length(symbol))
+    } else {
+        if (length(market) == 1) market = rep(market, length(symbol))
+        lst_syb$mkt = as.character(market)
     }
     
-    cn_dt = cn_dt[, `:=`(
-        syb = sub("^.*?([0-9]+).*$","\\1",symbol),
-        syb_code = gsub("[^a-zA-Z]+",'',symbol)
-    )][nchar(syb) == 6,syb3 := substr(syb, 1, syb_num)
-     ][syb_code %in% c('ss','sz'), exchg_code := syb_code
-     ][syb_code %in% c('sh','sz'), city := syb_code][]
+    # create a data.table of symbol
+    dt_syb = setDT(lst_syb)[is.na(mkt) & grepl("^\\^",symbol), mkt := 'index' 
+    ][is.na(mkt) & grepl("[0-9]{6}",symbol), mkt := 'stock'
+    ][, syb3 := substr(sub('^\\^', '', symbol), 1, 3)
+    ][!grepl('[0-9]{3}', syb3), syb3 := NA
+    ][grepl('\\.(hk|ss|sz|bs)$',symbol), exchg_code := sub('.+\\.(hk|ss|sz|bs)$', '\\1', symbol)
+    ][grepl('\\.(hk|sh|sz|bj)$',symbol), city := sub('.+\\.(hk|sh|sz|bj)$', '\\1', symbol)
+    ]
     
-    cn_tag_lst = lapply(list(
-        cn_dt[!is.na(exchg_code)][,.(syb3, exchg_code, symbol, syb)],
-        cn_dt[is.na(exchg_code) & !is.na(city)][,.(syb3, city, symbol, syb)],
-        cn_dt[is.na(exchg_code) & is.na(city)][,.(mkt, syb3, symbol, syb)]
-    ), function(c) {
-        by_cols = intersect(names(c), names(tags))
-        sub_cn_tags = merge(c, tags, by = by_cols, all.x = TRUE, sort = FALSE)
-        return(sub_cn_tags)
-    })
-    cn_tag = rbindlist(cn_tag_lst, fill = TRUE)[
-        is.na(city) & grepl('.hk$', symbol), 
-        `:=`(city = 'hk', exchg_code = 'hk') 
+    # merge dt_syb with tags
+    dt_syb_tags = rbindlist(lapply(list(
+        dt_syb[!is.na(syb3) & !is.na(mkt)][, .(rid, symbol, syb3, mkt)], 
+        dt_syb[!is.na(syb3) & !is.na(mkt)][, .(rid, symbol, syb3, mkt)][grepl("[0-9]{6}",symbol), mkt := 'fund'], 
+        dt_syb[!is.na(syb3) & is.na(mkt) & !is.na(exchg_code)][, .(rid, symbol, syb3, exchg_code)], 
+        dt_syb[!is.na(syb3) & is.na(mkt) & is.na(exchg_code) & !is.na(city)][, .(rid, symbol, syb3, city)]
+    ), function(x) {
+        by_cols = intersect(names(x), names(tags))
+        rbindlist(list(
+            merge(copy(x), tags, by = by_cols), 
+            merge(copy(x)[,syb3 := substr(syb3,1,2)], tags, by = by_cols)
+        ), fill = TRUE)
+    }), fill = TRUE)
+    
+    rbind(
+        dt_syb_tags, dt_syb, fill=TRUE
+    )[, .SD[1], keyby = 'rid'
+    ][, syb := sub("^.*?([0-9]+).*$","\\1",symbol)
     ][!is.na(exchg_code), syb_exp := paste(syb, exchg_code, sep='.')
     ][is.na(syb_exp), syb_exp := syb
-    ][, syb_exp := toupper(syb_exp)]
+    ][, syb_exp := toupper(syb_exp)
+    ][]
     
-    return(cn_tag)
 }
 # check SSE/SZSE share symbols to download data from 163/tx/yahoo
 check_symbol_for_163 = function(symbol, mkt = NULL) {

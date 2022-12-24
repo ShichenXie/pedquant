@@ -50,7 +50,7 @@ md_stock1_fs_cn = function(symbol1, type=NULL, print_step=0L, ...) {
     if (any(type == 'dupont')) return(fs_dupont_cn(symbol1))
     
     # symbol name
-    sn = md_stock_real_tx(symbol1, only_syb_nam = TRUE)
+    sn = md_stock_real(symbol1, only_syb_nam = TRUE)
     
     # type
     fs_type_163 = setDT(copy(financial_statements_163))
@@ -86,7 +86,7 @@ fs_dupont_cn = function(symbol1=NULL, ...) {
     # main financial indicators
     dat = fs_type1_cn('fi0_main', symbol1)
     # symbol name
-    sn = md_stock_real_tx(symbol1, only_syb_nam = TRUE)
+    sn = md_stock_real(symbol1, only_syb_nam = TRUE)
   }
   
   mfi2 = dcast(
