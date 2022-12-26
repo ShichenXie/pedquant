@@ -377,7 +377,7 @@ ed_nbs = function(symbol=NULL, freq=NULL, geo_type=NULL, subregion=NULL, date_ra
     setkeyv(temp, c('geo_code','date'))
     dat_lst[[i]] = temp[,geo_code := NULL]
   }
-  return(dat_lst)
+  return(dat_lst[])
 }
 
 # library(data.table)

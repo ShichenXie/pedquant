@@ -145,7 +145,8 @@ tags_dt = function() {
     )[,(c('exchange','AB','board')) := tstrsplit(tags,',')
      ][, exchg_code := toupper(substr(tags,1,2))
      ][exchg_code == 'SS', `:=`(city='sh', city_code='0')
-     ][exchg_code == 'SZ', `:=`(city='sz', city_code='1')][]
+     ][exchg_code == 'SZ', `:=`(city='sz', city_code='1')
+     ][exchg_code == 'BS', `:=`(city='bj')][]
     
 }
 check_symbol_cn = function(symbol, market = NULL) {
@@ -171,14 +172,15 @@ check_symbol_cn = function(symbol, market = NULL) {
     ][!grepl('[0-9]{3}', syb3), syb3 := NA
     ][grepl('\\.(hk|ss|sz|bs)$',symbol), exchg_code := sub('.+\\.(hk|ss|sz|bs)$', '\\1', symbol)
     ][grepl('\\.(hk|sh|sz|bj)$',symbol), city := sub('.+\\.(hk|sh|sz|bj)$', '\\1', symbol)
-    ]
+    ][!is.na(exchg_code) | !is.na(city), mkt := NA]
     
     # merge dt_syb with tags
+    dt_syb3 = dt_syb[!is.na(syb3)]
     dt_syb_tags = rbindlist(lapply(list(
-        dt_syb[!is.na(syb3) & !is.na(mkt)][, .(rid, symbol, syb3, mkt)], 
-        dt_syb[!is.na(syb3) & !is.na(mkt)][, .(rid, symbol, syb3, mkt)][grepl("[0-9]{6}",symbol), mkt := 'fund'], 
-        dt_syb[!is.na(syb3) & is.na(mkt) & !is.na(exchg_code)][, .(rid, symbol, syb3, exchg_code)], 
-        dt_syb[!is.na(syb3) & is.na(mkt) & is.na(exchg_code) & !is.na(city)][, .(rid, symbol, syb3, city)]
+        dt_syb3[!is.na(exchg_code)][, .(rid, symbol, syb3, exchg_code)], # syb3, exchg_code
+        dt_syb3[is.na(exchg_code) & !is.na(city)][, .(rid, symbol, syb3, city)], # syb3, city
+        dt_syb3[is.na(exchg_code) &  is.na(city)][, .(rid, symbol, syb3, mkt)], # syb3, mkt
+        dt_syb3[, .(rid, symbol, syb3, mkt='fund')] # syb3, mkt(fund)
     ), function(x) {
         by_cols = intersect(names(x), names(tags))
         rbindlist(list(
@@ -455,7 +457,7 @@ load_dat_loop = function(symbol, func, args=list(), print_step, sleep = 0, ...) 
         # sleep for 1s
         if (sleep > 0) Sys.sleep(abs(rnorm(1, mean=sleep)))
     }
-    return(dt_list)
+    return(dt_list[])
 }
 
 

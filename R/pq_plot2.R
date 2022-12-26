@@ -435,7 +435,7 @@ pq_plot = function(
     
     # y 
     if (length(y) > 1) {
-        addtiy = lapply(xefun:::c_list(y[-1]), function(x) list(position='overlay'))
+        addtiy = lapply(as.list2(y[-1]), function(x) list(position='overlay'))
         addti = c(addti, addtiy)
         y = y[1]
     }

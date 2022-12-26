@@ -165,7 +165,7 @@ md_moneycn = function(symbol=NULL, date_range = "3y", from = NULL, to = Sys.Date
     
     # load data by symbol
     dat_list = lapply(
-        xefun:::c_list(symbol), 
+        as.list2(symbol), 
         function(s) {
             if ((print_step>0)) cat(sprintf('%s %s\n', paste0(format(c(which(symbol %in% s), length(symbol))), collapse = '/'), s))
             dat = do.call(paste0('md_',s), list(date_range = date_range, from = from, to = to))
