@@ -3,8 +3,8 @@
 #' \code{pq_portfolio} calculates the weighted returns or the equity of a portfolio assets.
 #'
 #' @param dt a list/dataframe of price by asset.
-#' @param x the column name of adjusted asset price.
 #' @param orders a data frame of transaction orders, which includes symbol, date, prices, volumes and type columns. 
+#' @param x the column name of adjusted asset price, defaults to close.
 #' @param dtb a list/dataframe of price base asset.
 #' @param init_fund initial fund value.
 #' @param method the method to calculate asset returns, the available values include arithmetic and log, defaults to arithmetic.
@@ -23,7 +23,7 @@
 #'     symbol = c("601288.SS","601328.SS","601398.SS","601939.SS","601988.SS"), 
 #'     volumes = c(100, 200, 300, 300, 100)
 #' )
-#' dtRa = pq_portfolio(datadj, x='close', orders=orders) 
+#' dtRa = pq_portfolio(datadj, orders=orders) 
 #' 
 #' e1 = pq_plot(dtRa, y = 'cumreturns')
 #' e1[[1]]
@@ -36,7 +36,7 @@
 #'     date = rep(c('2009-03-02', '2010-01-04', '2014-09-01'), each = 5), 
 #'     volumes = rep(c(100, 200, 300, 300, 100), 3) * rep(c(1, -1, 2), each = 5)
 #' )
-#' dtRab = pq_portfolio(datadj, x='close', orders=orders, dtb = dt_ssec, init_fund = 10000) 
+#' dtRab = pq_portfolio(datadj, orders=orders, dtb = dt_ssec, init_fund = 10000) 
 #' 
 #' e2 = pq_plot(dtRab, y = 'cumreturns', yb = 'cumreturns_000001.SS', addti = list(portfolio=list()))
 #' e2[[1]]
@@ -46,14 +46,14 @@
 #' orders = data.frame(symbol = "000001.SS", 
 #'      date = c("2009-04-13", "2010-03-24", "2014-08-13", "2015-09-10"), 
 #'      volumes = c(400, -400, 300, -300))
-#' dtRa2 = pq_portfolio(dt_ssec, x='close', orders=orders, cols_keep = 'all')
+#' dtRa2 = pq_portfolio(dt_ssec, orders=orders, cols_keep = 'all')
 #' 
 #' e3 = pq_plot(dtRa2, y = 'close', addti = list(cumreturns=list(), portfolio=list()))
 #' e3[[1]]
 #' 
 #' @importFrom stats weighted.mean
 #' @export
-pq_portfolio = function(dt, x, orders, dtb = NULL, init_fund = NULL, method = 'arithmetic', cols_keep=NULL, ...) {
+pq_portfolio = function(dt, orders, x = 'close', dtb = NULL, init_fund = NULL, method = 'arithmetic', cols_keep=NULL, ...) {
     . = equity = equityindex = fund = chg = returns = symbol = value = balance = blchg = cumreturns = NULL
 
     w = 'weights'
@@ -68,7 +68,7 @@ pq_portfolio = function(dt, x, orders, dtb = NULL, init_fund = NULL, method = 'a
     # dt
     dt = check_dt(dt)
     # orders
-    orders = check_dt(orders, symb_name = FALSE)
+    orders = check_odr(orders)
 
     ## adding date column
     if (!('date' %in% names(orders))) orders = orders[, date := min(dt$date)] 

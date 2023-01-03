@@ -4,15 +4,15 @@
 \alias{pq_portfolio}
 \title{calculating returns/equity of portfolio}
 \usage{
-pq_portfolio(dt, x, orders, dtb = NULL, init_fund = NULL,
+pq_portfolio(dt, orders, x = "close", dtb = NULL, init_fund = NULL,
   method = "arithmetic", cols_keep = NULL, ...)
 }
 \arguments{
 \item{dt}{a list/dataframe of price by asset.}
 
-\item{x}{the column name of adjusted asset price.}
-
 \item{orders}{a data frame of transaction orders, which includes symbol, date, prices, volumes and type columns.}
+
+\item{x}{the column name of adjusted asset price, defaults to close.}
 
 \item{dtb}{a list/dataframe of price base asset.}
 
@@ -39,7 +39,7 @@ orders = data.frame(
     symbol = c("601288.SS","601328.SS","601398.SS","601939.SS","601988.SS"), 
     volumes = c(100, 200, 300, 300, 100)
 )
-dtRa = pq_portfolio(datadj, x='close', orders=orders) 
+dtRa = pq_portfolio(datadj, orders=orders) 
 
 e1 = pq_plot(dtRa, y = 'cumreturns')
 e1[[1]]
@@ -52,7 +52,7 @@ orders = data.frame(
     date = rep(c('2009-03-02', '2010-01-04', '2014-09-01'), each = 5), 
     volumes = rep(c(100, 200, 300, 300, 100), 3) * rep(c(1, -1, 2), each = 5)
 )
-dtRab = pq_portfolio(datadj, x='close', orders=orders, dtb = dt_ssec, init_fund = 10000) 
+dtRab = pq_portfolio(datadj, orders=orders, dtb = dt_ssec, init_fund = 10000) 
 
 e2 = pq_plot(dtRab, y = 'cumreturns', yb = 'cumreturns_000001.SS', addti = list(portfolio=list()))
 e2[[1]]
@@ -62,7 +62,7 @@ e2[[1]]
 orders = data.frame(symbol = "000001.SS", 
      date = c("2009-04-13", "2010-03-24", "2014-08-13", "2015-09-10"), 
      volumes = c(400, -400, 300, -300))
-dtRa2 = pq_portfolio(dt_ssec, x='close', orders=orders, cols_keep = 'all')
+dtRa2 = pq_portfolio(dt_ssec, orders=orders, cols_keep = 'all')
 
 e3 = pq_plot(dtRa2, y = 'close', addti = list(cumreturns=list(), portfolio=list()))
 e3[[1]]

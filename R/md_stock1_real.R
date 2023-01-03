@@ -32,7 +32,7 @@ md_stock_real = function(symbol, trytimes = 3, source = c('tx', 'sina'), ...) {
 md_stock_real_sina = function(symbols, only_syb_nam = FALSE, ...) {
     city = syb = exchg_code = name = time = sybsina = NULL
         
-    sybs_xchg = check_symbol_cn(symbols)[
+    sybs_xchg = syb_add_cntags(symbols)[
         , sybsina := syb
     ][is.na(city), `:=`(
         syb = toupper(syb), 
@@ -95,7 +95,7 @@ md_stock_real_sina = function(symbols, only_syb_nam = FALSE, ...) {
 md_stock_real_tx = function(symbols, only_syb_nam = FALSE, ...) {
     city = exchg_code = syb = symbol = amount = mkt = volume = cap_market = cap_total = unit = NULL
     
-    sybs_xchg = check_symbol_cn(symbols)[is.na(city), `:=`(
+    sybs_xchg = syb_add_cntags(symbols)[is.na(city), `:=`(
         syb = toupper(syb), 
         city = 'us'
     )]
@@ -164,7 +164,7 @@ md_stock_real_tx = function(symbols, only_syb_nam = FALSE, ...) {
         ][grepl('HK$', symbol), unit := 'HKD'
         ][is.na(unit), unit := 'CNY'
         ][, amount := amount*10000
-        ][, mkt := check_symbol_cn(symbol)$mkt
+        ][, mkt := syb_add_cntags(symbol)$mkt
         ][mkt == 'stock', volume := volume*100
         ][, mkt := NULL
         ][, `:=`(

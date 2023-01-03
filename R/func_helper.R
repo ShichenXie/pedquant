@@ -70,7 +70,7 @@ tags_symbol_stockcn = function(symbol, mkt, only_tags = TRUE) {
     ][nchar(syb)==5, tags := ifelse(substr(syb,1,2)=="08", "hkex,,gem", "hkex,,main")]
 
     tags = rbind(
-        merge(sm[nchar(syb)==6][,tags:=NULL], tags_dt(), all.x = TRUE, by = c('mkt', 'syb3')),
+        merge(sm[nchar(syb)==6][,tags:=NULL], syb_cntags(), all.x = TRUE, by = c('mkt', 'syb3')),
         sm[nchar(syb)==5][],
         fill = TRUE
     )#[!is.na(tags)]#[,tags]
@@ -106,7 +106,7 @@ tags_symbol_stockcn = function(symbol, mkt, only_tags = TRUE) {
     return(tags)
 }
 # tags of SSE/SZSE shares symbols
-tags_dt = function() {
+syb_cntags = function() {
     tags = exchg_code = NULL
     
     fread(
@@ -149,10 +149,10 @@ tags_dt = function() {
      ][exchg_code == 'BS', `:=`(city='bj')][]
     
 }
-check_symbol_cn = function(symbol, market = NULL) {
+syb_add_cntags = function(symbol, market = NULL) {
     . = city = exchg_code = mkt = rid = syb = syb3 = syb_exp = NULL
      
-    tags = tags_dt()[, exchg_code := tolower(exchg_code)][]
+    tags = syb_cntags()[, exchg_code := tolower(exchg_code)][]
     
     lst_syb = list(
         rid = seq_along(symbol), 
@@ -200,10 +200,10 @@ check_symbol_cn = function(symbol, market = NULL) {
     
 }
 # check SSE/SZSE share symbols to download data from 163/tx/yahoo
-check_symbol_for_163 = function(symbol, mkt = NULL) {
+syb_fmt_163 = function(symbol, mkt = NULL) {
     syb_163 = city_code = syb = tags = NULL
     
-    symbol_163 = check_symbol_cn(
+    symbol_163 = syb_add_cntags(
         symbol, mkt
     )[, syb_163 := paste0(city_code,syb)
     ][is.na(tags), syb_163 := symbol
@@ -211,10 +211,10 @@ check_symbol_for_163 = function(symbol, mkt = NULL) {
     
     return(symbol_163)
 }
-check_symbol_for_tx = function(symbol, mkt = NULL) {
+syb_fmt_tx = function(symbol, mkt = NULL) {
     syb_tx = city = syb = tags = NULL
     
-    symbol_tx = check_symbol_cn(
+    symbol_tx = syb_add_cntags(
         symbol, mkt
     )[, syb_tx := paste0(city,syb)
     ][is.na(tags), syb_tx := symbol
@@ -222,11 +222,11 @@ check_symbol_for_tx = function(symbol, mkt = NULL) {
     
     return(symbol_tx)
 }
-check_symbol_for_yahoo = function(symbol, mkt = NULL) {
+syb_fmt_output = function(symbol, mkt = NULL) {
     syb_yh = syb = exchg_code = tags = NULL
     
     if (all(grepl('[0-9]{6}', symbol))) {
-        symbol = check_symbol_cn(
+        symbol = syb_add_cntags(
             symbol, mkt
         )[, syb_yh := paste(syb, exchg_code, sep = '.') #paste0(city,syb)
         ][is.na(tags), syb_yh := symbol

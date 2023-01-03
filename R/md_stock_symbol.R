@@ -96,7 +96,7 @@ symbol_163_format = function(df_symbol) {
       , syb := sub(".*?(\\d+).*","\\1", symbol) 
     ][nchar(syb)==6, syb3 := substr(syb,1,3)],
     # tangs by syb3 and market
-    tags_dt()[, c("exchange","submarket","board") := tstrsplit(tags,",")
+    syb_cntags()[, c("exchange","submarket","board") := tstrsplit(tags,",")
     ][,.(market=mkt, syb3, exchange, submarket, board)],
     # merge by 
     all.x = TRUE, by = c('syb3', 'market')

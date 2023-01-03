@@ -143,7 +143,7 @@ ed_nbs_subregion = function(geo_type=NULL, eng=FALSE) {
   
   # param
   nbs_url = sel_nbs_url(eng)
-  time_sec = date_num(Sys.time(), 'ms')
+  time_sec = date_num(Sys.time(), 'milliseconds')
   
   # geography type
   geo_type = check_arg(geo_type, c("province", "city"), default = NULL, arg_name = 'geo_type')

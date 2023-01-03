@@ -9,7 +9,7 @@ md_stock1_info_163 = function(symbol1, rev_hist = FALSE, ...) {
   # http://quotes.money.163.com/service/gszl_600036.html?type=dy
   
   # skip index
-  chk_syb = check_symbol_cn(symbol1)
+  chk_syb = syb_add_cntags(symbol1)
   symbol1 = chk_syb$syb
   if (chk_syb[, mkt == 'index' || is.na(mkt)]) return(NULL)
   # symbol1 = '000001'
@@ -149,7 +149,7 @@ md_stock1_history_163 = function(symbol1, from='1900-01-01', to=Sys.Date(), zero
   
   # 'http://api.finance.ifeng.com/akmonthly/?code=sh600000&type=last'
   # {'D': 'akdaily', 'W': 'akweekly', 'M': 'akmonthly'}
-  chk_syb1 = check_symbol_cn(symbol1)[]
+  chk_syb1 = syb_add_cntags(symbol1)[]
   if (chk_syb1$mkt %in% 'fund') {
       return(md_fund1_history_163(symbol1, from, to))
   } else if (!(chk_syb1$exchg_code %in% c('sz', 'ss'))) {
@@ -157,7 +157,7 @@ md_stock1_history_163 = function(symbol1, from='1900-01-01', to=Sys.Date(), zero
   }
   
   # symbol
-  syb = check_symbol_for_163(symbol1) 
+  syb = syb_fmt_163(symbol1) 
 
   # date range
   fromto = lapply(list(from=from,to=to), function(x) format(check_fromto(x), '%Y%m%d'))
@@ -183,7 +183,7 @@ md_stock1_history_163 = function(symbol1, from='1900-01-01', to=Sys.Date(), zero
   setkeyv(dt, 'date')
   
   # if (max(dt[['date']]) < lwd()) dt = rbindlist(list(dt, md_stock_real1_tx(symbol1)[,names(dt), with=FALSE]), fill = FALSE)
-  dt = dt[, symbol := check_symbol_for_yahoo(symbol1)][, (cols_name[c(2,3,1,4:15)]), with=FALSE]
+  dt = dt[, symbol := syb_fmt_output(symbol1)][, (cols_name[c(2,3,1,4:15)]), with=FALSE]
   # if (max(dt[['date']]) < lwd()) dt = unique(dt, by='date')
   
   # fill zeros in dt
@@ -197,7 +197,7 @@ md_stock1_history_163 = function(symbol1, from='1900-01-01', to=Sys.Date(), zero
   
   
   # adding valuation ratios and adjust for dividend
-  chk_syb = try(check_symbol_for_yahoo(dt[1, tstrsplit(symbol, '\\.')][,V1]), silent = TRUE)
+  chk_syb = try(syb_fmt_output(dt[1, tstrsplit(symbol, '\\.')][,V1]), silent = TRUE)
   if (chk_syb == dt[1,symbol] && nrow(dt)>0) {
     valuation = list(...)[['valuation']]
     if (is.null(valuation)) valuation = FALSE
@@ -288,7 +288,7 @@ md_stock1_divsplit_163 = function(symbol1, from=NULL, to=NULL, ret = c('div', 's
   name = symbol = date2 = date1 = date0 = fenhong = . = songgu = spl = zhuanzeng = new_issues = old_issues = issue_price = issue_rate = splits = dividends = mkt = NULL
   
   # skip index
-  if (check_symbol_cn(symbol1)[, mkt == 'index' || is.na(mkt)]) return(NULL)
+  if (syb_add_cntags(symbol1)[, mkt == 'index' || is.na(mkt)]) return(NULL)
   # symbol1 = '000001'
   stk_price = md_stock_real(symbol1, only_syb_nam=TRUE)
   # return dts
@@ -389,7 +389,7 @@ md_fund1_history_163 = function(symbol1, from='1900-01-01', to=Sys.Date()) {
   dat_tx = md_stock1_history_tx(symbol1, from = from, to = to, adjust = '')
   
   if (FALSE) {
-      # syb1 = check_symbol_for_tx(symbol1)
+      # syb1 = syb_fmt_tx(symbol1)
       # dat1 = 'init'
       # i=1
       # datlst = list()
@@ -417,14 +417,14 @@ md_fund1_history_163 = function(symbol1, from='1900-01-01', to=Sys.Date()) {
   
   
   # from 163 ------
-  url0 = sprintf('http://quotes.money.163.com/fund/zyjl_%s_0.html?start=%s&end=%s', check_symbol_cn(symbol1)$syb, from, to)
+  url0 = sprintf('http://quotes.money.163.com/fund/zyjl_%s_0.html?start=%s&end=%s', syb_add_cntags(symbol1)$syb, from, to)
   pagnum = read_html(url0) %>% 
     html_nodes('div.mod_pages a') %>% 
     html_text() %>% .[-length(.)] %>% 
     as.integer() %>% max(., na.rm = T)
   
   dat_lst2 = lapply(
-    sprintf('http://quotes.money.163.com/fund/zyjl_%s_%s.html?start=%s&end=%s', check_symbol_cn(symbol1)[]$syb, seq(0,pagnum-1), from, to), 
+    sprintf('http://quotes.money.163.com/fund/zyjl_%s_%s.html?start=%s&end=%s', syb_add_cntags(symbol1)[]$syb, seq(0,pagnum-1), from, to), 
     function(u) {
       read_html(u) %>% html_table(fill = TRUE) %>% .[[1]]
     }
@@ -558,7 +558,7 @@ md_stock1_history_tx0 = function(symbol1, from, to, adjust) {
     city = syb1 = symbol = NULL
     
     # symbol1
-    sybs_xchg = check_symbol_cn(toupper(symbol1))[
+    sybs_xchg = syb_add_cntags(toupper(symbol1))[
         !is.na(city), syb1 := paste0(city, sub('(\\.ss|\\.sz)$', '', symbol))
     ][is.na(city), syb1 := sprintf('us%s.OQ', symbol)][]
     

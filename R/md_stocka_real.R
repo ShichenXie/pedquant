@@ -93,7 +93,7 @@ md_stockall_real_163 = function(symbol = c('a','index'), only_symbol = FALSE, sh
         }
     }
     
-    df = df_stock_cn[,unit := 'CNY'][, symbol := check_symbol_for_yahoo(symbol, market)]#[, mkt := NULL][]
+    df = df_stock_cn[,unit := 'CNY'][, symbol := syb_fmt_output(symbol, market)]#[, mkt := NULL][]
     
     cols_rm = intersect(names(df), c('sector', 'industry', 'province', 'plate_ids', 'region')) # , 'close_prev', 
     if (length(cols_rm)>0) df = df[, (cols_rm) := NULL]
@@ -132,7 +132,7 @@ md_fundall_real_163 = function() {
     
     dat_df = dat_df[
         , .SD[1], by = 'symbol'
-    ][, .(symbol = check_symbol_for_yahoo(symbol, 'fund'), date = syb_nam_dat$date, name, open, high, low, close = price, close_prev = yestclose, change_pct = percent*100, volume, amount = turnover, market = fund, unit = 'CNY')] # change=updown, sname, 
+    ][, .(symbol = syb_fmt_output(symbol, 'fund'), date = syb_nam_dat$date, name, open, high, low, close = price, close_prev = yestclose, change_pct = percent*100, volume, amount = turnover, market = fund, unit = 'CNY')] # change=updown, sname, 
     
     return(dat_df)
 }

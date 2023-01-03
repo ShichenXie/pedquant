@@ -1,8 +1,24 @@
 check_odr = function(orders) {
-    type = NULL
-    # symbol, date, type, prices, volumes
+    . = symbol = type = prices = values = volumes = NULL
+    
+    # symbol, date, type, prices, volumes, values
+    if (inherits(orders, 'list')) orders = rbindlist(orders, fill = TRUE)
+    
     if (inherits(orders, 'data.frame')) {
         orders = setDT(orders)[!is.na(type)]
+        
+        if ('date' %in% names(orders)) orders = orders[, date := as_date(date)]
+        
+        if (all(c('type', 'prices', 'volumes') %in% names(orders))) {
+            orders = orders[
+                type %in% c('sell', 'stc', 'sto'), volumes := - volumes
+            ][, .(
+                prices = sum(prices*volumes)/sum(volumes), 
+                volumes = sum(volumes), 
+                values = sum(prices*volumes)
+            ), by = .(symbol, date)
+            ][, type := ifelse(values >= 0, 'buy', 'sell')]
+        }
     }
     
     return(orders)

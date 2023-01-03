@@ -9,7 +9,7 @@ md_stock_adjust(dt, adjust = FALSE, forward = TRUE, ...)
 \arguments{
 \item{dt}{a list/dataframe of time series datasets that didnt adjust for split or dividend.}
 
-\item{adjust}{whether to adjust the OHLC prices, defaults to FALSE. If it is NULL, return the original data; if it is FALSE, create close_adj or change_pct column if not exist; if it is TRUE, adjust all open, high, low, close columns. The adjustment is based on the cumulative products of close/close_prev.}
+\item{adjust}{whether to adjust the OHLC prices. Defaults to FALSE, which creates close_adj or change_pct column if not exist; if it is TRUE, adjusts all open, high, low, close columns and creates close_adj or change_pct column if not exist; if it is NULL, returns the original data. The adjustment is based on the cumulative products of close/close_prev.}
 
 \item{forward}{forward adjust or backward adjust, defaults to TRUE.}
 

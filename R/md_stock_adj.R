@@ -4,12 +4,13 @@
 # zhuanlan.zhihu.com/p/283168542
 # https://wiki.mbalib.com/wiki/%E9%99%A4%E6%9D%83%E9%99%A4%E6%81%AF%E6%97%A5
 
-md_stock_adj1ohlc = function(dt, adjust=FALSE, forward=TRUE, source=NULL, adjfactor=NULL, ...) {
-    close_adj =  close_prev =  adjratio_cumchg =  change_pct =  adjratio = adjratio = NULL
+md_stock_adj1ohlc = function(dt, adjust=FALSE, forward=TRUE, source=NULL, ...) {
+    close_adj = close_prev = adjratio_cumchg = change_pct = adjratio = NULL
     
-    if (is.null(adjust)) return(dt)
+    # param: OHLC columns
+    cols_ohlc = c('open', 'high', 'low', 'close')
     
-    ## source ------
+    # source
     if (is.null(source)) {
         if ('close_adj' %in% names(dt) && !('close_prev' %in% names(dt)) && dt[!is.na(close_adj), .N>0]) {
             source = 'yahoo'
@@ -18,11 +19,10 @@ md_stock_adj1ohlc = function(dt, adjust=FALSE, forward=TRUE, source=NULL, adjfac
         }
     }
     
-    ## adjust ohlc ------
-    ## OHLC columns
-    cols_ohlc = c('open', 'high', 'low', 'close')
-    if (!all(cols_ohlc %in% names(dt))) return(dt)
+    # return original data
+    if (!all(cols_ohlc %in% names(dt)) || is.null(adjust) || is.null(source)) return(dt)
     
+    # adjust ohlc
     ## create close_adj for 163 prices
     if (!('close_adj' %in% names(dt)) & ('close_prev' %in% names(dt))) {
         if (as.character(source) == '163') {
@@ -52,10 +52,7 @@ md_stock_adj1ohlc = function(dt, adjust=FALSE, forward=TRUE, source=NULL, adjfac
     }
     
     ## adjust ohlc columns
-    if (isFALSE(adjust)) {
-        return(dt)
-    } else {
-        # adjust all ohlc prices if adjust is TRUE
+    if (isTRUE(adjust)) {
         dt = copy(dt)[, adjratio := close_adj/close
         ][, (cols_ohlc) := lapply(.SD, function(x) x*adjratio), .SDcols = cols_ohlc
         ][, adjratio := NULL]
@@ -69,7 +66,7 @@ md_stock_adj1ohlc = function(dt, adjust=FALSE, forward=TRUE, source=NULL, adjfac
 #' \code{md_stock_adjust} adjusts the open, high, low and close stock prices for split and dividend. 
 #' 
 #' @param dt a list/dataframe of time series datasets that didnt adjust for split or dividend.
-#' @param adjust whether to adjust the OHLC prices, defaults to FALSE. If it is NULL, return the original data; if it is FALSE, create close_adj or change_pct column if not exist; if it is TRUE, adjust all open, high, low, close columns. The adjustment is based on the cumulative products of close/close_prev.
+#' @param adjust whether to adjust the OHLC prices. Defaults to FALSE, which creates close_adj or change_pct column if not exist; if it is TRUE, adjusts all open, high, low, close columns and creates close_adj or change_pct column if not exist; if it is NULL, returns the original data. The adjustment is based on the cumulative products of close/close_prev.
 #' @param forward forward adjust or backward adjust, defaults to TRUE.
 #' @param ... Additional parameters.
 #' 
@@ -82,34 +79,41 @@ md_stock_adj1ohlc = function(dt, adjust=FALSE, forward=TRUE, source=NULL, adjfac
 #' }
 #' @export
 md_stock_adjust = function(dt, adjust = FALSE, forward = TRUE, ...) {
-    # adj_vol
-    source = list(...)[['source']]
-    adj_vol = list(...)[['adj_vol']]
+    symbol = NULL
+    
+    # param
+    args = list(...)
+    adj_vol = args[['adj_vol']]
+    
     # dt
     dt = check_dt(dt)
     
     # adjusted data list
     dat_list = lapply(
-        split(dt, by = 'symbol'), 
-        function(dts) {do.call(
-            'md_stock_adj1ohlc', 
-            args = list(dt = dts, source=source, adjust=adjust, forward=forward, ...) 
-        )}
+        xefun:::c_list(dt[, unique(symbol)]), 
+        function(s) {
+            dtadj = do.call(
+                'md_stock_adj1ohlc', 
+                args = list(dt = dt[symbol == s], adjust=adjust, forward=forward, source = args[['source']]) 
+            )
+            
+            if (isTRUE(adj_vol)) dtadj = md_stock_adj1vol(dtadj, adjfactor = args[['adjfactor']][symbol == s], col_vol = args[['col_vol']], adj_ohlc = FALSE)
+            
+            return(dtadj)
+        }
     )
-    
-    if (isTRUE(adj_vol)) dat_list = md_stock_adjvol(dat_list, ...)
     
     return(dat_list)
 }
 
 md_stock_adj1vol = function(dt, adjfactor, col_vol = 'volume', adj_ohlc = FALSE) {
-    . = symbol = from =  to =  dividends =  splits =  issue_rate =  issue_price =  splits_cum =  adjfactor_spl =  adjfactor_div =  adjfactor_spl =  adjfactor_div = volume_spl = close_spl = NULL
     
     # dt = md_stock('600547', date_range = 'max', source = '163')
     # adjfactor = md_stock('600547', date_range = 'max', source = '163', type = 'adjfactor')
-        
+    . = symbol = from = to = splits_cum = splits = dividends = adjfactor_spl = adjfactor_div = volume_adjspl = close_adjspl = close_spl = NULL
+    
     dt = check_dt(dt)
-    divspl = check_dt(adjfactor)
+    divspl = check_dt(adjfactor, symb_name = FALSE)
     symbol1 = sub('([0-9]+).+', '\\1', dt[1, symbol])
     
     if (is.null(divspl)) {
@@ -176,33 +180,31 @@ md_stock_adj1vol = function(dt, adjfactor, col_vol = 'volume', adj_ohlc = FALSE)
         
         dt_adj = dt_adj[
             order(symbol, date)
-        ][, volume_spl := get(col_vol)/adjfactor_spl
-        ][, close_spl := close * adjfactor_spl
-        ][, close_spl := fillna(close_spl), by = 'symbol'
-        ][, c(names(dt), 'volume_spl', 'close_spl'), with = FALSE]#[!is.na(get(col_vol))]
+        ][, volume_adjspl := get(col_vol)/adjfactor_spl
+        ][, close_adjspl := close * adjfactor_spl
+        ][, close_adjspl := fillna(close_spl), by = 'symbol'
+        ][, c(names(dt), 'close_adjspl', 'volume_adjspl'), with = FALSE]#[!is.na(get(col_vol))]
         
     }
     
     return(dt_adj)
 }
 
-md_stock_adjvol = function(dt, adjfactor, col_vol = 'volume', adj_ohlc = FALSE, ...) {
-    symbol = NULL
-    # dt
-    dt = check_dt(dt)
-    
-    # adjusted data list
-    syblst = dt[, unique(symbol)]
-    dat_list = lapply(
-        syblst, 
-        function(s) {
-            # print(s)
-            do.call(
-            'md_stock_adj1vol', 
-            args = list(dt = dt[symbol == s], adjfactor=adjfactor[symbol == s], col_vol=col_vol, adj_ohlc=adj_ohlc) 
-        )}
-    )
-    names(dat_list) = syblst
-    
-    return(dat_list)
-}
+# md_stock_adjvol = function(dt, adjfactor, col_vol = 'volume', adj_ohlc = FALSE, ...) {
+#     symbol = NULL
+#     # dt
+#     dt = check_dt(dt)
+#     
+#     # adjusted data list
+#     dat_list = lapply(
+#         xefun:::c_list(dt[, unique(symbol)]), 
+#         function(s) {
+#             # print(s)
+#             do.call(
+#             'md_stock_adj1vol', 
+#             args = list(dt = dt[symbol == s], adjfactor=adjfactor[symbol == s], col_vol=col_vol, adj_ohlc=adj_ohlc) 
+#         )}
+#     )
+#     
+#     return(dat_list)
+# }
