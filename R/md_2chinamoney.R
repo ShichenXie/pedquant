@@ -37,23 +37,23 @@ load_data_chinamoney = function(url, ft) {
 md_moneycn_symbol = function() {
     fread(
         'symbol,name
-         cnocnyOm,Shibor CNY OVERNIGHT, daily
-         cnocny1w,Shibor CNY 1W, daily
-         cnocny2w,Shibor CNY 2W, daily
-         cnocny1m,Shibor CNY 1M, daily
-         cnocny3m,Shibor CNY 3M, daily
-         cnocny6m,Shibor CNY 6M, daily
-         cnocny9m,Shibor CNY 9M, daily
-         cnocny1m,Shibor CNY 1Y, daily
-         cn1ylpr,China 1year Loan Prime Rate, monthly
-         cn5ylpr,China 5year Loan Prime Rate, monthly
-         cn1ypr_d,China 1year Policy Rate Deposit, daily
-         cn1ypr_l,China 1year Policy Rate Lending, daily
-         cn1ydy_b,China 1Y Bond Yield, daily
-         cn10ydy_b,China 10Y Bond Yield, daily
-         rmbx_cfets,CFETS RMB Index, weekly
-         rmbx_bis,BIS Currency Basket RMB Index, weekly
-         rmbx_sdr,SDR Currency Basket RMB Index, weekly
+         cnocnyOm,Shibor CNY OVERNIGHT - daily
+         cnocny1w,Shibor CNY 1W - daily
+         cnocny2w,Shibor CNY 2W - daily
+         cnocny1m,Shibor CNY 1M - daily
+         cnocny3m,Shibor CNY 3M - daily
+         cnocny6m,Shibor CNY 6M - daily
+         cnocny9m,Shibor CNY 9M - daily
+         cnocny1m,Shibor CNY 1Y - daily
+         cn1ylpr,China 1year Loan Prime Rate - monthly
+         cn5ylpr,China 5year Loan Prime Rate - monthly
+         cn1ypr_d,China 1year Policy Rate Deposit - daily
+         cn1ypr_l,China 1year Policy Rate Lending - daily
+         cn1ydy_b,China 1Y Bond Yield - daily
+         cn10ydy_b,China 10Y Bond Yield - daily
+         rmbx_cfets,CFETS RMB Index - weekly
+         rmbx_bis,BIS Currency Basket RMB Index - weekly
+         rmbx_sdr,SDR Currency Basket RMB Index - weekly
         '
     )
 }
