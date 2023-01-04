@@ -8,7 +8,7 @@ md_moneycn(symbol = NULL, date_range = "3y", from = NULL,
   to = Sys.Date(), print_step = 1L)
 }
 \arguments{
-\item{symbol}{benchmarks, available values including shibor, lpr, br, rmbx. Default is NULL,}
+\item{symbol}{benchmarks, available values including 'rmbx', 'shibor', 'lpr', 'pr', 'yb'. Default is NULL,}
 
 \item{date_range}{date range. Available value includes '1m'-'11m', 'ytd', 'max' and '1y'-'ny'. Default is 3y.}
 

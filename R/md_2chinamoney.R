@@ -37,21 +37,23 @@ load_data_chinamoney = function(url, ft) {
 md_moneycn_symbol = function() {
     fread(
         'symbol,name
-         cnocnyOm,Shibor CNY OVERNIGHT
-         cnocny1m,Shibor CNY 1W
-         cnocny2m,Shibor CNY 2W
-         cnocny1m,Shibor CNY 1M
-         cnocny3m,Shibor CNY 3M
-         cnocny6m,Shibor CNY 6M
-         cnocny9m,Shibor CNY 9M
-         cnocny1m,Shibor CNY 1Y
-         lpr1y,Loan Prime Rate 1year 
-         lpr5y,Loan Prime Rate 5year
-         bdr1y,Benchmark Deposit Rate 1year
-         blr1y,Benchmark Lending Rate 1year
-         rmbx_cfets,CFETS RMB Index
-         rmbx_bis,BIS Currency Basket RMB Index
-         rmbx_sdr,SDR Currency Basket RMB Index
+         cnocnyOm,Shibor CNY OVERNIGHT, daily
+         cnocny1w,Shibor CNY 1W, daily
+         cnocny2w,Shibor CNY 2W, daily
+         cnocny1m,Shibor CNY 1M, daily
+         cnocny3m,Shibor CNY 3M, daily
+         cnocny6m,Shibor CNY 6M, daily
+         cnocny9m,Shibor CNY 9M, daily
+         cnocny1m,Shibor CNY 1Y, daily
+         cn1ylpr,China 1year Loan Prime Rate, monthly
+         cn5ylpr,China 5year Loan Prime Rate, monthly
+         cn1ypr_d,China 1year Policy Rate Deposit, daily
+         cn1ypr_l,China 1year Policy Rate Lending, daily
+         cn1ydy_b,China 1Y Bond Yield, daily
+         cn10ydy_b,China 10Y Bond Yield, daily
+         rmbx_cfets,CFETS RMB Index, weekly
+         rmbx_bis,BIS Currency Basket RMB Index, weekly
+         rmbx_sdr,SDR Currency Basket RMB Index, weekly
         '
     )
 }
@@ -65,7 +67,7 @@ md_moneycn_widelong = function(dt) {
 
 # shanghai interbank offered rate, shibor
 #' @import data.table
-md_shibor = function(date_range = '3y', from=NULL, to=Sys.Date(), ...) {
+md_cnshibor = function(date_range = '3y', from=NULL, to=Sys.Date(), ...) {
     ## from/to
     to = check_to(to)
     from = check_from(date_range, from, to, default_from = "1997-01-01", default_date_range = '3y')
@@ -81,7 +83,7 @@ md_shibor = function(date_range = '3y', from=NULL, to=Sys.Date(), ...) {
 }
 
 # loan prime rate, lpr
-md_lpr = function(date_range = '3y', from=NULL, to=Sys.Date(), ...) {
+md_cnlpr = function(date_range = '3y', from=NULL, to=Sys.Date(), ...) {
     ## from/to
     to = check_to(to)
     from = check_from(date_range, from, to, default_from = "2013-01-01", default_date_range = '3y')
@@ -91,13 +93,14 @@ md_lpr = function(date_range = '3y', from=NULL, to=Sys.Date(), ...) {
     ## download data
     dat = load_data_chinamoney('https://www.shibor.org/dqs/rest/cm-u-bk-currency/LprHisExcel?lang=CN&strStartDate=%s&strEndDate=%s', date_ft1y(from, to))
     
-    setnames(dat, c('date', 'lpr1y', 'lpr5y'))
+    setnames(dat, c('date', 'cn1ylpr', 'cn5ylpr'))
     dat = md_moneycn_widelong(dat)
     return(dat[])
 }
 
-# benchmark/policy rate
-md_br = function(date_range = '3y', from=NULL, to=Sys.Date(), ...) {
+# policy rate
+md_cnpr = function(date_range = '3y', from=NULL, to=Sys.Date(), ...) {
+    date_range = 'max'
     ## from/to
     to = check_to(to)
     from = check_from(date_range, from, to, default_from = "1997-01-01", default_date_range = '3y')
@@ -105,7 +108,7 @@ md_br = function(date_range = '3y', from=NULL, to=Sys.Date(), ...) {
     ## download data
     dat = load_data_chinamoney(paste0('https://www.chinamoney.com.cn/dqs/rest/cm-u-bk-currency/SddsIntrRatePlRatHisExcel?lang=CN&startDate=%s&endDate=%s&t=', date_num(Sys.time(), 'ms')), data.table(f=from, t=to))
     
-    setnames(dat, c('date', "bdr1y", "blr1y"))
+    setnames(dat, c('date', "cn1ybdr", "cn1yblr"))
     dat2 = merge(
         data.table(date=seq(dat[,min(date)], Sys.Date(), by=1)),
         dat, by = 'date', all.x=TRUE
@@ -115,6 +118,23 @@ md_br = function(date_range = '3y', from=NULL, to=Sys.Date(), ...) {
     dat2 = md_moneycn_widelong(dat2)
     return(dat2[])
 }
+
+# yields of bond 
+md_cnyb = function(date_range = '3y', from=NULL, to=Sys.Date()) {
+    ## from/to
+    to = check_to(to)
+    from = check_from(date_range, from, to, default_from = "1997-01-01", default_date_range = '3y')
+    
+    ## download data
+    dat = load_data_chinamoney(paste0('https://www.chinamoney.com.cn/dqs/rest/cm-u-bk-currency/SddsIntrRateGovYldHisExcel?lang=CN&startDate=%s&endDate=%s&t=', date_num(Sys.time(), 'ms')), date_ft1y(from, to))
+    
+    setnames(dat, c('date', "cn1ydy_b", "cn10ydy_b"))
+    dat = md_moneycn_widelong(dat)
+    
+    return(dat[])
+}
+
+
 # forex cny
 md_cnyforex = function(date_range = '3y', from=NULL, to=Sys.Date()) {
     ## from/to
@@ -130,7 +150,7 @@ md_cnyforex = function(date_range = '3y', from=NULL, to=Sys.Date()) {
 
 
 # cny index
-md_rmbx = function(date_range = '3y', from=NULL, to=Sys.Date(), ...) {
+md_cnrmbx = function(date_range = '3y', from=NULL, to=Sys.Date(), ...) {
     ## from/to
     to = check_to(to)
     from = check_from(date_range, from, to, default_from = "2015-01-01", default_date_range = '3y')
@@ -148,7 +168,7 @@ md_rmbx = function(date_range = '3y', from=NULL, to=Sys.Date(), ...) {
 #' 
 #' \code{md_moneycn} query benchmark rates from chinamoney.com.cn.
 #' 
-#' @param symbol benchmarks, available values including shibor, lpr, br, rmbx. Default is NULL, 
+#' @param symbol benchmarks, available values including 'rmbx', 'shibor', 'lpr', 'pr', 'yb'. Default is NULL, 
 #' @param date_range date range. Available value includes '1m'-'11m', 'ytd', 'max' and '1y'-'ny'. Default is 3y.
 #' @param from the start date. Default is NULL. If it is NULL, then calculate using date_range and end date.
 #' @param to the end date. Default is the current date.
@@ -158,8 +178,9 @@ md_rmbx = function(date_range = '3y', from=NULL, to=Sys.Date(), ...) {
 md_moneycn = function(symbol=NULL, date_range = "3y", from = NULL, to = Sys.Date(), print_step = 1L) {
     # syb = intersect(symbol, ibor_symbol$symbol)
     if (is.null(symbol)) symbol = select_rows_df(data.table(
-        symbol = c('shibor', 'lpr', 'br', 'rmbx'), 
-        name = c('Shanghai Interbank Offered Rate', 'Loan Prime Rate', 'Benchmark Deposit/Lending Rate', 'RMB Index')
+        symbol = c('rmbx', 'shibor', 'lpr', 'pr', 'yb'), 
+        name = c('RMB Index', 'Shanghai Interbank Offered Rate', 'Loan Prime Rate', 'Policy Rate Deposit/Lending', 'Yields of Bond'), 
+        type = c('FX Market', 'RMB Market', 'RMB Market', 'Interest Rate', 'Interest Rate')
     ), column='symbol')[,symbol]
     
     
@@ -168,10 +189,12 @@ md_moneycn = function(symbol=NULL, date_range = "3y", from = NULL, to = Sys.Date
         as.list2(symbol), 
         function(s) {
             if ((print_step>0)) cat(sprintf('%s %s\n', paste0(format(c(which(symbol %in% s), length(symbol))), collapse = '/'), s))
-            dat = do.call(paste0('md_',s), list(date_range = date_range, from = from, to = to))
+            dat = do.call(paste0('md_cn',s), list(date_range = date_range, from = from, to = to))
         }
     )
     dat_list = rm_error_dat(dat_list)
     
     return(dat_list)
 }
+
+
