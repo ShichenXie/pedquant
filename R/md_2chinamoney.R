@@ -120,7 +120,7 @@ md_cnpr = function(date_range = '3y', from=NULL, to=Sys.Date(), ...) {
 }
 
 # yields of bond 
-md_cnyb = function(date_range = '3y', from=NULL, to=Sys.Date()) {
+md_cnbond = function(date_range = '3y', from=NULL, to=Sys.Date()) {
     ## from/to
     to = check_to(to)
     from = check_from(date_range, from, to, default_from = "1997-01-01", default_date_range = '3y')
@@ -178,8 +178,8 @@ md_cnrmbx = function(date_range = '3y', from=NULL, to=Sys.Date(), ...) {
 md_moneycn = function(symbol=NULL, date_range = "3y", from = NULL, to = Sys.Date(), print_step = 1L) {
     # syb = intersect(symbol, ibor_symbol$symbol)
     if (is.null(symbol)) symbol = select_rows_df(data.table(
-        symbol = c('rmbx', 'shibor', 'lpr', 'pr', 'yb'), 
-        name = c('RMB Index', 'Shanghai Interbank Offered Rate', 'Loan Prime Rate', 'Policy Rate Deposit/Lending', 'Yields of Bond'), 
+        symbol = c('rmbx', 'shibor', 'lpr', 'pr', 'bond'), 
+        name = c('RMB Index', 'Shanghai Interbank Offered Rate', 'Loan Prime Rate', 'Policy Deposit/Lending Rate', 'Yields of Gov. Bond'), 
         type = c('FX Market', 'RMB Market', 'RMB Market', 'Interest Rate', 'Interest Rate')
     ), column='symbol')[,symbol]
     

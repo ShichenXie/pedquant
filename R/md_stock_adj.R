@@ -12,11 +12,7 @@ md_stock_adj1ohlc = function(dt, adjust=FALSE, forward=TRUE, source=NULL, ...) {
     
     # source
     if (is.null(source)) {
-        if ('close_adj' %in% names(dt) && !('close_prev' %in% names(dt)) && dt[!is.na(close_adj), .N>0]) {
-            source = 'yahoo'
-        } else if ('close_prev' %in% names(dt) && dt[!is.na(close_prev), .N>0]) {
-            source = '163'
-        }
+        if ('close_prev' %in% names(dt) && dt[!is.na(close_prev), .N>0]) source = '163'
     }
     
     # return original data
@@ -24,7 +20,7 @@ md_stock_adj1ohlc = function(dt, adjust=FALSE, forward=TRUE, source=NULL, ...) {
     
     # adjust ohlc
     ## create close_adj for 163 prices
-    if (!('close_adj' %in% names(dt)) & ('close_prev' %in% names(dt))) {
+    if ('close_prev' %in% names(dt)) {
         if (as.character(source) == '163') {
             dt = copy(dt)[
                 order(date)
