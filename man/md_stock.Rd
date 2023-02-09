@@ -5,12 +5,12 @@
 \title{query stock market data}
 \usage{
 md_stock(symbol, type = "history", date_range = "3y", from = NULL,
-  to = Sys.Date(), adjust = FALSE, print_step = 1L, ...)
+  to = Sys.Date(), forward = NULL, print_step = 1L, ...)
 }
 \arguments{
 \item{symbol}{symbols of stock shares.}
 
-\item{type}{the data type, including history, adjfactor, real and info. Default is history.}
+\item{type}{the data type, including history, real. Defaults to history.}
 
 \item{date_range}{date range. Available value including '1m'-'11m', 'ytd', 'max' and '1y'-. Default is '3y'.}
 
@@ -18,8 +18,7 @@ md_stock(symbol, type = "history", date_range = "3y", from = NULL,
 
 \item{to}{the end date. Default is current system date.}
 
-\item{adjust}{whether to adjust the OHLC prices, defaults to FALSE. If it is FALSE, create a close_adj column if not exist; if it is TRUE, adjust all open, high, low, close columns; if it is NULL, return the original data from source.
-For the yahoo data, the adjustment is based on the close_adj; for the 163 data, the adjustment is based on the cumulative products of close/close_prev.}
+\item{forward}{whether to forward adjust the OHLC prices. If it is NULL, return the original data from source, defaults to NULL.}
 
 \item{print_step}{A non-negative integer. Print symbol name by each print_step iteration. Default is 1L.}
 

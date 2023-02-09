@@ -463,29 +463,43 @@ md_fund1_history_163 = function(symbol1, from='1900-01-01', to=Sys.Date()) {
 # stock hist/et tx ------
 # symbol1 = c('AAPL')
 # symbol1 = c('01810.hk')
-md_stock1_history_eastmoney = function(symbol1, from=NULL, to=Sys.Date(), date_range='max', adjust = TRUE, ...) {
-    . = V1 = amount = urlcode = symbol = NULL
+md_stock1_history_eastmoney = function(symbol1, from=NULL, to=Sys.Date(), freq='daily', date_range='3y', forward = NULL, ...) {
+    . = V1 = amount = symbol = city = syb_exp = NULL
     # from
     to = check_to(to)
     from = check_from(date_range, from, to, default_from = "1000-01-01", default_date_range = '3y')
     
+    freq = check_arg(freq, c('daily', 'weekly', 'monthly'))
+    freqcode = list('daily'='101', 'weekly'='102', 'monthly'='103')[[freq]]
+    if (is.null(forward)) {
+        adjcode = 0
+    } else if (isTRUE(forward)) { # hfq
+        adjcode = 2
+    } else if (isFALSE(forward)) { # qfq
+        adjcode = 1
+    } 
     # symbol1
-    symbol1 = toupper(symbol1)
+    sybtag = try(syb_add_cntags(symbol1), silent = TRUE)
+    symbol1 = sybtag[,syb_exp]
     
     # url
+    urlcode = ''
     if (grepl('.HK$', symbol1)) {
-        urlcode = 33
+        urlcode = '33.'
         syb = paste0('116.', sub('.HK$', '', symbol1))
-    } else if (!grepl('.(SS|SZ|SH)$', symbol1)) {
-        urlcode = 63
+    } else if (!grepl('.(SS|SZ|SH|ss|sz|sh)$', symbol1)) {
+        urlcode = '63.'
         syb = paste0(105:107, '.', symbol1)
+    } else {
+        urlcode = ''
+        syb = sybtag[, ifelse(city == 'sh', sprintf('1.%s', syb), sprintf('0.%s', syb))]
     }
-    
-    
-    # 
+
+    # &lmt=%s
+    # ut=7eea3edcaed734bea9cbfc24409ed989
     url = sprintf(
-        'http://%s.push2his.eastmoney.com/api/qt/stock/kline/get?fields1=f1,f2,f3,f4,f5,f6&fields2=f51,f52,f53,f54,f55,f56,f57,f58,f59,f60,f61&secid=%s&klt=101&fqt=1&end=%s&lmt=%s&ut=fa5fd1943c7b386f172d6893dbfba10b&_=1623766962675', 
-        urlcode, syb, format(to+1, '%Y%m%d'), as.integer(to - from)+1)
+        'http://%spush2his.eastmoney.com/api/qt/stock/kline/get?fields1=f1,f2,f3,f4,f5,f6&fields2=f51,f52,f53,f54,f55,f56,f57,f58,f59,f60,f61,f116&secid=%s&klt=%s&fqt=%s&beg=%s&end=%s&ut=fa5fd1943c7b386f172d6893dbfba10b&_=%s', 
+        urlcode, syb, freqcode, adjcode, format(from, '%Y%m%d'), format(to, '%Y%m%d'), date_num(Sys.time(),'ms'))
     datlst = lapply(url, function(x) {
         # print(x)
         ret = try(read_apidata_eastmoney(x),silent = TRUE)
@@ -493,9 +507,10 @@ md_stock1_history_eastmoney = function(symbol1, from=NULL, to=Sys.Date(), date_r
         return(ret)
     }) 
     
+    # hfq
     url2 = sprintf(
-        'http://%s.push2his.eastmoney.com/api/qt/stock/kline/get?fields1=f1,f2,f3&fields2=f53&secid=%s&klt=101&fqt=2&end=%s&lmt=%s&ut=fa5fd1943c7b386f172d6893dbfba10b&_=1623766962675', 
-        urlcode, syb, format(to+1, '%Y%m%d'), as.integer(to - from)+1)
+        'http://%spush2his.eastmoney.com/api/qt/stock/kline/get?fields1=f1,f2,f3&fields2=f53&secid=%s&klt=%s&fqt=%s&beg=%s&end=%s&ut=fa5fd1943c7b386f172d6893dbfba10b&_=%s', 
+        urlcode, syb, freqcode, 2, format(from, '%Y%m%d'), format(to, '%Y%m%d'), date_num(Sys.time(),'ms'))
     datlst2 = lapply(url2, function(x) {
         # print(x)
         ret = try(read_apidata_eastmoney(x),silent = TRUE)
@@ -516,13 +531,12 @@ md_stock1_history_eastmoney = function(symbol1, from=NULL, to=Sys.Date(), date_r
     ][, (cols_num) := lapply(.SD, as.numeric), .SDcols = cols_num
     ][, `:=`(
         date = as_date(date), 
-        amount = amount*10^4
-    )][date >= from & date <= to]
+        amount = amount
+    )][date >= from & date <= to
+     ][, symbol := symbol1]
     
-    if (grepl('.HK$', symbol1)) dat = dat[, symbol := symbol1]
-    
-    dat = md_stock_adj1ohlc(dat, adjust = adjust)
-    return(dat)
+    # dat = md_stock_adj1ohlc(dat, adjust = adjust)
+    return(dat[])
 }
 
 
@@ -559,7 +573,7 @@ md_stock1_history_tx0 = function(symbol1, from, to, adjust) {
     
     # symbol1
     sybs_xchg = syb_add_cntags(toupper(symbol1))[
-        !is.na(city), syb1 := paste0(city, sub('(\\.ss|\\.sz)$', '', symbol))
+        !is.na(city), syb1 := paste0(city, sub('(\\.ss|\\.sz|\\.sh)$', '', symbol))
     ][is.na(city), syb1 := sprintf('us%s.OQ', symbol)][]
     
     

@@ -64,7 +64,7 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">pq_portfolio</span><span class="op">(</span><span class="va">dt</span>, <span class="va">x</span>, <span class="va">orders</span>, dtb <span class="op">=</span> <span class="cn">NULL</span>, init_fund <span class="op">=</span> <span class="cn">NULL</span>,</span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">pq_portfolio</span><span class="op">(</span><span class="va">dt</span>, <span class="va">orders</span>, x <span class="op">=</span> <span class="st">"close"</span>, dtb <span class="op">=</span> <span class="cn">NULL</span>, init_fund <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  method <span class="op">=</span> <span class="st">"arithmetic"</span>, cols_keep <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -74,12 +74,12 @@
 <dd><p>a list/dataframe of price by asset.</p></dd>
 
 
-<dt>x</dt>
-<dd><p>the column name of adjusted asset price.</p></dd>
-
-
 <dt>orders</dt>
 <dd><p>a data frame of transaction orders, which includes symbol, date, prices, volumes and type columns.</p></dd>
+
+
+<dt>x</dt>
+<dd><p>the column name of adjusted asset price, defaults to close.</p></dd>
 
 
 <dt>dtb</dt>
@@ -116,8 +116,8 @@
 <span class="r-in"><span>    symbol <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"601288.SS"</span>,<span class="st">"601328.SS"</span>,<span class="st">"601398.SS"</span>,<span class="st">"601939.SS"</span>,<span class="st">"601988.SS"</span><span class="op">)</span>, </span></span>
 <span class="r-in"><span>    volumes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">100</span>, <span class="fl">200</span>, <span class="fl">300</span>, <span class="fl">300</span>, <span class="fl">100</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">dtRa</span> <span class="op">=</span> <span class="fu">pq_portfolio</span><span class="op">(</span><span class="va">datadj</span>, x<span class="op">=</span><span class="st">'close'</span>, orders<span class="op">=</span><span class="va">orders</span><span class="op">)</span> </span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>The initial value is setting to 2778.19</span>
+<span class="r-in"><span><span class="va">dtRa</span> <span class="op">=</span> <span class="fu">pq_portfolio</span><span class="op">(</span><span class="va">datadj</span>, orders<span class="op">=</span><span class="va">orders</span><span class="op">)</span> </span></span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>The initial value is setting to 0</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">e1</span> <span class="op">=</span> <span class="fu"><a href="pq_plot.html">pq_plot</a></span><span class="op">(</span><span class="va">dtRa</span>, y <span class="op">=</span> <span class="st">'cumreturns'</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">e1</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></span></span>
@@ -131,7 +131,7 @@
 <span class="r-in"><span>    date <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'2009-03-02'</span>, <span class="st">'2010-01-04'</span>, <span class="st">'2014-09-01'</span><span class="op">)</span>, each <span class="op">=</span> <span class="fl">5</span><span class="op">)</span>, </span></span>
 <span class="r-in"><span>    volumes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">100</span>, <span class="fl">200</span>, <span class="fl">300</span>, <span class="fl">300</span>, <span class="fl">100</span><span class="op">)</span>, <span class="fl">3</span><span class="op">)</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="op">-</span><span class="fl">1</span>, <span class="fl">2</span><span class="op">)</span>, each <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">dtRab</span> <span class="op">=</span> <span class="fu">pq_portfolio</span><span class="op">(</span><span class="va">datadj</span>, x<span class="op">=</span><span class="st">'close'</span>, orders<span class="op">=</span><span class="va">orders</span>, dtb <span class="op">=</span> <span class="va">dt_ssec</span>, init_fund <span class="op">=</span> <span class="fl">10000</span><span class="op">)</span> </span></span>
+<span class="r-in"><span><span class="va">dtRab</span> <span class="op">=</span> <span class="fu">pq_portfolio</span><span class="op">(</span><span class="va">datadj</span>, orders<span class="op">=</span><span class="va">orders</span>, dtb <span class="op">=</span> <span class="va">dt_ssec</span>, init_fund <span class="op">=</span> <span class="fl">10000</span><span class="op">)</span> </span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">e2</span> <span class="op">=</span> <span class="fu"><a href="pq_plot.html">pq_plot</a></span><span class="op">(</span><span class="va">dtRab</span>, y <span class="op">=</span> <span class="st">'cumreturns'</span>, yb <span class="op">=</span> <span class="st">'cumreturns_000001.SS'</span>, addti <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>portfolio<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">e2</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></span></span>
@@ -142,8 +142,8 @@
 <span class="r-in"><span><span class="va">orders</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>symbol <span class="op">=</span> <span class="st">"000001.SS"</span>, </span></span>
 <span class="r-in"><span>     date <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"2009-04-13"</span>, <span class="st">"2010-03-24"</span>, <span class="st">"2014-08-13"</span>, <span class="st">"2015-09-10"</span><span class="op">)</span>, </span></span>
 <span class="r-in"><span>     volumes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">400</span>, <span class="op">-</span><span class="fl">400</span>, <span class="fl">300</span>, <span class="op">-</span><span class="fl">300</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">dtRa2</span> <span class="op">=</span> <span class="fu">pq_portfolio</span><span class="op">(</span><span class="va">dt_ssec</span>, x<span class="op">=</span><span class="st">'close'</span>, orders<span class="op">=</span><span class="va">orders</span>, cols_keep <span class="op">=</span> <span class="st">'all'</span><span class="op">)</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>The initial value is setting to 666863.1</span>
+<span class="r-in"><span><span class="va">dtRa2</span> <span class="op">=</span> <span class="fu">pq_portfolio</span><span class="op">(</span><span class="va">dt_ssec</span>, orders<span class="op">=</span><span class="va">orders</span>, cols_keep <span class="op">=</span> <span class="st">'all'</span><span class="op">)</span></span></span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>The initial value is setting to 0</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">e3</span> <span class="op">=</span> <span class="fu"><a href="pq_plot.html">pq_plot</a></span><span class="op">(</span><span class="va">dtRa2</span>, y <span class="op">=</span> <span class="st">'close'</span>, addti <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>cumreturns<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>, portfolio<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">e3</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></span></span>

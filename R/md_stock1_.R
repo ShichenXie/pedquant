@@ -3,13 +3,13 @@
 #' \code{md_stock} provides an interface to query stock or fund data from 163 for SSE and SZSE shares, from eastmoney for HKEX and US shares.
 #' 
 #' @param symbol symbols of stock shares.
-#' @param type the data type, including history, adjfactor, real and info. Default is history.
+#' @param type the data type, including history, real. Defaults to history.
 # @param freq data frequency, default is daily. .
 #' @param date_range date range. Available value including '1m'-'11m', 'ytd', 'max' and '1y'-. Default is '3y'.
 #' @param from the start date. Default is NULL.
 #' @param to the end date. Default is current system date.
-#' @param adjust whether to adjust the OHLC prices, defaults to FALSE. If it is FALSE, create a close_adj column if not exist; if it is TRUE, adjust all open, high, low, close columns; if it is NULL, return the original data from source.
-#' For the yahoo data, the adjustment is based on the close_adj; for the 163 data, the adjustment is based on the cumulative products of close/close_prev.
+#' @param forward whether to forward adjust the OHLC prices. If it is NULL, return the original data from source, defaults to NULL.
+# If close_prev provided, the adjustment is based on the cumulative products of close/close_prev.
 #' @param print_step A non-negative integer. Print symbol name by each print_step iteration. Default is 1L.
 #' @param ... Additional parameters.
 #' 
@@ -65,11 +65,11 @@
 #' }
 #' 
 #' @export
-md_stock = function(symbol, type = 'history', date_range = "3y", from = NULL, to = Sys.Date(), adjust = FALSE, print_step = 1L, ...) {
+md_stock = function(symbol, type = 'history', date_range = "3y", from = NULL, to = Sys.Date(), forward = NULL, print_step = 1L, ...) {
     # arguments
     args = list(...)
     ## type
-    type = check_arg(type, c('history', 'real', 'adjfactor', 'info'))
+    type = check_arg(type, c('history', 'real')) # , 'adjfactor', 'info'
     if (type == 'spot') type = 'real'
     ## symbol
     symbol = tolower(symbol)
@@ -88,7 +88,7 @@ md_stock = function(symbol, type = 'history', date_range = "3y", from = NULL, to
         dat_list <- try(do.call('md_stock_real', args=list(symbol=symbol, ...)), silent = TRUE)
         
     }  else if (type == 'history') {
-        dat_list = load_dat_loop(symbol, 'md_stock1_history_163', args = list(from = from, to = to, zero_rm = zero_rm, adjust=adjust, ...), print_step=print_step)
+        dat_list = load_dat_loop(symbol, 'md_stock1_history_eastmoney', args = list(from = from, to = to, zero_rm = zero_rm, forward=forward, ...), print_step=print_step)
         
     } else if (type == 'adjfactor') (
         dat_list = load_dat_loop(symbol, 'md_stock1_divsplit_163', args = list(from = from, to = to), print_step=print_step)

@@ -65,7 +65,7 @@
 
     <div id="ref-usage">
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">md_stock</span><span class="op">(</span><span class="va">symbol</span>, type <span class="op">=</span> <span class="st">"history"</span>, date_range <span class="op">=</span> <span class="st">"3y"</span>, from <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  to <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.Date</a></span><span class="op">(</span><span class="op">)</span>, adjust <span class="op">=</span> <span class="cn">FALSE</span>, print_step <span class="op">=</span> <span class="fl">1L</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
+<span>  to <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.Date</a></span><span class="op">(</span><span class="op">)</span>, forward <span class="op">=</span> <span class="cn">NULL</span>, print_step <span class="op">=</span> <span class="fl">1L</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -75,7 +75,7 @@
 
 
 <dt>type</dt>
-<dd><p>the data type, including history, adjfactor, real and info. Default is history.</p></dd>
+<dd><p>the data type, including history, real. Defaults to history.</p></dd>
 
 
 <dt>date_range</dt>
@@ -90,9 +90,8 @@
 <dd><p>the end date. Default is current system date.</p></dd>
 
 
-<dt>adjust</dt>
-<dd><p>whether to adjust the OHLC prices, defaults to FALSE. If it is FALSE, create a close_adj column if not exist; if it is TRUE, adjust all open, high, low, close columns; if it is NULL, return the original data from source.
-For the yahoo data, the adjustment is based on the close_adj; for the 163 data, the adjustment is based on the cumulative products of close/close_prev.</p></dd>
+<dt>forward</dt>
+<dd><p>whether to forward adjust the OHLC prices. If it is NULL, return the original data from source, defaults to NULL.</p></dd>
 
 
 <dt>print_step</dt>
