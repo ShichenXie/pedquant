@@ -19,7 +19,7 @@ md_stocka_eastmoney = function(symbol1 = 'a') {
     url = sprintf(
         "http://%s.push2.eastmoney.com/api/qt/clist/get?fields=%s&pn=1&pz=50000&po=1&np=1&ut=bd1d9ddb04089700cf9c27f6f7426281&fltt=2&invt=2&fid=f3&fs=%s&_=%s", 
         urlcode, fieldscode, fscode, systime_ms)
-    dtmp = read_api_eastmoney(url)
+    dtmp = read_apidata_eastmoney(url, type = 'real_cn')
 
     dtmp = setnames(dtmp, 
              unlist(strsplit(fieldscode,',')), 

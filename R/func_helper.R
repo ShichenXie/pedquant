@@ -404,6 +404,8 @@ read_apidata_eastmoney = function(url, type='history') {
     } else if (type == 'real_us') {
         dat = data.table(datmp$data$diff)
         setnames(dat, c("v1", "close", "change_pct", "change", "volume", "amount", "amplitude", "turnover", "pe", "v2", "v3", "symbol", "exchange_code", "name", "high", "low", "open", "close_prev", 'cap_total', paste0('v', 5:6), "pb", paste0('v', 7:17)))
+    } else if (type == 'real_cn') {
+        dat = rbindlist(lapply(datmp$data$diff, setDT))
     }
     
     return(dat)
