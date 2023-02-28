@@ -377,11 +377,16 @@ read_apidata_sina = function(url, sybs, cols_name) {
 }
 
 read_api_eastmoney = function(url) {
-    datmp = GET(url) %>% 
-        read_html() %>% 
-        html_nodes('p') %>% 
-        html_text() %>% 
-        fromJSON()
+    datmp = POST(url) %>% 
+        content()
+        
+    # GET(url) %>% 
+    #     read_html() %>% 
+    #     html_nodes('p') %>% 
+    #     html_text() %>% 
+    #     fromJSON(datmp)
+    
+    # datmp = rbindlist(lapply(datmp$data$diff, setDT))
     
     return(datmp)
 }

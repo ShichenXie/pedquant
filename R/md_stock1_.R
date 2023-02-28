@@ -69,7 +69,7 @@ md_stock = function(symbol, type = 'history', date_range = "3y", from = NULL, to
     # arguments
     args = list(...)
     ## type
-    type = check_arg(type, c('history', 'real')) # , 'adjfactor', 'info'
+    type = check_arg(type, c('history', 'real', 'info')) # , 'adjfactor'
     if (type == 'spot') type = 'real'
     ## symbol
     symbol = tolower(symbol)
@@ -94,7 +94,7 @@ md_stock = function(symbol, type = 'history', date_range = "3y", from = NULL, to
         dat_list = load_dat_loop(symbol, 'md_stock1_divsplit_163', args = list(from = from, to = to), print_step=print_step)
         
     ) else if (type == 'info') {
-        dat_list = load_dat_loop(symbol, 'md_stock1_info_163', args = list(...), print_step=print_step)
+        dat_list = load_dat_loop(symbol, 'md_stock1_info', args = list(...), print_step=print_step)
         
     }
     
