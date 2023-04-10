@@ -272,7 +272,7 @@ nbs_jsondat_format = function(jsondat) {
   if ('reg' %in% code_names) {
     reg_df = setDT(jsondat$returndata$wdnodes$nodes[[which('reg' == code_names)]])[,.(geo=cname, geo_code=code)]
     
-    dat2 = dat2[reg_df, on = 'geo_code']
+    dat2 = merge(dat2, reg_df, by = 'geo_code')
   } else {
     dat2 = dat2[, `:=`(geo_code = 'cn', geo = 'china')]
   }

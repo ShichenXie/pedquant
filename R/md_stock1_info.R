@@ -24,7 +24,7 @@ md_stock1_info = function(symbol1) {
     dtmp = read_api_eastmoney(url)
     
     dtmp2 = setDT(dtmp$data)[]
-    setnames(dtmp2, c('sybmol', 'name', 'totalcapital', 'marketcaptial', 'totalvalue', 'marketvalue', 'sector', 'prov', 'ipodate' ))
+    setnames(dtmp2, c('symbol', 'name', 'shares_total', 'shares_market', 'cap_total', 'cap_market', 'sector', 'prov', 'ipodate' ))
     dtmp2[, `:=`(
         ipodate = as_date(as.character(ipodate)), 
         symbol = sybtag$syb_exp

@@ -21,13 +21,22 @@ md_stocka_eastmoney = function(symbol1 = 'a') {
         urlcode, fieldscode, fscode, systime_ms)
     dtmp = read_apidata_eastmoney(url, type = 'real_cn')
 
-    dtmp = setnames(dtmp, 
-             unlist(strsplit(fieldscode,',')), 
-             c('close', 'change_pct', 'change', 'volume', 'value', 'amplitude_pct', 'turnover', 'pe', 'f9', 'symbol', 'exchange', 'name', 'high', 'low', 'open', 'close_prev', 'cap_total', 'cap_market', 'pb', 'date', 'market', 'f20', 'prov', 'desc', 'time', 'pe_ttm', 'f25', 'f26', 'f27'))
-    dtmp[, `:=`(
+    colnam = data.table(
+        fi = c("f2", "f3", "f4", "f5", "f6", "f7", "f8", "f9", "f12", "f13", "f14", "f15", "f16", "f17", "f18", "f20", "f21", "f23", "f26", "f29", "f102", "f103", "f124", "f62"), 
+        ni = c('close', 'change_pct', 'change', 'volume', 'value', 'amplitude_pct', 'turnover', 'pe', 'sybcode', 'exchange', 'name', 'high', 'low', 'open', 'close_prev', 'cap_total', 'cap_market', 'pb', 'date', 'mktcode', 'prov', 'desc', 'time', 'pe_ttm')
+    )
+    dtmp = setnames(
+        dtmp, colnam$fi, colnam$ni, skip_absent=TRUE
+    )[, `:=`(
         date = as_date(date),
         time = as.POSIXct(as.numeric(time), origin='1970-01-01')
-    )]
+    )][data.table(mktcode = c(1,2,4,8,512), market=c('stock', 'index', 'bond', 'fund', '512')),
+       on = 'mktcode'
+     ][mktcode == '1', symbol := syb_fmt_output(sybcode, mkt='stock')
+     ][mktcode == '2', symbol := syb_fmt_output(sybcode, mkt='index')
+     ][mktcode == '8', symbol := syb_fmt_output(sybcode, mkt='fund')]
     
-    return(dat)
+    datlst = split(dtmp, by = 'market')
+    # dtmp[,.N, keyby=.(mktcode, f19, market, exchange)]
+    return(datlst)
 }

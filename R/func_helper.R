@@ -130,6 +130,8 @@ syb_cntags = function() {
         stock 43 bse,A,main
         stock 83 bse,A,main
         stock 87 bse,A,main
+        stock 400 neeq,-,neeq
+        stock 420 neeq,-,neeq
         index 000 sse,-,-
         index 399 szse,-,-
         fund 15 szse,-,-
@@ -378,7 +380,7 @@ read_apidata_sina = function(url, sybs, cols_name) {
 
 read_api_eastmoney = function(url) {
     datmp = POST(url) %>% 
-        content()
+        content(encoding = 'UTF-8')
         
     # GET(url) %>% 
     #     read_html() %>% 
@@ -403,7 +405,7 @@ read_apidata_eastmoney = function(url, type='history') {
         )][]
     } else if (type == 'real_us') {
         dat = data.table(datmp$data$diff)
-        setnames(dat, c("v1", "close", "change_pct", "change", "volume", "amount", "amplitude", "turnover", "pe", "v2", "v3", "symbol", "exchange_code", "name", "high", "low", "open", "close_prev", 'cap_total', paste0('v', 5:6), "pb", paste0('v', 7:17)))
+        setnames(dat, c("v1", "close", "change_pct", "change", "volume", "amount", "amplitude_pct", "turnover", "pe", "v2", "v3", "symbol", "exchange_code", "name", "high", "low", "open", "close_prev", 'cap_total', paste0('v', 5:6), "pb", paste0('v', 7:17)))
     } else if (type == 'real_cn') {
         dat = rbindlist(lapply(datmp$data$diff, setDT))
     }

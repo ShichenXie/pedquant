@@ -20,7 +20,7 @@ md_stock1_history = function(symbol, trytimes = 3, source = c('eastmoney', 'tx')
 # stock hist/et tx ------
 # symbol1 = c('AAPL')
 # symbol1 = c('01810.hk')
-md_stock1_history_eastmoney = function(symbol1, from=NULL, to=Sys.Date(), freq='daily', date_range='3y', forward = NULL, ...) {
+md_stock1_history_eastmoney = function(symbol1, from=NULL, to=Sys.Date(), freq='daily', date_range='3y', forward = NULL, only_adj = FALSE, ...) {
     . = V1 = amount = symbol = city = syb_exp = NULL
     # from
     to = check_to(to)
@@ -53,20 +53,22 @@ md_stock1_history_eastmoney = function(symbol1, from=NULL, to=Sys.Date(), freq='
     }
 
     # &lmt=%s
-    # ut=7eea3edcaed734bea9cbfc24409ed989
-    url = sprintf(
-        'http://%spush2his.eastmoney.com/api/qt/stock/kline/get?fields1=f1,f2,f3,f4,f5,f6&fields2=f51,f52,f53,f54,f55,f56,f57,f58,f59,f60,f61,f116&secid=%s&klt=%s&fqt=%s&beg=%s&end=%s&ut=fa5fd1943c7b386f172d6893dbfba10b&_=%s', 
-        urlcode, syb, freqcode, adjcode, format(from, '%Y%m%d'), format(to, '%Y%m%d'), date_num(Sys.time(),'ms'))
-    datlst = lapply(url, function(x) {
-        # print(x)
-        ret = try(read_apidata_eastmoney(x),silent = TRUE)
-        if (inherits(ret, 'try-error')) return(invisible())
-        return(ret)
-    }) 
+    # ut=7eea3edcaed734bea9cbfc24409ed989 
+    if (isFALSE(only_adj)) {
+        url = sprintf(
+            'http://%spush2his.eastmoney.com/api/qt/stock/kline/get?fields1=f1,f2,f3,f4,f5,f6&fields2=%s&secid=%s&klt=%s&fqt=%s&beg=%s&end=%s&ut=fa5fd1943c7b386f172d6893dbfba10b&_=%s', 
+            urlcode, 'f51,f52,f53,f54,f55,f56,f57,f58,f59,f60,f61,f116', syb, freqcode, adjcode, format(from, '%Y%m%d'), format(to, '%Y%m%d'), date_num(Sys.time(),'ms'))
+        datlst = lapply(url, function(x) {
+            # print(x)
+            ret = try(read_apidata_eastmoney(x),silent = TRUE)
+            if (inherits(ret, 'try-error')) return(invisible())
+            return(ret)
+        }) 
+    }
     
     # hfq
     url2 = sprintf(
-        'http://%spush2his.eastmoney.com/api/qt/stock/kline/get?fields1=f1,f2,f3&fields2=f53&secid=%s&klt=%s&fqt=%s&beg=%s&end=%s&ut=fa5fd1943c7b386f172d6893dbfba10b&_=%s', 
+        'http://%spush2his.eastmoney.com/api/qt/stock/kline/get?fields1=f1,f2,f3&fields2=f51,f53&secid=%s&klt=%s&fqt=%s&beg=%s&end=%s&ut=fa5fd1943c7b386f172d6893dbfba10b&_=%s', 
         urlcode, syb, freqcode, 2, format(from, '%Y%m%d'), format(to, '%Y%m%d'), date_num(Sys.time(),'ms'))
     datlst2 = lapply(url2, function(x) {
         # print(x)
@@ -76,21 +78,27 @@ md_stock1_history_eastmoney = function(symbol1, from=NULL, to=Sys.Date(), freq='
     }) 
     
     # missing: close_prev
-    cols_num = c("open", "high", "low", "close", "change", "change_pct", "amplitude", "volume", "amount", "turnover", "close_adj")
-    dat = cbind(
-        setnames(rbindlist(datlst), c(
-            "date", "open", "close", "high", "low",
-            "volume", "amount", "amplitude", "change_pct", "change", "turnover", 
-            'symbol', 'name', 'market'
-        )), 
-        rbindlist(datlst2)[,.(close_adj=V1)]
-    )[, c('symbol', 'name', "date", cols_num), with = FALSE
+    cols_num = c("open", "high", "low", "close", "change", "change_pct", "amplitude_pct", "volume", "amount", "turnover", "close_adj")
+    if (only_adj) cols_num = 'close_adj'
+    
+    if (only_adj) {
+        dat = rbindlist(datlst2)[,.(symbol, name, date=V1, close_adj=V2)]
+    } else {
+        dat = merge(
+            setnames(rbindlist(datlst), c(
+                "date", "open", "close", "high", "low",
+                "volume", "amount", "amplitude_pct", "change_pct", "change", "turnover", 
+                'symbol', 'name', 'market'
+            )), 
+            rbindlist(datlst2)[,.(symbol, name, date=V1, close_adj=V2)], by = c('symbol', 'name', 'date')
+        )
+    }
+    
+    dat = dat[, c('symbol', 'name', "date", cols_num), with = FALSE
     ][, (cols_num) := lapply(.SD, as.numeric), .SDcols = cols_num
-    ][, `:=`(
-        date = as_date(date), 
-        amount = amount
-    )][date >= from & date <= to
-     ][, symbol := symbol1]
+    ][, date := as_date(date)
+    ][date >= from & date <= to
+    ][, symbol := symbol1]
     
     # dat = md_stock_adj1ohlc(dat, adjust = adjust)
     return(dat[])
