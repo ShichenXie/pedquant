@@ -106,32 +106,32 @@
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># merge returns of assets and baseline</span></span></span>
 <span class="r-in"><span><span class="va">datRaRb</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/merge.html" class="external-link">merge</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>    <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/rbindlist.html" class="external-link">rbindlist</a></span><span class="op">(</span><span class="va">datret1</span><span class="op">)</span><span class="op">[</span>, <span class="fu">.</span><span class="op">(</span><span class="va">date</span>, <span class="va">symbol</span>, <span class="va">Ra</span><span class="op">)</span><span class="op">]</span>, </span></span>
-<span class="r-in"><span>    <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/rbindlist.html" class="external-link">rbindlist</a></span><span class="op">(</span><span class="va">datret2</span><span class="op">)</span><span class="op">[</span>, <span class="fu">.</span><span class="op">(</span><span class="va">date</span>, <span class="va">Rb</span><span class="op">)</span><span class="op">]</span>,</span></span>
+<span class="r-in"><span>    <span class="fu"><a href="https://rdrr.io/pkg/data.table/man/rbindlist.html" class="external-link">rbindlist</a></span><span class="op">(</span><span class="va">datret1</span><span class="op">)</span><span class="op">[</span>, <span class="fu">.</span><span class="op">(</span><span class="va">date</span>, <span class="va">symbol</span>, <span class="va">Ra</span><span class="op">)</span><span class="op">]</span>, </span></span>
+<span class="r-in"><span>    <span class="fu"><a href="https://rdrr.io/pkg/data.table/man/rbindlist.html" class="external-link">rbindlist</a></span><span class="op">(</span><span class="va">datret2</span><span class="op">)</span><span class="op">[</span>, <span class="fu">.</span><span class="op">(</span><span class="va">date</span>, <span class="va">Rb</span><span class="op">)</span><span class="op">]</span>,</span></span>
 <span class="r-in"><span>    by <span class="op">=</span> <span class="st">'date'</span>, all.x <span class="op">=</span> <span class="cn">TRUE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># claculate table.CAPM metrics</span></span></span>
 <span class="r-in"><span><span class="va">perf_capm</span> <span class="op">=</span> <span class="fu">pq_performance</span><span class="op">(</span><span class="va">datRaRb</span>, Ra <span class="op">=</span> <span class="st">'Ra'</span>, Rb <span class="op">=</span> <span class="st">'Rb'</span>, perf_fun <span class="op">=</span> <span class="st">'table.CAPM'</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/rbindlist.html" class="external-link">rbindlist</a></span><span class="op">(</span><span class="va">perf_capm</span>, idcol <span class="op">=</span> <span class="st">'symbol'</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>       symbol  Alpha   Beta  Beta+  Beta- R-squared Annualized Alpha Correlation</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1: 601288.SS 0.0048 0.6490 0.9538 0.4703    0.4898           0.0592      0.6998</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2: 601328.SS 0.0057 0.7513 0.9886 0.5825    0.4789           0.0701      0.6920</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3: 601398.SS 0.0051 0.6739 0.7942 0.6160    0.5239           0.0625      0.7238</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4: 601939.SS 0.0061 0.9472 1.1829 0.7994    0.5138           0.0763      0.7168</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5: 601988.SS 0.0040 0.7474 0.9353 0.7874    0.5312           0.0485      0.7289</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    Correlation p-value Tracking Error Active Premium Information Ratio</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1:                   0         0.1788         0.0440            0.2459</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2:                   0         0.1961         0.0522            0.2661</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3:                   0         0.1719         0.0478            0.2782</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4:                   0         0.2202         0.0566            0.2571</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5:                   0         0.1780         0.0328            0.1842</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    Treynor Ratio</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1:        0.1192</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2:        0.1139</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3:        0.1205</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4:        0.0950</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5:        0.0886</span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/pkg/data.table/man/rbindlist.html" class="external-link">rbindlist</a></span><span class="op">(</span><span class="va">perf_capm</span>, idcol <span class="op">=</span> <span class="st">'symbol'</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>       symbol   Alpha   Beta  Beta+   Beta- R-squared Annualized Alpha</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1: 601288.SS -0.0033 0.1785 0.0869 -0.0152    0.0612          -0.0384</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2: 601328.SS -0.0029 0.2259 0.0519  0.1260    0.0729          -0.0347</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3: 601398.SS -0.0049 0.3414 0.1061  0.3901    0.1512          -0.0573</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4: 601939.SS -0.0034 0.4014 0.0342  0.3929    0.1267          -0.0399</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5: 601988.SS -0.0021 0.1813 0.1935  0.0127    0.0905          -0.0245</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    Correlation Correlation p-value Tracking Error Active Premium</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1:      0.2474              0.0589         0.1721        -0.0527</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2:      0.2700              0.0386         0.1782        -0.0502</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3:      0.3889              0.0023         0.1664        -0.0708</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4:      0.3559              0.0057         0.1934        -0.0581</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5:      0.3008              0.0206         0.1596        -0.0369</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    Information Ratio Treynor Ratio</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1:           -0.3064       -0.2266</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2:           -0.2817       -0.1679</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3:           -0.4256       -0.1715</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4:           -0.3004       -0.1141</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5:           -0.2310       -0.1356</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
