@@ -1,5 +1,5 @@
 md_stocka_eastmoney = function(symbol1 = 'a') {
-    rid=value=variable=time=NULL
+    mktcode = sybcode = symbol = rid = value = variable = time = exchange = NULL
     
     if (symbol1 == 'a') {
         urlcode = '82'
@@ -23,7 +23,7 @@ md_stocka_eastmoney = function(symbol1 = 'a') {
 
     colnam = data.table(
         fi = c("f2", "f3", "f4", "f5", "f6", "f7", "f8", "f9", "f12", "f13", "f14", "f15", "f16", "f17", "f18", "f20", "f21", "f23", "f26", "f29", "f102", "f103", "f124", "f62"), 
-        ni = c('close', 'change_pct', 'change', 'volume', 'value', 'amplitude_pct', 'turnover', 'pe', 'sybcode', 'exchange', 'name', 'high', 'low', 'open', 'close_prev', 'cap_total', 'cap_market', 'pb', 'date', 'mktcode', 'prov', 'desc', 'time', 'pe_ttm')
+        ni = c('close', 'change_pct', 'change', 'volume', 'value', 'amplitude_pct', 'turnover', 'pe', 'sybcode', 'exchangecode', 'name', 'high', 'low', 'open', 'close_prev', 'cap_total', 'cap_market', 'pb', 'date', 'mktcode', 'prov', 'desc', 'time', 'pe_ttm')
     )
     dtmp = setnames(
         dtmp, colnam$fi, colnam$ni, skip_absent=TRUE
@@ -34,7 +34,10 @@ md_stocka_eastmoney = function(symbol1 = 'a') {
        on = 'mktcode'
      ][mktcode == '1', symbol := syb_fmt_output(sybcode, mkt='stock')
      ][mktcode == '2', symbol := syb_fmt_output(sybcode, mkt='index')
-     ][mktcode == '8', symbol := syb_fmt_output(sybcode, mkt='fund')]
+     ][mktcode == '8', symbol := syb_fmt_output(sybcode, mkt='fund')
+     ][grepl('SS$', symbol), exchange := 'sse'
+     ][grepl('SZ$', symbol), exchange := 'szse'
+     ][grepl('BS$', symbol), exchange := 'bse']
     
     datlst = split(dtmp, by = 'market')
     # dtmp[,.N, keyby=.(mktcode, f19, market, exchange)]

@@ -15,7 +15,7 @@
 #' library(pedquant)
 #' 
 #' data(dt_banks)
-#' datadj = md_stock_adjust(dt_banks, adjust = TRUE)
+#' datadj = md_stock_adjust(dt_banks)
 #' 
 #' 
 #' # example I 

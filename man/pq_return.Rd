@@ -43,7 +43,7 @@ pq_return(dt, x, freq = "daily", n = 1, date_type = "eop",
 \donttest{
 # load data and adjust
 data(dt_banks)
-datadj = md_stock_adjust(dt_banks, adjust = FALSE)
+datadj = md_stock_adjust(dt_banks)
 
 # set freq
 dts_returns1 = pq_return(datadj, x = 'close_adj', freq = 'all')

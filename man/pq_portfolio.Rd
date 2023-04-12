@@ -31,7 +31,7 @@ pq_portfolio(dt, orders, x = "close", dtb = NULL, init_fund = NULL,
 library(pedquant)
 
 data(dt_banks)
-datadj = md_stock_adjust(dt_banks, adjust = TRUE)
+datadj = md_stock_adjust(dt_banks)
 
 
 # example I 

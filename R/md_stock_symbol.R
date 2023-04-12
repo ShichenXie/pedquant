@@ -116,7 +116,8 @@ md_stock_symbol_exchange = function(XCHG=NULL, print_step=1L) {
   exc_len = length(XCHG)
   dat_lst = NULL
   if (any(c("sse", "szse") %in% XCHG)) {
-    temp = md_stock_symbol_163()[exchange %in% XCHG]
+    dtmp = md_stocka_eastmoney()
+    temp = dtmp$stock[exchange %in% XCHG]
     exc = intersect(c("sse", "szse"),XCHG)
     for (e in exc) {
       if ((print_step > 0) & (i %% print_step == 0)) cat(sprintf('%s %s\n', paste0(format(c(i, exc_len)), collapse = '/'), e))

@@ -21,7 +21,7 @@ md_stock1_history = function(symbol, trytimes = 3, source = c('eastmoney', 'tx')
 # symbol1 = c('AAPL')
 # symbol1 = c('01810.hk')
 md_stock1_history_eastmoney = function(symbol1, from=NULL, to=Sys.Date(), freq='daily', date_range='3y', forward = NULL, only_adj = FALSE, ...) {
-    . = V1 = amount = symbol = city = syb_exp = NULL
+    . = V1 = amount = symbol = city = syb_exp = name = V2 = NULL
     # from
     to = check_to(to)
     from = check_from(date_range, from, to, default_from = "1000-01-01", default_date_range = '3y')
@@ -54,10 +54,13 @@ md_stock1_history_eastmoney = function(symbol1, from=NULL, to=Sys.Date(), freq='
 
     # &lmt=%s
     # ut=7eea3edcaed734bea9cbfc24409ed989 
+    # ,f58,amplitude_pct
+    # ,f59,change_pct
+    # ,f60,change
     if (isFALSE(only_adj)) {
         url = sprintf(
             'http://%spush2his.eastmoney.com/api/qt/stock/kline/get?fields1=f1,f2,f3,f4,f5,f6&fields2=%s&secid=%s&klt=%s&fqt=%s&beg=%s&end=%s&ut=fa5fd1943c7b386f172d6893dbfba10b&_=%s', 
-            urlcode, 'f51,f52,f53,f54,f55,f56,f57,f58,f59,f60,f61,f116', syb, freqcode, adjcode, format(from, '%Y%m%d'), format(to, '%Y%m%d'), date_num(Sys.time(),'ms'))
+            urlcode, 'f51,f52,f53,f54,f55,f56,f57,f61,f116', syb, freqcode, adjcode, format(from, '%Y%m%d'), format(to, '%Y%m%d'), date_num(Sys.time(),'ms'))
         datlst = lapply(url, function(x) {
             # print(x)
             ret = try(read_apidata_eastmoney(x),silent = TRUE)
@@ -78,16 +81,18 @@ md_stock1_history_eastmoney = function(symbol1, from=NULL, to=Sys.Date(), freq='
     }) 
     
     # missing: close_prev
-    cols_num = c("open", "high", "low", "close", "change", "change_pct", "amplitude_pct", "volume", "amount", "turnover", "close_adj")
+    # "amplitude_pct", "change", "change_pct",  
+    cols_num = c("open", "high", "low", "close", "volume", "amount", "turnover", "close_adj")
     if (only_adj) cols_num = 'close_adj'
     
     if (only_adj) {
         dat = rbindlist(datlst2)[,.(symbol, name, date=V1, close_adj=V2)]
     } else {
+        # "amplitude_pct", "change_pct", "change", 
         dat = merge(
             setnames(rbindlist(datlst), c(
                 "date", "open", "close", "high", "low",
-                "volume", "amount", "amplitude_pct", "change_pct", "change", "turnover", 
+                "volume", "amount", "turnover", 
                 'symbol', 'name', 'market'
             )), 
             rbindlist(datlst2)[,.(symbol, name, date=V1, close_adj=V2)], by = c('symbol', 'name', 'date')
@@ -172,3 +177,59 @@ md_stock1_history_tx0 = function(symbol1, from, to, adjust) {
 }
 
 
+#' adjust stock prices
+#' 
+#' \code{md_stock_adjust} adjusts the open, high, low and close stock prices. 
+#' 
+#' @param dt a list/dataframe of time series datasets that didnt adjust for split or dividend.
+#' @param forward forward adjust or backward adjust, defaults to FALSE. 
+#' @param ... Additional parameters.
+#' 
+#' @examples 
+#' \donttest{
+#' data("dt_banks")
+#' 
+#' dtadj1 = md_stock_adjust(dt_banks, adjust = FALSE)
+#' dtadj2 = md_stock_adjust(dt_banks, adjust = TRUE)
+#' }
+#' @export
+md_stock_adjust = function(dt, forward = FALSE, ...) {
+    symbol = NULL
+    # dt
+    dt = check_dt(dt)
+    
+    # adjusted data list
+    dat_list = lapply(
+        xefun:::c_list(dt[, unique(symbol)]), 
+        function(s) {
+            dtadj = md_stock_adj1ohlc(dt = dt[symbol == s], forward=forward) 
+            return(dtadj)
+        }
+    )
+    
+    return(dat_list)
+}
+
+md_stock_adj1ohlc = function(dt, forward=NULL) {
+    close_adj = NULL
+    # param: OHLC columns
+    cols_ohlc = c('open', 'high', 'low', 'close')
+    
+    # return original data
+    if (!all(cols_ohlc %in% names(dt)) || is.null(forward) || !('close_adj' %in% names(dt)) || dt[,all(close == close_adj)]) return(dt)
+    
+    # adjust ohlc
+    if (is.logical(forward)) {
+        dt = copy(dt)[
+            , (cols_ohlc) := lapply(.SD, function(x) {
+                if (isTRUE(forward)) {
+                    x[.N]*close_adj/close_adj[.N]
+                } else {
+                    x[1]*close_adj/close[1]
+                }
+            }), .SDcols = cols_ohlc
+        ]
+    }
+    
+    return(dt[])
+}

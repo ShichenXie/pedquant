@@ -387,7 +387,7 @@ pp_candle = function(
 #' 
 #' # multiple series
 #' data(dt_banks)
-#' dt_banksadj = md_stock_adjust(dt_banks, adjust = TRUE)
+#' dt_banksadj = md_stock_adjust(dt_banks)
 #' 
 #' # linear trend
 #' elist = pq_plot(dt_banksadj)
