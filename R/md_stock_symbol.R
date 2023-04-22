@@ -1,50 +1,10 @@
-# hkex ------
+
 #' @import data.table
 #' @importFrom stringi stri_unescape_unicode
-md_stock_symbol_hk = function(source="sina", return_price=TRUE) {
-  symbol = exchange = market_symbols = stock_list_hk2 = ticktime = NULL
+md_stk_syb_hk = function(source="eastmoney", return_price=TRUE) {
+  symbol = exchange = market_symbols = stock_list_hk2 = ticktime = f1 = name = NULL
 
-  if (source == "163") {
-    # function
-    fun_listcomp_hk = function(urli, mkt_board) {
-      dt = V1 = name = NULL
-
-      doc = readLines(urli, warn = FALSE)
-
-      # date
-      datetime = as.Date(sub(".+time\":\"([0-9\\-]+).+", "\\1", doc))
-
-      # list company
-      listcomp = data.table(dt = doc)[
-        , strsplit(sub(".+\\[\\{(.+)\\}\\].+", "\\1", dt), "\\},\\{")
-      ][, c("eps", "exchange_rate", "financedata.net_profit", "financedata.totalturnover_", "high", "low", "market_capital", "name", "open", "pe", "percent", "price", "symbol", "turnover", "updown", "volume", "yestclose", "zf", "no") := tstrsplit(V1, ",", fixed=TRUE)
-      ][, lapply(.SD, function(x) gsub("\".+\"\\:|\\}|\"", "", x))
-      ][, `:=`(
-        V1 = NULL, date = datetime, board = mkt_board,
-        name = stri_unescape_unicode(name),
-        market = "stock", exchange = "hkex"
-      )][, c("market", "exchange", "board", "symbol", "name", "date", "open", "high", "low", "price", "percent", "updown", "volume", "turnover", "exchange_rate", "zf", "pe", "market_capital", "eps", "financedata.net_profit", "financedata.totalturnover_"), with=FALSE]
-
-      # # string to number
-      # cols_str_to_num = c("eps", "exchange_rate", "financedata.net_profit", "financedata.totalturnover_", "high", "low", "market_capital", "open", "pe", "percent", "price", "turnover", "updown", "volume", "yestclose", "zf", "no")
-      # listcomp[, (cols_str_to_num) := lapply(.SD, as.numeric), .SDcols = cols_str_to_num]
-      return(listcomp)
-    }
-
-
-    urls = c(
-      # main
-      main = "http://quotes.money.163.com/hk/service/hkrank.php?host=/hk/service/hkrank.php&page=0&query=CATEGORY:MAIN;TYPE:1;EXCHANGE_RATE:_exists_true&fields=no,time,SYMBOL,NAME,PRICE,PERCENT,UPDOWN,OPEN,YESTCLOSE,HIGH,LOW,VOLUME,TURNOVER,EXCHANGE_RATE,ZF,PE,MARKET_CAPITAL,EPS,FINANCEDATA.NET_PROFIT,FINANCEDATA.TOTALTURNOVER_&sort=SYMBOL&order=desc&count=300000&type=query&callback=callback_1620346970&req=12219",
-      # GEM
-      gem = "http://quotes.money.163.com/hk/service/hkrank.php?host=/hk/service/hkrank.php&page=0&query=CATEGORY:GEM;TYPE:1;EXCHANGE_RATE:_exists_true&fields=no,SYMBOL,NAME,PRICE,PERCENT,UPDOWN,OPEN,YESTCLOSE,HIGH,LOW,VOLUME,TURNOVER,EXCHANGE_RATE,ZF,PE,MARKET_CAPITAL,EPS,FINANCEDATA.NET_PROFIT,FINANCEDATA.TOTALTURNOVER_&sort=SYMBOL&order=desc&count=20000&type=query&callback=callback_2057363736&req=12220"
-    )
-
-
-    # hongkong stock list
-    stock_list_hk = mapply(fun_listcomp_hk, urls, names(urls), SIMPLIFY = FALSE)
-    stock_list_hk = rbindlist(stock_list_hk)
-
-  } else if (source=="sina") {
+  if (source=="sina") {
     url_hk_sina <- c(
       "http://vip.stock.finance.sina.com.cn/quotes_service/api/json_v2.php/Market_Center.getHKStockData?page=1&num=100000&sort=symbol&asc=1&node=qbgg_hk&_s_r_a=init"
     )
@@ -54,36 +14,59 @@ md_stock_symbol_hk = function(source="sina", return_price=TRUE) {
     )] 
     setnames(stock_list_hk, c('engname', 'lasttrade', 'prevclose', 'pricechange', 'changepercent', 'market_value', 'pe_ratio'), c('name_eng', 'close', 'close_prev', 'change', 'change_pct', 'cap_total', 'pe'))
   } else if (source == 'eastmoney') {
-        url_hk_em = "http://72.push2.eastmoney.com/api/qt/clist/get?pn=1&pz=5000&po=1&np=1&ut=bd1d9ddb04089700cf9c27f6f7426281&fltt=2&invt=2&fid=f3&fs=m:128%20t:1&fields=f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f12,f13,f14,f15,f16,f17,f18,f20,f21,f23,f24,f25,f22,f11,f62,f128,f136,f115,f152&_=1624010056945"
-        # %20t:3,m:128%20t:4,m:128%20t:1,m:128%20t:2
+        fid = 
+            c(1, 12, 14, 124, 17, 15, 16, 2, 5, 6, 8)
+            # setdiff(1:149,c(36:61,100:108, 112:123,128:138))
+        
+        url_hk_em = sprintf(
+            "http://72.push2.eastmoney.com/api/qt/clist/get?pn=1&pz=50000&po=1&np=1&ut=%s&fltt=2&invt=2&fid=f3&fs=%s&fields=%s&_=%s", 
+            'bd1d9ddb04089700cf9c27f6f7426281', 
+            "m:128%20t:1", 
+            paste0('f', fid, collapse = ','),
+            # "f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f11,f12,f13,f14,f15,f16,f17,f18,f19,f20,f21,f22,f23,f24,f25,f62,f128,f136,f115,f152", 
+            date_num(Sys.time(), 'ms')
+            ) # m:128%20t:1,m:128%20t:2,m:128%20t:3,m:128%20t:4,
+        datem = read_apidata_eastmoney(url_hk_em, type = 'real_cn')
+        
+        setnames(datem, 
+                 c('f12', 'f14', 'f124', 'f17', 'f15', 'f16', 'f2', 'f5', 'f6', 'f8'), 
+                 c('symbol', 'name', 'ticktime', 'open', 'high', 'low', 'close', 'volume', 'amount', 'turnover' ))
+        datem = datem[
+            , ticktime := as.POSIXct(ticktime, origin = '1970-01-01')
+        ][grepl('牛|熊', name), market := 'bullbear'
+        ][grepl('沽|购', name), market := 'warrant']
+        stock_list_hk = datem[f1==3] 
     }
 
 
   stock_list_hk = stock_list_hk[,`:=`(
       symbol = paste0(symbol, '.HK'),
       date = as_date(ticktime)
-  )][, c('exchange', 'market', 'board', 'symbol', 'name', 'date', 'open', 'high', 'low', 'close', 'close_prev', 'volume', 'amount', 'change_pct',  'cap_total', 'eps', 'dividend', 'pe', 'name_eng', 'ticktime')]
-  if (return_price == FALSE) stock_list_hk = stock_list_hk[, c("market", "exchange", "board", "symbol", "name"), with=FALSE]
-  # data("market_symbols", envir = environment())
-  # stock_list_hk2 = rbindlist(
-  #   list(setDT(market_symbols)[exchange=="hkex"], stock_list_hk))[, .SD[1], by=symbol]
-
+  )][, c('symbol', 'name', 'date', 'open', 'high', 'low', 'close', 'volume', 'amount', 'turnover')]
+  
   return(stock_list_hk)
 }
 
-# shse, szse ------
-
-
-
-# us ------
-md_stock_symbol_us = function(exchange) {
+md_stk_syb_us = function(exchange) {
   . = symbol = name = sector = industry = country = ipoyear = marketCap = NULL
   # c("AMEX", "NASDAQ", "NYSE")
   exchange = toupper(exchange)
   exchange2code = list(NASDAQ = '105', NYSE='106', AMEX = '107')
   
-  datem = read_apidata_eastmoney(url = sprintf("http://72.push2.eastmoney.com/api/qt/clist/get?pn=1&pz=20000&po=1&np=1&ut=bd1d9ddb04089700cf9c27f6f7426281&fltt=2&invt=2&fid=f3&fs=m:%s&fields=f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f12,f13,f14,f15,f16,f17,f18,f20,f21,f23,f24,f25,f26,f22,f33,f11,f62,f128,f136,f115,f152&_=1624010056945", exchange2code[[exchange]]), type = 'real_us')
-  dat2 = datem[, c('symbol', 'name', 'open', 'high', 'low', 'close', 'close_prev', 'volume', 'amount', 'change', 'change_pct', 'amplitude', 'turnover', 'cap_total', 'pe'), with=FALSE]
+  url = sprintf(
+      "http://72.push2.eastmoney.com/api/qt/clist/get?pn=1&pz=20000&po=1&np=1&ut=bd1d9ddb04089700cf9c27f6f7426281&fltt=2&invt=2&fid=f3&fs=m:%s&fields=%s&_=%s", 
+      exchange2code[[exchange]], 
+      paste0('f', c(1, 12, 14, 124, 17, 15, 16, 2, 5, 6, 8), collapse = ','),
+      # "f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f12,f13,f14,f15,f16,f17,f18,f20,f21,f23,f24,f25,f26,f22,f33,f11,f62,f128,f136,f115,f152", 
+      date_num(Sys.time(), 'ms')
+  )
+  
+  datem = read_apidata_eastmoney(url, type = 'real_us')
+  setnames(datem, 
+           c('f12', 'f14', 'f124', 'f17', 'f15', 'f16', 'f2', 'f5', 'f6', 'f8'), 
+           c('symbol', 'name', 'ticktime', 'open', 'high', 'low', 'close', 'volume', 'amount', 'turnover' ))
+  datem = datem[, ticktime := as.POSIXct(ticktime, origin = '1970-01-01')
+              ][, date := as_date(ticktime)] 
   
   if (FALSE) {
       url = sprintf(
@@ -97,15 +80,15 @@ md_stock_symbol_us = function(exchange) {
   }
   
   
-  return(dat2)
+  return(datem)
 }
 
 
-# stock symbol by exchange ------
+
 md_stock_symbol_exchange = function(XCHG=NULL, print_step=1L) {
   exchange = NULL
   
-  exchange_list = c('sse','szse', 'hkex', "amex", "nasdaq", "nyse")
+  exchange_list = c('sse','szse', 'bse', 'hkex', "amex", "nasdaq", "nyse")
   while ((is.null(XCHG) || length(XCHG)==0)) {
     XCHG = select_rows_df(dt = setDT(list(exchange = exchange_list)), column = 'exchange')[,exchange]
   }
@@ -115,10 +98,10 @@ md_stock_symbol_exchange = function(XCHG=NULL, print_step=1L) {
   i = 1
   exc_len = length(XCHG)
   dat_lst = NULL
-  if (any(c("sse", "szse") %in% XCHG)) {
+  if (any(c("sse", "szse", 'bse') %in% XCHG)) {
     dtmp = md_stocka_eastmoney()
-    temp = dtmp$stock[exchange %in% XCHG]
-    exc = intersect(c("sse", "szse"),XCHG)
+    temp = rbindlist(dtmp[c('stock','index')])[exchange %in% XCHG]
+    exc = intersect(c("sse", "szse", 'bse'), XCHG)
     for (e in exc) {
       if ((print_step > 0) & (i %% print_step == 0)) cat(sprintf('%s %s\n', paste0(format(c(i, exc_len)), collapse = '/'), e))
       i = i+1
@@ -131,7 +114,7 @@ md_stock_symbol_exchange = function(XCHG=NULL, print_step=1L) {
     for (e in exc) {
       if ((print_step > 0) & (i %% print_step == 0)) cat(sprintf('%s %s\n', paste0(format(c(i, exc_len)), collapse = '/'), e))
       i = i+1
-      dat_lst[[e]] = md_stock_symbol_hk()
+      dat_lst[[e]] = md_stk_syb_hk()
     }
   }
   if (any(c("amex", "nasdaq", "nyse") %in% XCHG)) {
@@ -139,7 +122,7 @@ md_stock_symbol_exchange = function(XCHG=NULL, print_step=1L) {
     for (e in exc) {
       if ((print_step > 0) & (i %% print_step == 0)) cat(sprintf('%s %s\n', paste0(format(c(i, exc_len)), collapse = '/'), e))
       i = i+1
-      dat_lst[[e]] = md_stock_symbol_us(e)
+      dat_lst[[e]] = md_stk_syb_us(e)
     }
   }
   # dat_lst = rbindlist(dat_lst, fill = TRUE)
@@ -147,7 +130,79 @@ md_stock_symbol_exchange = function(XCHG=NULL, print_step=1L) {
 }
 
 
-# stock symbol constituent of index ------
+#' symbol components of exchange
+#' 
+#' \code{md_stock_symbol} returns all stock symbols by exchange
+#' 
+#' @param exchange the available stock exchanges are sse, szse, hkex, amex, nasdaq, nyse.
+#' @param ... ignored parameters
+#' 
+#' @examples 
+#' \dontrun{
+#' # get stock symbols in a stock exchange
+#' ## specify the exchanges
+#' ex_syb1 = md_stock_symbol(exchange = c('sse', 'szse'))
+#' 
+#' ## choose exchanges interactivly
+#' ex_syb2 = md_stock_symbol()
+#' 
+#' }
+#' 
+#' @export
+md_stock_symbol = function(exchange=NULL, ...) {
+    datlst = md_stock_symbol_exchange(exchange)
+    datlst2 = lapply(datlst, function(x) {
+        cols = c('symbol', 'name', 'date', 'open', 'high', 'low', 'close', 'volume', 'amount', 'turnover', 'market')
+        
+        x[, intersect(cols, names(x)), with = FALSE]
+    } )
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# stock symbol constituent of index
 # China securities index, csindex
 
 # query constituent of securities index
@@ -171,19 +226,19 @@ md_stock_symbol_exchange = function(XCHG=NULL, print_step=1L) {
 # @export
 # 
 stk_syb_idx1 = function(syb) {
-  exchange = NULL
-  
-  url = sprintf("http://www.csindex.com.cn/uploads/file/autofile/cons/%scons.xls",syb)
-  dat = load_read_xl(url)
-  setDT(dat)
-  setnames(dat, c("date","index_symbol","index_name","index_name_en","stock_symbol","stock_name", "stock_name_en","exchange"))
-  dat = dat[, exchange := ifelse(exchange=="SHH","sse", ifelse(exchange=="SHZ","szse", exchange))]
-  # cat(sprintf("For more detials go to:\nhttp://www.csindex.com.cn/zh-CN/indices/index-detail/%s\n", symbol))
-  return(dat)
+    exchange = NULL
+    
+    url = sprintf("http://www.csindex.com.cn/uploads/file/autofile/cons/%scons.xls",syb)
+    dat = load_read_xl(url)
+    setDT(dat)
+    setnames(dat, c("date","index_symbol","index_name","index_name_en","stock_symbol","stock_name", "stock_name_en","exchange"))
+    dat = dat[, exchange := ifelse(exchange=="SHH","sse", ifelse(exchange=="SHZ","szse", exchange))]
+    # cat(sprintf("For more detials go to:\nhttp://www.csindex.com.cn/zh-CN/indices/index-detail/%s\n", symbol))
+    return(dat)
 }
 md_stock_symbol_index = function(symbol, print_step=1L) {
-  dat_list = load_dat_loop(symbol, "stk_syb_idx1", args = list(), print_step=print_step)
-  return(dat_list)
+    dat_list = load_dat_loop(symbol, "stk_syb_idx1", args = list(), print_step=print_step)
+    return(dat_list)
 }
 
 
@@ -192,27 +247,4 @@ md_stock_symbol_index = function(symbol, print_step=1L) {
 # @param index the stock index symbol provided by China Securities Index Co.Ltd (\url{http://www.csindex.com.cn}).
 # get stock components of a stock index (only in sse and szse)
 # index_syb = md_stock_symbol(index = c('000001', '000016', '000300', '000905'))
-
-#' symbol components of exchange
-#' 
-#' \code{md_stock_symbol} returns all stock symbols by exchange
-#' 
-#' @param exchange the available stock exchanges are sse, szse, hkex, amex, nasdaq, nyse.
-#' @param ... ignored parameters
-#' 
-#' @examples 
-#' \dontrun{
-#' # get stock symbols in a stock exchange
-#' ## specify the exchanges
-#' ex_syb1 = md_stock_symbol(exchange = c('sse', 'szse'))
-#' 
-#' ## choose exchanges interactivly
-#' ex_syb2 = md_stock_symbol()
-#' 
-#' }
-#' 
-#' @export
-md_stock_symbol = function(exchange=NULL, ...) {
-    md_stock_symbol_exchange(exchange)
-}
 

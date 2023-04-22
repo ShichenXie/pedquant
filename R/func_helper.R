@@ -227,14 +227,19 @@ syb_fmt_tx = function(symbol, mkt = NULL) {
 syb_fmt_output = function(symbol, mkt = NULL) {
     syb_yh = syb = exchg_code = tags = NULL
     
-    if (all(grepl('[0-9]{6}', symbol))) {
-        symbol = syb_add_cntags(
-            symbol, mkt
+    dtsyb = data.table(syb = symbol)[, cnsyb := grepl('[0-9]{6}', syb)]
+    
+    if (nrow(dtsyb[cnsyb == TRUE]) > 0) {
+        sybout = syb_add_cntags(
+            dtsyb[cnsyb == TRUE,syb], mkt
         )[, syb_yh := paste(syb, exchg_code, sep = '.') #paste0(city,syb)
         ][is.na(tags), syb_yh := symbol
         ][][, syb_yh]
     }
-    return(toupper(symbol))
+    
+    dtsyb[cnsyb == TRUE, syb := sybout]
+    
+    return(toupper(dtsyb$syb))
 }
 
 
@@ -404,8 +409,8 @@ read_apidata_eastmoney = function(url, type='history') {
             market = datmp$data$market
         )][]
     } else if (type == 'real_us') {
-        dat = data.table(datmp$data$diff)
-        setnames(dat, c("v1", "close", "change_pct", "change", "volume", "amount", "amplitude_pct", "turnover", "pe", "v2", "v3", "symbol", "exchange_code", "name", "high", "low", "open", "close_prev", 'cap_total', paste0('v', 5:6), "pb", paste0('v', 7:17)))
+        dat = rbindlist(lapply(datmp$data$diff, setDT))
+        
     } else if (type == 'real_cn') {
         dat = rbindlist(lapply(datmp$data$diff, setDT))
     }
