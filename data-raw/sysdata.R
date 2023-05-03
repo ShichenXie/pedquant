@@ -11,7 +11,20 @@ if (FALSE) {
   # code_country = cc$country
   # code_currency = cc$currency
   
-  # # financial_statements_163
+  # # 
+    financial_statements_163 = fread('
+    type, name, name_en, urls
+       fs0_summary, 财务报表摘要, Financial Statements Summary, http://quotes.money.163.com/service/cwbbzy_%s.html
+        fs1_income, 利润表, Income Statement, http://quotes.money.163.com/service/lrb_%s.html
+       fs2_balance, 资产负债表, Balance Sheet, http://quotes.money.163.com/service/zcfzb_%s.html
+      fs3_cashflow, 现金流量表, CashFlow Statement, http://quotes.money.163.com/service/xjllb_%s.html
+          fi0_main, 主要财务指标, Financial Indicators, http://quotes.money.163.com/service/zycwzb_%s.html?type=report
+       fi1_earning, 盈利能力, Earning Capability, http://quotes.money.163.com/service/zycwzb_%s.html?type=report&part=ylnl
+     fi2_repayment, 偿还能力, Repayment Capability, http://quotes.money.163.com/service/zycwzb_%s.html?type=report&part=chnl
+        fi3_growth, 成长能力, Growth Capability, http://quotes.money.163.com/service/zycwzb_%s.html?type=report&part=cznl
+     fi4_operation, 营运能力, Operation Capability, http://quotes.money.163.com/service/zycwzb_%s.html?type=report&part=yynl
+    ')
+    
   # # prov_indu_163
   
   # # symbol_stock_163
@@ -145,6 +158,20 @@ NA financial VX VIX恐慌指数期货', fill = TRUE)
   # # holiday of china
   # holiday = setDF(ed_holiday(date_range = 'max'))
   
-  # usethis::use_data(code_china_district, code_country, code_currency, code_exchange_commodity, code_exchange_stock, financial_statements_163, holiday, prov_indu_163, symbol_future_sina, symbol_stock_163, symbol_stooq, urls_pbc, internal = TRUE, overwrite = TRUE)
+  fs_typ_em = setDF(fread('
+    typ, nam, nam_en, report_name
+    fs0_summary,  业绩报表,   Financial Statements Summary, RPT_LICO_FN_CPD
+    fs1_income,   利润表,     Income Statement, RPT_DMSK_FN_INCOME
+    fs2_balance,  资产负债表, Balance Sheet, RPT_DMSK_FN_BALANCE
+    fs3_cashflow, 现金流量表, CashFlow Statement, RPT_DMSK_FN_CASHFLOW
+    '))
+  fs_colnam_em = 
+      lapply(xefun::as.list2(c('fs0_summary', 'fs1_income', 'fs2_balance', 'fs3_cashflow')), function(x) {
+          readxl::read_excel('../pedquant_ref/fscolsem.xlsx', sheet = x)
+      }) |> 
+      rbindlist(idcol = 'typ') |> 
+      setDF()
+  
+  # usethis::use_data(code_china_district, code_country, code_currency, code_exchange_commodity, code_exchange_stock, fs_typ_em, fs_colnam_em, holiday, prov_indu_163, symbol_future_sina, symbol_stock_163, symbol_stooq, urls_pbc, internal = TRUE, overwrite = TRUE)
   
 }

@@ -42,6 +42,7 @@ reference:
       - '`md_stock`'
       - '`md_stock_symbol`'
       - '`md_stock_adjust`'
+      - '`md_stock_financials`'
       - '`md_future`'
       - '`md_future_symbol`'
   - title: "quantitative analysis" 

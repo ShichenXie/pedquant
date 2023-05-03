@@ -105,7 +105,13 @@ tags_symbol_stockcn = function(symbol, mkt, only_tags = TRUE) {
     if (only_tags) tags = tags[,tags]
     return(tags)
 }
+
+
 # tags of SSE/SZSE shares symbols
+# http://www.sse.com.cn/
+# https://szse.com.cn/
+# https://www.neeq.com.cn/
+# https://www.bse.cn/
 syb_cntags = function() {
     tags = exchg_code = NULL
     
@@ -127,9 +133,9 @@ syb_cntags = function() {
         stock 301 szse,A,chinext
         stock 200 szse,B,main
         stock 201 szse,B,main
-        stock 43 bse,A,main
-        stock 83 bse,A,main
-        stock 87 bse,A,main
+        stock 43 neeq,-,neeq
+        stock 83 neeq,-,neeq
+        stock 87 neeq,-,neeq
         stock 400 neeq,-,neeq
         stock 420 neeq,-,neeq
         index 000 sse,-,-
@@ -148,7 +154,8 @@ syb_cntags = function() {
      ][, exchg_code := toupper(substr(tags,1,2))
      ][exchg_code == 'SS', `:=`(city='sh', city_code='0')
      ][exchg_code == 'SZ', `:=`(city='sz', city_code='1')
-     ][exchg_code == 'BS', `:=`(city='bj')][]
+     ][exchg_code == 'BS', `:=`(city='bj')
+     ][grepl('neeq'), `:=`(city='nq')]
     
 }
 syb_add_cntags = function(symbol, market = NULL) {
@@ -225,14 +232,14 @@ syb_fmt_tx = function(symbol, mkt = NULL) {
     return(symbol_tx)
 }
 syb_fmt_output = function(symbol, mkt = NULL) {
-    syb_yh = syb = exchg_code = tags = NULL
+    syb_yh = syb = exchg_code = tags = cnsyb = city = NULL
     
     dtsyb = data.table(syb = symbol)[, cnsyb := grepl('[0-9]{6}', syb)]
     
     if (nrow(dtsyb[cnsyb == TRUE]) > 0) {
         sybout = syb_add_cntags(
             dtsyb[cnsyb == TRUE,syb], mkt
-        )[, syb_yh := paste(syb, exchg_code, sep = '.') #paste0(city,syb)
+        )[, syb_yh := paste(syb, toupper(city), sep = '.') #paste0(city,syb)
         ][is.na(tags), syb_yh := symbol
         ][][, syb_yh]
     }

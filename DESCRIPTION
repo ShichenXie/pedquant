@@ -1,10 +1,10 @@
 Package: pedquant
-Version: 0.2.1.999
+Version: 0.2.2
 Title: Public Economic Data and Quantitative Analysis
 Description: 
     Provides an interface to access public economic and financial data for 
     economic research and quantitative analysis. The data sources including 
-    NBS, FRED, 163, Sina, Eastmoney and etc. It also provides quantitative 
+    NBS, FRED, Sina, Eastmoney and etc. It also provides quantitative 
     functions for trading strategies based on the 'data.table', 'TTR', 
     'PerformanceAnalytics' and etc packages.
 Authors@R: 
@@ -25,7 +25,7 @@ Imports:
     readxl,
     readr,
     echarts4r,
-    xefun (> 0.1.2)
+    xefun (> 0.1.3)
 Suggests: 
     knitr,
     rmarkdown

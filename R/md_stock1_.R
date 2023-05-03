@@ -1,6 +1,6 @@
 #' query stock market data 
 #' 
-#' \code{md_stock} provides an interface to query stock or fund data from 163 for SSE and SZSE shares, from eastmoney for HKEX and US shares.
+#' \code{md_stock} provides an interface to query stock or fund data.
 #' 
 #' @param symbol symbols of stock shares.
 #' @param type the data type, including history, real. Defaults to history.
@@ -29,39 +29,16 @@
 #' ## the symbol with suffix
 #' dt_cn2 = md_stock(c("000001.sz", "000001.ss", '512510.ss'))
 #' 
-#' 
-#' # Example II: price adjust factors
-#' # adjust factors, splits and dividend
-#' dt_adj = md_stock(symbol=c("000001", "^000001"), type='adjfactor', date_range='max')
-#'              
 #'              
 #' # Example III: query real prices
 #' # real price for equities
-#' dt_real1 = md_stock(c('FB', 'AMZN', 'AAPL', 'NFLX', 'GOOG',
+#' dt_real1 = md_stock(c('META', 'AMZN', 'AAPL', 'NFLX', 'GOOG',
 #'                      '00700.hk', '03690.hk', '01810.hk',
 #'                      "000001", "^000001", "512510"), type = 'real')
-#' 
-#' 
-#' # real prices of all A shares in sse and szse
-#' dt_real2 = md_stock(symbol='a', type='real')
-#' # real prices of all A/B shares and index in sse and szse
-#' dt_real3 = md_stock(symbol=c('a', 'b', 'index'), type='real')
-#' 
-#' # show real prices and sector/industry
-#' dt_real4 = md_stock(symbol = c('a', 'b', 'index', 'fund'), 
-#'   type = 'real', show_tags = TRUE)
-#' 
-#' 
-#' # Example IV: 
-#' # valuation ratios (pe, pb, ps) for shares in sse and szse
-#' dt_valuation = md_stock(symbol=c('600000', '000001', '^000001', '^399001'), 
-#'                valuation = TRUE)
 #'                
 #'                
-#' # query company information (profile/ipo), revenue and staff
+#' # query company information 
 #' dt_info1 = md_stock('600036', type = 'info')
-#' # query history revenue 
-#' dt_info2 = md_stock('600036', type = 'info', rev_hist = TRUE)
 #' }
 #' 
 #' @export

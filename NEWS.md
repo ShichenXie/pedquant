@@ -1,6 +1,7 @@
 # pedquant 0.2.1
 
 * remove several not needed scripts
+* replace stock data source from 163 to eastmoney
 
 # pedquant 0.2.0
 
