@@ -2,8 +2,6 @@
 
 # pedquant
 
-[![Travis build
-status](https://travis-ci.org/ShichenXie/pedquant.svg?branch=master)](https://travis-ci.org/ShichenXie/pedquant)
 [![CRAN
 status](https://www.r-pkg.org/badges/version/pedquant)](https://cran.r-project.org/package=pedquant)
 [![](http://cranlogs.r-pkg.org/badges/grand-total/pedquant)](https://cran.r-project.org/package=pedquant)
@@ -90,11 +88,13 @@ The following examples show you how to import data.
      ][, (c('type', 'prices')) := lapply(.SD, shift), .SDcols = c('type', 'prices')
      ][,.(symbol, name, date, close_adj, type, prices)]
     head(dtorders[!is.na(type)])
-    #>       symbol     name       date close_adj type   prices
-    #> 1: 601988.SS 中国银行 2015-09-28  3.283584 sell 3.309507
-    #> 2: 601988.SS 中国银行 2016-09-05  3.148622  buy 3.157722
-    #> 3: 601988.SS 中国银行 2018-05-03  3.638575 sell 3.629050
-    #> 4: 601988.SS 中国银行 2018-12-26  3.630000  buy 3.610000
+    #>       symbol     name       date close_adj type prices
+    #> 1: 601988.SS 中国银行 2019-01-30      5.69  buy   5.70
+    #> 2: 601988.SS 中国银行 2019-10-14      5.93 sell   5.90
+    #> 3: 601988.SS 中国银行 2019-10-31      5.97  buy   5.95
+    #> 4: 601988.SS 中国银行 2020-01-17      5.91 sell   5.91
+    #> 5: 601988.SS 中国银行 2020-08-31      5.71  buy   5.74
+    #> 6: 601988.SS 中国银行 2020-09-11      5.63 sell   5.63
 
     # charting
     e = pq_plot(dt_banks,  y='close_adj', addti = list(sma=list(n=200), sma=list(n=50)), orders = dtorders[!is.na(type)])

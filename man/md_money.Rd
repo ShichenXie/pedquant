@@ -2,7 +2,7 @@
 % Please edit documentation in R/md_2money.R
 \name{md_money}
 \alias{md_money}
-\title{query interbank offerd rate}
+\title{query interbank offered rate}
 \usage{
 md_money(symbol = NULL, date_range = "3y", from = NULL,
   to = Sys.Date(), print_step = 1L)

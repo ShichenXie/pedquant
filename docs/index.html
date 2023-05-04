@@ -140,15 +140,17 @@
 <span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a> ][, (<span class="fu">c</span>(<span class="st">'type'</span>, <span class="st">'prices'</span>)) <span class="sc">:</span><span class="er">=</span> <span class="fu">lapply</span>(.SD, shift), .SDcols <span class="ot">=</span> <span class="fu">c</span>(<span class="st">'type'</span>, <span class="st">'prices'</span>)</span>
 <span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a> ][,.(symbol, name, date, close_adj, type, prices)]</span>
 <span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(dtorders[<span class="sc">!</span><span class="fu">is.na</span>(type)])</span>
-<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;       symbol     name       date close_adj type   prices</span></span>
-<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1: 601988.SS 中国银行 2015-09-28  3.283584 sell 3.309507</span></span>
-<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2: 601988.SS 中国银行 2016-09-05  3.148622  buy 3.157722</span></span>
-<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3: 601988.SS 中国银行 2018-05-03  3.638575 sell 3.629050</span></span>
-<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4: 601988.SS 中国银行 2018-12-26  3.630000  buy 3.610000</span></span>
-<span id="cb3-37"><a href="#cb3-37" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-38"><a href="#cb3-38" aria-hidden="true" tabindex="-1"></a><span class="co"># charting</span></span>
-<span id="cb3-39"><a href="#cb3-39" aria-hidden="true" tabindex="-1"></a>e <span class="ot">=</span> <span class="fu">pq_plot</span>(dt_banks,  <span class="at">y=</span><span class="st">'close_adj'</span>, <span class="at">addti =</span> <span class="fu">list</span>(<span class="at">sma=</span><span class="fu">list</span>(<span class="at">n=</span><span class="dv">200</span>), <span class="at">sma=</span><span class="fu">list</span>(<span class="at">n=</span><span class="dv">50</span>)), <span class="at">orders =</span> dtorders[<span class="sc">!</span><span class="fu">is.na</span>(type)])</span>
-<span id="cb3-40"><a href="#cb3-40" aria-hidden="true" tabindex="-1"></a><span class="co"># e[['601988.SS']]</span></span></code></pre></div>
+<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;       symbol     name       date close_adj type prices</span></span>
+<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1: 601988.SS 中国银行 2019-01-30      5.69  buy   5.70</span></span>
+<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2: 601988.SS 中国银行 2019-10-14      5.93 sell   5.90</span></span>
+<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3: 601988.SS 中国银行 2019-10-31      5.97  buy   5.95</span></span>
+<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4: 601988.SS 中国银行 2020-01-17      5.91 sell   5.91</span></span>
+<span id="cb3-37"><a href="#cb3-37" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 5: 601988.SS 中国银行 2020-08-31      5.71  buy   5.74</span></span>
+<span id="cb3-38"><a href="#cb3-38" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 6: 601988.SS 中国银行 2020-09-11      5.63 sell   5.63</span></span>
+<span id="cb3-39"><a href="#cb3-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-40"><a href="#cb3-40" aria-hidden="true" tabindex="-1"></a><span class="co"># charting</span></span>
+<span id="cb3-41"><a href="#cb3-41" aria-hidden="true" tabindex="-1"></a>e <span class="ot">=</span> <span class="fu">pq_plot</span>(dt_banks,  <span class="at">y=</span><span class="st">'close_adj'</span>, <span class="at">addti =</span> <span class="fu">list</span>(<span class="at">sma=</span><span class="fu">list</span>(<span class="at">n=</span><span class="dv">200</span>), <span class="at">sma=</span><span class="fu">list</span>(<span class="at">n=</span><span class="dv">50</span>)), <span class="at">orders =</span> dtorders[<span class="sc">!</span><span class="fu">is.na</span>(type)])</span>
+<span id="cb3-42"><a href="#cb3-42" aria-hidden="true" tabindex="-1"></a><span class="co"># e[['601988.SS']]</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="issues-and-contributions">Issues and Contributions<a class="anchor" aria-label="anchor" href="#issues-and-contributions"></a>
@@ -194,7 +196,6 @@
 <div class="dev-status">
 <h2 data-toc-skip>Dev status</h2>
 <ul class="list-unstyled">
-<li><a href="https://travis-ci.org/ShichenXie/pedquant" class="external-link"><img src="https://travis-ci.org/ShichenXie/pedquant.svg?branch=master" alt="Travis build status"></a></li>
 <li><a href="https://cran.r-project.org/package=pedquant" class="external-link"><img src="https://www.r-pkg.org/badges/version/pedquant" alt="CRAN status"></a></li>
 <li><a href="https://cran.r-project.org/package=pedquant" class="external-link"><img src="http://cranlogs.r-pkg.org/badges/grand-total/pedquant"></a></li>
 <li><a href="https://cran.r-project.org/package=pedquant" class="external-link"><img src="http://cranlogs.r-pkg.org/badges/pedquant"></a></li>

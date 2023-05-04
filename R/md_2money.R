@@ -93,7 +93,7 @@ md_libor = function(symbol, date_range = '3y', from=NULL, to=Sys.Date(), print_s
 
 
 
-#' query interbank offerd rate
+#' query interbank offered rate
 #' 
 #' \code{md_money} query libor from FRED or shibor from chinamoney.
 #' 
