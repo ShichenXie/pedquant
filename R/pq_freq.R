@@ -69,8 +69,10 @@ pq1_freq = function(dat, freq, date_type='eop') {
 #' data(dt_ssec)
 #' dat1_weekly = pq_freq(dt_ssec, "weekly")
 #' 
+#' \dontrun{
 #' data(dt_banks)
 #' dat2_weekly = pq_freq(dt_banks, "monthly")
+#' }
 #' 
 #' @export
 #' 

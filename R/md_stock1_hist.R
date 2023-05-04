@@ -110,6 +110,14 @@ md_stock1_history_eastmoney = function(symbol1, from=NULL, to=Sys.Date(), freq='
 }
 
 
+# md_stock1_adjfactor ------
+md_stock1_adjfactor = function(symbol1) {
+    syb_exp = NULL
+    
+    sybtag = try(syb_add_cntags(symbol1), silent = TRUE)
+    symbol1 = sybtag[,syb_exp]
+}
+
 # https://web.ifzq.gtimg.cn/appstock/app/fqkline/get?param=usAAPL.OQ,day,2020-3-1,2021-3-1,500,qfq
 # https://web.ifzq.gtimg.cn/appstock/app/fqkline/get?_var=kline_dayhfq&param=sh600519,day,,,320,hfq&r=0.9860043111257255
 md_stock1_history_tx = function(symbol1, from=NULL, to=Sys.Date(), date_range='max', ...) {
