@@ -1,3 +1,7 @@
+# pedquant 0.2.2.1
+
+* fixed a bug in md_stock function
+
 # pedquant 0.2.2
 
 * replace stock data source from the 163 to the Eastmoney

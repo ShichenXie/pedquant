@@ -38,9 +38,9 @@ md_stocka_eastmoney = function(symbol1 = 'a') {
      ][mktcode == '1', symbol := syb_fmt_output(sybcode, mkt='stock')
      ][mktcode == '2', symbol := syb_fmt_output(sybcode, mkt='index')
      ][mktcode == '8', symbol := syb_fmt_output(sybcode, mkt='fund')
-     ][grepl('SS$', symbol), exchange := 'sse'
+     ][grepl('SH$', symbol), exchange := 'sse'
      ][grepl('SZ$', symbol), exchange := 'szse'
-     ][grepl('BS$', symbol), exchange := 'bse']
+     ][grepl('NQ$', symbol), exchange := 'bse']
     
     datlst = split(dtmp, by = 'market')
     # dtmp[,.N, keyby=.(mktcode, f19, market, exchange)]

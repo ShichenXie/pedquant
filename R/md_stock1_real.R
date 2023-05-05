@@ -2,11 +2,13 @@ md_stock_real = function(symbol, trytimes = 3, source = c('tx', 'sina'), ...) {
     dat = NULL
     ti = 1
     
-    if (length(intersect(symbol, c('a','b','index', 'fund'))) > 0) {
+    if (length(intersect(symbol, c('stock','index', 'fund'))) > 0) {
         while (!inherits(dat, 'list') & ti <= trytimes) {
             dat = try(do.call('md_stocka_eastmoney', args = list(symbol=symbol, ...)), silent = TRUE)
             ti = ti + 1
         }
+        
+        dat[intersect(symbol, c('stock','index', 'fund'))]
         
     } else {
         si = 1

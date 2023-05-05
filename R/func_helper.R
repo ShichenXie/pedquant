@@ -155,7 +155,7 @@ syb_cntags = function() {
      ][exchg_code == 'SS', `:=`(city='sh', city_code='0')
      ][exchg_code == 'SZ', `:=`(city='sz', city_code='1')
      ][exchg_code == 'BS', `:=`(city='bj')
-     ][grepl('neeq'), `:=`(city='nq')]
+     ][grepl('neeq', tags), `:=`(city='nq')]
     
 }
 syb_add_cntags = function(symbol, market = NULL) {
