@@ -202,7 +202,7 @@ syb_add_cntags = function(symbol, market = NULL) {
         dt_syb_tags, dt_syb, fill=TRUE
     )[, .SD[1], keyby = 'rid'
     ][, syb := sub("^.*?([0-9]+).*$","\\1",symbol)
-    ][!is.na(exchg_code), syb_exp := paste(syb, exchg_code, sep='.')
+    ][!is.na(exchg_code), syb_exp := paste(syb, city, sep='.')
     ][is.na(syb_exp), syb_exp := syb
     ][, syb_exp := toupper(syb_exp)
     ][]

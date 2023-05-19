@@ -80,6 +80,10 @@ md_stock1_history_eastmoney = function(symbol1, from=NULL, to=Sys.Date(), freq='
         return(ret)
     }) 
     
+    if (ncol(datlst2[[1]]) == 3) {
+        cat(symbol1, 'unlisted or delisted. \n')
+        return(invisible())
+    }
     # missing: close_prev
     # "amplitude_pct", "change", "change_pct",  
     cols_num = c("open", "high", "low", "close", "volume", "amount", "turnover", "close_adj")
