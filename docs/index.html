@@ -38,7 +38,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">pedquant</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.2.999</span>
       </span>
     </div>
 
@@ -110,47 +110,49 @@
 </h2>
 <p>The following examples show you how to import data.</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(pedquant)</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="co"># loading data</span></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="do">## import eocnomic data</span></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>dat1 <span class="ot">=</span> <span class="fu">ed_fred</span>(<span class="st">'GDPCA'</span>)</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1/1 GDPCA</span></span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>dat2 <span class="ot">=</span> <span class="fu">ed_nbs</span>(<span class="at">geo_type=</span><span class="st">'nation'</span>, <span class="at">freq=</span><span class="st">'quarterly'</span>, <span class="at">symbol=</span><span class="st">'A010101'</span>)</span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="do">## import market data</span></span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>FAAG <span class="ot">=</span> <span class="fu">md_stock</span>(<span class="fu">c</span>(<span class="st">'META'</span>, <span class="st">'AMZN'</span>, <span class="st">'AAPL'</span>, <span class="st">'GOOG'</span>), <span class="at">date_range =</span> <span class="st">'10y'</span>)</span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1/4 meta</span></span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2/4 amzn</span></span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3/4 aapl</span></span>
-<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4/4 goog</span></span>
-<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>INDX <span class="ot">=</span> <span class="fu">md_stock</span>(<span class="fu">c</span>(<span class="st">'^000001'</span>,<span class="st">'^399001'</span>), <span class="at">date_range =</span> <span class="st">'10y'</span>)</span>
-<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1/2 ^000001</span></span>
-<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2/2 ^399001</span></span>
-<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a><span class="co"># double moving average strategy</span></span>
-<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a><span class="do">## add technical indicators</span></span>
-<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">"dt_banks"</span>)</span>
-<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>dtbnkti <span class="ot">=</span> <span class="fu">pq_addti</span>(dt_banks, <span class="at">x=</span><span class="st">'close_adj'</span>, <span class="at">sma=</span><span class="fu">list</span>(<span class="at">n=</span><span class="dv">200</span>), <span class="at">sma=</span><span class="fu">list</span>(<span class="at">n=</span><span class="dv">50</span>))</span>
-<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a><span class="do">## crossover signals</span></span>
-<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(data.table)</span>
-<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>dtorders <span class="ot">=</span> <span class="fu">copy</span>(dtbnkti[[<span class="st">'601988.SS'</span>]])[</span>
-<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>   sma_50 <span class="sc">%x&gt;%</span> sma_200, <span class="st">`</span><span class="at">:=</span><span class="st">`</span>(<span class="at">type =</span> <span class="st">'buy'</span>,  <span class="at">prices =</span> close_adj)</span>
-<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a> ][sma_50 <span class="sc">%x&lt;%</span> sma_200, <span class="st">`</span><span class="at">:=</span><span class="st">`</span>(<span class="at">type =</span> <span class="st">'sell'</span>, <span class="at">prices =</span> close_adj)</span>
-<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a> ][<span class="fu">order</span>(date)</span>
-<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a> ][, (<span class="fu">c</span>(<span class="st">'type'</span>, <span class="st">'prices'</span>)) <span class="sc">:</span><span class="er">=</span> <span class="fu">lapply</span>(.SD, shift), .SDcols <span class="ot">=</span> <span class="fu">c</span>(<span class="st">'type'</span>, <span class="st">'prices'</span>)</span>
-<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a> ][,.(symbol, name, date, close_adj, type, prices)]</span>
-<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(dtorders[<span class="sc">!</span><span class="fu">is.na</span>(type)])</span>
-<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;       symbol     name       date close_adj type prices</span></span>
-<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1: 601988.SS 中国银行 2019-01-30      5.69  buy   5.70</span></span>
-<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2: 601988.SS 中国银行 2019-10-14      5.93 sell   5.90</span></span>
-<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3: 601988.SS 中国银行 2019-10-31      5.97  buy   5.95</span></span>
-<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4: 601988.SS 中国银行 2020-01-17      5.91 sell   5.91</span></span>
-<span id="cb3-37"><a href="#cb3-37" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 5: 601988.SS 中国银行 2020-08-31      5.71  buy   5.74</span></span>
-<span id="cb3-38"><a href="#cb3-38" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 6: 601988.SS 中国银行 2020-09-11      5.63 sell   5.63</span></span>
-<span id="cb3-39"><a href="#cb3-39" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-40"><a href="#cb3-40" aria-hidden="true" tabindex="-1"></a><span class="co"># charting</span></span>
-<span id="cb3-41"><a href="#cb3-41" aria-hidden="true" tabindex="-1"></a>e <span class="ot">=</span> <span class="fu">pq_plot</span>(dt_banks,  <span class="at">y=</span><span class="st">'close_adj'</span>, <span class="at">addti =</span> <span class="fu">list</span>(<span class="at">sma=</span><span class="fu">list</span>(<span class="at">n=</span><span class="dv">200</span>), <span class="at">sma=</span><span class="fu">list</span>(<span class="at">n=</span><span class="dv">50</span>)), <span class="at">orders =</span> dtorders[<span class="sc">!</span><span class="fu">is.na</span>(type)])</span>
-<span id="cb3-42"><a href="#cb3-42" aria-hidden="true" tabindex="-1"></a><span class="co"># e[['601988.SS']]</span></span></code></pre></div>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">packageVersion</span>(<span class="st">'pedquant'</span>)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] '0.2.2.999'</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co"># loading data</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="do">## import eocnomic data</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>dat1 <span class="ot">=</span> <span class="fu">ed_fred</span>(<span class="st">'GDPCA'</span>)</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1/1 GDPCA</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>dat2 <span class="ot">=</span> <span class="fu">ed_nbs</span>(<span class="at">geo_type=</span><span class="st">'nation'</span>, <span class="at">freq=</span><span class="st">'quarterly'</span>, <span class="at">symbol=</span><span class="st">'A010101'</span>)</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="do">## import market data</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>FAAG <span class="ot">=</span> <span class="fu">md_stock</span>(<span class="fu">c</span>(<span class="st">'META'</span>, <span class="st">'AMZN'</span>, <span class="st">'AAPL'</span>, <span class="st">'GOOG'</span>), <span class="at">date_range =</span> <span class="st">'10y'</span>)</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1/4 meta</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2/4 amzn</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3/4 aapl</span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4/4 goog</span></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>INDX <span class="ot">=</span> <span class="fu">md_stock</span>(<span class="fu">c</span>(<span class="st">'^000001'</span>,<span class="st">'^399001'</span>), <span class="at">date_range =</span> <span class="st">'10y'</span>)</span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1/2 ^000001</span></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2/2 ^399001</span></span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a><span class="co"># double moving average strategy</span></span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a><span class="do">## add technical indicators</span></span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">"dt_banks"</span>)</span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>dtbnkti <span class="ot">=</span> <span class="fu">pq_addti</span>(dt_banks, <span class="at">x=</span><span class="st">'close_adj'</span>, <span class="at">sma=</span><span class="fu">list</span>(<span class="at">n=</span><span class="dv">200</span>), <span class="at">sma=</span><span class="fu">list</span>(<span class="at">n=</span><span class="dv">50</span>))</span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a><span class="do">## crossover signals</span></span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(data.table)</span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>dtorders <span class="ot">=</span> <span class="fu">copy</span>(dtbnkti[[<span class="st">'601988.SH'</span>]])[</span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>   sma_50 <span class="sc">%x&gt;%</span> sma_200, <span class="st">`</span><span class="at">:=</span><span class="st">`</span>(<span class="at">side =</span> <span class="dv">1</span>,  <span class="at">prices =</span> close_adj)</span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a> ][sma_50 <span class="sc">%x&lt;%</span> sma_200, <span class="st">`</span><span class="at">:=</span><span class="st">`</span>(<span class="at">side =</span> <span class="sc">-</span><span class="dv">1</span>, <span class="at">prices =</span> close_adj)</span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a> ][<span class="fu">order</span>(date)</span>
+<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a> ][, (<span class="fu">c</span>(<span class="st">'side'</span>, <span class="st">'prices'</span>)) <span class="sc">:</span><span class="er">=</span> <span class="fu">lapply</span>(.SD, shift), .SDcols <span class="ot">=</span> <span class="fu">c</span>(<span class="st">'side'</span>, <span class="st">'prices'</span>)</span>
+<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a> ][,.(symbol, name, date, side, prices)</span>
+<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a> ][<span class="sc">!</span><span class="fu">is.na</span>(side)]</span>
+<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(dtorders)</span>
+<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;       symbol     name       date side prices</span></span>
+<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1: 601988.SH 中国银行 2021-04-20    1   5.76</span></span>
+<span id="cb3-37"><a href="#cb3-37" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2: 601988.SH 中国银行 2021-08-19   -1   5.67</span></span>
+<span id="cb3-38"><a href="#cb3-38" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3: 601988.SH 中国银行 2021-11-18    1   5.70</span></span>
+<span id="cb3-39"><a href="#cb3-39" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4: 601988.SH 中国银行 2021-11-25   -1   5.71</span></span>
+<span id="cb3-40"><a href="#cb3-40" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 5: 601988.SH 中国银行 2022-01-18    1   5.72</span></span>
+<span id="cb3-41"><a href="#cb3-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-42"><a href="#cb3-42" aria-hidden="true" tabindex="-1"></a><span class="co"># charting</span></span>
+<span id="cb3-43"><a href="#cb3-43" aria-hidden="true" tabindex="-1"></a>e <span class="ot">=</span> <span class="fu">pq_plot</span>(<span class="fu">setDT</span>(dt_banks)[symbol<span class="sc">==</span><span class="st">'601988.SH'</span>],  <span class="at">y=</span><span class="st">'close_adj'</span>, <span class="at">addti =</span> <span class="fu">list</span>(<span class="at">sma=</span><span class="fu">list</span>(<span class="at">n=</span><span class="dv">200</span>), <span class="at">sma=</span><span class="fu">list</span>(<span class="at">n=</span><span class="dv">50</span>)), <span class="at">orders =</span> dtorders)</span>
+<span id="cb3-44"><a href="#cb3-44" aria-hidden="true" tabindex="-1"></a><span class="co"># e[['601988.SS']]</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="issues-and-contributions">Issues and Contributions<a class="anchor" aria-label="anchor" href="#issues-and-contributions"></a>

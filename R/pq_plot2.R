@@ -8,7 +8,7 @@ pp_yrng = function(dt, y, yb, yrng=NULL, ...) {
 
 pp_dtpre = function(dt, x='date', y='close', 
                     addti = NULL, markline = TRUE, 
-                    orders = NULL, order_y = 'prices', order_type = 'type') {
+                    orders = NULL, order_y = 'prices', order_type = 'side_bs') {
     sybnam = symbol = name = markline_value = NULL
     
     dt = setorderv(copy(dt), c('symbol', x))[, sybnam := sprintf('%s %s', symbol, name[.N]), by = 'symbol']
@@ -98,15 +98,15 @@ p_markline = function(e, dt, markline = TRUE) {
 p_orders = function(e, orders, color_up = "#CF002F", color_down = "#000000", orders_ml=FALSE, ...) {
     if (is.null(orders)) return(e)
     
-    if ('buy' %in% unique(orders$type)) e = e_scatter_(e, 'buy', symbol = 'triangle', symbolSize = 12, color = color_up, legend = FALSE)
-    if ('sell' %in% unique(orders$type)) e = e_scatter_(e, 'sell', symbol = 'triangle', symbolSize = 12, symbolRotate=180, color = color_down, legend = FALSE) 
-    if ('bto' %in% unique(orders$type)) e = e_scatter_(e, 'bto', symbol = 'circle', symbolSize = 12, color = color_up, legend = FALSE)
-    if ('stc' %in% unique(orders$type)) e = e_scatter_(e, 'stc', symbol = 'circle', symbolSize = 12, symbolRotate=180, color = color_down, legend = FALSE) 
-    if ('sto' %in% unique(orders$type)) e = e_scatter_(e, 'sto', symbol = 'rect', symbolSize = 12, color = color_up, legend = FALSE)
-    if ('btc' %in% unique(orders$type)) e = e_scatter_(e, 'btc', symbol = 'rect', symbolSize = 12, symbolRotate=180, color = color_down, legend = FALSE) 
-    
+    # long
+    if ('buy' %in% unique(orders$side_bs)) e = e_scatter_(e, 'buy', symbol = 'triangle', symbolSize = 12, color = color_up, legend = FALSE)
+    if ('sell' %in% unique(orders$side_bs)) e = e_scatter_(e, 'sell', symbol = 'triangle', symbolSize = 12, symbolRotate=180, color = color_down, legend = FALSE) 
+    # short
+    if ('buy_short' %in% unique(orders$side_bs)) e = e_scatter_(e, 'buy_short', symbol = 'triangle', symbolSize = 12, color = color_up, legend = FALSE)
+    if ('sell_short' %in% unique(orders$side_bs)) e = e_scatter_(e, 'sell_short', symbol = 'triangle', symbolSize = 12, symbolRotate=180, color = color_down, legend = FALSE) 
+
     if (isFALSE(orders_ml)) return(e)
-    for (o in split(orders,by='type')) {
+    for (o in split(orders,by='side_bs')) {
         for (i in o[,.I]) {
             e = e |>
                 e_mark_line(
@@ -278,7 +278,7 @@ pp_line = function(
     dt, x = 'date', y = 'close', yb = NULL, date_range = 'max', yaxis_log = FALSE, title = NULL, 
     color_up = "#CF002F", color_down = "#000000", theme = 'default', 
     markline = TRUE, nsd_lm = NULL, addti = NULL, 
-    orders = NULL, order_y = 'prices', order_type = 'type', ...
+    orders = NULL, order_y = 'prices', order_type = 'side_bs', ...
 ) {
     dt = pp_dtpre(dt, x, y, addti, markline, orders, order_y, order_type) |>
         pp_dtlm(x, y, yaxis_log, nsd_lm)
@@ -302,7 +302,7 @@ pp_step = function(
     dt, x = 'date', y = 'close', yb = NULL, date_range = 'max', yaxis_log = FALSE, title = NULL, 
     color_up = "#CF002F", color_down = "#000000", theme = 'default', 
     markline = TRUE, nsd_lm = NULL, addti = NULL, 
-    orders = NULL, order_y = 'prices', order_type = 'type', ...
+    orders = NULL, order_y = 'prices', order_type = 'side_bs', ...
 ) {
     dt = pp_dtpre(dt, x, y, addti, markline, orders, order_y, order_type) |>
         pp_dtlm(x, y, yaxis_log, nsd_lm)
@@ -326,7 +326,7 @@ pp_candle = function(
     dt, x = 'date', y = 'close', yb = NULL, date_range = 'max', yaxis_log = FALSE, title = NULL, 
     color_up = "#CF002F", color_down = "#000000", theme = 'default', 
     markline = TRUE, nsd_lm = NULL, addti = NULL, 
-    orders = NULL, order_y = 'prices', order_type = 'type', ...
+    orders = NULL, order_y = 'prices', order_type = 'side_bs', ...
 ) {
     dt = pp_dtpre(dt, x, y, addti, markline, orders, order_y, order_type) |>
         pp_dtlm(x, y, yaxis_log, nsd_lm)
@@ -365,7 +365,7 @@ pp_candle = function(
 #' @param addti list of technical indicators or numerical columns in dt. For technical indicator, it is calculated via \code{pq_addti}, which including overlays and indicators.
 #' @param nsd_lm number of standard deviation from linear regression fitting values. 
 #' @param markline whether to display markline. Default is TRUE. 
-#' @param orders the data frame of transaction orders, which includes symbol, date (required), prices, volumes (required) and type columns. 
+#' @param orders a data frame of trade orders, which including columns of symbol, date, side, prices, and quantity. 
 #' @param arrange a list. Number of rows and columns charts to connect. Default is NULL.
 #' @param theme name of echarts theme, see details in \code{\link{e_theme}}
 #' @param ... ignored
@@ -396,6 +396,7 @@ pp_candle = function(
 #' 
 #' # multiple series
 #' data(dt_banks)
+#' setDT(dt_banks)
 #' dt_banksadj = md_stock_adjust(dt_banks)
 #' 
 #' # linear trend
@@ -404,9 +405,9 @@ pp_candle = function(
 #' e4[[1]]
 #' 
 #' # orders 
-#' b2 = dt_banks[symbol %in% c('601988.SS', '601398.SS')]
+#' b2 = dt_banks[symbol %in% c('601988.SH', '601398.SH')]
 #' b2orders = b2[sample(.N, 10), .(symbol, date, prices=close, 
-#'               type=sample(c('buy','sell'), 10, replace=TRUE))]
+#'               side=sample(c(-1, 1), 10, replace=TRUE))]
 #'                 
 #' e5 = pq_plot(b2, orders=b2orders)
 #' e5[[1]]

@@ -80,7 +80,7 @@ md_stock1_history_eastmoney = function(symbol1, from=NULL, to=Sys.Date(), freq='
         return(ret)
     }) 
     
-    if (ncol(datlst2[[1]]) == 3) {
+    if (ncol(datlst2[[1]]) == 3 || is.null(datlst2[[1]])) {
         cat(symbol1, 'unlisted or delisted. \n')
         return(invisible())
     }

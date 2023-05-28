@@ -20,16 +20,16 @@ library(data.table)
 library(pedquant)
 
 data("dt_banks")
-boc = md_stock_adjust(setDT(dt_banks)[symbol=='601988.SS'])
+boc = md_stock_adjust(setDT(dt_banks)[symbol=='601988.SH'])
 bocti = pq_addti(boc, x='close_adj', sma=list(n=200), sma=list(n=50))
 
 dtorders = copy(bocti[[1]])[,.(symbol, name, date, close_adj, sma_50, sma_200)
 ][sma_50 \%x>\% sma_200, `:=`(
-    type = 'buy', prices = close_adj
+    side = 'buy', prices = close_adj
 )][sma_50 \%x<\% sma_200, `:=`(
-    type = 'sell', prices = close_adj
-)][, (c('type', 'prices')) := lapply(.SD, shift), .SDcols = c('type', 'prices')]
-orders = dtorders[!is.na(type)]
+    side = 'sell', prices = close_adj
+)][, (c('side', 'prices')) := lapply(.SD, shift), .SDcols = c('side', 'prices')]
+orders = dtorders[!is.na(side)]
 head(orders)
 
 e = pq_plot(boc,  y='close_adj', addti = list(sma=list(n=200), sma=list(n=50)), orders = orders)

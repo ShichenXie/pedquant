@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pedquant</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.2.999</span>
       </span>
     </div>
 
@@ -117,7 +117,7 @@
 
 
 <dt>orders</dt>
-<dd><p>the data frame of transaction orders, which includes symbol, date (required), prices, volumes (required) and type columns.</p></dd>
+<dd><p>a data frame of trade orders, which including columns of symbol, date, side, prices, and quantity.</p></dd>
 
 
 <dt>arrange</dt>
@@ -163,6 +163,7 @@
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># multiple series</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">dt_banks</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/setDT.html" class="external-link">setDT</a></span><span class="op">(</span><span class="va">dt_banks</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">dt_banksadj</span> <span class="op">=</span> <span class="fu"><a href="md_stock_adjust.html">md_stock_adjust</a></span><span class="op">(</span><span class="va">dt_banks</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># linear trend</span></span></span>
@@ -172,9 +173,9 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> NULL</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># orders </span></span></span>
-<span class="r-in"><span><span class="va">b2</span> <span class="op">=</span> <span class="va">dt_banks</span><span class="op">[</span><span class="va">symbol</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'601988.SS'</span>, <span class="st">'601398.SS'</span><span class="op">)</span><span class="op">]</span></span></span>
+<span class="r-in"><span><span class="va">b2</span> <span class="op">=</span> <span class="va">dt_banks</span><span class="op">[</span><span class="va">symbol</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'601988.SH'</span>, <span class="st">'601398.SH'</span><span class="op">)</span><span class="op">]</span></span></span>
 <span class="r-in"><span><span class="va">b2orders</span> <span class="op">=</span> <span class="va">b2</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="va">.N</span>, <span class="fl">10</span><span class="op">)</span>, <span class="fu">.</span><span class="op">(</span><span class="va">symbol</span>, <span class="va">date</span>, prices<span class="op">=</span><span class="va">close</span>, </span></span>
-<span class="r-in"><span>              type<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'buy'</span>,<span class="st">'sell'</span><span class="op">)</span>, <span class="fl">10</span>, replace<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span><span class="op">]</span></span></span>
+<span class="r-in"><span>              side<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span>, <span class="fl">10</span>, replace<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span><span class="op">]</span></span></span>
 <span class="r-in"><span>                </span></span>
 <span class="r-in"><span><span class="va">e5</span> <span class="op">=</span> <span class="fu">pq_plot</span><span class="op">(</span><span class="va">b2</span>, orders<span class="op">=</span><span class="va">b2orders</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">e5</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></span></span>

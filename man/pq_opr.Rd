@@ -23,10 +23,10 @@ It performs arithmetic operation on numeric columns on multiple series.
 \examples{
 data("dt_banks")
 
-dt1 = pq_opr(dt_banks, '601288.SS/601988.SS')
+dt1 = pq_opr(dt_banks, '601288.SH/601988.SH')
 print(dt1)
 
-dt2 = pq_opr(dt_banks, c('(601288.SS+601988.SS)/2', '(601288.SS*601988.SS)^0.5'))
+dt2 = pq_opr(dt_banks, c('(601288.SH+601988.SH)/2', '(601288.SH*601988.SH)^0.5'))
 print(dt2)
 
 }

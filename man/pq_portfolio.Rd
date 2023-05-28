@@ -10,7 +10,7 @@ pq_portfolio(dt, orders, x = "close", dtb = NULL, init_fund = NULL,
 \arguments{
 \item{dt}{a list/dataframe of price by asset.}
 
-\item{orders}{a data frame of transaction orders, which includes symbol, date, prices, volumes and type columns.}
+\item{orders}{a data frame of transaction orders, which includes symbol, date, prices, quantity and side columns.}
 
 \item{x}{the column name of adjusted asset price, defaults to close.}
 
@@ -36,8 +36,8 @@ datadj = md_stock_adjust(dt_banks)
 
 # example I 
 orders = data.frame(
-    symbol = c("601288.SS","601328.SS","601398.SS","601939.SS","601988.SS"), 
-    volumes = c(100, 200, 300, 300, 100)
+    symbol = c("601288.SH","601328.SH","601398.SH","601939.SH","601988.SH"), 
+    quantity = c(100, 200, 300, 300, 100)
 )
 dtRa = pq_portfolio(datadj, orders=orders) 
 
@@ -48,20 +48,20 @@ e1[[1]]
 # example II 
 data(dt_ssec)
 orders = data.frame(
-    symbol = rep(c("601288.SS","601328.SS","601398.SS","601939.SS","601988.SS"), 3), 
+    symbol = rep(c("601288.SH","601328.SH","601398.SH","601939.SH","601988.SH"), 3), 
     date = rep(c('2009-03-02', '2010-01-04', '2014-09-01'), each = 5), 
-    volumes = rep(c(100, 200, 300, 300, 100), 3) * rep(c(1, -1, 2), each = 5)
+    quantity = rep(c(100, 200, 300, 300, 100), 3) * rep(c(1, -1, 2), each = 5)
 )
 dtRab = pq_portfolio(datadj, orders=orders, dtb = dt_ssec, init_fund = 10000) 
 
-e2 = pq_plot(dtRab, y = 'cumreturns', yb = 'cumreturns_000001.SS', addti = list(portfolio=list()))
+e2 = pq_plot(dtRab, y = 'cumreturns', yb = 'cumreturns_000001.SH', addti = list(portfolio=list()))
 e2[[1]]
 
 
 # example III
-orders = data.frame(symbol = "000001.SS", 
+orders = data.frame(symbol = "000001.SH", 
      date = c("2009-04-13", "2010-03-24", "2014-08-13", "2015-09-10"), 
-     volumes = c(400, -400, 300, -300))
+     quantity = c(400, -400, 300, -300))
 dtRa2 = pq_portfolio(dt_ssec, orders=orders, cols_keep = 'all')
 
 e3 = pq_plot(dtRa2, y = 'close', addti = list(cumreturns=list(), portfolio=list()))

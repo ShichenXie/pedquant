@@ -3,7 +3,7 @@
 #' \code{pq_portfolio} calculates the weighted returns or the equity of a portfolio assets.
 #'
 #' @param dt a list/dataframe of price by asset.
-#' @param orders a data frame of transaction orders, which includes symbol, date, prices, volumes and type columns. 
+#' @param orders a data frame of transaction orders, which includes symbol, date, prices, quantity and side columns. 
 #' @param x the column name of adjusted asset price, defaults to close.
 #' @param dtb a list/dataframe of price base asset.
 #' @param init_fund initial fund value.
@@ -20,8 +20,8 @@
 #' 
 #' # example I 
 #' orders = data.frame(
-#'     symbol = c("601288.SS","601328.SS","601398.SS","601939.SS","601988.SS"), 
-#'     volumes = c(100, 200, 300, 300, 100)
+#'     symbol = c("601288.SH","601328.SH","601398.SH","601939.SH","601988.SH"), 
+#'     quantity = c(100, 200, 300, 300, 100)
 #' )
 #' dtRa = pq_portfolio(datadj, orders=orders) 
 #' 
@@ -32,20 +32,20 @@
 #' # example II 
 #' data(dt_ssec)
 #' orders = data.frame(
-#'     symbol = rep(c("601288.SS","601328.SS","601398.SS","601939.SS","601988.SS"), 3), 
+#'     symbol = rep(c("601288.SH","601328.SH","601398.SH","601939.SH","601988.SH"), 3), 
 #'     date = rep(c('2009-03-02', '2010-01-04', '2014-09-01'), each = 5), 
-#'     volumes = rep(c(100, 200, 300, 300, 100), 3) * rep(c(1, -1, 2), each = 5)
+#'     quantity = rep(c(100, 200, 300, 300, 100), 3) * rep(c(1, -1, 2), each = 5)
 #' )
 #' dtRab = pq_portfolio(datadj, orders=orders, dtb = dt_ssec, init_fund = 10000) 
 #' 
-#' e2 = pq_plot(dtRab, y = 'cumreturns', yb = 'cumreturns_000001.SS', addti = list(portfolio=list()))
+#' e2 = pq_plot(dtRab, y = 'cumreturns', yb = 'cumreturns_000001.SH', addti = list(portfolio=list()))
 #' e2[[1]]
 #' 
 #' 
 #' # example III
-#' orders = data.frame(symbol = "000001.SS", 
+#' orders = data.frame(symbol = "000001.SH", 
 #'      date = c("2009-04-13", "2010-03-24", "2014-08-13", "2015-09-10"), 
-#'      volumes = c(400, -400, 300, -300))
+#'      quantity = c(400, -400, 300, -300))
 #' dtRa2 = pq_portfolio(dt_ssec, orders=orders, cols_keep = 'all')
 #' 
 #' e3 = pq_plot(dtRa2, y = 'close', addti = list(cumreturns=list(), portfolio=list()))
@@ -57,7 +57,7 @@ pq_portfolio = function(dt, orders, x = 'close', dtb = NULL, init_fund = NULL, m
     . = equity = equityindex = fund = chg = returns = symbol = value = balance = blchg = cumreturns = NULL
 
     w = 'weights'
-    v = 'volumes'
+    v = 'quantity'
     
     args = list(...)
     x_value = args[['x_value']]

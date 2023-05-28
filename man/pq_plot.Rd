@@ -32,7 +32,7 @@ pq_plot(dt, chart_type = "line", x = "date", y = "close", yb = NULL,
 
 \item{markline}{whether to display markline. Default is TRUE.}
 
-\item{orders}{the data frame of transaction orders, which includes symbol, date (required), prices, volumes (required) and type columns.}
+\item{orders}{a data frame of trade orders, which including columns of symbol, date, side, prices, and quantity.}
 
 \item{arrange}{a list. Number of rows and columns charts to connect. Default is NULL.}
 
@@ -69,6 +69,7 @@ e3[[1]]
 
 # multiple series
 data(dt_banks)
+setDT(dt_banks)
 dt_banksadj = md_stock_adjust(dt_banks)
 
 # linear trend
@@ -77,9 +78,9 @@ e4 = pq_plot(dt_banksadj, arrange = list(rows=1, cols=1))
 e4[[1]]
 
 # orders 
-b2 = dt_banks[symbol \%in\% c('601988.SS', '601398.SS')]
+b2 = dt_banks[symbol \%in\% c('601988.SH', '601398.SH')]
 b2orders = b2[sample(.N, 10), .(symbol, date, prices=close, 
-              type=sample(c('buy','sell'), 10, replace=TRUE))]
+              side=sample(c(-1, 1), 10, replace=TRUE))]
                 
 e5 = pq_plot(b2, orders=b2orders)
 e5[[1]]

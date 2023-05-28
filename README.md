@@ -58,6 +58,8 @@ including [tidyquant](https://github.com/business-science/tidyquant) or
 The following examples show you how to import data.
 
     library(pedquant)
+    packageVersion('pedquant')
+    #> [1] '0.2.2.999'
     # loading data
     ## import eocnomic data
     dat1 = ed_fred('GDPCA')
@@ -81,23 +83,23 @@ The following examples show you how to import data.
 
     ## crossover signals
     library(data.table)
-    dtorders = copy(dtbnkti[['601988.SS']])[
-       sma_50 %x>% sma_200, `:=`(type = 'buy',  prices = close_adj)
-     ][sma_50 %x<% sma_200, `:=`(type = 'sell', prices = close_adj)
+    dtorders = copy(dtbnkti[['601988.SH']])[
+       sma_50 %x>% sma_200, `:=`(side = 1,  prices = close_adj)
+     ][sma_50 %x<% sma_200, `:=`(side = -1, prices = close_adj)
      ][order(date)
-     ][, (c('type', 'prices')) := lapply(.SD, shift), .SDcols = c('type', 'prices')
-     ][,.(symbol, name, date, close_adj, type, prices)]
-    head(dtorders[!is.na(type)])
-    #>       symbol     name       date close_adj type prices
-    #> 1: 601988.SS 中国银行 2019-01-30      5.69  buy   5.70
-    #> 2: 601988.SS 中国银行 2019-10-14      5.93 sell   5.90
-    #> 3: 601988.SS 中国银行 2019-10-31      5.97  buy   5.95
-    #> 4: 601988.SS 中国银行 2020-01-17      5.91 sell   5.91
-    #> 5: 601988.SS 中国银行 2020-08-31      5.71  buy   5.74
-    #> 6: 601988.SS 中国银行 2020-09-11      5.63 sell   5.63
+     ][, (c('side', 'prices')) := lapply(.SD, shift), .SDcols = c('side', 'prices')
+     ][,.(symbol, name, date, side, prices)
+     ][!is.na(side)]
+    head(dtorders)
+    #>       symbol     name       date side prices
+    #> 1: 601988.SH 中国银行 2021-04-20    1   5.76
+    #> 2: 601988.SH 中国银行 2021-08-19   -1   5.67
+    #> 3: 601988.SH 中国银行 2021-11-18    1   5.70
+    #> 4: 601988.SH 中国银行 2021-11-25   -1   5.71
+    #> 5: 601988.SH 中国银行 2022-01-18    1   5.72
 
     # charting
-    e = pq_plot(dt_banks,  y='close_adj', addti = list(sma=list(n=200), sma=list(n=50)), orders = dtorders[!is.na(type)])
+    e = pq_plot(setDT(dt_banks)[symbol=='601988.SH'],  y='close_adj', addti = list(sma=list(n=200), sma=list(n=50)), orders = dtorders)
     # e[['601988.SS']]
 
 ## Issues and Contributions

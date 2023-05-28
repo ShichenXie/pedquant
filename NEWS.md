@@ -1,3 +1,7 @@
+# pedquant 0.2.2.999
+
+* adjusted order book structure
+
 # pedquant 0.2.2.1
 
 * fixed a bug in md_stock function

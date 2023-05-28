@@ -48,6 +48,7 @@ The following examples show you how to import data.
 
 ```{r data-2sma, warning=FALSE}
 library(pedquant)
+packageVersion('pedquant')
 # loading data
 ## import eocnomic data
 dat1 = ed_fred('GDPCA')
@@ -64,16 +65,17 @@ dtbnkti = pq_addti(dt_banks, x='close_adj', sma=list(n=200), sma=list(n=50))
 
 ## crossover signals
 library(data.table)
-dtorders = copy(dtbnkti[['601988.SS']])[
-   sma_50 %x>% sma_200, `:=`(type = 'buy',  prices = close_adj)
- ][sma_50 %x<% sma_200, `:=`(type = 'sell', prices = close_adj)
+dtorders = copy(dtbnkti[['601988.SH']])[
+   sma_50 %x>% sma_200, `:=`(side = 1,  prices = close_adj)
+ ][sma_50 %x<% sma_200, `:=`(side = -1, prices = close_adj)
  ][order(date)
- ][, (c('type', 'prices')) := lapply(.SD, shift), .SDcols = c('type', 'prices')
- ][,.(symbol, name, date, close_adj, type, prices)]
-head(dtorders[!is.na(type)])
+ ][, (c('side', 'prices')) := lapply(.SD, shift), .SDcols = c('side', 'prices')
+ ][,.(symbol, name, date, side, prices)
+ ][!is.na(side)]
+head(dtorders)
 
 # charting
-e = pq_plot(dt_banks,  y='close_adj', addti = list(sma=list(n=200), sma=list(n=50)), orders = dtorders[!is.na(type)])
+e = pq_plot(setDT(dt_banks)[symbol=='601988.SH'],  y='close_adj', addti = list(sma=list(n=200), sma=list(n=50)), orders = dtorders)
 # e[['601988.SS']]
 ```
 
