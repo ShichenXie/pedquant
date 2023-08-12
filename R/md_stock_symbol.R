@@ -15,7 +15,7 @@ md_stk_syb_hk = function(source="eastmoney", return_price=TRUE) {
     setnames(stock_list_hk, c('engname', 'lasttrade', 'prevclose', 'pricechange', 'changepercent', 'market_value', 'pe_ratio'), c('name_eng', 'close', 'close_prev', 'change', 'change_pct', 'cap_total', 'pe'))
   } else if (source == 'eastmoney') {
         fid = 
-            c(1, 12, 14, 124, 17, 15, 16, 2, 5, 6, 8, 29, 62, 23, 20, 21)
+            c(1, 12, 14, 124, 17, 15, 16, 2, 5, 6, 8, 29, 9, 23, 20, 21)
             # setdiff(1:149,c(36:61,100:108, 112:123,128:138))
         # "f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f11,f12,f13,f14,f15,f16,f17,f18,f19,f20,f21,f22,f23,f24,f25,f62,f128,f136,f115,f152", 
         
@@ -155,7 +155,7 @@ md_stock_symbol_exchange = function(XCHG=NULL, print_step=1L) {
 md_stock_symbol = function(exchange=NULL, ...) {
     datlst = md_stock_symbol_exchange(exchange)
     datlst2 = lapply(datlst, function(x) {
-        cols = c('symbol', 'name', 'date', 'open', 'high', 'low', 'close', 'volume', 'amount', 'turnover', 'market', 'mktcode', 'pe_ttm', 'pb', 'cap_total', 'cap_market')
+        cols = c('symbol', 'name', 'date', 'open', 'high', 'low', 'close', 'volume', 'amount', 'turnover', 'market', 'mktcode', 'pe_forward', 'pe_ttm', 'pe_lyr', 'pb', 'cap_total', 'cap_market')
         
         x[, intersect(cols, names(x)), with = FALSE]
     } )

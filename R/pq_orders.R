@@ -13,6 +13,7 @@
 check_odr = function(orders) {
     . = symbol = side = prices = values = quantity = NULL
     
+    if (is.null(orders)) return(orders)
     # symbol, date, side, prices, quantity, values
     if (inherits(orders, 'list')) orders = rbindlist(orders, fill = TRUE)
     orders = setDT(orders)

@@ -39,11 +39,13 @@ pp_dtpre = function(dt, x='date', y='close',
     
     return(dt)
 }
-pp_title = function(dt, title=NULL) {
+pp_title = function(dt, title=NULL, sybnam_N=TRUE, ...) {
     # symbol = name = NULL 
     if (is.null(title) & length(unique(dt$symbol))==1) {
         cols_sn = intersect(c('symbol','name'), names(dt))
-        title = setDT(dt)[.N, cols_sn, with=FALSE]
+        if (sybnam_N == TRUE) {
+            title = setDT(dt)[.N, cols_sn, with=FALSE]
+        } else title = setDT(dt)[1, cols_sn, with=FALSE]
         title = paste0(unlist(title), collapse = ' ')
     }
     return(title)
@@ -282,7 +284,7 @@ pp_line = function(
 ) {
     dt = pp_dtpre(dt, x, y, addti, markline, orders, order_y, order_type) |>
         pp_dtlm(x, y, yaxis_log, nsd_lm)
-    title  = pp_title(dt, title)
+    title  = pp_title(dt, title, ...)
     xstart = pp_xstart(dt, x, date_range)
     yrng = pp_yrng(dt=dt, y=y, yb=yb, ...)
     
@@ -306,7 +308,7 @@ pp_step = function(
 ) {
     dt = pp_dtpre(dt, x, y, addti, markline, orders, order_y, order_type) |>
         pp_dtlm(x, y, yaxis_log, nsd_lm)
-    title  = pp_title(dt, title)
+    title  = pp_title(dt, title, ...)
     xstart = pp_xstart(dt, x, date_range)
     yrng = pp_yrng(dt=dt, y=y, yb=yb, ...)
         
@@ -330,7 +332,7 @@ pp_candle = function(
 ) {
     dt = pp_dtpre(dt, x, y, addti, markline, orders, order_y, order_type) |>
         pp_dtlm(x, y, yaxis_log, nsd_lm)
-    title  = pp_title(dt, title)
+    title  = pp_title(dt, title, ...)
     xstart = pp_xstart(dt, x, date_range)
     yrng = pp_yrng(dt=dt, y=y, yb=yb, ...)
     

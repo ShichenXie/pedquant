@@ -36,7 +36,7 @@ md_stock_financials = function(type=NULL, date_range='1q', from=NULL, to=Sys.Dat
     }
         
     fs_typ_em = setDT(copy(fs_typ_em))
-    if (is.null(type)) type = select_rows_df(dt = fs_typ_em[,.(type=typ, name=nam, name_en=nam_en)], column = 'type', input_string=type)[,type]
+    type = select_rows_df(dt = fs_typ_em[,.(type=typ, name=nam, name_en=nam_en)], column = 'type', input_string=type)[,type]
     
     datlst = load_dat_loop(fs_typ_em[typ %in% type, typ], 'md_stock_fs1', args = list(date = date, ...), print_step=print_step)
     
@@ -44,10 +44,11 @@ md_stock_financials = function(type=NULL, date_range='1q', from=NULL, to=Sys.Dat
 
 
 md_stock_fs1 = function(typ1='fs0_summary', date='2022-12-31', colnam_chn = FALSE) {
-    typ = report_name = type1 = NULL
+    typ = report_name = type1 = colnam_eng = NULL
     
     
     date = as_date(date)
+    cat(sprintf('  @ %s \n',date))
     
     datlst = lapply(date, function(di) {
         # print(di)
@@ -72,11 +73,18 @@ md_stock_fs1 = function(typ1='fs0_summary', date='2022-12-31', colnam_chn = FALS
     })
     
     dat = rbindlist(datlst, fill = TRUE)
-    setnames(dat, c('SECUCODE', 'SECURITY_NAME_ABBR', 'REPORTDATE', 'REPORT_DATE', 'NOTICE_DATE'), c('symbol', 'name', 'date_report', 'date_report', 'date_notice'), skip_absent = TRUE)
+    names(dat) = tolower(names(dat))
+    setnames(dat, c("secucode", "security_name_abbr", "reportdate", "report_date", "notice_date", "update_date" ), c('symbol', 'name', 'date_report', 'date_report', 'date_notice', 'date_update'), skip_absent = TRUE)
     
+    cols_1st = c('symbol', 'name', 'date_report', 'date_notice', 'date_update')
+    cols_dat = names(dat)
+    cols_rm = c("security_code", "datayear", "datemmdd")
+    dat = dat[, c(intersect(cols_1st,cols_dat), setdiff(cols_dat,c(cols_rm,cols_1st))), with=FALSE]
+    
+    colnam = setDT(copy(fs_colnam_em))
+    dat = dat[,intersect(colnam[typ == typ1,colnam_eng], names(dat)),with=FALSE]
     
     if (isTRUE(colnam_chn)) {
-        colnam = setDT(copy(fs_colnam_em))[typ == typ1 & colnam_chn != '_']
         setnames(dat, colnam$colnam_eng, colnam$colnam_chn, skip_absent = TRUE)
     }
     

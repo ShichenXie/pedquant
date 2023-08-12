@@ -1,6 +1,7 @@
 # pedquant 0.2.2.999
 
 * adjusted order book structure
+* adjusted symbol suffix of shanghai exchange shares from 'ss' to 'sh'
 
 # pedquant 0.2.2.1
 

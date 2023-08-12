@@ -67,6 +67,10 @@ md_stock1_history_eastmoney = function(symbol1, from=NULL, to=Sys.Date(), freq='
             if (inherits(ret, 'try-error')) return(invisible())
             return(ret)
         }) 
+        if (ncol(datlst[[1]]) %in% c(0,3) || is.null(datlst[[1]])) {
+            cat(symbol1, 'unlisted or delisted. \n')
+            return(invisible())
+        }
     }
     
     # hfq
@@ -80,7 +84,7 @@ md_stock1_history_eastmoney = function(symbol1, from=NULL, to=Sys.Date(), freq='
         return(ret)
     }) 
     
-    if (ncol(datlst2[[1]]) == 3 || is.null(datlst2[[1]])) {
+    if (ncol(datlst2[[1]]) %in% c(0,3) || is.null(datlst2[[1]])) {
         cat(symbol1, 'unlisted or delisted. \n')
         return(invisible())
     }
