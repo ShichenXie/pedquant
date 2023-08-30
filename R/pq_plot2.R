@@ -64,14 +64,17 @@ pp_xstart = function(dt, x = 'date', date_range = 'max') {
 }
 
 
-p_theme = function(e, xstart = 0, xend = 100, yaxis_log = FALSE, yrng = NULL, title = 'none', theme = 'default') {
+p_theme = function(e, xstart = 0, xend = 100, yaxis_log = FALSE, #yrng = NULL, 
+                   title = 'none', theme = 'default') {
     if (isTRUE(yaxis_log)) yaxis_type = 'log' else yaxis_type = 'value'
     
     e |>  
         e_title(title, left='30') |> 
         e_tooltip(trigger='axis', axisPointer = list(type = 'cross', show = TRUE)) |> 
         e_datazoom(x_index = 0, start = xstart, end = xend) |> 
-        e_y_axis(min=yrng[1], max=yrng[2], type = yaxis_type, position = 'right', axisLabel = list(rotate = 90) ) |> 
+        e_y_axis(
+            min='dataMin', # yrng[1], # max=yrng[2], 
+            type = yaxis_type, position = 'right', axisLabel = list(rotate = 90) ) |> 
         e_toolbox(right='30') |> 
         e_toolbox_feature(c("restore", "dataZoom", "saveAsImage")) |> 
         e_legend(type = "plain", orient = "vertical", left='30', top='30') |> 
@@ -286,7 +289,7 @@ pp_line = function(
         pp_dtlm(x, y, yaxis_log, nsd_lm)
     title  = pp_title(dt, title, ...)
     xstart = pp_xstart(dt, x, date_range)
-    yrng = pp_yrng(dt=dt, y=y, yb=yb, ...)
+    # yrng = pp_yrng(dt=dt, y=y, yb=yb, ...)
     
     e = pp_base(dt, x, yb=yb) |> 
         e_line_(serie = y, legend=TRUE, symbol='none') |>
@@ -294,7 +297,8 @@ pp_line = function(
         p_markline(dt = dt, markline = markline) |> 
         p_lm(x=x, y=y, nsd_lm=nsd_lm) |>
         p_addti_overlay(dt = dt, addti = addti) |>
-        p_theme(xstart = xstart, xend = 100, yaxis_log = yaxis_log, yrng = yrng, title = title, theme = theme) |> 
+        p_theme(xstart = xstart, xend = 100, yaxis_log = yaxis_log, #yrng = yrng, 
+                title = title, theme = theme) |> 
         p_addti_indicator(dt = dt, addti = addti, x = x, theme = theme)
         
     return(e)
@@ -310,7 +314,7 @@ pp_step = function(
         pp_dtlm(x, y, yaxis_log, nsd_lm)
     title  = pp_title(dt, title, ...)
     xstart = pp_xstart(dt, x, date_range)
-    yrng = pp_yrng(dt=dt, y=y, yb=yb, ...)
+    # yrng = pp_yrng(dt=dt, y=y, yb=yb, ...)
         
     e = pp_base(dt, x, yb=yb) |> 
         e_step_(serie = y, symbol='none') |> 
@@ -318,7 +322,8 @@ pp_step = function(
         p_markline(dt = dt, markline = markline) |> 
         p_lm(x=x, y=y, nsd_lm=nsd_lm) |>
         p_addti_overlay(dt = dt, addti = addti) |>
-        p_theme(xstart = xstart, xend = 100, yaxis_log = yaxis_log, yrng = yrng, title = title, theme = theme) |>
+        p_theme(xstart = xstart, xend = 100, yaxis_log = yaxis_log, # yrng = yrng, 
+                title = title, theme = theme) |>
         p_addti_indicator(dt = dt, addti = addti, x = x, theme = theme)
     
     return(e)
@@ -334,7 +339,7 @@ pp_candle = function(
         pp_dtlm(x, y, yaxis_log, nsd_lm)
     title  = pp_title(dt, title, ...)
     xstart = pp_xstart(dt, x, date_range)
-    yrng = pp_yrng(dt=dt, y=y, yb=yb, ...)
+    # yrng = pp_yrng(dt=dt, y=y, yb=yb, ...)
     
     dt = copy(dt)[, date := as.factor(date)]
     e = pp_base(dt, x, yb=yb) |> 
@@ -345,7 +350,8 @@ pp_candle = function(
         p_markline(dt = dt, markline = markline) |> 
         p_lm(x=x, y=y, nsd_lm=nsd_lm) |>
         p_addti_overlay(dt = dt, addti = addti) |>
-        p_theme(xstart = xstart, xend = 100, yaxis_log = yaxis_log, yrng = yrng, title = title, theme = theme) |> 
+        p_theme(xstart = xstart, xend = 100, yaxis_log = yaxis_log, # yrng = yrng, 
+                title = title, theme = theme) |> 
         p_addti_indicator(dt = dt, addti = addti, x = x, theme = theme)
     
     return(e)

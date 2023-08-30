@@ -1,7 +1,8 @@
-# pedquant 0.2.2.999
+# pedquant 0.2.3
 
 * adjusted order book structure
-* adjusted symbol suffix of shanghai exchange shares from 'ss' to 'sh'
+* modified symbol suffix of shanghai exchange shares from 'ss' to 'sh'
+* set y-axis starts from 'dataMin'
 
 # pedquant 0.2.2.1
 
