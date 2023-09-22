@@ -66,10 +66,10 @@ pq1_freq = function(dat, freq, date_type='eop') {
 #' @param date_type the available date type are eop (end of period) and bop (bebinning of period), defaults to the eop. 
 #' 
 #' @examples 
+#' \dontrun{
 #' data(dt_ssec)
 #' dat1_weekly = pq_freq(dt_ssec, "weekly")
 #' 
-#' \dontrun{
 #' data(dt_banks)
 #' dat2_weekly = pq_freq(dt_banks, "monthly")
 #' }

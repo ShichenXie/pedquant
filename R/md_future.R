@@ -1,18 +1,6 @@
 # query future data from sina
 # ref: http://blog.sina.com.cn/s/blog_53d5ab970102vjj7.html
 
-symbol_future_sina_xchg = function() {
-    exchange = type = NULL
-    syb_dt = setDT(copy(symbol_future_sina))[
-        , c('exchange', 'board', 'symbol', 'name'), with = FALSE
-    ][exchange %in% c('DCE', 'ZCE', 'SHFE', 'CFFEX'), type := 'inner'
-    ][is.na(type), type := 'global'
-    ]
-    syb_lst = split(syb_dt, by = 'type', keep.by = FALSE)
-    syb_lst = c(split(syb_lst$inner, by = 'exchange'), syb_lst[2])
-    
-    return(syb_lst)
-}
 #' symbol of future market data
 #' 
 #' \code{md_future_symbol} returns all future symbols that provided by sina finance, see details on \url{http://vip.stock.finance.sina.com.cn/quotes_service/view/qihuohangqing.html} or \url{http://vip.stock.finance.sina.com.cn/mkt/#global_qh})
@@ -26,7 +14,16 @@ symbol_future_sina_xchg = function() {
 #' 
 #' @export
 md_future_symbol = function(...) {
-    syb_dt = symbol_future_sina_xchg()
+    exchange = type = board = NULL
+    
+    syb_dt = setDT(copy(symbol_future_sina))[order(exchange, board)][
+        , c('exchange', 'board', 'symbol', 'name'), with = FALSE
+    ][exchange %in% c('DCE', 'ZCE', 'SHFE', 'CFFEX', 'GFEX'), type := 'inner'
+    ][is.na(type), type := 'global'
+    ]
+    syb_lst = split(syb_dt, by = 'type', keep.by = FALSE)
+    syb_lst = c(split(syb_lst$inner, by = 'exchange'), syb_lst[2])
+    
     return(syb_dt)
 }
 
@@ -39,7 +36,7 @@ future_symbols_sybnam = function(symbols) {
     symbol_future = setDT(copy(symbol_future_sina))[
         sub('[0-9]+', '0', sybs), on = 'symbol'  
     ][, symbol := sybs
-    ][exchange %in% c('DCE', 'ZCE', 'CFFEX', 'SHFE') & sub('[A-Z]+', '', symbol) != '0', 
+    ][exchange %in% c('DCE', 'ZCE', 'CFFEX', 'SHFE', 'GFEX') & sub('[A-Z]+', '', symbol) != '0', 
       name := paste0(name, sub('[A-Z]+', '', symbol)) ]
     
     return(symbol_future)
@@ -71,7 +68,7 @@ md_future1_history_sina = function(symbol, name, freq, from, to, handle, ...) {
     # url
     # http://stock2.finance.sina.com.cn/futures/api/json.php/IndexService.getInnerFuturesDailyKLine?symbol=M0
     url0 = 'https://stock2.finance.sina.com.cn/futures/api/jsonp.php/var=/InnerFuturesNewService.get%s?symbol=%s'
-    if (!(sybnam$exchange %in% c('DCE', 'ZCE', 'CFFEX', 'SHFE')))  url0 = 'https://stock2.finance.sina.com.cn/futures/api/jsonp.php/var=/GlobalFuturesService.getGlobalFutures%s?symbol=%s'
+    if (!(sybnam$exchange %in% c('DCE', 'ZCE', 'CFFEX', 'SHFE', 'GFEX')))  url0 = 'https://stock2.finance.sina.com.cn/futures/api/jsonp.php/var=/GlobalFuturesService.getGlobalFutures%s?symbol=%s'
     urli = sprintf(url0, freq, syb)
     dat = try(read_lines(urli), silent = TRUE)
     

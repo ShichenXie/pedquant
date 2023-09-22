@@ -243,7 +243,7 @@ p_addti_indicator = function(e, dt, addti = NULL, x = 'date', theme = 'default')
                 }
                 
                  e = do.call(efun, args = ticol_args) |> 
-                     e_y_axis(position = 'right', axisLabel = list(rotate = 90, hideOverlap=TRUE)) |> 
+                     e_y_axis(min='dataMin', position = 'right', axisLabel = list(rotate = 90, hideOverlap=TRUE)) |> 
                      e_legend(type = "plain", orient = "vertical", left='30', top='10') |> 
                      e_datazoom(show=FALSE) |>
                      e_toolbox(show=FALSE) |>

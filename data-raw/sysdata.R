@@ -39,78 +39,91 @@ if (FALSE) {
   #         rbind(syb_stock2, symbol_stock_163, fill=TRUE)
   #     )[,.SD[1], keyby=symbol
   #     ][grepl('^c.+', province), province := NA] )
-  
+    
+    
+    
   # # symbol_future_sina
   future1 = fread(
     'exchange symbol name board unit 
-DCE V0  PVC     energy  人民币/吨
-DCE L0  乙烯塑料    energy  人民币/吨
-DCE PP0 聚丙烯PP    energy  人民币/吨
-DCE EB0 苯乙烯  energy  人民币/吨
-DCE EG0 乙二醇  energy  人民币/吨
-DCE J0  焦炭    energy  人民币/吨
-DCE JM0 焦煤    energy  人民币/吨
-DCE A0  豆一    grain   人民币/吨
-DCE B0  豆二    grain   人民币/吨
-DCE M0  豆粕    grain   人民币/吨
-DCE Y0  豆油    grain   人民币/吨
-DCE C0  玉米    grain   人民币/吨
-DCE CS0 淀粉    grain   人民币/吨
-DCE RR0 粳米    grain   人民币/吨
-DCE JD0 鸡蛋    grain   人民币/500千克
-DCE LH0 生猪    grain   人民币/吨
-DCE I0  铁矿石  metal   人民币/吨
-DCE FB0 纤维板  other   人民币/立方米
-DCE BB0 胶合板  other   人民币/张
-DCE P0  棕榈    soft    人民币/吨
-SHFE    NR0 20号胶  other   人民币/吨
-SHFE    SP0 纸浆    other   人民币/吨
-SHFE    SC0 原油    energy  人民币/桶
-SHFE    FU0 燃油    energy  人民币/吨
-SHFE    LU0 低硫燃料油  energy  人民币/吨
-SHFE    BU0 沥青    energy  人民币/吨
-SHFE    RU0 橡胶    energy  人民币/吨
-SHFE    AU0 黄金    metal   人民币/克
-SHFE    AG0 白银    metal   人民币/千克
-SHFE    BC0 国际铜  metal   人民币/吨
-SHFE    CU0 沪铜    metal   人民币/吨
-SHFE    SS0 不锈钢  metal   人民币/吨
-SHFE    RB0 螺纹钢  metal   人民币/吨
-SHFE    WR0 线材    metal   人民币/吨
-SHFE    HC0 热轧卷板    metal   人民币/吨
-SHFE    PB0 沪铅    metal   人民币/吨
-SHFE    AL0 沪铝    metal   人民币/吨
-SHFE    ZN0 沪锌    metal   人民币/吨
-SHFE    SN0 沪锡    metal   人民币/吨
-SHFE    NI0 沪镍    metal   人民币/吨
-ZCE TA0 PTA     energy  人民币/吨
-ZCE ZC0 动力煤  energy  人民币/吨
-ZCE MA0 郑醇    energy  人民币/吨
-ZCE AP0 苹果    grain   人民币/吨
-ZCE CJ0 红枣    grain   人民币/吨
-ZCE PK0 花生    grain   人民币/吨
-ZCE RS0 菜籽    grain   人民币/吨
-ZCE RM0 菜粕    grain   人民币/吨
-ZCE OI0 菜油    grain   人民币/吨
-ZCE WH0 强麦    grain   人民币/吨
-ZCE JR0 粳稻    grain   人民币/吨
-ZCE RI0 早籼稻  grain   人民币/吨
-ZCE LR0 晚籼稻  grain   人民币/吨
-ZCE SF0 硅铁    metal   人民币/吨
-ZCE SM0 锰硅    metal   人民币/吨
-ZCE PF0 短纤    other   人民币/吨
-ZCE SA0 纯碱    other   人民币/吨
-ZCE UR0 尿素    other   人民币/吨
-ZCE FG0 玻璃    other   人民币/吨
-ZCE SR0 白糖    soft    人民币/吨
-ZCE CF0 棉花    soft    人民币/吨
-ZCE CY0 棉纱    soft    人民币/吨
-CFFEX   TS0 2年期国债   financial   百元净价报价
-CFFEX   TF0 5年期国债   financial   百元净价报价
-CFFEX   T0  10年期国债  financial   百元净价报价
-CFFEX   IH0 上证50指数  financial   指数点
-CFFEX   IF0 沪深300指数 financial   指数点
-CFFEX   IC0 中证500指数 financial   指数点')
+    DCE     V0  PVC     energy  人民币/吨
+    DCE     L0  乙烯塑料    energy  人民币/吨
+    DCE     PP0 聚丙烯PP    energy  人民币/吨
+    DCE     EB0 苯乙烯  energy  人民币/吨
+    DCE     EG0 乙二醇  energy  人民币/吨
+    DCE     J0  焦炭    energy  人民币/吨
+    DCE     JM0 焦煤    energy  人民币/吨
+    DCE     A0  豆一    grain   人民币/吨
+    DCE     B0  豆二    grain   人民币/吨
+    DCE     M0  豆粕    grain   人民币/吨
+    DCE     Y0  豆油    grain   人民币/吨
+    DCE     C0  玉米    grain   人民币/吨
+    DCE     CS0 淀粉    grain   人民币/吨
+    DCE     RR0 粳米    grain   人民币/吨
+    DCE     JD0 鸡蛋    grain   人民币/500千克
+    DCE     LH0 生猪    grain   人民币/吨
+    DCE     I0  铁矿石  metal   人民币/吨
+    DCE     FB0 纤维板  other   人民币/立方米
+    DCE     BB0 胶合板  other   人民币/张
+    DCE     P0  棕榈    soft    人民币/吨
+    DCE     PG0 液化石油气 energy 人民币/吨
+    SHFE    NR0 20号胶  other   人民币/吨
+    SHFE    SP0 纸浆    other   人民币/吨
+    SHFE    SC0 原油    energy  人民币/桶
+    SHFE    FU0 燃油    energy  人民币/吨
+    SHFE    LU0 低硫燃料油  energy  人民币/吨
+    SHFE    BU0 沥青    energy  人民币/吨
+    SHFE    RU0 橡胶    energy  人民币/吨
+    SHFE    AU0 黄金    metal   人民币/克
+    SHFE    AG0 白银    metal   人民币/千克
+    SHFE    BC0 国际铜  metal   人民币/吨
+    SHFE    CU0 沪铜    metal   人民币/吨
+    SHFE    SS0 不锈钢  metal   人民币/吨
+    SHFE    RB0 螺纹钢  metal   人民币/吨
+    SHFE    WR0 线材    metal   人民币/吨
+    SHFE    HC0 热轧卷板    metal   人民币/吨
+    SHFE    PB0 沪铅    metal   人民币/吨
+    SHFE    AL0 沪铝    metal   人民币/吨
+    SHFE    ZN0 沪锌    metal   人民币/吨
+    SHFE    SN0 沪锡    metal   人民币/吨
+    SHFE    NI0 沪镍    metal   人民币/吨
+    SHFE    AO0 氧化铝 metal 人民币/吨
+    SHFE    BR0 丁二烯橡胶 energy 人民币/吨
+    SHFE    EC0 集运指数欧线 other 指数点
+    ZCE     TA0 PTA     energy  人民币/吨
+    ZCE     ZC0 动力煤  energy  人民币/吨
+    ZCE     MA0 郑醇    energy  人民币/吨
+    ZCE     AP0 苹果    grain   人民币/吨
+    ZCE     CJ0 红枣    grain   人民币/吨
+    ZCE     PK0 花生    grain   人民币/吨
+    ZCE     RS0 菜籽    grain   人民币/吨
+    ZCE     RM0 菜粕    grain   人民币/吨
+    ZCE     OI0 菜油    grain   人民币/吨
+    ZCE     WH0 强麦    grain   人民币/吨
+    ZCE     JR0 粳稻    grain   人民币/吨
+    ZCE     RI0 早籼稻  grain   人民币/吨
+    ZCE     LR0 晚籼稻  grain   人民币/吨
+    ZCE     SF0 硅铁    metal   人民币/吨
+    ZCE     SM0 锰硅    metal   人民币/吨
+    ZCE     PF0 短纤    other   人民币/吨
+    ZCE     SA0 纯碱    other   人民币/吨
+    ZCE     UR0 尿素    other   人民币/吨
+    ZCE     FG0 玻璃    other   人民币/吨
+    ZCE     SR0 白糖    soft    人民币/吨
+    ZCE     CF0 棉花    soft    人民币/吨
+    ZCE     CY0 棉纱    soft    人民币/吨
+    ZCE     SH0 烧碱    other   人民币/吨
+    ZCE     PX0 对二甲苯 other  人民币/吨
+    CFFEX   TS0 2年期国债   financial   百元净价报价
+    CFFEX   TF0 5年期国债   financial   百元净价报价
+    CFFEX   T0  10年期国债  financial   百元净价报价
+    CFFEX   IH0 上证50指数  financial   指数点
+    CFFEX   IF0 沪深300指数 financial   指数点
+    CFFEX   IC0 中证500指数 financial   指数点
+    GFEX    SI0 工业硅 other 人民币/吨
+    GFEX    LC0 碳酸锂 other 人民币/吨')
+
+  
+  
   future2 = fread(
     'exchange board symbol name unit
 CME-CBOT grain C 美国玉米 美分/蒲式耳
