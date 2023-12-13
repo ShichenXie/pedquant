@@ -34,7 +34,7 @@ future_symbols_sybnam = function(symbols) {
     sybs = toupper(symbols)
     # symbol and name
     symbol_future = setDT(copy(symbol_future_sina))[
-        sub('[0-9]+', '0', sybs), on = 'symbol'  
+        sub('[0-9]+$', '0', sybs), on = 'symbol'  
     ][, symbol := sybs
     ][exchange %in% c('DCE', 'ZCE', 'CFFEX', 'SHFE', 'GFEX') & sub('[A-Z]+', '', symbol) != '0', 
       name := paste0(name, sub('[A-Z]+', '', symbol)) ]

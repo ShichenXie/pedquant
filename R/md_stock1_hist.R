@@ -36,7 +36,7 @@ md_stock1_history_eastmoney = function(symbol1, from=NULL, to=Sys.Date(), freq='
         adjcode = 1
     } 
     # symbol1
-    sybtag = try(syb_add_cntags(symbol1), silent = TRUE)
+    sybtag = suppressWarnings(syb_add_cntags(symbol1))
     symbol1 = sybtag[,syb_exp]
     
     # url
@@ -61,13 +61,13 @@ md_stock1_history_eastmoney = function(symbol1, from=NULL, to=Sys.Date(), freq='
         url = sprintf(
             'http://%spush2his.eastmoney.com/api/qt/stock/kline/get?fields1=f1,f2,f3,f4,f5,f6&fields2=%s&secid=%s&klt=%s&fqt=%s&beg=%s&end=%s&ut=fa5fd1943c7b386f172d6893dbfba10b&_=%s', 
             urlcode, 'f51,f52,f53,f54,f55,f56,f57,f61,f116', syb, freqcode, adjcode, format(from, '%Y%m%d'), format(to, '%Y%m%d'), date_num(Sys.time(),'ms'))
-        datlst = lapply(url, function(x) {
+        datlst = rbindlist(lapply(url, function(x) {
             # print(x)
             ret = try(read_apidata_eastmoney(x),silent = TRUE)
             if (inherits(ret, 'try-error')) return(invisible())
             return(ret)
-        }) 
-        if (ncol(datlst[[1]]) %in% c(0,3) || is.null(datlst[[1]])) {
+        })) 
+        if (ncol(datlst) %in% c(0,3) || is.null(datlst)) {
             cat(symbol1, 'unlisted or delisted. \n')
             return(invisible())
         }
@@ -77,14 +77,14 @@ md_stock1_history_eastmoney = function(symbol1, from=NULL, to=Sys.Date(), freq='
     url2 = sprintf(
         'http://%spush2his.eastmoney.com/api/qt/stock/kline/get?fields1=f1,f2,f3&fields2=f51,f53&secid=%s&klt=%s&fqt=%s&beg=%s&end=%s&ut=fa5fd1943c7b386f172d6893dbfba10b&_=%s', 
         urlcode, syb, freqcode, 2, format(from, '%Y%m%d'), format(to, '%Y%m%d'), date_num(Sys.time(),'ms'))
-    datlst2 = lapply(url2, function(x) {
+    datlst2 = rbindlist(lapply(url2, function(x) {
         # print(x)
         ret = try(read_apidata_eastmoney(x),silent = TRUE)
         if (inherits(ret, 'try-error')) return(invisible())
         return(ret)
-    }) 
+    })) 
     
-    if (ncol(datlst2[[1]]) %in% c(0,3) || is.null(datlst2[[1]])) {
+    if (ncol(datlst2) %in% c(0,3) || is.null(datlst2)) {
         cat(symbol1, 'unlisted or delisted. \n')
         return(invisible())
     }
@@ -94,16 +94,16 @@ md_stock1_history_eastmoney = function(symbol1, from=NULL, to=Sys.Date(), freq='
     if (only_adj) cols_num = 'close_adj'
     
     if (only_adj) {
-        dat = rbindlist(datlst2)[,.(symbol, name, date=V1, close_adj=V2)]
+        dat = datlst2[,.(symbol, name, date=V1, close_adj=V2)]
     } else {
         # "amplitude_pct", "change_pct", "change", 
         dat = merge(
-            setnames(rbindlist(datlst), c(
+            setnames(datlst, c(
                 "date", "open", "close", "high", "low",
                 "volume", "amount", "turnover", 
                 'symbol', 'name', 'market'
             )), 
-            rbindlist(datlst2)[,.(symbol, name, date=V1, close_adj=V2)], by = c('symbol', 'name', 'date')
+            datlst2[,.(symbol, name, date=V1, close_adj=V2)], by = c('symbol', 'name', 'date')
         )
     }
     
