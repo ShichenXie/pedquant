@@ -343,7 +343,7 @@ pp_candle = function(
     
     dt = copy(dt)[, date := as.factor(date)]
     e = pp_base(dt, x, yb=yb) |> 
-        e_candle_('open', 'close', 'low', 'high', 
+        e_candle_('open', 'close', 'low', 'high', name = title,
                   itemStyle = list(color = color_up, borderColor = color_up,
                                    color0 = color_down, borderColor0 = color_down)) |> 
         p_orders(orders, color_up, color_down, ...)  |> 
