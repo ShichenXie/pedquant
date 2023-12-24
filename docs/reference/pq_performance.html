@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pedquant</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.4</span>
       </span>
     </div>
 
@@ -107,14 +107,14 @@
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># merge returns of assets and baseline</span></span></span>
 <span class="r-in"><span><span class="va">datRaRb</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/merge.html" class="external-link">merge</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>    <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/rbindlist.html" class="external-link">rbindlist</a></span><span class="op">(</span><span class="va">datret1</span><span class="op">)</span><span class="op">[</span>, <span class="fu">.</span><span class="op">(</span><span class="va">date</span>, <span class="va">symbol</span>, <span class="va">Ra</span><span class="op">)</span><span class="op">]</span>, </span></span>
-<span class="r-in"><span>    <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/rbindlist.html" class="external-link">rbindlist</a></span><span class="op">(</span><span class="va">datret2</span><span class="op">)</span><span class="op">[</span>, <span class="fu">.</span><span class="op">(</span><span class="va">date</span>, <span class="va">Rb</span><span class="op">)</span><span class="op">]</span>,</span></span>
+<span class="r-in"><span>    <span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/rbindlist.html" class="external-link">rbindlist</a></span><span class="op">(</span><span class="va">datret1</span><span class="op">)</span><span class="op">[</span>, <span class="fu">.</span><span class="op">(</span><span class="va">date</span>, <span class="va">symbol</span>, <span class="va">Ra</span><span class="op">)</span><span class="op">]</span>, </span></span>
+<span class="r-in"><span>    <span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/rbindlist.html" class="external-link">rbindlist</a></span><span class="op">(</span><span class="va">datret2</span><span class="op">)</span><span class="op">[</span>, <span class="fu">.</span><span class="op">(</span><span class="va">date</span>, <span class="va">Rb</span><span class="op">)</span><span class="op">]</span>,</span></span>
 <span class="r-in"><span>    by <span class="op">=</span> <span class="st">'date'</span>, all.x <span class="op">=</span> <span class="cn">TRUE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># claculate table.CAPM metrics</span></span></span>
 <span class="r-in"><span><span class="va">perf_capm</span> <span class="op">=</span> <span class="fu">pq_performance</span><span class="op">(</span><span class="va">datRaRb</span>, Ra <span class="op">=</span> <span class="st">'Ra'</span>, Rb <span class="op">=</span> <span class="st">'Rb'</span>, perf_fun <span class="op">=</span> <span class="st">'table.CAPM'</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/rbindlist.html" class="external-link">rbindlist</a></span><span class="op">(</span><span class="va">perf_capm</span>, idcol <span class="op">=</span> <span class="st">'symbol'</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/rbindlist.html" class="external-link">rbindlist</a></span><span class="op">(</span><span class="va">perf_capm</span>, idcol <span class="op">=</span> <span class="st">'symbol'</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>

@@ -1,3 +1,7 @@
+# pedquant 0.2.4
+
+* fixed mutual bugs
+
 # pedquant 0.2.3
 
 * adjusted order book structure
