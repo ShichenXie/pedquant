@@ -87,7 +87,7 @@
 <p><a href="https://cran.r-project.org/package=pedquant" class="external-link"><img src="https://www.r-pkg.org/badges/version/pedquant" alt="CRAN status"></a> <a href="https://cran.r-project.org/package=pedquant" class="external-link"><img src="http://cranlogs.r-pkg.org/badges/grand-total/pedquant"></a> <a href="https://cran.r-project.org/package=pedquant" class="external-link"><img src="http://cranlogs.r-pkg.org/badges/pedquant"></a></p>
 <p><code>pedquant</code> (Public Economic Data and QUANTitative analysis) provides an interface to access public economic and financial data for economic research and quantitative analysis. The functions are grouped into three main categories,</p>
 <ul>
-<li>ed_* (economic data) functions load economic data from <a href="http://www.stats.gov.cn/" class="external-link">NBS</a> and <a href="https://fred.stlouisfed.org/" class="external-link">FRED</a>;</li>
+<li>ed_* (economic data) functions load economic data from <a href="https://www.stats.gov.cn/" class="external-link">NBS</a> and <a href="https://fred.stlouisfed.org/" class="external-link">FRED</a>;</li>
 <li>md_* (market data) functions load the forex, money, bond, stock, future market data from public data sources, including 163, Sina, qq finance and etc.</li>
 <li>pq_* (quantitative analysis) functions create technical indicators, visualization charts and industrial index etc for time series data.</li>
 </ul>
@@ -111,7 +111,7 @@
 <p>The following examples show you how to import data.</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="fu">library</span>(pedquant)</span>
 <span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a><span class="fu">packageVersion</span>(<span class="st">'pedquant'</span>)</span>
-<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a><span class="co">#&gt; [1] '0.2.2.999'</span></span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a><span class="co">#&gt; [1] '0.2.4'</span></span>
 <span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a><span class="co"># loading data</span></span>
 <span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a><span class="do">## import eocnomic data</span></span>
 <span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a>dat1 <span class="ot">=</span> <span class="fu">ed_fred</span>(<span class="st">'GDPCA'</span>)</span>

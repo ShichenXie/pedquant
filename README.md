@@ -13,7 +13,7 @@ research and quantitative analysis. The functions are grouped into three
 main categories,
 
 -   ed\_\* (economic data) functions load economic data from
-    [NBS](http://www.stats.gov.cn/) and
+    [NBS](https://www.stats.gov.cn/) and
     [FRED](https://fred.stlouisfed.org/);
 -   md\_\* (market data) functions load the forex, money, bond, stock,
     future market data from public data sources, including 163, Sina, qq
@@ -59,7 +59,7 @@ The following examples show you how to import data.
 
     library(pedquant)
     packageVersion('pedquant')
-    #> [1] '0.2.2.999'
+    #> [1] '0.2.4'
     # loading data
     ## import eocnomic data
     dat1 = ed_fred('GDPCA')
