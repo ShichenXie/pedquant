@@ -28,7 +28,7 @@ ed_nbs(symbol = NULL, freq = NULL, geo_type = NULL, subregion = NULL,
 \item{eng}{logical. The language of the query results is in English or in Chinese Default is FALSE.}
 }
 \description{
-\code{ed_nbs} provides an interface to query economic data from National Bureau of Statistics of China (NBS, \url{http://www.stats.gov.cn/}).
+\code{ed_nbs} provides an interface to query economic data from National Bureau of Statistics of China (NBS, \url{https://www.stats.gov.cn/}).
 }
 \examples{
 \dontrun{
