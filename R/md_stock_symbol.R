@@ -150,21 +150,21 @@ md_stock_symbol_exchange = function(XCHG=NULL, print_step=1L) {
 #' ex_syb2 = md_stock_symbol()
 #' 
 #' # constituent stock symbol of index
-#' dtidx = md_stock_symbol(index = c('000016', '000300', '000905', '930050'))
+#' dtidx = md_stock_symbol(index = c('930050', '000300', '000905', '000852'))
 #' }
 #' 
 #' @export
 md_stock_symbol = function(exchange=NULL, ...) {
     index = list(...)[['index']]
     
-    if (!is.null(exchange)) {
+    if (is.null(index)) {
         datlst = md_stock_symbol_exchange(exchange)
         datlst = lapply(datlst, function(x) {
             cols = c('symbol', 'name', 'date', 'open', 'high', 'low', 'close', 'volume', 'amount', 'turnover', 'market', 'mktcode', 'pe_forward', 'pe_ttm', 'pe_lyr', 'pb', 'cap_total', 'cap_market')
             
             x[, intersect(cols, names(x)), with = FALSE]
         } )
-    } else if (!is.null(index)) {
+    } else {
         datlst = md_stock_symbol_index(index)
     }
     
@@ -177,27 +177,7 @@ md_stock_symbol = function(exchange=NULL, ...) {
 
 # stock symbol constituent of index
 # China securities index, csindex
-
-# query constituent of securities index
-# 
-# \code{md_stock_symbol_index} provides an interface to query the current constituent of securities index. 
-# 
-# @param symbol the symbol of securities index. It supports Chinese securities index only at this moment.
-# 
-# @source \url{http://www.csindex.com.cn/zh-CN}
-# 
-# @examples 
-# \donttest{
-# dt50 = md_stock_symbol_index("000016")
-# 
-# dt300 = md_stock_symbol_index("000300")
-# 
-# dt500 = md_stock_symbol_index("000905")
-# }
-# 
-# @import data.table
-# @export
-# 
+# https://www.csindex.com.cn/#/indices/family
 stk_syb_idx1 = function(syb) {
     exchange = stock_symbol = NULL
     

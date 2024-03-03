@@ -1,6 +1,7 @@
 # pedquant 0.2.4.999
 
-* the md_stock_symbol supports to query the constituent stock symbols of index
+* fixed a bug in pq_plot function to support candle chart
+* the md_stock_symbol supports to query the constituent symbols of Chinese securities index
 
 # pedquant 0.2.4
 
