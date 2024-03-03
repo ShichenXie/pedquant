@@ -12,7 +12,7 @@ md_symbol(market = NULL, ...)
 \item{...}{ignored parameters}
 }
 \description{
-\code{md_stock_symbol} returns all symbols by market category, including forex, money, bond, stock, future.
+\code{md_symbol} returns all symbols by market category, including forex, money, bond, stock, future.
 }
 \examples{
 \dontrun{

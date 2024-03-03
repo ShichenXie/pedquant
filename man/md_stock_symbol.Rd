@@ -23,6 +23,8 @@ ex_syb1 = md_stock_symbol(exchange = c('sse', 'szse'))
 ## choose exchanges interactivly
 ex_syb2 = md_stock_symbol()
 
+# constituent stock symbol of index
+dtidx = md_stock_symbol(index = c('000016', '000300', '000905', '930050'))
 }
 
 }

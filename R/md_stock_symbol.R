@@ -149,57 +149,27 @@ md_stock_symbol_exchange = function(XCHG=NULL, print_step=1L) {
 #' ## choose exchanges interactivly
 #' ex_syb2 = md_stock_symbol()
 #' 
+#' # constituent stock symbol of index
+#' dtidx = md_stock_symbol(index = c('000016', '000300', '000905', '930050'))
 #' }
 #' 
 #' @export
 md_stock_symbol = function(exchange=NULL, ...) {
-    datlst = md_stock_symbol_exchange(exchange)
-    datlst2 = lapply(datlst, function(x) {
-        cols = c('symbol', 'name', 'date', 'open', 'high', 'low', 'close', 'volume', 'amount', 'turnover', 'market', 'mktcode', 'pe_forward', 'pe_ttm', 'pe_lyr', 'pb', 'cap_total', 'cap_market')
-        
-        x[, intersect(cols, names(x)), with = FALSE]
-    } )
+    index = list(...)[['index']]
+    
+    if (!is.null(exchange)) {
+        datlst = md_stock_symbol_exchange(exchange)
+        datlst = lapply(datlst, function(x) {
+            cols = c('symbol', 'name', 'date', 'open', 'high', 'low', 'close', 'volume', 'amount', 'turnover', 'market', 'mktcode', 'pe_forward', 'pe_ttm', 'pe_lyr', 'pb', 'cap_total', 'cap_market')
+            
+            x[, intersect(cols, names(x)), with = FALSE]
+        } )
+    } else if (!is.null(index)) {
+        datlst = md_stock_symbol_index(index)
+    }
+    
+    return(datlst)
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -210,7 +180,7 @@ md_stock_symbol = function(exchange=NULL, ...) {
 
 # query constituent of securities index
 # 
-# \code{md_index_cons} provides an interface to query the current constituent of securities index. 
+# \code{md_stock_symbol_index} provides an interface to query the current constituent of securities index. 
 # 
 # @param symbol the symbol of securities index. It supports Chinese securities index only at this moment.
 # 
@@ -218,27 +188,32 @@ md_stock_symbol = function(exchange=NULL, ...) {
 # 
 # @examples 
 # \donttest{
-# dt50 = md_index_cons("000016")
+# dt50 = md_stock_symbol_index("000016")
 # 
-# dt300 = md_index_cons("000300")
+# dt300 = md_stock_symbol_index("000300")
 # 
-# dt500 = md_index_cons("000905")
+# dt500 = md_stock_symbol_index("000905")
 # }
 # 
 # @import data.table
 # @export
 # 
 stk_syb_idx1 = function(syb) {
-    exchange = NULL
+    exchange = stock_symbol = NULL
     
-    url = sprintf("http://www.csindex.com.cn/uploads/file/autofile/cons/%scons.xls",syb)
+    # syb = "930050"
+    url = sprintf("https://csi-web-dev.oss-cn-shanghai-finance-1-pub.aliyuncs.com/static/html/csindex/public/uploads/file/autofile/closeweight/%scloseweight.xls", syb)
+    
+    # url = sprintf("http://www.csindex.com.cn/uploads/file/autofile/cons/%scons.xls",syb)
     dat = load_read_xl(url)
     setDT(dat)
-    setnames(dat, c("date","index_symbol","index_name","index_name_en","stock_symbol","stock_name", "stock_name_en","exchange"))
-    dat = dat[, exchange := ifelse(exchange=="SHH","sse", ifelse(exchange=="SHZ","szse", exchange))]
+    setnames(dat, c("date","index_symbol","index_name","index_name_eng","stock_symbol","stock_name", "stock_name_eng","exchange", "exchange_eng", "weight"))
+    
+    dat[, stock_symbol := syb_add_cntags(stock_symbol)[['syb_exp']]][]
     # cat(sprintf("For more detials go to:\nhttp://www.csindex.com.cn/zh-CN/indices/index-detail/%s\n", symbol))
     return(dat)
 }
+
 md_stock_symbol_index = function(symbol, print_step=1L) {
     dat_list = load_dat_loop(symbol, "stk_syb_idx1", args = list(), print_step=print_step)
     return(dat_list)

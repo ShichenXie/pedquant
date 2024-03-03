@@ -1,3 +1,7 @@
+# pedquant 0.2.4.999
+
+* the md_stock_symbol supports to query the constituent stock symbols of index
+
 # pedquant 0.2.4
 
 * fixed mutual bugs

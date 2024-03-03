@@ -68,7 +68,7 @@ md_query = function(market=NULL, ...) {
 
 #' symbol of market data
 #' 
-#' \code{md_stock_symbol} returns all symbols by market category, including forex, money, bond, stock, future.
+#' \code{md_symbol} returns all symbols by market category, including forex, money, bond, stock, future.
 #' 
 #' @param market the market category, including forex, money, bond, stock, future. Default is NULL.
 #' @param ... ignored parameters
