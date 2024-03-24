@@ -464,6 +464,10 @@ pq_plot = function(
     arrange_rowcol_all1 = all(sapply(list('rows', 'cols'), function(x) any(arrange[[x]] == 1)))
     
     dt = check_dt(dt, symb_name = TRUE)
+    if (!(y %in% names(dt))) {
+        y = intersect('value', names(dt))
+        if (length(y)==0) warning("Please specify the column name for y axis.") else warning("The y axis modified to 'value'.")
+    }
     orders = check_odr(orders)
     
     arglst = list(dt=dt, x=x, y=y, yb=yb, date_range=date_range, yaxis_log=yaxis_log, title=title, addti=addti, nsd_lm=nsd_lm, markline=markline, orders=orders, arrange=arrange, theme=theme, ...)

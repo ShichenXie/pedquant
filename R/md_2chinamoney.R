@@ -45,10 +45,9 @@ md_moneycn_symbol = function() {
          cnocny6m,Shibor CNY 6M - daily
          cnocny9m,Shibor CNY 9M - daily
          cnocny1m,Shibor CNY 1Y - daily
-         cn1ylpr,China 1year Loan Prime Rate - monthly
-         cn5ylpr,China 5year Loan Prime Rate - monthly
-         cn1ypr_d,China 1year Policy Rate Deposit - daily
-         cn1ypr_l,China 1year Policy Rate Lending - daily
+         cn1ylpr,China 1year Loan Prime Rate
+         cn5ylpr,China 5year Loan Prime Rate
+         cn1ydpr,China 1year Deposit Prime Rate Deposit
          cn1ydy_b,China 1Y Bond Yield - daily
          cn10ydy_b,China 10Y Bond Yield - daily
          rmbx_cfets,CFETS RMB Index - weekly
@@ -60,9 +59,9 @@ md_moneycn_symbol = function() {
 md_moneycn_widelong = function(dt) {
     . = name = symbol = NULL
     
-    melt(dt, id.vars = 'date', variable.name = 'symbol', value.name = 'close')[
+    melt(dt, id.vars = 'date', variable.name = 'symbol', value.name = 'value')[
         md_moneycn_symbol()[], on = 'symbol', nomatch = 0
-    ][, .(symbol, name, date, open=close, high=close, low=close, close)]
+    ][, .(symbol, name, date, value)]
 }
 
 # shanghai interbank offered rate, shibor
@@ -83,40 +82,28 @@ md_cnshibor = function(date_range = '3y', from=NULL, to=Sys.Date(), ...) {
 }
 
 # loan prime rate, lpr
-md_cnlpr = function(date_range = '3y', from=NULL, to=Sys.Date(), ...) {
-    ## from/to
-    to = check_to(to)
-    from = check_from(date_range, from, to, default_from = "2013-01-01", default_date_range = '3y')
-    
-    # 'https://www.chinamoney.com.cn/dqs/rest/cm-u-bk-currency/LprHisExcel?lang=CN&strStartDate=%s&strEndDate=%s'
-    # https://www.shibor.org/dqs/rest/cm-u-bk-currency/LprHisExcel?lang=CN&strStartDate=2013-01-01&strEndDate=2013-12-31
-    ## download data
-    dat = load_data_chinamoney('https://www.shibor.org/dqs/rest/cm-u-bk-currency/LprHisExcel?lang=CN&strStartDate=%s&strEndDate=%s', date_ft1y(from, to))
-    
-    setnames(dat, c('date', 'cn1ylpr', 'cn5ylpr'))
-    dat = md_moneycn_widelong(dat)
-    return(dat[])
-}
-
-# policy rate
-md_cnpr = function(date_range = '3y', from=NULL, to=Sys.Date(), ...) {
-    date_range = 'max'
+md_cnlpr = function(date_range = 'max', from=NULL, to=Sys.Date(), ...) {
     ## from/to
     to = check_to(to)
     from = check_from(date_range, from, to, default_from = "1997-01-01", default_date_range = '3y')
     
-    ## download data
-    dat = load_data_chinamoney(paste0('https://www.chinamoney.com.cn/dqs/rest/cm-u-bk-currency/SddsIntrRatePlRatHisExcel?lang=CN&startDate=%s&endDate=%s&t=', date_num(Sys.time(), 'ms')), data.table(f=from, t=to))
+    # loan prime rate
+    dtlpr = load_read_xl(sprintf('https://www.chinamoney.com.cn/dqs/rest/cm-u-bk-currency/LprHisExcel?lang=CN&strStartDate=%s&strEndDate=%s', data.table(f=from, t=to)$f, to))
+    setnames(dtlpr, c('date', "cn1ylpr", "cn5ylpr"))
+    dtlpr = dtlpr[, `:=`(
+        date = as.Date(date), 
+        cn1ylpr = as.numeric(cn1ylpr),
+        cn5ylpr = as.numeric(cn5ylpr)
+    )][!is.na(date)][order(date)]
     
-    setnames(dat, c('date', "cn1ybdr", "cn1yblr"))
-    dat2 = merge(
-        data.table(date=seq(dat[,min(date)], Sys.Date(), by=1)),
-        dat, by = 'date', all.x=TRUE
-    )[, lapply(.SD, fillna)
-    ]
+    # policy rate
+    dtpr = load_data_chinamoney(paste0('https://www.chinamoney.com.cn/dqs/rest/cm-u-bk-currency/SddsIntrRatePlRatHisExcel?lang=CN&startDate=%s&endDate=%s&t=', date_num(Sys.time(), 'ms')), data.table(f=from, t=to))
+    setnames(dtpr, c('date', 'cn1ydpr', 'cn1ylpr'))
+    # https://www.chinamoney.com.cn/dqs/rest/cm-u-bk-currency/LprHisExcel?lang=CN&strStartDate=2023-03-24&strEndDate=2024-03-23
     
-    dat2 = md_moneycn_widelong(dat2)
-    return(dat2[])
+    
+    dat = md_moneycn_widelong(rbind(dtlpr, dtpr, fill = TRUE))[!is.na(value)][order(symbol, date)][]
+    return(dat[])
 }
 
 # yields of bond 
@@ -178,9 +165,9 @@ md_cnrmbx = function(date_range = '3y', from=NULL, to=Sys.Date(), ...) {
 md_moneycn = function(symbol=NULL, date_range = "3y", from = NULL, to = Sys.Date(), print_step = 1L) {
     # syb = intersect(symbol, ibor_symbol$symbol)
     if (is.null(symbol)) symbol = select_rows_df(data.table(
-        symbol = c('rmbx', 'shibor', 'lpr', 'pr', 'bond'), 
-        name = c('RMB Index', 'Shanghai Interbank Offered Rate', 'Loan Prime Rate', 'Policy Deposit/Lending Rate', 'Yields of Gov. Bond'), 
-        type = c('FX Market', 'RMB Market', 'RMB Market', 'Interest Rate', 'Interest Rate')
+        symbol = c('rmbx', 'shibor', 'lpr', 'bond'), 
+        name = c('RMB Index', 'Shanghai Interbank Offered Rate', 'Loan Prime Rate', 'Yields of Gov. Bond'), 
+        type = c('FX Market', 'RMB Market', 'RMB Market', 'Interest Rate')
     ), column='symbol')[,symbol]
     
     

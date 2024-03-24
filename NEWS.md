@@ -2,6 +2,7 @@
 
 * fixed a bug in pq_plot function to support candle chart
 * the md_stock_symbol supports to query the constituent symbols of Chinese securities index
+* fixed a bug in md_moneycn function to query lpr
 
 # pedquant 0.2.4
 
