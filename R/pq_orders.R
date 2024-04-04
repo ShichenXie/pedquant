@@ -11,7 +11,7 @@
 # current prices:
 # current values
 check_odr = function(orders) {
-    . = symbol = side = prices = values = quantity = NULL
+    . = symbol = side = prices = values = quantity = side_term = n = term = NULL
     
     if (is.null(orders)) return(orders)
     # symbol, date, side, prices, quantity, values
@@ -34,10 +34,25 @@ check_odr = function(orders) {
             ][, side := ifelse(values >= 0, 1, -1)]
         }
         
-        orders = orders[
-            data.table(side=c(1,-1, 1.1,-1.1), side_bs = c('buy', 'sell', 'buy_short', 'sell_short')), 
-            on='side', nomatch=0
-        ][]
+        # side level
+        if (!('side_term' %in% names(orders))) {
+            if ('n' %in% names(orders)) {
+                orders = orders[, side_term := n] 
+            } else if ('term' %in% names(orders)) {
+                orders = orders[, side_term := term] 
+            } else {
+                orders = orders[, side_term := 10]
+            }
+        } 
+        
+        # side type
+        if (!('side_bs' %in% names(orders))) {
+            orders = orders[
+                data.table(side=c(1,-1, 1.1,-1.1), side_bs = c('buy', 'sell', 'buy_short', 'sell_short')), 
+                on='side', nomatch=0
+            ][]
+        }
+        
     }
     
     return(orders)

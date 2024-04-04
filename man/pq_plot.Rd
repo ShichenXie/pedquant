@@ -79,8 +79,11 @@ e4[[1]]
 
 # orders 
 b2 = dt_banks[symbol \%in\% c('601988.SH', '601398.SH')]
-b2orders = b2[sample(.N, 10), .(symbol, date, prices=close, 
-              side=sample(c(-1, 1), 10, replace=TRUE))]
+b2orders = b2[sample(.N, 20), .(
+    symbol, date, prices=close,
+    side = sample(c(-1,  1), 20, replace=TRUE),
+    term = sample(c(10, 20), 20, replace=TRUE)
+)]
                 
 e5 = pq_plot(b2, orders=b2orders)
 e5[[1]]

@@ -57,7 +57,7 @@ md_moneycn_symbol = function() {
     )
 }
 md_moneycn_widelong = function(dt) {
-    . = name = symbol = NULL
+    . = name = symbol = value = NULL
     
     melt(dt, id.vars = 'date', variable.name = 'symbol', value.name = 'value')[
         md_moneycn_symbol()[], on = 'symbol', nomatch = 0
@@ -83,6 +83,8 @@ md_cnshibor = function(date_range = '3y', from=NULL, to=Sys.Date(), ...) {
 
 # loan prime rate, lpr
 md_cnlpr = function(date_range = 'max', from=NULL, to=Sys.Date(), ...) {
+    cn1ylpr = cn5ylpr = value = symbol = NULL 
+    
     ## from/to
     to = check_to(to)
     from = check_from(date_range, from, to, default_from = "1997-01-01", default_date_range = '3y')

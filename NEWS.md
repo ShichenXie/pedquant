@@ -3,10 +3,12 @@
 * fixed a bug in pq_plot function to support candle chart
 * the md_stock_symbol supports to query the constituent symbols of Chinese securities index
 * fixed a bug in md_moneycn function to query lpr
+* fixed a bug in md_stock_symbol supports to query stock symbol constituent of index
+* pq_plot supports order with multiple terms
 
 # pedquant 0.2.4
 
-* fixed mutual bugs
+* fixed several bugs
 
 # pedquant 0.2.3
 
@@ -21,7 +23,7 @@
 # pedquant 0.2.2
 
 * replace stock data source from the 163 to the Eastmoney
-* fixed mutual bugs
+* fixed several bugs
 
 # pedquant 0.2.1
 
@@ -46,7 +48,7 @@
 
 # pedquant 0.1.7
 
-* fixed mutual bugs in the functions such as get_fromto, md_stock_divsplit1_163, md_stock_symbol etc.
+* fixed several bugs in the functions such as get_fromto, md_stock_divsplit1_163, md_stock_symbol etc.
 * modified stock adjust method for 163 data
 * md_stock function supports to query listed company information, such as profile, IPO, structure of income, structure of employee
 

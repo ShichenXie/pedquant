@@ -8,7 +8,7 @@ pp_yrng = function(dt, y, yb, yrng=NULL, ...) {
 
 pp_dtpre = function(dt, x='date', y='close', 
                     addti = NULL, markline = TRUE, 
-                    orders = NULL, order_y = 'prices', order_type = 'side_bs') {
+                    orders = NULL, order_y = 'prices', order_type = 'side_bs', order_term = 'side_term') {
     sybnam = symbol = name = markline_value = NULL
     
     dt = setorderv(copy(dt), c('symbol', x))[, sybnam := sprintf('%s %s', symbol, name[.N]), by = 'symbol']
@@ -31,10 +31,11 @@ pp_dtpre = function(dt, x='date', y='close',
         dt = merge(
             dt, 
             dcast(orders, 
-                  sprintf('%s ~ %s', paste0(dtodr_cols,collapse='+'), order_type), 
+                  sprintf('%s ~ %s + %s', paste0(dtodr_cols,collapse='+'), order_type, order_term), 
                   value.var = order_y), 
             by = dtodr_cols, all.x = TRUE
         )
+        
     }
     
     return(dt)
@@ -101,14 +102,31 @@ p_markline = function(e, dt, markline = TRUE) {
 }
 # orders
 p_orders = function(e, orders, color_up = "#CF002F", color_down = "#000000", orders_ml=FALSE, ...) {
+    side_term = side_bs = NULL
+
     if (is.null(orders)) return(e)
     
-    # long
-    if ('buy' %in% unique(orders$side_bs)) e = e_scatter_(e, 'buy', symbol = 'triangle', symbolSize = 12, color = color_up, legend = FALSE)
-    if ('sell' %in% unique(orders$side_bs)) e = e_scatter_(e, 'sell', symbol = 'triangle', symbolSize = 12, symbolRotate=180, color = color_down, legend = FALSE) 
-    # short
-    if ('buy_short' %in% unique(orders$side_bs)) e = e_scatter_(e, 'buy_short', symbol = 'triangle', symbolSize = 12, color = color_up, legend = FALSE)
-    if ('sell_short' %in% unique(orders$side_bs)) e = e_scatter_(e, 'sell_short', symbol = 'triangle', symbolSize = 12, symbolRotate=180, color = color_down, legend = FALSE) 
+    lvls = orders[order(-side_term)][,unique(side_term)]
+    sybs = rep_len(c('triangle', 'arrow', 'diamond'), length(lvls))
+    cols = orders[, unique(paste(side_bs, side_term, sep = '_'))]
+    
+    for (i in seq_along(lvls) ) {
+        sybi = sybs[i]
+        sybsize = 12 - (i*i-1)
+        
+        # long
+        col1 = sprintf('buy_%s', lvls[i])
+        if (col1 %in% cols) e = e_scatter_(e, col1, symbol = sybi, symbolSize = sybsize, color = color_up, legend = FALSE)
+        col2 = sprintf('sell_%s', lvls[i])
+        if (col2 %in% cols) e = e_scatter_(e, col2, symbol = sybi, symbolSize = sybsize, symbolRotate=180, color = color_down, legend = FALSE) 
+        
+        # short
+        col3 = sprintf('buy_short_%s', lvls[i])
+        if (col3 %in% cols) e = e_scatter_(e, col3, symbol = sybi, symbolSize = sybsize, color = color_up, legend = FALSE)
+        col4 = sprintf('sell_short_%s', lvls[i])
+        if (col4 %in% cols) e = e_scatter_(e, col4, symbol = sybi, symbolSize = sybsize, symbolRotate=180, color = color_down, legend = FALSE) 
+    }
+    
 
     if (isFALSE(orders_ml)) return(e)
     for (o in split(orders,by='side_bs')) {
@@ -414,8 +432,11 @@ pp_candle = function(
 #' 
 #' # orders 
 #' b2 = dt_banks[symbol %in% c('601988.SH', '601398.SH')]
-#' b2orders = b2[sample(.N, 10), .(symbol, date, prices=close, 
-#'               side=sample(c(-1, 1), 10, replace=TRUE))]
+#' b2orders = b2[sample(.N, 20), .(
+#'     symbol, date, prices=close,
+#'     side = sample(c(-1,  1), 20, replace=TRUE),
+#'     term = sample(c(10, 20), 20, replace=TRUE)
+#' )]
 #'                 
 #' e5 = pq_plot(b2, orders=b2orders)
 #' e5[[1]]
