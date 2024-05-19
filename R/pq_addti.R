@@ -467,7 +467,7 @@ pq_addti = function(dt, ...) {
 arg_addti = function(addti, x) {
     if (is.null(addti) || is.null(x)) return(addti)
     lapply(addti, function(a) {
-        a$x = x
+        if (inherits(a, 'list')) a$x = x
         return(a)
     })
 }

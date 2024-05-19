@@ -46,7 +46,7 @@ future_symbols_sybnam = function(symbols) {
 md_future1_info_sina = function(symbol, ...) {
     . = name = NULL
     
-    dat = read_html(sprintf('https://finance.sina.com.cn/futures/quotes/%s.shtml', symbol), encoding = 'GBK') 
+    dat = rvest::read_html(sprintf('https://finance.sina.com.cn/futures/quotes/%s.shtml', symbol), encoding = 'GBK') 
     dt = html_table(dat)[[7]]
     setnames(setDT(dt), rep(c('variable','value'), 3))
     
@@ -67,17 +67,30 @@ md_future1_history_sina = function(symbol, name, freq, from, to, handle, ...) {
     
     # url
     # http://stock2.finance.sina.com.cn/futures/api/json.php/IndexService.getInnerFuturesDailyKLine?symbol=M0
-    url0 = 'https://stock2.finance.sina.com.cn/futures/api/jsonp.php/var=/InnerFuturesNewService.get%s?symbol=%s'
-    if (!(sybnam$exchange %in% c('DCE', 'ZCE', 'CFFEX', 'SHFE', 'GFEX')))  url0 = 'https://stock2.finance.sina.com.cn/futures/api/jsonp.php/var=/GlobalFuturesService.getGlobalFutures%s?symbol=%s'
+    if (sybnam$exchange %in% c('DCE', 'ZCE', 'SHFE', 'GFEX', 'CFFEX')) {
+        url0 = 'https://stock2.finance.sina.com.cn/futures/api/jsonp.php/var=/InnerFuturesNewService.get%s?symbol=%s'
+    } else if (FALSE) {
+        url0 = 'http://stock2.finance.sina.com.cn/futures/api/json.php/CffexFuturesService.getCffexFutures%s?symbol=%s'
+    } else {
+        url0 = 'https://stock2.finance.sina.com.cn/futures/api/jsonp.php/var=/GlobalFuturesService.getGlobalFutures%s?symbol=%s'
+    }
+    
     urli = sprintf(url0, freq, syb)
     dat = try(read_lines(urli), silent = TRUE)
     
     # data 
     cols_names = c("date", "open", "high", "low", "close", "volume", "position", "settle")
-    dt = setDT(fromJSON(sub('.+?(\\[.+\\]).+', '\\1', dat[2])))
-    dt = setnames(
-        dt, cols_names
-    )[, (cols_names[-1]) := lapply(.SD, as.numeric), .SDcols = cols_names[-1]]
+    if (FALSE) {
+        dt = setDT(as.data.frame(fromJSON(dat)))
+    } else {
+        dt = setDT(fromJSON(sub('.+?(\\[.+\\]).+', '\\1', dat[2])))
+        
+        dt = setnames(
+            dt, cols_names
+        )[, (cols_names[-1]) := lapply(.SD, as.numeric), .SDcols = cols_names[-1]]
+    }
+    
+    
     
     if (freq == 'DailyKLine') {
         dt = dt[, date := as.Date(date)]
