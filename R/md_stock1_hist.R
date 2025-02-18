@@ -216,7 +216,7 @@ md_stock_adjust = function(dt, forward = FALSE, ...) {
     
     # adjusted data list
     dat_list = lapply(
-        xefun:::c_list(dt[, unique(symbol)]), 
+        as.list2(dt[, unique(symbol)]), 
         function(s) {
             dtadj = md_stock_adj1ohlc(dt = dt[symbol == s], forward=forward) 
             return(dtadj)

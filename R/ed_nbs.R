@@ -310,6 +310,8 @@ nbs_jsondat_format = function(jsondat) {
 #' @param to the end date. Default is the current date.
 #' @param na_rm logical. Whether to remove missing values from datasets. Default is FALSE.
 #' @param eng logical. The language of the query results is in English or in Chinese Default is FALSE.
+#' @param print_step A non-negative integer. Print symbol name by each print_step iteration. Default is 1L.
+#' @param ... Additional parameters.
 #' 
 #' @examples 
 #' \dontrun{
@@ -333,9 +335,8 @@ nbs_jsondat_format = function(jsondat) {
 #' 
 #' @import data.table
 #' @export
-ed_nbs = function(symbol=NULL, freq=NULL, geo_type=NULL, subregion=NULL, date_range='10y', from=NULL, to=Sys.Date(), na_rm=FALSE, eng=FALSE) {
-  code=dim_geo_type=dim_freq=dim_sta_db=geo_code=value=NULL
-
+ed_nbs = function(symbol=NULL, freq=NULL, geo_type=NULL, subregion=NULL, date_range='10y', from=NULL, to=Sys.Date(), na_rm=FALSE, eng=FALSE, print_step=1L, ...) {
+    code = geo_code = value = NULL
   # arguments
   ## geography type
   geo_type = check_arg(geo_type, c("nation", "province", "city"), arg_name = 'geo_type')
@@ -359,15 +360,23 @@ ed_nbs = function(symbol=NULL, freq=NULL, geo_type=NULL, subregion=NULL, date_ra
   
   # print(sprintf('symbol = "%s", freq = "%s", geo_type = "%s", subregion = "%s"', symbol, freq, geo_type, subregion))
   # jsondat
-  jsondat_list = NULL
-  for (s in symbol) {
-    temp = ed1_nbs(symbol1=s, geo_type, subregion, from, freq, eng)
-    temp = nbs_jsondat_format(temp)[date>=from & date<=to,]
-    if (!is.null(subregion)) temp = temp[geo_code %in% subregion]
-    if (na_rm) temp = temp[!is.na(value)]
-    jsondat_list[[s]] = temp
+  ed1_nbs_ = function(symbol1, geo_type, subregion, from, to, freq, eng) {
+      
+      temp = ed1_nbs(symbol1=symbol1, geo_type, subregion, from, freq, eng)
+      temp = nbs_jsondat_format(temp)[date>=from & date<=to,]
+      if (!is.null(subregion)) temp = temp[geo_code %in% subregion]
+      if (na_rm) temp = temp[!is.na(value)]
+      return(temp)
   }
-  dat = rbindlist(jsondat_list, fill = TRUE)
+  
+  jsondat_list = load_dat_loop(
+      symbol = symbol, 
+      func = ed1_nbs_, 
+      args = list(geo_type=geo_type, subregion=subregion, from=from, to=to, freq=freq, eng=eng), 
+      print_step=print_step, ...
+  )
+  jsondat_list = rm_error_dat(jsondat_list)
+  dat = rbindlist(jsondat_list, fill = TRUE)[, freq := substr(freq,1,1)]
   
   # data list
   sybs = dat[,unique(symbol)]

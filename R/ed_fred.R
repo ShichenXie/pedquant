@@ -89,7 +89,7 @@ ed_fred = function(symbol=NULL, date_range='10y', from=NULL, to=Sys.Date(), na_r
     from = check_from(date_range, from, to, default_from = "1776-07-04", default_date_range = '10y')
     
     # data list
-    dat_list = load_dat_loop(symbol, "ed_fred1", args = list(from = from, to = to, na_rm = na_rm), print_step = print_step)
+    dat_list = load_dat_loop(symbol, ed_fred1, args = list(from = from, to = to, na_rm = na_rm), print_step = print_step)
     return(dat_list)
 }
 

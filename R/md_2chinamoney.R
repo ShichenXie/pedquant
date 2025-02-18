@@ -25,7 +25,12 @@ load_data_chinamoney = function(url, ft) {
     )
     
     # rbind
-    dat = rbindlist(datlst, fill=TRUE)[, date := as.Date(date)][!is.na(date)][order(date)]
+    dat = rbindlist(
+        datlst, fill=TRUE
+    )[, date := try(as.Date(date), silent = TRUE)
+    ][!grepl("Error", date)
+    ][!is.na(date)
+    ][order(date)]
     
     # as.numeric
     numcols = names(dat)[-1]

@@ -58,6 +58,9 @@ pp_xstart = function(dt, x = 'date', date_range = 'max') {
     } else {
         xstart = as.numeric(from - from0)/as.numeric(to0 - from0) * 100
     }
+    
+    if (xstart < 0) xstart = 0
+    
     return(xstart)
 }
 
@@ -99,12 +102,12 @@ p_orders = function(e, orders, color_up = "#CF002F", color_down = "#000000", ord
     if (is.null(orders)) return(e)
     
     lvls = orders[order(-side_term)][,unique(side_term)]
-    sybs = rep_len(c('triangle', 'arrow', 'diamond'), length(lvls))
+    sybs = rep_len(c('circle', 'triangle', 'diamond'), length(lvls)) # 'arrow', 
     cols = orders[, unique(paste(side_bs, side_term, sep = '_'))]
     
     for (i in seq_along(lvls) ) {
         sybi = sybs[i]
-        sybsize = 12 - (i*i-1)
+        sybsize = 13 - 3*(i-1)
         
         # long
         col1 = sprintf('buy_%s', lvls[i])

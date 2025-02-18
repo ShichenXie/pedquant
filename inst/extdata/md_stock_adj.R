@@ -193,7 +193,7 @@ md_stock_adj1vol = function(dt, adjfactor, col_vol = 'volume', adj_ohlc = FALSE)
 #     
 #     # adjusted data list
 #     dat_list = lapply(
-#         xefun:::c_list(dt[, unique(symbol)]), 
+#         as.list2(dt[, unique(symbol)]), 
 #         function(s) {
 #             # print(s)
 #             do.call(

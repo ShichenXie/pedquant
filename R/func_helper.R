@@ -466,7 +466,8 @@ fillna = function(x, from_last = FALSE) {
 
 # loop on get_data1
 #' @importFrom stats rnorm
-load_dat_loop = function(symbol, func, args=list(), print_step, sleep = 0, ...) {
+load_dat_loop = function(symbol, func, args=list(), print_step=0, sleep = 0, ...) {
+    
     runif = dt_list = NULL
     syb_len = length(symbol)
     for (i in 1:syb_len) {
@@ -564,7 +565,8 @@ select_rows_df = function(dt, column=NULL, input_string=NULL, onerow=FALSE) {
 # remove not available data
 rm_error_dat = function(datlst) {
     # remove error symbols
-    error_symbols = names(datlst)[which(sapply(datlst, function(x) inherits(x, 'try-error')))]
+    error_symbols = names(datlst)[which(sapply(datlst, function(x) inherits(x, 'try-error') | any(grepl('Error', x)) ))]
+    
     if (length(error_symbols) > 0) {
         warning(sprintf('The following symbols can\'t imported:\n%s', paste0(error_symbols, collapse=', ')))
         datlst = datlst[setdiff(names(datlst), error_symbols)]
