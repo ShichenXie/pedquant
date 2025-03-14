@@ -6,7 +6,7 @@
 \usage{
 pq_plot(dt, chart_type = "line", x = "date", y = "close", yb = NULL,
   date_range = "max", yaxis_log = FALSE, title = NULL, addti = NULL,
-  nsd_lm = NULL, markline = TRUE, orders = NULL, arrange = list(rows =
+  nsd_lm = NULL, markline = FALSE, orders = NULL, arrange = list(rows =
   NULL, cols = NULL), theme = "default", ...)
 }
 \arguments{
@@ -53,6 +53,9 @@ data(dt_ssec)
 # line chart (default)
 e1 = pq_plot(dt_ssec, chart_type = 'line') # line chart (default)
 e1[[1]]
+
+# show turnover
+eto = pq_plot(dt_ssec, yvol = 'turnover')
 
 # add technical indicators
 e2 = pq_plot(dt_ssec, addti = list(

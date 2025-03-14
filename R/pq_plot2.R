@@ -90,8 +90,8 @@ p_markline = function(e, markline_yvals, markline = TRUE) {
     
     for (yv in markline_yvals) {
         e = e |>
-            e_mark_line(data = list(yAxis = yv), symbol = 'none',
-                        lineStyle = list(type = 'dashed', color = 'grey'))
+            e_mark_line(data = list(yAxis = yv, yAxisIndex = 1), symbol = 'none', 
+                        lineStyle = list(type = 'dashed', color = 'grey', width = 1))
     }
     return(e)
 }
@@ -128,7 +128,7 @@ p_orders = function(e, orders, color_up = "#CF002F", color_down = "#000000", ord
         for (i in o[,.I]) {
             e = e |>
                 e_mark_line(
-                    data = list(xAxis = o[i,date]), 
+                    data = list(xAxis = o[i,date], yAxisIndex=0), 
                     symbol = 'none', 
                     label = list(show=FALSE), 
                     lineStyle = list(type = 'dotted', color = 'grey')
@@ -276,7 +276,9 @@ p_addti_indicator = function(e, dt, addti = NULL, x = 'date', theme = 'default')
     do.call('e_arrange', args = c(elst, list(cols=1)))
 }
 
-pp_base = function(dt, x = 'date', h='100%', yb=NULL) {
+#' @importFrom htmlwidgets JS
+#' @importFrom stats IQR quantile
+pp_base = function(dt, x = 'date', h='100%', yb=NULL, yvol = NULL, ...) {
     symbol = name = syb_nam = NULL 
     
     if (dt[,length(unique(symbol))] > 1) {
@@ -287,7 +289,45 @@ pp_base = function(dt, x = 'date', h='100%', yb=NULL) {
         e = dt |> 
             e_charts_(x) 
     }
-    if (!is.null(yb)) e = e_line_(e, serie = yb, legend=TRUE, symbol='none', color = 'grey')
+    
+    # base line
+    if (!is.null(yb)) e = e_line_(
+        e, serie = yb, legend=TRUE, symbol='none', color = 'grey', 
+        lineStyle = list(type = 'dashed', width = 1 )
+    )
+    
+    # volume line
+    if (!is.null(yvol) && !all(is.na(dt[[yvol]]))) { 
+        yvolmax = ceiling2(quantile(dt[[yvol]], 0.75) + IQR(dt[[yvol]])*3) * 5
+        
+        e = e_line_(e, serie = yvol, legend=TRUE, y_index = 1, symbol='none', color = '#D3D3D3', lineStyle = list(
+            width = 1
+        )) |>
+            e_y_axis(
+                index = 1, min='dataMin', max = yvolmax, 
+                splitLine = list(show=FALSE), 
+                axisTick = list(
+                    show = TRUE, inside = TRUE, lineStyle = list(color = "#D3D3D3"), 
+                    showAbove = JS(paste0("function(value) {",
+                                          "  return value <= ", yvolmax/3, ";",
+                                          "}"))
+                ), 
+                axisLabel = list(
+                    rotate = 90, 
+                    formatter = JS(paste0("function(value, index) {",
+                                          "  if (value <= ", yvolmax/3, ") {",
+                                          "    return value;",
+                                          "  } else {",
+                                          "    return '';",
+                                          "  }",
+                                          "}"))
+                )
+            )
+        
+        
+        
+        
+    }
     return(e)
 }
 
@@ -298,8 +338,9 @@ pp_line = function(
     orders = NULL, order_y = 'prices', order_type = 'side_bs', ...
 ) {
     title  = pp_title(dt, title, ...)
+    yvol = list(...)[['yvol']]
     
-    dt = dt[, intersect(names(dt), c('symbol', x, y, yb)), with=FALSE]
+    dt = dt[, intersect(names(dt), c('symbol', x, y, yb, yvol)), with=FALSE]
     dt = pp_dtpre(dt, x, y, addti, orders, order_y, order_type) |>
         pp_dtlm(x, y, yaxis_log, nsd_lm)
     
@@ -307,7 +348,7 @@ pp_line = function(
     markline_yvals = dt[, .SD[.N], by='symbol'][, unique(get(y))]
     dtcols = names(dt)
     
-    e = pp_base(dt, x, yb=yb) |> 
+    e = pp_base(dt, x, yb=yb, ...) |> 
         e_line_(serie = y, legend=TRUE, symbol='none') |>
         p_orders(orders, color_up, color_down, ...) |>
         p_markline(markline_yvals = markline_yvals, markline = markline) |> 
@@ -327,8 +368,9 @@ pp_step = function(
     orders = NULL, order_y = 'prices', order_type = 'side_bs', ...
 ) {
     title  = pp_title(dt, title, ...)
+    yvol = list(...)[['yvol']]
     
-    dt = dt[, intersect(names(dt), c('symbol', x, y, yb)), with=FALSE]
+    dt = dt[, intersect(names(dt), c('symbol', x, y, yb, yvol)), with=FALSE]
     dt = pp_dtpre(dt, x, y, addti, orders, order_y, order_type) |>
         pp_dtlm(x, y, yaxis_log, nsd_lm)
     
@@ -336,7 +378,7 @@ pp_step = function(
     markline_yvals = dt[, .SD[.N], by='symbol'][, unique(get(y))]
     dtcols = names(dt)
     
-    e = pp_base(dt, x, yb=yb) |> 
+    e = pp_base(dt, x, yb=yb, ...) |> 
         e_step_(serie = y, symbol='none') |> 
         p_orders(orders, color_up, color_down, ...) |> 
         p_markline(markline_yvals = markline_yvals, markline = markline) |> 
@@ -356,8 +398,9 @@ pp_candle = function(
     orders = NULL, order_y = 'prices', order_type = 'side_bs', ...
 ) {
     title  = pp_title(dt, title, ...)
+    yvol = list(...)[['yvol']]
     
-    dt = dt[, intersect(names(dt), c('symbol', x, y, yb, 'close', 'open', 'low', 'high')), with=FALSE]
+    dt = dt[, intersect(names(dt), c('symbol', x, y, yb, yvol, 'close', 'open', 'low', 'high')), with=FALSE]
     dt = pp_dtpre(dt, x, y, addti, orders, order_y, order_type) |>
         pp_dtlm(x, y, yaxis_log, nsd_lm)
     
@@ -366,7 +409,7 @@ pp_candle = function(
     dtcols = names(dt)
     
     dt = copy(dt)[, date := as.factor(date)]
-    e = pp_base(dt, x, yb=yb) |> 
+    e = pp_base(dt, x, yb=yb, ...) |> 
         e_candle_('close', 'open', 'low', 'high', name = title,
                   itemStyle = list(color = color_up, borderColor = color_up,
                                    color0 = color_down, borderColor0 = color_down)) |> 
@@ -413,6 +456,9 @@ pp_candle = function(
 #' e1 = pq_plot(dt_ssec, chart_type = 'line') # line chart (default)
 #' e1[[1]]
 #' 
+#' # show turnover
+#' eto = pq_plot(dt_ssec, yvol = 'turnover')
+#' 
 #' # add technical indicators
 #' e2 = pq_plot(dt_ssec, addti = list(
 #'         sma = list(n = 200), 
@@ -457,7 +503,7 @@ pp_candle = function(
 pq_plot = function(
     dt, chart_type = 'line', x = 'date', y = 'close', yb = NULL,
     date_range = 'max', yaxis_log = FALSE, title = NULL, 
-    addti = NULL, nsd_lm = NULL, markline = TRUE, orders = NULL, 
+    addti = NULL, nsd_lm = NULL, markline = FALSE, orders = NULL, 
     arrange = list(rows=NULL, cols=NULL), 
     theme = 'default', 
     ...) {

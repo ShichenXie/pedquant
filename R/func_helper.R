@@ -357,6 +357,17 @@ load_read_csv = function(url, encode="UTF-8", handle=new_handle(), csv_header=TR
     else return(setDT(dat))
 }
 
+load_read_json = function(url) {
+    url = "https://raw.githubusercontent.com/NateScarlet/holiday-cn/master/2007.json"
+    
+    temp = tempfile()
+    on.exit(unlink(temp))
+    
+    download.file(url=url, destfile=temp, quiet=TRUE)
+    dat = read_csv(temp, show_col_types=FALSE)
+    
+    
+}
 
 
 #' @importFrom readr read_lines
@@ -404,9 +415,10 @@ read_api_eastmoney = function(url) {
     
     return(datmp)
 }
-read_apidata_eastmoney = function(url, type='history') {
+read_apidata_eastmoney = function(url, type='history', datmp = NULL) {
     doc = NULL
-    datmp = read_api_eastmoney(url)
+    if (is.null(datmp)) datmp = read_api_eastmoney(url)
+    
     if (is.null(datmp$data)) return(invisible())
     
     if (type == 'history') {

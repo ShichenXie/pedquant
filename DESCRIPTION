@@ -25,7 +25,8 @@ Imports:
     readxl,
     readr,
     echarts4r,
-    xefun (> 0.1.3)
+    xefun (> 0.1.3),
+    htmlwidgets
 Suggests: 
     knitr,
     rmarkdown

@@ -223,7 +223,7 @@ ti_idicators_hline = function() {list(
 
 # add one technical indicator
 #' @import TTR
-addti1 = function(dt, ti, col_formula = FALSE, ...) {
+addti1 = function(dt, ti, col_formula = FALSE, tinam_prefix = FALSE, ...) {
   .=high=low=volume=adx_dx=adx_adx=adx_dip=adx_din=formula_str=NULL
   
   dt = setDT(copy(dt))
@@ -310,6 +310,9 @@ addti1 = function(dt, ti, col_formula = FALSE, ...) {
   }
   if (tolower(ti) == 'adx') dtti = dtti[,.(adx_dx, adx_adx, adx_dip, adx_din)]
   
+  # add prefix to ti names
+  if (isTRUE(tinam_prefix)) setnames(dtti, paste(sel_cols[1], names(dtti), sep = '_'))
+  
   # formula
   if (col_formula) {
     dtti = dtti[, formula_str := sprintf(
@@ -330,12 +333,14 @@ pq1_addti = function(dt, ...) {
   if ("col_formula" %in% ti_names)  col_formula = ti_lst_input[["col_formula"]]
   col_kp = TRUE
   if ("col_kp"      %in% ti_names)  col_kp      = ti_lst_input[["col_kp"]]
+  tinam_prefix = FALSE
+  if ("tinam_prefix"      %in% ti_names)  tinam_prefix      = ti_lst_input[["tinam_prefix"]]
   
   #setdiff(names(), c('col_kp','col_formula'))
   dtti_list = list()
   for (i in seq_along(ti_lst_input)) {
     ti1_nam = ti_names[i]
-    if (ti1_nam %in% c('col_kp','col_formula')) next
+    if (ti1_nam %in% c('col_kp','col_formula', 'tinam_prefix')) next
     # check ti 
     if (!(ti1_nam %in% ti_ttr_func)) {
       ti1_nam2 = ti_ttr_func[which(tolower(ti1_nam) == tolower(ti_ttr_func))]
@@ -347,7 +352,7 @@ pq1_addti = function(dt, ...) {
     #   next
     # }
     
-    arg_lst = list(dt=dt, ti=ti1_nam, col_formula = col_formula)
+    arg_lst = list(dt=dt, ti=ti1_nam, col_formula = col_formula, tinam_prefix = tinam_prefix)
     dtti_listi = try(
       do.call(addti1, args = c(arg_lst, ti_lst_input[[i]])),
       silent = TRUE
@@ -409,6 +414,7 @@ pq1_addti = function(dt, ...) {
 #' 
 #' # add technical indicators
 #' dt_ti1 = pq_addti(dt_ssec, sma=list(n=20), sma=list(n=50), macd = list())
+#' dt_tinam = pq_addti(dt_ssec, sma=list(n=20), sma=list(n=50), macd = list(), tinam_prefix = TRUE)
 #' 
 #' # specify the price column x
 #' dt_ti11 = pq_addti(dt_ssec, sma=list(n=20, x='open'), sma=list(n=50, x='open'))
