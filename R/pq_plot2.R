@@ -2,7 +2,7 @@
 pp_dtpre = function(dt, x='date', y='close', 
                     addti = NULL, 
                     orders = NULL, order_y = 'prices', order_type = 'side_bs', order_term = 'side_term', ...) {
-    symbol = name = markline_value = NULL
+    symbol = name = markline_value = p = NULL
     
     dt = setorderv(copy(dt), c('symbol', x)) 
     
