@@ -21,15 +21,15 @@ pp_dtpre = function(dt, x='date', y='close',
     
 
     if (inherits(orders, 'data.frame') && nrow(orders) > 0) {
-        
-        dtodr_cols = intersect(c('symbol', 'date'), names(orders))
+        if (!('p' %in% names(orders))) orders = orders[, p := NA]
+        dtodr_cols = intersect(c('symbol', 'date', 'p'), names(orders))
         
         dt = merge(
             dt, 
             dcast(orders, 
                   sprintf('%s ~ %s + %s', paste0(dtodr_cols,collapse='+'), order_type, order_term), 
                   value.var = order_y), 
-            by = dtodr_cols, all.x = TRUE
+            by = setdiff(dtodr_cols, 'p'), all.x = TRUE
         )
         
     }
@@ -102,7 +102,9 @@ p_orders = function(e, orders, color_up = "#CF002F", color_down = "#000000", ord
     if (is.null(orders)) return(e)
     
     lvls = orders[order(-side_term)][,unique(side_term)]
-    sybs = rep_len(c('circle', 'triangle', 'diamond'), length(lvls)) # 'arrow', 
+    sybs = rep_len(c('circle', 'roundRect', 'triangle', 'arrow', 'diamond'), length(lvls)) # 'arrow', 
+    # 'circle', 'rect', 'roundRect', 'triangle', 'diamond', 'pin', 'arrow', 'none'
+    
     cols = orders[, unique(paste(side_bs, side_term, sep = '_'))]
     
     for (i in seq_along(lvls) ) {
@@ -119,7 +121,7 @@ p_orders = function(e, orders, color_up = "#CF002F", color_down = "#000000", ord
         col3 = sprintf('buy_short_%s', lvls[i])
         if (col3 %in% cols) e = e_scatter_(e, col3, symbol = sybi, symbolSize = sybsize, color = color_up, legend = FALSE)
         col4 = sprintf('sell_short_%s', lvls[i])
-        if (col4 %in% cols) e = e_scatter_(e, col4, symbol = sybi, symbolSize = sybsize, symbolRotate=180, color = color_down, legend = FALSE) 
+        if (col4 %in% cols) e = e_scatter_(e, col4, symbol = sybi, symbolSize = sybsize, symbolRotate=180, color = color_down, legend = FALSE)  
     }
     
 

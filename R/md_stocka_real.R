@@ -69,6 +69,7 @@ md_stocka_eastmoney = function(symbol1 = 'stocka') {
             urlcode, paste0('f', fid, collapse = ','), pagenum, fscode, date_num(Sys.time(), 'ms')) 
         dmplst = c(dmplst, list(dt = read_apidata_eastmoney(url, type = 'real_cn') )) 
         pagenum = pagenum + 1
+        Sys.sleep(abs(rnorm(1,0.86)))
     }
     
     cols_num = c("open", "high", "low", "close", "volume", "amount", "turnover",  "cap_total", "cap_market", "pe_ttm", "pb", "pe_lyr", "pe_forward")
@@ -91,5 +92,6 @@ md_stocka_eastmoney = function(symbol1 = 'stocka') {
     
     datlst = split(dtmp, by = 'market')
     # dtmp[,.N, keyby=.(mktcode, f19, market, exchange)]
+    
     return(datlst)
 }

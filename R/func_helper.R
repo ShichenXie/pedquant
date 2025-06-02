@@ -369,6 +369,16 @@ load_read_json = function(url) {
     
 }
 
+#' @importFrom jsonlite read_json
+read_api_tsanghi = function(url) {
+    dmp = read_json(url)
+    setDT(rbindlist(lapply(dmp$data, function(x) {
+        as.data.frame(lapply(x, function(x) {
+            if (is.null(x)) x = NA 
+            return(x)
+        }))
+    })))[]
+}
 
 #' @importFrom readr read_lines
 #' @importFrom httr POST add_headers

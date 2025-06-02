@@ -65,7 +65,7 @@ md_stock = function(symbol, type = 'history', date_range = "3y", from = NULL, to
         dat_list <- try(do.call('md_stock_real', args=list(symbol=symbol, ...)), silent = TRUE)
         
     }  else if (type == 'history') {
-        dat_list = load_dat_loop(symbol, 'md_stock1_history_eastmoney', args = list(from = from, to = to, zero_rm = zero_rm, forward=forward, ...), print_step=print_step)
+        dat_list = load_dat_loop(symbol, 'md_stock1_history_eastmoney', args = list(from = from, to = to, zero_rm = zero_rm, forward=forward, ...), print_step=print_step, sleep = args$sleep)
         
     } else if (type == 'adjfactor') (
         dat_list = load_dat_loop(symbol, 'md_stock1_divsplit_163', args = list(from = from, to = to), print_step=print_step)

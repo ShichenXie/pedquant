@@ -373,7 +373,7 @@ ed_nbs = function(symbol=NULL, freq=NULL, geo_type=NULL, subregion=NULL, date_ra
       symbol = symbol, 
       func = ed1_nbs_, 
       args = list(geo_type=geo_type, subregion=subregion, from=from, to=to, freq=freq, eng=eng), 
-      print_step=print_step, ...
+      print_step=print_step#, ...
   )
   jsondat_list = rm_error_dat(jsondat_list)
   dat = rbindlist(jsondat_list, fill = TRUE)[, freq := substr(freq,1,1)]
