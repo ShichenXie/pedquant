@@ -34,7 +34,7 @@ fidnam = function(col) {
         f221 date_lastupdate'
     )[[col]]
 }
-md_stocka_eastmoney = function(symbol1 = 'stocka') {
+md_stocka_eastmoney = function(symbol1 = 'stocka', sleep = 1.86) {
     mktcode = sybcode = symbol = rid = value = variable = time = exchange = ticktime = date_lastupdate = NULL
     
     if (symbol1 == 'stocka') {
@@ -69,7 +69,7 @@ md_stocka_eastmoney = function(symbol1 = 'stocka') {
             urlcode, paste0('f', fid, collapse = ','), pagenum, fscode, date_num(Sys.time(), 'ms')) 
         dmplst = c(dmplst, list(dt = read_apidata_eastmoney(url, type = 'real_cn') )) 
         pagenum = pagenum + 1
-        Sys.sleep(abs(rnorm(1,0.86)))
+        Sys.sleep(abs(rnorm(1, sleep)))
     }
     
     cols_num = c("open", "high", "low", "close", "volume", "amount", "turnover",  "cap_total", "cap_market", "pe_ttm", "pb", "pe_lyr", "pe_forward")

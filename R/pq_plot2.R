@@ -444,7 +444,7 @@ pp_candle = function(
 #' @param markline whether to display markline. Default is TRUE. 
 #' @param orders a data frame of trade orders, which including columns of symbol, date, side, prices, and quantity. 
 #' @param arrange a list. Number of rows and columns charts to connect. Default is NULL.
-#' @param theme name of echarts theme, see details in \code{\link{e_theme}}
+#' @param theme name of echarts theme, see details in \code{\link[echarts4r]{e_theme}}
 #' @param ... ignored
 #' 
 #' @examples 

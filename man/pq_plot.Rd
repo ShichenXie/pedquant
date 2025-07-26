@@ -36,7 +36,7 @@ pq_plot(dt, chart_type = "line", x = "date", y = "close", yb = NULL,
 
 \item{arrange}{a list. Number of rows and columns charts to connect. Default is NULL.}
 
-\item{theme}{name of echarts theme, see details in \code{\link{e_theme}}}
+\item{theme}{name of echarts theme, see details in \code{\link[echarts4r]{e_theme}}}
 
 \item{...}{ignored}
 }
