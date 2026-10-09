@@ -46,7 +46,7 @@ md_libor1_last5 = function(currency) {
     # scrap
     wb = read_html(url)
     
-    dt_libor_5 = setDT(html_table(wb, fill = TRUE, header = TRUE)[[14]])
+    dt_libor_5 = setDT(html_table(wb, header = TRUE)[[14]])
     dt_libor_5 = dt_libor_5[,-1][,symbol := paste0('uko',currency,c('on','1w','2w',paste0(1:11,'m'),'1y'))][]
     dt_libor_5[dt_libor_5=='-'] <- NA
     dt_libor_5 = melt(dt_libor_5, id.vars = 'symbol', na.rm = TRUE, variable.name = 'date')[, `:=`(
