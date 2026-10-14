@@ -84,7 +84,7 @@ md_stock1_info_163 = function(symbol1, rev_hist = FALSE, ...) {
         # sub('.*([0-9]{4}-[0-9]{2}-[0-9]{2}).*', '\\1', rd) 
         
         
-        tbls = rvest::html_table(datweb, fill = TRUE, header = FALSE)
+        tbls = rvest::html_table(datweb, header = FALSE)
         
         profile = 
             rbind(
@@ -297,7 +297,7 @@ md_stock1_divsplit_163 = function(symbol1, from=NULL, to=NULL, ret = c('div', 's
     # get dividends
     tbls = sprintf('http://quotes.money.163.com/f10/fhpg_%s.html#01d05', sub("^.*?([0-9]+).*$",'\\1', symbol1)) %>%
         read_html(.) %>% 
-        rvest::html_table(., fill = TRUE, header = TRUE)
+        rvest::html_table(., header = TRUE)
     
     
     tbl_divspl = setDT(tbls[[4]])[-1][, lapply(.SD, function(x) replace(x, x=='--', NA))][,c(3:8)]
@@ -424,7 +424,7 @@ md_fund1_history_163 = function(symbol1, from='1900-01-01', to=Sys.Date()) {
     dat_lst2 = lapply(
         sprintf('http://quotes.money.163.com/fund/zyjl_%s_%s.html?start=%s&end=%s', syb_add_cntags(symbol1)[]$syb, seq(0,pagnum-1), from, to), 
         function(u) {
-            read_html(u) %>% html_table(fill = TRUE) %>% .[[1]]
+            read_html(u) %>% html_table() %>% .[[1]]
         }
     )
     dat_163 = rbindlist(dat_lst2)
